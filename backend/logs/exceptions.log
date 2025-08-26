@@ -1,0 +1,126 @@
+2025-08-25 12:23:04 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/middleware/requestLogger.ts(20,3): error TS2322: Type '(chunk?: any, encoding?: any, callback?: any) => void' is not assignable to type '{ (cb?: (() => void) | undefined): Response<any, Record<string, any>>; (chunk: any, cb?: (() => void) | undefined): Response<any, Record<string, any>>; (chunk: any, encoding: BufferEncoding, cb?: (() => void) | undefined): Response<...>; }'.
+  Type 'void' is not assignable to type 'Response<any, Record<string, any>>'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 12:42:57 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/middleware/requestLogger.ts(20,3): error TS2322: Type '(chunk?: any, encoding?: any, callback?: any) => void' is not assignable to type '{ (cb?: (() => void) | undefined): Response<any, Record<string, any>>; (chunk: any, cb?: (() => void) | undefined): Response<any, Record<string, any>>; (chunk: any, encoding: BufferEncoding, cb?: (() => void) | undefined): Response<...>; }'.
+  Type 'void' is not assignable to type 'Response<any, Record<string, any>>'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 12:50:36 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:83:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-25 19:02:26 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/tokenService.ts(275,17): error TS2551: Property 'setex' does not exist on type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...'. Did you mean 'setEx'?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:02:57 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/tokenService.ts(275,17): error TS2551: Property 'setex' does not exist on type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...'. Did you mean 'setEx'?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:03:03 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/tokenService.ts(275,17): error TS2551: Property 'setex' does not exist on type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...'. Did you mean 'setEx'?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:03:10 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/tokenService.ts(275,17): error TS2551: Property 'setex' does not exist on type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...'. Did you mean 'setEx'?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:03:21 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/tokenService.ts(275,17): error TS2551: Property 'setex' does not exist on type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...'. Did you mean 'setEx'?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:03:28 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/tokenService.ts(275,17): error TS2551: Property 'setex' does not exist on type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...'. Did you mean 'setEx'?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 19:03:38 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/authController.ts(363,36): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)

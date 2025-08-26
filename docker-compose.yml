@@ -1,0 +1,132 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: evofit-postgres
+    environment:
+      POSTGRES_DB: evofit_db
+      POSTGRES_USER: evofit
+      POSTGRES_PASSWORD: evofit_dev_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - evofit-network
+    profiles:
+      - dev
+      - prod
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: evofit-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - evofit-network
+    profiles:
+      - dev
+      - prod
+
+  # Backend API (Node.js + Express + TypeScript)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: evofit-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://evofit:evofit_dev_password@postgres:5432/evofit_db
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: dev_jwt_access_secret_change_in_production
+      JWT_REFRESH_SECRET: dev_jwt_refresh_secret_change_in_production
+      JWT_ACCESS_EXPIRE: 15m
+      JWT_REFRESH_EXPIRE: 7d
+      BCRYPT_ROUNDS: 12
+      EMAIL_FROM: noreply@evofit.dev
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      AWS_S3_BUCKET: evofit-dev-uploads
+      AWS_REGION: us-east-1
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - evofit-network
+    profiles:
+      - dev
+    command: ["npm", "run", "dev"]
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.dev
+    container_name: evofit-frontend
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - evofit-network
+    profiles:
+      - dev
+    command: ["npm", "run", "dev"]
+
+  # MailHog (Email testing)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: evofit-mailhog
+    ports:
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
+    networks:
+      - evofit-network
+    profiles:
+      - dev
+
+  # pgAdmin (Database administration)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: evofit-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@evofit.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+      PGADMIN_CONFIG_LOGIN_BANNER: '"EvoFit Development Database"'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - evofit-network
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  evofit-network:
+    driver: bridge

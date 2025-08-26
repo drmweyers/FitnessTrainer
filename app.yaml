@@ -1,0 +1,70 @@
+name: evofit-prod
+region: tor
+services:
+- name: web
+  image:
+    registry_type: DOCR
+    repository: evofit
+    tag: prod
+  http_port: 3000
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /
+  health_check:
+    http_path: /api/health
+    initial_delay_seconds: 30
+    period_seconds: 30
+    timeout_seconds: 10
+    success_threshold: 1
+    failure_threshold: 3
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    value: ${db.DATABASE_URL}
+  - key: JWT_SECRET
+    scope: RUN_TIME
+    type: SECRET
+  - key: OPENAI_API_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: AWS_ACCESS_KEY_ID
+    scope: RUN_TIME
+    type: SECRET
+  - key: AWS_SECRET_ACCESS_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: AWS_REGION
+    scope: RUN_TIME
+    value: us-east-1
+  - key: S3_BUCKET_NAME
+    scope: RUN_TIME
+    type: SECRET
+  - key: GOOGLE_CLIENT_ID
+    scope: RUN_TIME
+    type: SECRET
+  - key: GOOGLE_CLIENT_SECRET
+    scope: RUN_TIME
+    type: SECRET
+  - key: STRIPE_PUBLIC_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: STRIPE_SECRET_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: STRIPE_WEBHOOK_SECRET
+    scope: RUN_TIME
+    type: SECRET
+  - key: AUTO_MIGRATE
+    value: "true"
+  - key: DB_SSL_MODE
+    value: require
+databases:
+- name: db
+  engine: PG
+  version: "14"
+  size: db-s-1vcpu-1gb
+  num_nodes: 1
+  production: true
