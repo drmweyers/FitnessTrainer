@@ -29,7 +29,7 @@ model User {
   lastLoginAt  DateTime? @map("last_login_at")
   deletedAt    DateTime? @map("deleted_at")
 
-  // Relations
+  // Relations - Authentication
   emailVerifications EmailVerification[]
   passwordResets     PasswordReset[]
   twoFactorAuth      TwoFactorAuth?
@@ -38,6 +38,16 @@ model User {
   securityAuditLogs  SecurityAuditLog[]
   accountLockouts    AccountLockout[]
   apiTokens          ApiToken[]
+
+  // Relations - User Profile (Epic 001)
+  userProfile         UserProfile?
+  userMeasurements    UserMeasurement[]
+  userHealth          UserHealth?
+  userGoals           UserGoal[]
+  trainerCertifications TrainerCertification[]
+  trainerSpecializations TrainerSpecialization[]
+  progressPhotos      ProgressPhoto[]
+  profileCompletion   ProfileCompletion?
 
   @@map("users")
 }
@@ -172,4 +182,184 @@ model ApiToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("api_tokens")
+}
+
+// =====================================
+// EPIC 001: USER PROFILES
+// =====================================
+
+enum PreferredUnits {
+  metric
+  imperial
+}
+
+enum GoalType {
+  weight_loss
+  muscle_gain
+  endurance
+  strength
+  flexibility
+  general_fitness
+  sport_specific
+  rehabilitation
+}
+
+enum PhotoType {
+  front
+  side
+  back
+  other
+}
+
+// User profiles (extends users table)
+model UserProfile {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String         @unique @map("user_id") @db.Uuid
+  bio             String?        @db.Text
+  dateOfBirth     DateTime?      @map("date_of_birth") @db.Date
+  gender          String?        @db.VarChar(20)
+  phone           String?        @db.VarChar(20)
+  timezone        String?        @db.VarChar(50)
+  preferredUnits  PreferredUnits @default(metric) @map("preferred_units")
+  profilePhotoUrl String?        @map("profile_photo_url") @db.VarChar(500)
+  coverPhotoUrl   String?        @map("cover_photo_url") @db.VarChar(500)
+  isPublic        Boolean        @default(true) @map("is_public")
+  completedAt     DateTime?      @map("completed_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime?      @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+// Physical measurements
+model UserMeasurement {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String    @map("user_id") @db.Uuid
+  height              Decimal?  @db.Decimal(5, 2)
+  weight              Decimal?  @db.Decimal(5, 2)
+  bodyFatPercentage   Decimal?  @map("body_fat_percentage") @db.Decimal(4, 2)
+  muscleMass          Decimal?  @map("muscle_mass") @db.Decimal(5, 2)
+  measurements        Json?     // chest, waist, hips, etc.
+  recordedAt          DateTime  @default(now()) @map("recorded_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_measurements")
+}
+
+// Health information
+model UserHealth {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String    @unique @map("user_id") @db.Uuid
+  bloodType         String?   @map("blood_type") @db.VarChar(10)
+  medicalConditions String[]  @map("medical_conditions")
+  medications       String[]
+  allergies         String[]
+  injuries          Json?
+  surgeries         Json?
+  familyHistory     Json?     @map("family_history")
+  lifestyle         Json?     // smoking, drinking, sleep, stress
+  lastPhysicalExam  DateTime? @map("last_physical_exam") @db.Date
+  emergencyContact  Json?     @map("emergency_contact")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_health")
+}
+
+// Fitness goals
+model UserGoal {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  goalType     GoalType  @map("goal_type")
+  specificGoal String?   @map("specific_goal") @db.Text
+  targetValue  Decimal?  @map("target_value") @db.Decimal(10, 2)
+  targetDate   DateTime? @map("target_date") @db.Date
+  priority     Int?
+  isActive     Boolean   @default(true) @map("is_active")
+  achievedAt   DateTime? @map("achieved_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_goals")
+}
+
+// Trainer certifications
+model TrainerCertification {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId              String    @map("trainer_id") @db.Uuid
+  certificationName      String    @map("certification_name") @db.VarChar(255)
+  issuingOrganization    String    @map("issuing_organization") @db.VarChar(255)
+  credentialId           String?   @map("credential_id") @db.VarChar(100)
+  issueDate              DateTime? @map("issue_date") @db.Date
+  expiryDate             DateTime? @map("expiry_date") @db.Date
+  documentUrl            String?   @map("document_url") @db.VarChar(500)
+  isVerified             Boolean   @default(false) @map("is_verified")
+  verifiedAt             DateTime? @map("verified_at")
+  createdAt              DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  trainer User @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("trainer_certifications")
+}
+
+// Trainer specializations
+model TrainerSpecialization {
+  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId        String @map("trainer_id") @db.Uuid
+  specialization   String @db.VarChar(100)
+  yearsExperience  Int?   @map("years_experience")
+  description      String? @db.Text
+
+  // Relations
+  trainer User @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("trainer_specializations")
+}
+
+// Progress photos
+model ProgressPhoto {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  photoUrl      String    @map("photo_url") @db.VarChar(500)
+  thumbnailUrl  String?   @map("thumbnail_url") @db.VarChar(500)
+  photoType     PhotoType @map("photo_type")
+  notes         String?   @db.Text
+  isPrivate     Boolean   @default(true) @map("is_private")
+  takenAt       DateTime? @map("taken_at")
+  uploadedAt    DateTime  @default(now()) @map("uploaded_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("progress_photos")
+}
+
+// Profile completion tracking
+model ProfileCompletion {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                 String    @unique @map("user_id") @db.Uuid
+  basicInfo              Boolean   @default(false) @map("basic_info")
+  profilePhoto           Boolean   @default(false) @map("profile_photo")
+  healthInfo             Boolean   @default(false) @map("health_info")
+  goalsSet               Boolean   @default(false) @map("goals_set")
+  measurements           Boolean   @default(false)
+  certifications         Boolean   @default(false) // trainers only
+  completionPercentage   Int       @default(0) @map("completion_percentage")
+  lastUpdated            DateTime  @default(now()) @map("last_updated")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profile_completion")
 }

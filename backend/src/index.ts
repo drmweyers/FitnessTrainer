@@ -13,6 +13,10 @@ import { rateLimitConfig } from '@/config/rateLimit';
 // Routes
 import authRoutes from '@/routes/auth';
 import healthRoutes from '@/routes/health';
+console.log('Loading routes...');
+import workingProfileRoutes from '@/routes/workingProfileRoutes';
+console.log('Routes loaded.');
+// import profileRoutes from '@/routes/profileRoutes';
 
 // Middleware
 import { errorHandler } from '@/middleware/errorHandler';
@@ -52,6 +56,9 @@ app.use(requestLogger);
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/profile', workingProfileRoutes);
+// TODO: Re-enable full profile routes after fixing import issues
+// app.use('/api/profile', profileRoutes);
 
 // Global error handler
 app.use(errorHandler);

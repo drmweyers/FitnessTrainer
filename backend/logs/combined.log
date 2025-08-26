@@ -228,3 +228,101 @@
 {"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 20:31:57","version":"1.0.0"}
 {"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 20:31:57","version":"1.0.0"}
 {"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 20:31:57","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:47:28","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:47:29","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:47:29","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:47:29","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:47:29","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:47:29","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:48:12","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:48:12","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:48:12","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:48:12","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:48:12","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:48:12","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:51:21","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:51:21","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:51:21","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:51:21","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:51:21","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:51:21","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:51:41","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:51:41","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:51:41","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:51:41","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:51:41","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:51:41","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:52:02","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:52:42","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:53:20","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:53:53","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:54:02","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:54:08","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:54:13","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:54:33","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:54:39","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:56:13","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:56:46","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:56:52","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:57:01","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:57:07","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:57:08","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:57:08","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:57:08","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:57:08","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:57:08","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:57:14","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:57:32","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:57:48","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:58:07","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:58:07","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:58:07","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:58:07","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:58:07","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:58:07","version":"1.0.0"}
+{"ip":"::1","level":"info","message":"GET /","method":"GET","service":"evofit-backend","timestamp":"2025-08-25 21:58:07","url":"/","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36","version":"1.0.0"}
+{"duration":"2ms","ip":"::1","level":"warn","message":"GET / 404","method":"GET","responseTime":2,"service":"evofit-backend","statusCode":404,"timestamp":"2025-08-25 21:58:07","url":"/","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36","version":"1.0.0"}
+{"ip":"::1","level":"info","message":"GET /favicon.ico","method":"GET","service":"evofit-backend","timestamp":"2025-08-25 21:58:11","url":"/favicon.ico","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36","version":"1.0.0"}
+{"duration":"1ms","ip":"::1","level":"warn","message":"GET /favicon.ico 404","method":"GET","responseTime":1,"service":"evofit-backend","statusCode":404,"timestamp":"2025-08-25 21:58:11","url":"/favicon.ico","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:58:18","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:58:18","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:58:18","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:58:18","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:58:18","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:58:18","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:58:30","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:58:30","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:58:30","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:58:44","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:58:44","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:58:44","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:58:57","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:58:57","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:58:57","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:58:57","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:58:57","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:58:57","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:59:04","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:59:04","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:59:04","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:59:04","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:59:04","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:59:04","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 21:59:11","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2025-08-25 21:59:11","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to Redis cache","service":"evofit-backend","timestamp":"2025-08-25 21:59:11","version":"1.0.0"}
+{"level":"info","message":"🚀 EvoFit Backend API running on port 4000","service":"evofit-backend","timestamp":"2025-08-25 21:59:11","version":"1.0.0"}
+{"level":"info","message":"📱 Environment: development","service":"evofit-backend","timestamp":"2025-08-25 21:59:11","version":"1.0.0"}
+{"level":"info","message":"🔗 Health check: http://localhost:4000/api/health","service":"evofit-backend","timestamp":"2025-08-25 21:59:11","version":"1.0.0"}
+{"ip":"::1","level":"info","message":"POST /api/auth/login","method":"POST","service":"evofit-backend","timestamp":"2025-08-25 21:59:14","url":"/api/auth/login","userAgent":"curl/8.14.1","version":"1.0.0"}
+{"expiresAt":"2025-09-02T01:59:14.816Z","level":"info","message":"Generated refresh token","service":"evofit-backend","sessionId":"9b2097da-f294-4219-8211-af0f3308c85d","timestamp":"2025-08-25 21:59:14","userId":"e58c82a0-253e-48c6-bc9d-23e9ac2d67f9","version":"1.0.0"}
+{"email":"admin@fitmeal.pro","level":"info","message":"User logged in successfully","role":"admin","service":"evofit-backend","timestamp":"2025-08-25 21:59:14","userId":"e58c82a0-253e-48c6-bc9d-23e9ac2d67f9","version":"1.0.0"}
+{"duration":"315ms","ip":"::1","level":"info","message":"POST /api/auth/login 200","method":"POST","responseTime":315,"service":"evofit-backend","statusCode":200,"timestamp":"2025-08-25 21:59:14","url":"/api/auth/login","userAgent":"curl/8.14.1","version":"1.0.0"}
+{"ip":"::1","level":"info","message":"GET /api/profile","method":"GET","service":"evofit-backend","timestamp":"2025-08-25 21:59:21","url":"/api/profile","userAgent":"curl/8.14.1","version":"1.0.0"}
+{"duration":"8ms","ip":"::1","level":"info","message":"GET /api/profile 200","method":"GET","responseTime":8,"service":"evofit-backend","statusCode":200,"timestamp":"2025-08-25 21:59:21","url":"/api/profile","userAgent":"curl/8.14.1","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 22:00:08","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 22:01:01","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 22:01:23","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 22:01:36","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 22:01:36","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2025-08-25 22:01:42","version":"1.0.0"}

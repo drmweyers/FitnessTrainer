@@ -124,3 +124,404 @@ src/controllers/authController.ts(363,36): error TS7030: Not all code paths retu
     at Module.load (node:internal/modules/cjs/loader:1289:32)
     at Function._load (node:internal/modules/cjs/loader:1108:12)
     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:52:02 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/profileRoutes.ts(3,10): error TS2614: Module '"@/middleware/auth"' has no exported member 'authMiddleware'. Did you mean to use 'import authMiddleware from "@/middleware/auth"' instead?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:52:42 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/profileRoutes.ts(3,10): error TS2614: Module '"@/middleware/auth"' has no exported member 'authMiddleware'. Did you mean to use 'import authMiddleware from "@/middleware/auth"' instead?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:53:20 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/profileRoutes.ts(3,10): error TS2614: Module '"@/middleware/auth"' has no exported member 'authMiddleware'. Did you mean to use 'import authMiddleware from "@/middleware/auth"' instead?
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:53:53 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/profileRoutes.ts(8,12): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ authenticate: (req: Request, res: Response, next: NextFunction) => Promise<void>; optionalAuth: (req: Request, res: Response, next: NextFunction) => Promise<void>; ... 7 more ...; verifiedOnly: ((req: Request, res: Response, next: NextFunction) => void)[]; }' is not assignable to parameter of type 'PathParams'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:54:02 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/profileRoutes.ts(8,12): error TS2304: Cannot find name 'authMiddleware'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:54:08 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(25,15): error TS2614: Module '"@/middleware/auth"' has no exported member 'AuthenticatedRequest'. Did you mean to use 'import AuthenticatedRequest from "@/middleware/auth"' instead?
+src/controllers/profileController.ts(35,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(84,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(145,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(206,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(261,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(343,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(390,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(439,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(533,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(578,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(635,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(686,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(733,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(788,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(855,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(894,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(947,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1037,9): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:54:13 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(1,10): error TS2300: Duplicate identifier 'Request'.
+src/controllers/profileController.ts(25,15): error TS2300: Duplicate identifier 'Request'.
+src/controllers/profileController.ts(47,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(96,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(157,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(218,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(273,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(355,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(402,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(451,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(545,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(590,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(605,52): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(647,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(652,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(698,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(745,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(800,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(824,70): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(867,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(906,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(959,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1049,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1054,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:54:33 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(47,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(96,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(157,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(218,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(273,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(355,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(402,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(451,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(545,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(590,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(605,52): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(647,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(652,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(698,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(745,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(800,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(824,70): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(867,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(906,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(959,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1049,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1054,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:54:40 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(53,9): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/profileController.ts(96,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(157,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(218,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(273,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(355,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(402,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(451,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(545,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(590,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(605,52): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(647,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(652,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(698,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(745,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(800,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(824,70): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(867,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(906,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(959,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1049,9): error TS7030: Not all code paths return a value.
+src/controllers/profileController.ts(1054,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:56:14 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(617,52): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(665,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(843,70): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(1079,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:56:46 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(675,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(853,70): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(1089,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:56:52 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(863,70): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/profileController.ts(1099,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:57:01 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/profileController.ts(1109,62): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 21:57:48 [error]: C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\routes\profileRoutes.ts:8
+router.get('/', profileController_1.profileController.getProfile.bind(profileController_1.profileController));
+                                                      ^
+
+TypeError: Cannot read properties of undefined (reading 'getProfile')
+    at Object.<anonymous> (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\routes\profileRoutes.ts:15:35)
+    at Module._compile (node:internal/modules/cjs/loader:1554:14)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+    at Module.require (node:internal/modules/cjs/loader:1311:12)
+2025-08-25 21:58:30 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:86:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-25 21:58:44 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:86:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-25 22:00:08 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/workingProfileRoutes.ts(35,17): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(84,18): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 22:01:01 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/workingProfileRoutes.ts(35,17): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(84,18): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 22:01:24 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/workingProfileRoutes.ts(35,17): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(84,18): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 22:01:37 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/workingProfileRoutes.ts(35,17): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(84,18): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 22:01:37 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/workingProfileRoutes.ts(35,17): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(84,18): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-25 22:01:42 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/routes/workingProfileRoutes.ts(35,17): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(84,18): error TS7030: Not all code paths return a value.
+src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
