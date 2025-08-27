@@ -675,3 +675,9 @@ src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths ret
     at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
     at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-26 23:12:57 [error]: Error: Socket closed unexpectedly
+    at Socket.<anonymous> (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@redis\client\dist\lib\client\socket.js:194:118)
+    at Object.onceWrapper (node:events:633:26)
+    at Socket.emit (node:events:518:28)
+    at Socket.emit (node:domain:489:12)
+    at TCP.<anonymous> (node:net:351:12)
