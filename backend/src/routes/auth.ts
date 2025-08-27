@@ -7,7 +7,12 @@ import {
   registerSchema, 
   loginSchema, 
   refreshTokenSchema,
-  logoutSchema
+  logoutSchema,
+  verifyEmailSchema,
+  resendVerificationSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema
 } from '@/types/auth';
 
 const router = Router();
@@ -30,21 +35,27 @@ router.post('/refresh',
   authController.refreshToken
 );
 
-router.post('/forgot-password', passwordResetRateLimit, (req, res) => {
-  res.json({ message: 'Forgot password endpoint - TODO: implement' });
-});
+router.post('/forgot-password', 
+  passwordResetRateLimit,
+  validateBody(forgotPasswordSchema),
+  authController.forgotPassword
+);
 
-router.post('/reset-password', (req, res) => {
-  res.json({ message: 'Reset password endpoint - TODO: implement' });
-});
+router.post('/reset-password',
+  validateBody(resetPasswordSchema),
+  authController.resetPassword
+);
 
-router.post('/verify-email', (req, res) => {
-  res.json({ message: 'Email verification endpoint - TODO: implement' });
-});
+router.post('/verify-email',
+  validateBody(verifyEmailSchema),
+  authController.verifyEmail
+);
 
-router.post('/resend-verification', authRateLimit, (req, res) => {
-  res.json({ message: 'Resend verification endpoint - TODO: implement' });
-});
+router.post('/resend-verification', 
+  authRateLimit,
+  validateBody(resendVerificationSchema),
+  authController.resendVerification
+);
 
 // OAuth routes
 router.post('/oauth/google', (req, res) => {
@@ -67,17 +78,22 @@ router.post('/logout',
   authController.logout
 );
 
-router.put('/change-password', authRateLimit, (req, res) => {
-  res.json({ message: 'Change password endpoint - TODO: implement' });
-});
+router.put('/change-password', 
+  authenticate,
+  authRateLimit,
+  validateBody(changePasswordSchema),
+  authController.changePassword
+);
 
-router.get('/sessions', (req, res) => {
-  res.json({ message: 'Get user sessions endpoint - TODO: implement' });
-});
+router.get('/sessions',
+  authenticate,
+  authController.getSessions
+);
 
-router.delete('/sessions/:sessionId', (req, res) => {
-  res.json({ message: 'Delete session endpoint - TODO: implement' });
-});
+router.delete('/sessions/:sessionId',
+  authenticate,
+  authController.revokeSession
+);
 
 // Two-factor authentication
 router.post('/2fa/setup', (req, res) => {
@@ -93,8 +109,9 @@ router.post('/2fa/disable', (req, res) => {
 });
 
 // Security logs
-router.get('/security-logs', (req, res) => {
-  res.json({ message: 'Security logs endpoint - TODO: implement' });
-});
+router.get('/security-logs',
+  authenticate,
+  authController.getSecurityLogs
+);
 
 export default router;

@@ -41,3 +41,22 @@ Thumbs.db
 *.db
 *.sqlite
 prisma/migrations/dev/
+
+# Exercise Database (Large files - exclude entire folder)
+exerciseDB/
+
+# Test artifacts
+test-results/
+playwright-report/
+screenshots/
+coverage/
+
+# Development logs
+backend/logs/
+backend/server.log
+*.log
+nul
+
+# Build artifacts
+*.zip
+*.json.zip

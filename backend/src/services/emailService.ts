@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { logger } from '@/config/logger';
+import { logger } from '../config/logger';
 
 interface EmailConfig {
   host: string;
@@ -302,6 +302,204 @@ class EmailService {
     await this.sendEmail({
       to: email,
       subject: 'Welcome to EvoFit - Your fitness journey starts now!',
+      html,
+    });
+  }
+
+  /**
+   * Send client invitation email
+   */
+  async sendClientInvitation(
+    clientEmail: string,
+    trainerName: string,
+    trainerEmail: string,
+    invitationToken: string
+  ): Promise<void> {
+    const invitationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/accept-invitation?token=${invitationToken}`;
+    
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>You're invited to join EvoFit!</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+            background-color: #f8fafc;
+          }
+          .container {
+            background-color: #ffffff;
+            margin: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+          }
+          .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+          }
+          .header p {
+            margin: 8px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+          }
+          .content {
+            padding: 40px 30px;
+          }
+          .greeting {
+            font-size: 18px;
+            margin-bottom: 24px;
+            color: #374151;
+          }
+          .message {
+            font-size: 16px;
+            margin-bottom: 32px;
+            color: #6b7280;
+            line-height: 1.7;
+          }
+          .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 16px 0 32px 0;
+            transition: transform 0.2s ease;
+          }
+          .cta-button:hover {
+            transform: translateY(-2px);
+          }
+          .features {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+          }
+          .features h3 {
+            color: #374151;
+            margin-bottom: 16px;
+            font-size: 18px;
+          }
+          .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+          .feature-list li {
+            padding: 8px 0;
+            color: #6b7280;
+            position: relative;
+            padding-left: 24px;
+          }
+          .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+          }
+          .footer {
+            background-color: #f9fafb;
+            padding: 24px 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+          }
+          .footer p {
+            margin: 8px 0;
+            color: #9ca3af;
+            font-size: 14px;
+          }
+          .link-fallback {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #6b7280;
+            border-left: 4px solid #fbbf24;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🏋️ EvoFit</h1>
+            <p>Personal Training Platform</p>
+          </div>
+          
+          <div class="content">
+            <div class="greeting">
+              Hello! 👋
+            </div>
+            
+            <div class="message">
+              <strong>${trainerName}</strong> has invited you to join their training program on EvoFit, 
+              the modern platform for personal trainers and their clients.
+              <br><br>
+              With EvoFit, you'll be able to:
+            </div>
+
+            <div class="features">
+              <h3>What you can do with EvoFit:</h3>
+              <ul class="feature-list">
+                <li>Access personalized workout programs</li>
+                <li>Track your progress and achievements</li>
+                <li>Communicate directly with your trainer</li>
+                <li>Log workouts and nutrition</li>
+                <li>View detailed analytics and reports</li>
+                <li>Schedule sessions and appointments</li>
+              </ul>
+            </div>
+
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="${invitationUrl}" class="cta-button">
+                Accept Invitation & Get Started
+              </a>
+            </div>
+
+            <div class="link-fallback">
+              <strong>Button not working?</strong> Copy and paste this link into your browser:
+              <br>
+              <span style="word-break: break-all; color: #374151;">${invitationUrl}</span>
+            </div>
+
+            <div class="message" style="margin-top: 32px; font-size: 14px;">
+              This invitation was sent by ${trainerName} (${trainerEmail}). 
+              If you believe this was sent in error, you can safely ignore this email.
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p><strong>EvoFit - Evolution in Fitness</strong></p>
+            <p>Empowering trainers and transforming lives, one workout at a time.</p>
+            <p style="margin-top: 16px; font-size: 12px;">
+              This invitation will expire in 7 days for security purposes.
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await this.sendEmail({
+      to: clientEmail,
+      subject: `You're invited to join ${trainerName}'s training program on EvoFit`,
       html,
     });
   }

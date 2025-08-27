@@ -32,17 +32,18 @@ router.use(authenticate);
 /**
  * Get current user's profile
  */
-router.get('/', async (req: AuthenticatedRequest, res: Response) => {
+router.get('/', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user!.id;
     const profile = await profileService.getProfile(userId);
 
     if (!profile) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Profile not found',
         error: 'PROFILE_NOT_FOUND',
       });
+      return;
     }
 
     const response: UserProfileResponse = {
@@ -81,16 +82,17 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
 /**
  * Create user profile
  */
-router.post('/', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const validation = createUserProfileSchema.safeParse(req.body);
     if (!validation.success) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Invalid profile data',
         error: 'VALIDATION_ERROR',
         details: validation.error.errors,
       });
+      return;
     }
 
     const userId = req.user!.id;
@@ -124,11 +126,12 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
     
     // Handle duplicate profile error
     if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return res.status(409).json({
+      res.status(409).json({
         success: false,
         message: 'Profile already exists',
         error: 'PROFILE_EXISTS',
       });
+      return;
     }
 
     res.status(500).json({
@@ -142,16 +145,17 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
 /**
  * Update user profile
  */
-router.put('/', async (req: AuthenticatedRequest, res: Response) => {
+router.put('/', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const validation = updateUserProfileSchema.safeParse(req.body);
     if (!validation.success) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Invalid profile data',
         error: 'VALIDATION_ERROR',
         details: validation.error.errors,
       });
+      return;
     }
 
     const userId = req.user!.id;
@@ -185,11 +189,12 @@ router.put('/', async (req: AuthenticatedRequest, res: Response) => {
     
     // Handle profile not found
     if (error instanceof Error && error.message.includes('Record to update not found')) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Profile not found',
         error: 'PROFILE_NOT_FOUND',
       });
+      return;
     }
 
     res.status(500).json({

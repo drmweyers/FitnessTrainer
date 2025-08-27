@@ -49,6 +49,16 @@ model User {
   progressPhotos      ProgressPhoto[]
   profileCompletion   ProfileCompletion?
 
+  // Relations - Client Management (Epic 003)
+  trainerClients      TrainerClient[]   @relation("TrainerRelation")
+  clientTrainers      TrainerClient[]   @relation("ClientRelation")
+  clientInvitations   ClientInvitation[] @relation("TrainerInvitations")
+  clientProfile       ClientProfile?
+  trainerNotes        ClientNote[]      @relation("TrainerNotes")
+  clientNotes         ClientNote[]      @relation("ClientNotes")
+  clientTags          ClientTag[]       @relation("TrainerTags")
+  tagAssignments      ClientTagAssignment[] @relation("ClientTagAssignments")
+
   @@map("users")
 }
 
@@ -362,4 +372,125 @@ model ProfileCompletion {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profile_completion")
+}
+
+// =====================================
+// EPIC 003: CLIENT MANAGEMENT
+// =====================================
+
+enum ClientStatus {
+  active
+  pending
+  offline
+  need_programming
+  archived
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+}
+
+enum FitnessLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+// Trainer-client relationships
+model TrainerClient {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId    String       @map("trainer_id") @db.Uuid
+  clientId     String       @map("client_id") @db.Uuid
+  status       ClientStatus
+  connectedAt  DateTime?    @map("connected_at")
+  archivedAt   DateTime?    @map("archived_at")
+
+  // Relations
+  trainer User @relation("TrainerRelation", fields: [trainerId], references: [id], onDelete: Cascade)
+  client  User @relation("ClientRelation", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([trainerId, clientId])
+  @@map("trainer_clients")
+}
+
+// Client invitations
+model ClientInvitation {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId     String           @map("trainer_id") @db.Uuid
+  clientEmail   String           @map("client_email") @db.VarChar(255)
+  token         String           @unique @db.VarChar(255)
+  status        InvitationStatus
+  customMessage String?          @map("custom_message") @db.Text
+  sentAt        DateTime         @default(now()) @map("sent_at")
+  expiresAt     DateTime         @map("expires_at")
+  acceptedAt    DateTime?        @map("accepted_at")
+
+  // Relations
+  trainer User @relation("TrainerInvitations", fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("client_invitations")
+}
+
+// Client profiles (extended)
+model ClientProfile {
+  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String       @unique @map("user_id") @db.Uuid
+  emergencyContact Json?        @map("emergency_contact") @db.JsonB
+  medicalConditions String[]    @map("medical_conditions")
+  medications      String[]
+  allergies        String[]
+  injuries         Json?        @db.JsonB
+  fitnessLevel     FitnessLevel @map("fitness_level")
+  goals            Json?        @db.JsonB
+  preferences      Json?        @db.JsonB
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("client_profiles")
+}
+
+// Client notes
+model ClientNote {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId String    @map("trainer_id") @db.Uuid
+  clientId  String    @map("client_id") @db.Uuid
+  note      String    @db.Text
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  trainer User @relation("TrainerNotes", fields: [trainerId], references: [id], onDelete: Cascade)
+  client  User @relation("ClientNotes", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_notes")
+}
+
+// Client tags
+model ClientTag {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String @db.VarChar(50)
+  color     String @db.VarChar(7)
+  trainerId String @map("trainer_id") @db.Uuid
+
+  // Relations
+  trainer User                    @relation("TrainerTags", fields: [trainerId], references: [id], onDelete: Cascade)
+  assignments ClientTagAssignment[]
+
+  @@map("client_tags")
+}
+
+// Client tag assignments
+model ClientTagAssignment {
+  clientId String @map("client_id") @db.Uuid
+  tagId    String @map("tag_id") @db.Uuid
+
+  // Relations
+  client User      @relation("ClientTagAssignments", fields: [clientId], references: [id], onDelete: Cascade)
+  tag    ClientTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([clientId, tagId])
+  @@map("client_tag_assignments")
 }

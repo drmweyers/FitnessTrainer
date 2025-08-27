@@ -87,6 +87,18 @@ Card.Description = function CardDescription({
   )
 }
 
+Card.Content = function CardContent({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("p-6", className)}
+      {...props}
+    />
+  )
+}
+
 Card.Footer = function CardFooter({
   className,
   ...props
