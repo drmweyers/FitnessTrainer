@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend-Backend Integration Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .loading { background-color: #fff3cd; border-color: #ffeaa7; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Frontend-Backend Integration Test</h1>
+    
+    <div id="health-test" class="test loading">
+        <h3>Health Check</h3>
+        <div class="result">Testing...</div>
+    </div>
+    
+    <div id="categories-test" class="test loading">
+        <h3>Categories API</h3>
+        <div class="result">Testing...</div>
+    </div>
+    
+    <div id="exercises-test" class="test loading">
+        <h3>Exercise Search API</h3>
+        <div class="result">Testing...</div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        async function testEndpoint(testId, url, description) {
+            const testDiv = document.getElementById(testId);
+            const resultDiv = testDiv.querySelector('.result');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    testDiv.className = 'test success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ ${description} - SUCCESS</strong>
+                        <pre>${JSON.stringify(data, null, 2).substring(0, 500)}...</pre>
+                    `;
+                } else {
+                    testDiv.className = 'test error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ ${description} - API ERROR</strong>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                testDiv.className = 'test error';
+                resultDiv.innerHTML = `
+                    <strong>❌ ${description} - FETCH ERROR</strong>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
+        // Run tests
+        testEndpoint('health-test', `${API_BASE}/health`, 'Health Check');
+        testEndpoint('categories-test', `${API_BASE}/exercises/categories`, 'Categories API');
+        testEndpoint('exercises-test', `${API_BASE}/exercises?limit=3`, 'Exercise Search API');
+    </script>
+</body>
+</html>

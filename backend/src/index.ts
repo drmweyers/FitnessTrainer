@@ -13,6 +13,7 @@ import { rateLimitConfig } from '@/config/rateLimit';
 // Routes
 import authRoutes from '@/routes/auth';
 import healthRoutes from '@/routes/health';
+import exerciseRoutes from '@/routes/exercises';
 console.log('Loading routes...');
 // import workingProfileRoutes from '@/routes/workingProfileRoutes';
 import { clientRoutes } from '@/routes/clientRoutes';
@@ -57,6 +58,7 @@ app.use(requestLogger);
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/exercises', exerciseRoutes);
 // app.use('/api/profile', workingProfileRoutes);
 app.use('/api/clients', clientRoutes);
 // TODO: Re-enable full profile routes after fixing import issues

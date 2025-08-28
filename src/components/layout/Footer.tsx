@@ -43,7 +43,7 @@ export default function Footer() {
                   priority
                 />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">PT Influencer</p>
+                  <p className="text-sm font-medium text-gray-900">EvoFit Fitness</p>
                   <p className="text-xs text-gray-500">Professional Training Platform</p>
                 </div>
               </Link>
@@ -70,10 +70,10 @@ export default function Footer() {
                   Workouts
                 </Link>
                 <Link 
-                  href="/recipes" 
+                  href="/exercises" 
                   className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
-                  Recipes
+                  Exercises
                 </Link>
                 <Link 
                   href="/programs" 
@@ -91,7 +91,7 @@ export default function Footer() {
             </div>
 
             <div className="text-center md:text-right text-sm text-gray-500">
-              <p>© {new Date().getFullYear()} PT Influencer. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} EvoFit Fitness. All rights reserved.</p>
             </div>
           </div>
         </div>

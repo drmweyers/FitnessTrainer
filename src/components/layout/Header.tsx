@@ -34,7 +34,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               height={32}
               priority
             />
-            <span className="font-semibold text-lg hidden sm:inline">FitTrack Pro</span>
+            <span className="font-semibold text-lg hidden sm:inline">EvoFit Fitness</span>
           </div>
         </div>
 
@@ -49,7 +49,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <div className="flex items-center gap-3 ml-4">
             <div className="hidden sm:block text-right">
               <div className="text-sm font-medium">John Doe</div>
-              <div className="text-xs text-gray-500">Recipe Creator</div>
+              <div className="text-xs text-gray-500">Fitness Trainer</div>
             </div>
             <div className="h-8 w-8 rounded-full overflow-hidden">
               <Image

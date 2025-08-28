@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import ExerciseLibrary from '@/components/features/ExerciseLibrary/ExerciseLibrary'
+import { ExerciseLibrary } from '@/components/features/ExerciseLibrary/ExerciseLibrary'
 import WorkoutBuilder from '@/components/features/WorkoutBuilder/WorkoutBuilder'
 import Layout from '@/components/layout/Layout'
 import { Exercise } from '@/types/exercise'

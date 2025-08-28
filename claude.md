@@ -585,18 +585,18 @@ docker-compose --profile dev up -d --build
 ## Claude Code Router Configuration
 
 ### Overview
-Claude Code Router is configured to use native Claude models by default, with the ability to switch to alternative models (Qwen) when credits are exhausted.
+Claude Code Router is configured to use native Claude models by default. Alternative models (like Qwen) can be used when needed.
 
 ### Running Claude Code
 
-#### Option 1: Use Native Claude Models (Default)
+#### Default: Use Native Claude Models
 ```powershell
 cd <project-directory>
 claude code
 ```
-This uses your Anthropic account directly until credits are exhausted.
+This uses Claude models directly through your Anthropic account.
 
-#### Option 2: Use with Router Proxy
+#### Alternative: Use with Router Proxy (when needed)
 ```powershell
 cd <project-directory>
 claude code --api-proxy http://127.0.0.1:8080
@@ -648,15 +648,16 @@ Start-Process node -ArgumentList "C:\Users\drmwe\AppData\Roaming\npm\node_module
 - Logs: `~/.claude-code-router/claude-code-router.log`
 
 ### Best Practices
-1. Use native Claude models for complex tasks requiring latest capabilities
-2. Switch to Qwen models for routine coding tasks or when credits are low
-3. Use `qwen/qwen-2.5-coder-32b-instruct` for coding-specific tasks
-4. Use `qwen/qwq-32b-preview` for complex reasoning tasks
-5. Monitor usage to optimize between cost and performance
+1. Use native Claude models by default for all tasks
+2. Only switch to alternative models (like Qwen) when absolutely necessary
+3. Monitor usage to maintain optimal performance
+4. Prioritize Claude models for their superior capabilities and consistency
 
-### Quick Model Change Commands
+### Model Switching (Only When Necessary)
 
-**IMPORTANT**: First ensure Claude Code is running with the router:
+**NOTE**: Model switching should only be used when Claude credits are exhausted or for specific testing purposes.
+
+If you need to switch models, first ensure Claude Code is running with the router:
 ```powershell
 claude code --api-proxy http://127.0.0.1:8080
 ```

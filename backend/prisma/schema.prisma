@@ -59,6 +59,12 @@ model User {
   clientTags          ClientTag[]       @relation("TrainerTags")
   tagAssignments      ClientTagAssignment[] @relation("ClientTagAssignments")
 
+  // Relations - Exercise Library (Epic 004)
+  exerciseFavorites   ExerciseFavorite[] @relation("UserExerciseFavorites")
+  exerciseCollections ExerciseCollection[] @relation("UserExerciseCollections")
+  exerciseUsage       ExerciseUsage[]    @relation("UserExerciseUsage")
+  exerciseSearchHistory ExerciseSearchHistory[] @relation("UserExerciseSearchHistory")
+
   @@map("users")
 }
 
@@ -493,4 +499,116 @@ model ClientTagAssignment {
 
   @@id([clientId, tagId])
   @@map("client_tag_assignments")
+}
+
+// =====================================
+// EPIC 004: EXERCISE LIBRARY
+// =====================================
+
+enum DifficultyLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+// Core exercises table (populated from exerciseDB JSON)
+model Exercise {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  exerciseId        String   @unique @map("exercise_id") @db.VarChar(50) // from exerciseDB
+  name              String   @db.VarChar(255)
+  gifUrl            String   @map("gif_url") @db.VarChar(500)
+  bodyPart          String   @map("body_part") @db.VarChar(100)
+  equipment         String   @db.VarChar(100)
+  targetMuscle      String   @map("target_muscle") @db.VarChar(100)
+  secondaryMuscles  String[] @map("secondary_muscles")
+  instructions      String[]
+  difficulty        DifficultyLevel @default(intermediate)
+  searchVector      String?  @map("search_vector") // for full-text search
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  favorites         ExerciseFavorite[]
+  collectionExercises CollectionExercise[]
+  usageHistory      ExerciseUsage[]
+
+  @@map("exercises")
+}
+
+// Exercise favorites
+model ExerciseFavorite {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  exerciseId  String    @map("exercise_id") @db.Uuid
+  favoritedAt DateTime  @default(now()) @map("favorited_at")
+
+  // Relations
+  user        User      @relation("UserExerciseFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  exercise    Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@map("exercise_favorites")
+}
+
+// Exercise collections
+model ExerciseCollection {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  isPublic    Boolean   @default(false) @map("is_public")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  user        User      @relation("UserExerciseCollections", fields: [userId], references: [id], onDelete: Cascade)
+  exercises   CollectionExercise[]
+
+  @@map("exercise_collections")
+}
+
+// Collection exercises (many-to-many relationship)
+model CollectionExercise {
+  collectionId String    @map("collection_id") @db.Uuid
+  exerciseId   String    @map("exercise_id") @db.Uuid
+  position     Int?
+  addedAt      DateTime  @default(now()) @map("added_at")
+
+  // Relations
+  collection   ExerciseCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  exercise     Exercise           @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, exerciseId])
+  @@map("collection_exercises")
+}
+
+// Exercise usage tracking
+model ExerciseUsage {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  exerciseId  String   @map("exercise_id") @db.Uuid
+  context     String   @db.VarChar(50) // 'program', 'workout', 'viewed'
+  usedAt      DateTime @default(now()) @map("used_at")
+
+  // Relations
+  user        User     @relation("UserExerciseUsage", fields: [userId], references: [id], onDelete: Cascade)
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@map("exercise_usage")
+}
+
+// Search history
+model ExerciseSearchHistory {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  searchQuery  String    @map("search_query") @db.VarChar(255)
+  filters      Json?     @db.JsonB
+  resultCount  Int?      @map("result_count")
+  searchedAt   DateTime  @default(now()) @map("searched_at")
+
+  // Relations
+  user         User      @relation("UserExerciseSearchHistory", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("exercise_search_history")
 }

@@ -28,9 +28,21 @@
       "Bash(kill:*)",
       "Bash(PORT=4001 npx ts-node src/index.ts)",
       "Bash(npx next dev:*)",
-      "Bash(npx playwright test:*)"
+      "Bash(npx playwright test:*)",
+      "Bash(dir:*)",
+      "Bash(npx prisma:*)",
+      "Bash(del \"C:\\Users\\drmwe\\claude-workspace\\FitnessTrainer\\test-integration.html\")",
+      "Bash(timeout 30 npm run dev)",
+      "Bash(timeout 30 npm run dev -- -p 3001)",
+      "Bash(timeout 60 npm run build)",
+      "Bash(npx next build:*)",
+      "Bash(start \"\" \"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\")",
+      "Bash(timeout:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\c\\Users\\drmwe\\claude-workspace"
+    ]
   }
 }

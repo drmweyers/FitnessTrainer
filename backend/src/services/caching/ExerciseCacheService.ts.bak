@@ -1,0 +1,230 @@
+import Redis from 'redis';
+import { Exercise } from '@prisma/client';
+import { logger } from '@/config/logger';
+
+/**
+ * Redis caching service for Exercise Library optimization
+ * Handles caching of exercise data, search results, and user preferences
+ */
+export class ExerciseCacheService {
+  private redis: Redis.RedisClientType;
+  private readonly TTL = {
+    exercises: 3600, // 1 hour for exercise data
+    searchResults: 1800, // 30 minutes for search results
+    userPreferences: 86400, // 24 hours for user preferences
+    popularExercises: 7200, // 2 hours for popular exercises
+  };
+
+  constructor(redisClient: Redis.RedisClientType) {
+    this.redis = redisClient;
+  }
+
+  // Exercise data caching
+  async cacheExercises(exercises: Exercise[]): Promise<void> {
+    try {
+      const pipeline = this.redis.multi();
+      
+      exercises.forEach(exercise => {
+        pipeline.setEx(
+          `exercise:${exercise.exerciseId}`,
+          this.TTL.exercises,
+          JSON.stringify(exercise)
+        );
+      });
+
+      await pipeline.exec();
+      logger.info(`Cached ${exercises.length} exercises`);
+    } catch (error) {
+      logger.error('Error caching exercises:', error);
+    }
+  }
+
+  async getExercise(exerciseId: string): Promise<Exercise | null> {
+    try {
+      const cached = await this.redis.get(`exercise:${exerciseId}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      logger.error('Error getting cached exercise:', error);
+      return null;
+    }
+  }
+
+  // Search results caching
+  async cacheSearchResults(
+    searchKey: string,
+    results: Exercise[],
+    ttl = this.TTL.searchResults
+  ): Promise<void> {
+    try {
+      await this.redis.setEx(
+        `search:${searchKey}`,
+        ttl,
+        JSON.stringify(results)
+      );
+      logger.info(`Cached search results for: ${searchKey}`);
+    } catch (error) {
+      logger.error('Error caching search results:', error);
+    }
+  }
+
+  async getSearchResults(searchKey: string): Promise<Exercise[] | null> {
+    try {
+      const cached = await this.redis.get(`search:${searchKey}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      logger.error('Error getting cached search results:', error);
+      return null;
+    }
+  }
+
+  // Popular exercises caching
+  async cachePopularExercises(
+    bodyPart: string,
+    exercises: Exercise[]
+  ): Promise<void> {
+    try {
+      await this.redis.setEx(
+        `popular:${bodyPart}`,
+        this.TTL.popularExercises,
+        JSON.stringify(exercises)
+      );
+    } catch (error) {
+      logger.error('Error caching popular exercises:', error);
+    }
+  }
+
+  async getPopularExercises(bodyPart: string): Promise<Exercise[] | null> {
+    try {
+      const cached = await this.redis.get(`popular:${bodyPart}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      logger.error('Error getting popular exercises:', error);
+      return null;
+    }
+  }
+
+  // User-specific caching
+  async cacheUserFavorites(
+    userId: string,
+    favorites: Exercise[]
+  ): Promise<void> {
+    try {
+      await this.redis.setEx(
+        `favorites:${userId}`,
+        this.TTL.userPreferences,
+        JSON.stringify(favorites)
+      );
+    } catch (error) {
+      logger.error('Error caching user favorites:', error);
+    }
+  }
+
+  async getUserFavorites(userId: string): Promise<Exercise[] | null> {
+    try {
+      const cached = await this.redis.get(`favorites:${userId}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      logger.error('Error getting user favorites:', error);
+      return null;
+    }
+  }
+
+  // Invalidation methods
+  async invalidateExercise(exerciseId: string): Promise<void> {
+    try {
+      await this.redis.del(`exercise:${exerciseId}`);
+    } catch (error) {
+      logger.error('Error invalidating exercise cache:', error);
+    }
+  }
+
+  async invalidateUserCache(userId: string): Promise<void> {
+    try {
+      const keys = await this.redis.keys(`*:${userId}`);
+      if (keys.length > 0) {
+        await this.redis.del(keys);
+      }
+    } catch (error) {
+      logger.error('Error invalidating user cache:', error);
+    }
+  }
+
+  async invalidateSearchCache(): Promise<void> {
+    try {
+      const keys = await this.redis.keys('search:*');
+      if (keys.length > 0) {
+        await this.redis.del(keys);
+      }
+    } catch (error) {
+      logger.error('Error invalidating search cache:', error);
+    }
+  }
+
+  // Batch operations for performance
+  async batchGetExercises(exerciseIds: string[]): Promise<(Exercise | null)[]> {
+    try {
+      const pipeline = this.redis.multi();
+      exerciseIds.forEach(id => {
+        pipeline.get(`exercise:${id}`);
+      });
+
+      const results = await pipeline.exec();
+      return results?.map(result => 
+        result && typeof result[1] === 'string' 
+          ? JSON.parse(result[1] as string) 
+          : null
+      ) || [];
+    } catch (error) {
+      logger.error('Error batch getting exercises:', error);
+      return Array(exerciseIds.length).fill(null);
+    }
+  }
+
+  // Cache statistics
+  async getCacheStats(): Promise<{
+    exercises: number;
+    searchResults: number;
+    userCaches: number;
+  }> {
+    try {
+      const [exerciseKeys, searchKeys, userKeys] = await Promise.all([
+        this.redis.keys('exercise:*'),
+        this.redis.keys('search:*'),
+        this.redis.keys('favorites:*'),
+      ]);
+
+      return {
+        exercises: exerciseKeys.length,
+        searchResults: searchKeys.length,
+        userCaches: userKeys.length,
+      };
+    } catch (error) {
+      logger.error('Error getting cache stats:', error);
+      return { exercises: 0, searchResults: 0, userCaches: 0 };
+    }
+  }
+
+  // Generate cache keys for consistent naming
+  static generateSearchKey(
+    query?: string,
+    bodyPart?: string,
+    equipment?: string,
+    difficulty?: string,
+    page = 1,
+    limit = 24
+  ): string {
+    const params = {
+      q: query || '',
+      bp: bodyPart || '',
+      eq: equipment || '',
+      diff: difficulty || '',
+      p: page.toString(),
+      l: limit.toString(),
+    };
+
+    return Object.entries(params)
+      .filter(([_, value]) => value !== '')
+      .map(([key, value]) => `${key}:${value}`)
+      .join('|');
+  }
+}

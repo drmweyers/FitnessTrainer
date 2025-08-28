@@ -1,0 +1,91 @@
+# Optimize Docker build context for faster builds
+# Exclude large files and directories that aren't needed in containers
+
+# Node.js
+node_modules
+npm-debug.log*
+.npm
+
+# Next.js
+.next
+out
+dist
+build
+
+# Logs
+*.log
+logs
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+test-results/
+playwright-report/
+screenshots/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation that's not needed in containers
+docs/
+*.md
+README.md
+
+# Large example/demo files
+exerciseDB/
+web-bundles/
+
+# BMAD directories (not needed in container)
+.bmad-*/
+
+# Build artifacts that will be regenerated
+*.tgz
+*.tar.gz
+
+# Temporary files
+tmp/
+temp/
+.tmp
+
+# Database files
+*.sqlite
+*.db
+
+# Docker files themselves
+Dockerfile*
+docker-compose*

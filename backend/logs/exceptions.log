@@ -681,3 +681,560 @@ src/routes/workingProfileRoutes.ts(145,17): error TS7030: Not all code paths ret
     at Socket.emit (node:events:518:28)
     at Socket.emit (node:domain:489:12)
     at TCP.<anonymous> (node:net:351:12)
+2025-08-27 11:48:14 [error]: Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:63:18)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Socket.Writable.write (node:internal/streams/writable:510:10)
+    at console.value (node:internal/console/constructor:298:16)
+    at console.log (node:internal/console/constructor:384:26)
+    at Object.mc (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@prisma\client\runtime\library.js:21:432)
+    at EventEmitter.<anonymous> (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@prisma\client\runtime\library.js:130:3902)
+    at EventEmitter.emit (node:events:518:28)
+    at EventEmitter.emit (node:domain:489:12)
+2025-08-27 11:48:20 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 11:48:23 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 11:49:05 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 11:49:21 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 11:57:53 [error]: Error: Socket closed unexpectedly
+    at Socket.<anonymous> (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@redis\client\dist\lib\client\socket.js:194:118)
+    at Object.onceWrapper (node:events:633:26)
+    at Socket.emit (node:events:518:28)
+    at Socket.emit (node:domain:489:12)
+    at TCP.<anonymous> (node:net:351:12)
+2025-08-27 12:03:53 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 12:03:53 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 12:05:22 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 12:05:22 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:37:03 [error]: Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:63:18)
+    at writeOrBuffer (node:internal/streams/writable:572:12)
+    at _write (node:internal/streams/writable:501:10)
+    at Socket.Writable.write (node:internal/streams/writable:510:10)
+    at console.value (node:internal/console/constructor:298:16)
+    at console.log (node:internal/console/constructor:384:26)
+    at Object.mc (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@prisma\client\runtime\library.js:21:432)
+    at EventEmitter.<anonymous> (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@prisma\client\runtime\library.js:130:3902)
+    at EventEmitter.emit (node:events:518:28)
+    at EventEmitter.emit (node:domain:489:12)
+2025-08-27 18:37:03 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:37:59 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:92:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:38:29 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(21,48): error TS2345: Argument of type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe...' is not assignable to parameter of type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/redis/dist/index").RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/F...'.
+  Type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...' is not assignable to type 'RedisClient<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; slowLo...'.
+    Types of property 'options' are incompatible.
+      Type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...' is not assignable to type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...'. Two different types with this name exist, but they are unrelated.
+        Type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...' is not assignable to type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...'. Two different types with this name exist, but they are unrelated.
+          Type 'RedisFunctions' is not assignable to type 'Record<string, never>'.
+            'string' index signatures are incompatible.
+              Type 'RedisFunctionLibrary' is not assignable to type 'never'.
+src/controllers/exerciseController.ts(27,29): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(120,7): error TS2322: Type 'false | { favorites: { where: { userId: string; }; select: { id: true; }; }; }' is not assignable to type 'ExerciseInclude<DefaultArgs> | null | undefined'.
+  Type 'false' has no properties in common with type 'ExerciseInclude<DefaultArgs>'.
+src/controllers/exerciseController.ts(159,56): error TS2345: Argument of type 'ExerciseResponse[]' is not assignable to parameter of type '{ id: string; isActive: boolean; createdAt: Date; updatedAt: Date | null; name: string; exerciseId: string; gifUrl: string; bodyPart: string; equipment: string; targetMuscle: string; secondaryMuscles: string[]; instructions: string[]; difficulty: DifficultyLevel; searchVector: string | null; }[]'.
+  Property 'searchVector' is missing in type 'ExerciseResponse' but required in type '{ id: string; isActive: boolean; createdAt: Date; updatedAt: Date | null; name: string; exerciseId: string; gifUrl: string; bodyPart: string; equipment: string; targetMuscle: string; secondaryMuscles: string[]; instructions: string[]; difficulty: DifficultyLevel; searchVector: string | null; }'.
+src/controllers/exerciseController.ts(192,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(198,60): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(214,7): error TS2322: Type 'false | { favorites: { where: { userId: string; }; select: { id: true; }; }; }' is not assignable to type 'ExerciseInclude<DefaultArgs> | null | undefined'.
+  Type 'false' has no properties in common with type 'ExerciseInclude<DefaultArgs>'.
+src/controllers/exerciseController.ts(337,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(396,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(542,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(579,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(583,7): error TS2322: Type '{ collectionId: string | undefined; exerciseId: string; position: number | undefined; }' is not assignable to type '(Without<CollectionExerciseCreateInput, CollectionExerciseUncheckedCreateInput> & CollectionExerciseUncheckedCreateInput) | (Without<...> & CollectionExerciseCreateInput)'.
+  Types of property 'collectionId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(611,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:38:43 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(21,48): error TS2345: Argument of type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe...' is not assignable to parameter of type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/redis/dist/index").RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/F...'.
+  Type 'RedisClientType<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; sl...' is not assignable to type 'RedisClient<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); ... 15 more ...; slowLo...'.
+    Types of property 'options' are incompatible.
+      Type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...' is not assignable to type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...'. Two different types with this name exist, but they are unrelated.
+        Type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...' is not assignable to type 'import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/client/dist/lib/client/index").RedisClientOptions<{ graph: { CONFIG_GET: typeof import("C:/Users/drmwe/claude-workspace/FitnessTrainer/backend/node_modules/@redis/graph/dist/commands/CONFIG_GET"); configGet: typeof import("C:/Users/dr...'. Two different types with this name exist, but they are unrelated.
+          Type 'RedisFunctions' is not assignable to type 'Record<string, never>'.
+            'string' index signatures are incompatible.
+              Type 'RedisFunctionLibrary' is not assignable to type 'never'.
+src/controllers/exerciseController.ts(27,29): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(120,7): error TS2322: Type 'false | { favorites: { where: { userId: string; }; select: { id: true; }; }; }' is not assignable to type 'ExerciseInclude<DefaultArgs> | null | undefined'.
+  Type 'false' has no properties in common with type 'ExerciseInclude<DefaultArgs>'.
+src/controllers/exerciseController.ts(159,56): error TS2345: Argument of type 'ExerciseResponse[]' is not assignable to parameter of type '{ id: string; isActive: boolean; createdAt: Date; updatedAt: Date | null; name: string; exerciseId: string; gifUrl: string; bodyPart: string; equipment: string; targetMuscle: string; secondaryMuscles: string[]; instructions: string[]; difficulty: DifficultyLevel; searchVector: string | null; }[]'.
+  Property 'searchVector' is missing in type 'ExerciseResponse' but required in type '{ id: string; isActive: boolean; createdAt: Date; updatedAt: Date | null; name: string; exerciseId: string; gifUrl: string; bodyPart: string; equipment: string; targetMuscle: string; secondaryMuscles: string[]; instructions: string[]; difficulty: DifficultyLevel; searchVector: string | null; }'.
+src/controllers/exerciseController.ts(192,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(198,60): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(214,7): error TS2322: Type 'false | { favorites: { where: { userId: string; }; select: { id: true; }; }; }' is not assignable to type 'ExerciseInclude<DefaultArgs> | null | undefined'.
+  Type 'false' has no properties in common with type 'ExerciseInclude<DefaultArgs>'.
+src/controllers/exerciseController.ts(337,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(396,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(542,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(579,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(583,7): error TS2322: Type '{ collectionId: string | undefined; exerciseId: string; position: number | undefined; }' is not assignable to type '(Without<CollectionExerciseCreateInput, CollectionExerciseUncheckedCreateInput> & CollectionExerciseUncheckedCreateInput) | (Without<...> & CollectionExerciseCreateInput)'.
+  Types of property 'collectionId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(611,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:40:55 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(163,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(302,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(360,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(505,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(542,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(546,7): error TS2322: Type '{ collectionId: string | undefined; exerciseId: string; position: number | undefined; }' is not assignable to type '(Without<CollectionExerciseCreateInput, CollectionExerciseUncheckedCreateInput> & CollectionExerciseUncheckedCreateInput) | (Without<...> & CollectionExerciseCreateInput)'.
+  Types of property 'collectionId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(574,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:41:09 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(163,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(302,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(360,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(505,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(542,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(546,7): error TS2322: Type '{ collectionId: string | undefined; exerciseId: string; position: number | undefined; }' is not assignable to type '(Without<CollectionExerciseCreateInput, CollectionExerciseUncheckedCreateInput> & CollectionExerciseUncheckedCreateInput) | (Without<...> & CollectionExerciseCreateInput)'.
+  Types of property 'collectionId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/controllers/exerciseController.ts(574,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:41:49 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(163,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(302,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(360,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(505,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(581,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:42:44 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(163,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(243,38): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(302,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(360,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(505,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(581,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:43:16 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(26,29): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(163,32): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(243,38): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(302,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(360,36): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(411,31): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(455,33): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(505,40): error TS7030: Not all code paths return a value.
+src/controllers/exerciseController.ts(581,45): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:43:52 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:44:15 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:48:36 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:49:16 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:50:30 [error]: Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 18:56:04 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(171,105): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:56:05 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(171,105): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 18:56:21 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(171,105): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 19:05:27 [error]: Error: Socket closed unexpectedly
+    at Socket.<anonymous> (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\@redis\client\dist\lib\client\socket.js:194:118)
+    at Object.onceWrapper (node:events:633:26)
+    at Socket.emit (node:events:518:28)
+    at Socket.emit (node:domain:489:12)
+    at TCP.<anonymous> (node:net:351:12)
+2025-08-28 00:41:25 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-28 00:41:46 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-27 20:42:33 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(171,105): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-27 20:42:34 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(171,105): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1706:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-08-28 00:42:38 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-28 00:42:57 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-28 00:43:16 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-28 00:43:45 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-27 20:44:23 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 20:44:23 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 00:44:45 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-28 00:48:18 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-27 20:49:18 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 20:49:18 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 00:50:09 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-28 00:51:19 [error]: Error: Error loading shared library /app/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node: Exec format error
+    at Object.Module._extensions..node (node:internal/modules/cjs/loader:1460:18)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Module.require (node:internal/modules/cjs/loader:1231:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/app/node_modules/bcrypt/bcrypt.js:6:16)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-27 22:29:00 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:29:22 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:29:40 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:29:53 [error]: Error: listen EADDRINUSE: address already in use :::5000
+    at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+    at listenInCluster (node:net:1994:12)
+    at Server.listen (node:net:2099:7)
+    at Function.listen (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\node_modules\express\lib\application.js:635:24)
+    at startServer (C:\Users\drmwe\claude-workspace\FitnessTrainer\backend\src\index.ts:94:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
