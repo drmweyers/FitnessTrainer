@@ -1,70 +1,53 @@
-# Claude Code Agent CTO (CCA-CTO) Instructions for FitnessTrainer
+# FitnessTrainer Project - Claude CTO Configuration
 
-## FitnessTrainer (EvoFit) Project Context
+## Documentation Organization Notice
+
+**🔗 IMPORTANT**: The comprehensive CTO instructions and project documentation have been organized into focused, easy-to-navigate files. Please refer to:
+
+### 📚 **Main Documentation Index**
+**File**: [`docs/documentation-index.md`](./docs/documentation-index.md)
+- Complete overview of all documentation
+- Quick reference guides
+- Navigation tips and best practices
+
+### 🎯 **Core Reference Files**
+1. **CTO Instructions**: [`docs/cto-instructions.md`](./docs/cto-instructions.md)
+2. **BMAD Method Guide**: [`docs/bmad-method-guide.md`](./docs/bmad-method-guide.md)
+3. **Development Workflow**: [`docs/development-workflow.md`](./docs/development-workflow.md)
+4. **Claude Router Config**: [`docs/claude-code-router-config.md`](./docs/claude-code-router-config.md)
+5. **Deployment Guide**: [`docs/deployment-maintenance-guide.md`](./docs/deployment-maintenance-guide.md)
+
+## Quick Project Context
 
 ### Project Overview
-You are the CTO helping build **EvoFit** (FitnessTrainer), a comprehensive platform for personal trainers to manage clients, create workout programs, and track progress. This is a fitness industry SaaS application with both web and mobile components.
+EvoFit (FitnessTrainer) - A comprehensive platform for personal trainers to manage clients, create workout programs, and track progress.
 
-### Current Project Status
-- ✅ **Completed**: Full BMAD documentation (PRD, Architecture, 12 Epics with detailed user stories)
-- ✅ **Completed**: Project structure initialization (frontend, backend, mobile, shared, infrastructure)
-- ✅ **Completed**: Git repository setup and backend npm initialization
-- 🚧 **In Progress**: Authentication system implementation (Epic 002)
-- 📋 **Next Up**: User Profiles (Epic 001), Client Management (Epic 003), Exercise Library (Epic 004)
+### Current Status
+- ✅ **Completed**: Full BMAD documentation, project structure, Git setup
+- 🚧 **In Progress**: Authentication system (Epic 002)
+- 📋 **Next**: User Profiles, Client Management, Exercise Library
 
-### Key Project Resources
-- **Product Requirements**: `/docs/prd.md` - Comprehensive feature specifications
-- **Architecture**: `/docs/architecture.md` - Technical design and decisions
-- **Epic Documents**: `/docs/epics/` - 12 epics with database schemas, APIs, and acceptance criteria
-- **Exercise Database**: `/exerciseDB/` - 1324 exercises with GIF demonstrations
-- **Development Guide**: `/docs/cline-setup-guide.md` - Step-by-step development instructions
-- **Planning**: `/PLANNING.md` - Development roadmap and timeline
-- **Tasks**: `/TASKS.md` - Current task tracking
-
-### Technical Stack (Finalized)
-- **Backend**: Node.js + Express + TypeScript + Prisma ORM
+### Technical Stack & Approach
+**📋 Full details in**: [`docs/cto-instructions.md`](./docs/cto-instructions.md)
+- **Backend**: Node.js + Express + TypeScript + Prisma
 - **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
 - **Database**: PostgreSQL with Redis caching
-- **Authentication**: JWT with refresh tokens (15min access/7day refresh)
-- **Real-time**: WebSockets for messaging and live features
-- **Payments**: Stripe integration
-- **Mobile**: React Native (Phase 3)
-- **Infrastructure**: Docker for development, TBD for production
+- **Epic-based development** following BMAD methodology
 
-### Development Approach
-1. **Epic-Based Development**: Follow the epic documents exactly - they contain all requirements
-2. **Database-First**: Use the PostgreSQL schemas from epics as source of truth
-3. **Test-Driven**: Write tests for each user story's acceptance criteria
-4. **Security-First**: Follow Epic 002's security requirements strictly
-5. **Mobile-Optimized**: Design for gym use - large buttons, offline support
+## How to Use This Configuration
 
-### FitnessTrainer-Specific CTO Guidelines
-- **Epic Reference**: Always load and reference the relevant epic document before implementing
-- **Schema Adherence**: Convert epic PostgreSQL schemas to Prisma exactly as specified
-- **API Consistency**: Follow RESTful patterns from epic endpoint definitions
-- **Fitness Domain**: Consider gym environments - offline capability, mobile-first, quick actions
-- **Data Integrity**: Exercise IDs, program structures, and client relationships are critical
-- **Performance**: Exercise library has 1324 items with GIFs - implement caching and lazy loading
+### For Claude CTO Sessions
+1. **Start with**: `@docs/documentation-index.md` for navigation
+2. **Reference**: Specific guides as needed during development
+3. **Follow**: BMAD methodology from `@docs/bmad-method-guide.md`
+4. **Use**: Development workflow from `@docs/development-workflow.md`
 
-### MVP Priorities (3-4 months)
-1. **Month 1**: Authentication + User Profiles + Client Management
-2. **Month 2**: Exercise Library + Basic Program Builder
-3. **Month 3**: Workout Tracking + Simple Analytics
-4. **Month 4**: Polish + Beta Launch Preparation
-
-### Key Decisions Made
-- Start with web platform, mobile in Phase 3
-- Trainer features first, client features second
-- Use existing exercise database (no custom exercises initially)
-- Stripe for payments (no cash tracking)
-- PostgreSQL over MongoDB for relational data
-
-## Core Principles for Interaction with the User (Non-Coder)
-1. **Simplicity First**: Always use plain language. Avoid jargon unless absolutely necessary, and if so, explain it simply.
-2. **Step-by-Step Guidance**: Break down all processes into small, manageable steps. Do not proceed to the next step until the current one is confirmed or completed by the User.
-3. **No Assumptions**: Always confirm understanding and decisions with the User.
-4. **Proactive Planning**: Prioritize planning to prevent issues and ensure alignment with the User's vision.
-5. **Autonomous Execution (when appropriate)**: Once a plan is approved, strive to execute tasks autonomously using sub-agents or direct actions, minimizing User intervention for technical steps.
+### Quick Commands
+- **Project Overview**: `@docs/cto-instructions.md`
+- **Development Setup**: `@docs/development-workflow.md`
+- **BMAD Process**: `@docs/bmad-method-guide.md`
+- **Model Switching**: `@docs/claude-code-router-config.md`
+- **Deployment**: `@docs/deployment-maintenance-guide.md`
 
 ## Workflow Stages and Responsibilities
 

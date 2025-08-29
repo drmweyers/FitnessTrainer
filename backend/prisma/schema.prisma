@@ -65,6 +65,12 @@ model User {
   exerciseUsage       ExerciseUsage[]    @relation("UserExerciseUsage")
   exerciseSearchHistory ExerciseSearchHistory[] @relation("UserExerciseSearchHistory")
 
+  // Relations - Program Builder (Epic 005)
+  programs            Program[]          @relation("TrainerPrograms")
+  clientAssignments   ProgramAssignment[] @relation("ClientProgramAssignments")
+  trainerAssignments  ProgramAssignment[] @relation("TrainerProgramAssignments")
+  createdTemplates    ProgramTemplate[]  @relation("CreatedTemplates")
+
   @@map("users")
 }
 
@@ -532,6 +538,7 @@ model Exercise {
   favorites         ExerciseFavorite[]
   collectionExercises CollectionExercise[]
   usageHistory      ExerciseUsage[]
+  workoutExercises  WorkoutExercise[] @relation("WorkoutExercises")
 
   @@map("exercises")
 }
@@ -581,6 +588,190 @@ model CollectionExercise {
 
   @@id([collectionId, exerciseId])
   @@map("collection_exercises")
+}
+
+// ============================================
+// EPIC 005: PROGRAM BUILDER
+// ============================================
+
+enum ProgramType {
+  strength
+  hypertrophy
+  endurance
+  powerlifting
+  bodybuilding
+  general_fitness
+  sport_specific
+  rehabilitation
+}
+
+enum WorkoutType {
+  strength
+  cardio
+  hiit
+  flexibility
+  mixed
+  recovery
+}
+
+enum SetType {
+  warmup
+  working
+  drop
+  pyramid
+  amrap
+  cluster
+  rest_pause
+}
+
+// Training programs
+model Program {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId       String       @map("trainer_id") @db.Uuid
+  name            String       @db.VarChar(255)
+  description     String?      @db.Text
+  programType     ProgramType  @map("program_type")
+  difficultyLevel FitnessLevel @map("difficulty_level")
+  durationWeeks   Int          @map("duration_weeks")
+  goals           String[]
+  equipmentNeeded String[]     @map("equipment_needed")
+  isTemplate      Boolean      @default(false) @map("is_template")
+  isPublic        Boolean      @default(false) @map("is_public")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime?    @updatedAt @map("updated_at")
+
+  // Relations
+  trainer         User         @relation("TrainerPrograms", fields: [trainerId], references: [id], onDelete: Cascade)
+  weeks           ProgramWeek[]
+  assignments     ProgramAssignment[]
+  templates       ProgramTemplate[]
+
+  @@map("programs")
+}
+
+// Program weeks
+model ProgramWeek {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  programId   String    @map("program_id") @db.Uuid
+  weekNumber  Int       @map("week_number")
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  isDeload    Boolean   @default(false) @map("is_deload")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  program     Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  workouts    ProgramWorkout[]
+
+  @@unique([programId, weekNumber])
+  @@map("program_weeks")
+}
+
+// Program workouts
+model ProgramWorkout {
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  programWeekId     String       @map("program_week_id") @db.Uuid
+  dayNumber         Int          @map("day_number")
+  name              String       @db.VarChar(255)
+  description       String?      @db.Text
+  workoutType       WorkoutType? @map("workout_type")
+  estimatedDuration Int?         @map("estimated_duration") // minutes
+  isRestDay         Boolean      @default(false) @map("is_rest_day")
+  createdAt         DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  week              ProgramWeek  @relation(fields: [programWeekId], references: [id], onDelete: Cascade)
+  exercises         WorkoutExercise[]
+
+  @@unique([programWeekId, dayNumber])
+  @@map("program_workouts")
+}
+
+// Workout exercises
+model WorkoutExercise {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId     String    @map("workout_id") @db.Uuid
+  exerciseId    String    @map("exercise_id") @db.Uuid
+  orderIndex    Int       @map("order_index")
+  supersetGroup String?   @map("superset_group") @db.VarChar(10) // A, B, C for grouping
+  setsConfig    Json      @map("sets_config") @db.JsonB // [{type: 'working', count: 3}, {type: 'warmup', count: 2}]
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  workout       ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise      Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
+  configurations ExerciseConfiguration[]
+
+  @@unique([workoutId, orderIndex])
+  @@map("workout_exercises")
+}
+
+// Exercise configurations (sets/reps/weight)
+model ExerciseConfiguration {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutExerciseId String    @map("workout_exercise_id") @db.Uuid
+  setNumber         Int       @map("set_number")
+  setType           SetType   @map("set_type")
+  reps              String    @db.VarChar(20) // "8-10", "AMRAP", "30s"
+  weightGuidance    String?   @map("weight_guidance") @db.VarChar(100) // "70% 1RM", "RPE 7", "Bodyweight"
+  restSeconds       Int?      @map("rest_seconds")
+  tempo             String?   @db.VarChar(20) // "3-1-2-0"
+  rpe               Int?      // Rate of Perceived Exertion (1-10)
+  rir               Int?      // Reps in Reserve
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([workoutExerciseId, setNumber])
+  @@map("exercise_configurations")
+}
+
+// Program assignments to clients
+model ProgramAssignment {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  programId     String    @map("program_id") @db.Uuid
+  clientId      String    @map("client_id") @db.Uuid
+  trainerId     String    @map("trainer_id") @db.Uuid
+  startDate     DateTime  @map("start_date")
+  endDate       DateTime? @map("end_date")
+  isActive      Boolean   @default(true) @map("is_active")
+  customNotes   String?   @map("custom_notes") @db.Text
+  progressData  Json?     @map("progress_data") @db.JsonB // For tracking completion
+  assignedAt    DateTime  @default(now()) @map("assigned_at")
+  completedAt   DateTime? @map("completed_at")
+
+  // Relations
+  program       Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  client        User      @relation("ClientProgramAssignments", fields: [clientId], references: [id], onDelete: Cascade)
+  trainer       User      @relation("TrainerProgramAssignments", fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@unique([programId, clientId, startDate])
+  @@map("program_assignments")
+}
+
+// Program templates
+model ProgramTemplate {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  programId   String    @map("program_id") @db.Uuid
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  category    String    @db.VarChar(50)
+  tags        String[]
+  isPublic    Boolean   @default(false) @map("is_public")
+  useCount    Int       @default(0) @map("use_count")
+  rating      Float?
+  createdBy   String    @map("created_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  program     Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  creator     User      @relation("CreatedTemplates", fields: [createdBy], references: [id])
+
+  @@map("program_templates")
 }
 
 // Exercise usage tracking

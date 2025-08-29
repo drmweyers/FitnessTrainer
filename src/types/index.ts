@@ -1,4 +1,21 @@
 // src/types/index.ts
+
+// Re-export all types for easy access
+export * from './client';
+export * from './exercise';
+export * from './program';
+export * from './recipe';
+export * from './badge';
+
+// Workout types (with aliased Exercise to avoid conflicts)
+export type { 
+  Exercise as WorkoutExercise,
+  Workout,
+  WorkoutSet,
+  WorkoutRoutine
+} from './workout';
+
+// Legacy Level interface (keeping for backward compatibility)
 export interface Level {
     id: string
     name: string

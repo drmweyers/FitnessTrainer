@@ -37,7 +37,11 @@
       "Bash(timeout 60 npm run build)",
       "Bash(npx next build:*)",
       "Bash(start \"\" \"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\")",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(cat:*)",
+      "Bash(PORT=3002 timeout 8s npm run dev)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": [],
