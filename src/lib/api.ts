@@ -13,3 +13,14 @@ export {
   getClientPrograms,
   ProgramApiError 
 } from './api/programs';
+export { 
+  authApi, 
+  tokenUtils, 
+  AuthApiError 
+} from './api/auth';
+export { 
+  apiClient, 
+  ApiClientError, 
+  isApiError, 
+  handleApiError 
+} from './api/apiClient';

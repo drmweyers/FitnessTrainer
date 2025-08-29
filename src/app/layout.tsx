@@ -6,8 +6,8 @@ import Providers from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Recipe Books',
-  description: 'Your personal recipe collection',
+  title: 'EvoFit - Personal Training Platform',
+  description: 'Complete fitness platform for personal trainers and clients',
 }
 
 export default function RootLayout({

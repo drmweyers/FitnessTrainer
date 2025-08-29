@@ -56,7 +56,7 @@ services:
       AWS_REGION: us-east-1
       CORS_ORIGIN: http://localhost:3001
     ports:
-      - "5000:4000"
+      - "5000:5000"
     volumes:
       - ./backend:/app
       - /app/node_modules

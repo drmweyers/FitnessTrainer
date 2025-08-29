@@ -1,6 +1,7 @@
 // src/types/index.ts
 
 // Re-export all types for easy access
+export * from './auth';
 export * from './client';
 export * from './exercise';
 export * from './program';
