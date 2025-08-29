@@ -270,7 +270,7 @@ const ProgressionBuilder: React.FC<ProgressionBuilderProps> = ({
             ...exercise,
             configurations: updatedConfigurations
           };
-        })) || []
+        }) || []
       })) || []
     }));
 

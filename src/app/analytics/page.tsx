@@ -18,7 +18,7 @@ export default function AnalyticsPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '3m' | '6m' | '1y'>('3m');
   const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos'>('overview');
-  const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
+  // const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
 
   // Mock user ID - in real app this would come from authentication context
   const userId = 'mock-user-id';
