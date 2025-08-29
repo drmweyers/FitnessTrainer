@@ -35,12 +35,12 @@ class AnalyticsApiService {
   }
 
   // Body Measurements
-  async getBodyMeasurements(userId: string, timeRange?: string): Promise<BodyMeasurement[]> {
+  async getBodyMeasurements(timeRange?: string): Promise<BodyMeasurement[]> {
     const params = new URLSearchParams();
     if (timeRange) params.append('timeRange', timeRange);
     
     return this.request<BodyMeasurement[]>(
-      `/analytics/measurements/${userId}${params.toString() ? '?' + params.toString() : ''}`
+      `/analytics/measurements/me${params.toString() ? '?' + params.toString() : ''}`
     );
   }
 
@@ -65,11 +65,13 @@ class AnalyticsApiService {
   }
 
   // Performance Metrics
-  async getPerformanceMetrics(userId: string, exerciseId?: string): Promise<PerformanceMetric[]> {
-    const params = new URLSearchParams({ userId });
+  async getPerformanceMetrics(exerciseId?: string): Promise<PerformanceMetric[]> {
+    const params = new URLSearchParams();
     if (exerciseId) params.append('exerciseId', exerciseId);
     
-    return this.request<PerformanceMetric[]>(`/analytics/performance?${params.toString()}`);
+    return this.request<PerformanceMetric[]>(
+      `/analytics/performance/me${params.toString() ? '?' + params.toString() : ''}`
+    );
   }
 
   async recordPerformanceMetric(metric: Omit<PerformanceMetric, 'id' | 'recordedAt'>): Promise<PerformanceMetric> {
@@ -79,21 +81,21 @@ class AnalyticsApiService {
     });
   }
 
-  async getPersonalBests(userId: string): Promise<Array<{ exercise: string; metric: string; value: number; date: string }>> {
+  async getPersonalBests(): Promise<Array<{ exercise: string; metric: string; value: number; date: string }>> {
     return this.request<Array<{ exercise: string; metric: string; value: number; date: string }>>(
-      `/analytics/performance/${userId}/personal-bests`
+      `/analytics/performance/me/personal-bests`
     );
   }
 
   // Training Load
-  async getTrainingLoad(userId: string, weekCount: number = 12): Promise<TrainingLoad[]> {
-    return this.request<TrainingLoad[]>(`/analytics/training-load/${userId}?weeks=${weekCount}`);
+  async getTrainingLoad(weekCount: number = 12): Promise<TrainingLoad[]> {
+    return this.request<TrainingLoad[]>(`/analytics/training-load/me?weeks=${weekCount}`);
   }
 
-  async calculateWeeklyLoad(userId: string, weekStartDate: string): Promise<TrainingLoad> {
+  async calculateWeeklyLoad(weekStartDate: string): Promise<TrainingLoad> {
     return this.request<TrainingLoad>('/analytics/training-load/calculate', {
       method: 'POST',
-      body: JSON.stringify({ userId, weekStartDate }),
+      body: JSON.stringify({ weekStartDate }),
     });
   }
 
@@ -114,12 +116,12 @@ class AnalyticsApiService {
   }
 
   // User Insights
-  async getUserInsights(userId: string, unreadOnly: boolean = false): Promise<UserInsight[]> {
+  async getUserInsights(unreadOnly: boolean = false): Promise<UserInsight[]> {
     const params = new URLSearchParams();
     if (unreadOnly) params.append('unreadOnly', 'true');
     
     return this.request<UserInsight[]>(
-      `/analytics/insights/${userId}${params.toString() ? '?' + params.toString() : ''}`
+      `/analytics/insights/me${params.toString() ? '?' + params.toString() : ''}`
     );
   }
 
@@ -142,8 +144,8 @@ class AnalyticsApiService {
   }
 
   // Milestone Achievements
-  async getMilestoneAchievements(userId: string): Promise<MilestoneAchievement[]> {
-    return this.request<MilestoneAchievement[]>(`/analytics/milestones/${userId}`);
+  async getMilestoneAchievements(): Promise<MilestoneAchievement[]> {
+    return this.request<MilestoneAchievement[]>(`/analytics/milestones/me`);
   }
 
   // Analytics Reports
@@ -186,13 +188,13 @@ class AnalyticsApiService {
   }
 
   // Dashboard Data
-  async getDashboardData(userId: string): Promise<AnalyticsDashboardData> {
-    return this.request<AnalyticsDashboardData>(`/analytics/dashboard/${userId}`);
+  async getDashboardData(): Promise<AnalyticsDashboardData> {
+    return this.request<AnalyticsDashboardData>(`/analytics/dashboard/me`);
   }
 
   // Chart Data Helpers
-  async getWeightProgressData(userId: string, timeRange: string = '6m'): Promise<Array<{ date: string; weight: number; bodyFat?: number }>> {
-    const measurements = await this.getBodyMeasurements(userId, timeRange);
+  async getWeightProgressData(timeRange: string = '6m'): Promise<Array<{ date: string; weight: number; bodyFat?: number }>> {
+    const measurements = await this.getBodyMeasurements(timeRange);
     return measurements
       .filter(m => m.weight)
       .map(m => ({
@@ -204,11 +206,10 @@ class AnalyticsApiService {
   }
 
   async getStrengthProgressData(
-    userId: string, 
     exerciseIds: string[], 
     timeRange: string = '6m'
   ): Promise<Array<{ exercise: string; data: Array<{ date: string; maxWeight: number }> }>> {
-    const allMetrics = await this.getPerformanceMetrics(userId);
+    const allMetrics = await this.getPerformanceMetrics();
     
     return exerciseIds.map(exerciseId => {
       const exerciseMetrics = allMetrics
@@ -225,8 +226,8 @@ class AnalyticsApiService {
     });
   }
 
-  async getVolumeProgressionData(userId: string, timeRange: string = '3m'): Promise<Array<{ date: string; volume: number }>> {
-    const metrics = await this.getPerformanceMetrics(userId);
+  async getVolumeProgressionData(timeRange: string = '3m'): Promise<Array<{ date: string; volume: number }>> {
+    const metrics = await this.getPerformanceMetrics();
     
     // Group by date and sum volume
     const volumeByDate = metrics

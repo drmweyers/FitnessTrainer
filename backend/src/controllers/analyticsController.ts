@@ -47,8 +47,23 @@ export class AnalyticsController {
   // Body Measurements
   static async getBodyMeasurements(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId } = req.params;
+      const { userId: requestedUserId } = req.params;
       const { timeRange } = req.query;
+      
+      // Ensure user can only access their own data or trainer can access client data
+      let userId = req.user!.id;
+      
+      // If trainer is requesting another user's data, verify trainer-client relationship
+      if (requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        
+        // TODO: Add trainer-client relationship verification
+        // For now, trainers and admins can access any user's data
+        userId = requestedUserId;
+      }
 
       let whereClause: any = { userId };
 
@@ -95,11 +110,16 @@ export class AnalyticsController {
 
   static async saveBodyMeasurement(req: Request, res: Response, next: NextFunction) {
     try {
-      const validatedData = bodyMeasurementSchema.parse(req.body);
+      // Remove userId from validation schema since it should come from auth
+      const { userId: _, ...bodyData } = req.body;
+      const validatedData = bodyMeasurementSchema.omit({ userId: true }).parse(bodyData);
+      
+      // Use authenticated user's ID
+      const userId = req.user!.id;
 
       const measurement = await prisma.userMeasurement.create({
         data: {
-          userId: validatedData.userId,
+          userId,
           recordedAt: new Date(validatedData.measurementDate),
           weight: validatedData.weight,
           bodyFatPercentage: validatedData.bodyFatPercentage,
@@ -113,7 +133,7 @@ export class AnalyticsController {
       
       if (validatedData.weight) {
         metrics.push({
-          userId: validatedData.userId,
+          userId,
           metricType: 'body_weight' as const,
           value: validatedData.weight,
           unit: 'kg',
@@ -122,7 +142,7 @@ export class AnalyticsController {
       
       if (validatedData.bodyFatPercentage) {
         metrics.push({
-          userId: validatedData.userId,
+          userId,
           metricType: 'body_fat' as const,
           value: validatedData.bodyFatPercentage,
           unit: '%',
@@ -131,7 +151,7 @@ export class AnalyticsController {
       
       if (validatedData.muscleMass) {
         metrics.push({
-          userId: validatedData.userId,
+          userId,
           metricType: 'muscle_mass' as const,
           value: validatedData.muscleMass,
           unit: 'kg',
@@ -146,7 +166,7 @@ export class AnalyticsController {
       }
 
       // Check for milestones and insights
-      await AnalyticsController.checkMilestones(validatedData.userId, measurement);
+      await AnalyticsController.checkMilestones(userId, measurement);
 
       res.status(201).json(measurement);
     } catch (error) {
@@ -158,7 +178,21 @@ export class AnalyticsController {
   static async updateBodyMeasurement(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const validatedData = bodyMeasurementSchema.partial().parse(req.body);
+      const userId = req.user!.id;
+      
+      // Remove userId from request data since it should come from auth
+      const { userId: _, ...bodyData } = req.body;
+      const validatedData = bodyMeasurementSchema.omit({ userId: true }).partial().parse(bodyData);
+
+      // Verify the measurement belongs to the authenticated user
+      const existingMeasurement = await prisma.userMeasurement.findUnique({
+        where: { id },
+      });
+
+      if (!existingMeasurement || existingMeasurement.userId !== userId) {
+        res.status(404).json({ message: 'Measurement not found' });
+        return;
+      }
 
       const measurement = await prisma.userMeasurement.update({
         where: { id },
@@ -181,6 +215,17 @@ export class AnalyticsController {
   static async deleteBodyMeasurement(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+      const userId = req.user!.id;
+
+      // Verify the measurement belongs to the authenticated user
+      const existingMeasurement = await prisma.userMeasurement.findUnique({
+        where: { id },
+      });
+
+      if (!existingMeasurement || existingMeasurement.userId !== userId) {
+        res.status(404).json({ message: 'Measurement not found' });
+        return;
+      }
 
       await prisma.userMeasurement.delete({
         where: { id },
@@ -196,9 +241,20 @@ export class AnalyticsController {
   // Performance Metrics
   static async getPerformanceMetrics(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId, exerciseId } = req.query;
+      const { userId: requestedUserId, exerciseId } = req.query;
+      
+      // Use authenticated user's ID or allow trainers to access client data
+      let userId = req.user!.id;
+      
+      if (requestedUserId && requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        userId = requestedUserId as string;
+      }
 
-      let whereClause: any = { userId: userId as string };
+      let whereClause: any = { userId };
       if (exerciseId) {
         whereClause.exerciseId = exerciseId as string;
       }
@@ -220,10 +276,18 @@ export class AnalyticsController {
 
   static async recordPerformanceMetric(req: Request, res: Response, next: NextFunction) {
     try {
-      const validatedData = performanceMetricSchema.parse(req.body);
+      // Remove userId from request data since it should come from auth
+      const { userId: _, ...metricData } = req.body;
+      const validatedData = performanceMetricSchema.omit({ userId: true }).parse(metricData);
+      
+      // Use authenticated user's ID
+      const userId = req.user!.id;
 
       const metric = await prisma.performanceMetric.create({
-        data: validatedData,
+        data: {
+          ...validatedData,
+          userId,
+        },
         include: {
           exercise: true,
         },
@@ -238,7 +302,18 @@ export class AnalyticsController {
 
   static async getPersonalBests(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
+      const { userId: requestedUserId } = req.params;
+      
+      // Use authenticated user's ID or allow trainers to access client data
+      let userId = req.user!.id;
+      
+      if (requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        userId = requestedUserId;
+      }
 
       const personalBests = await prisma.performanceMetric.groupBy({
         by: ['exerciseId', 'metricType'],
@@ -278,8 +353,19 @@ export class AnalyticsController {
   // Training Load
   static async getTrainingLoad(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
+      const { userId: requestedUserId } = req.params;
       const weeks = parseInt(req.query.weeks as string) || 12;
+      
+      // Use authenticated user's ID or allow trainers to access client data
+      let userId = req.user!.id;
+      
+      if (requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        userId = requestedUserId;
+      }
 
       const trainingLoad = await prisma.trainingLoad.findMany({
         where: { userId },
@@ -296,7 +382,9 @@ export class AnalyticsController {
 
   static async calculateWeeklyLoad(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId, weekStartDate } = req.body;
+      const { weekStartDate } = req.body;
+      const userId = req.user!.id; // Use authenticated user's ID
+      
       const startDate = new Date(weekStartDate);
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + 7);
@@ -414,8 +502,19 @@ export class AnalyticsController {
   // User Insights
   static async getUserInsights(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
+      const { userId: requestedUserId } = req.params;
       const { unreadOnly } = req.query;
+      
+      // Use authenticated user's ID or allow trainers to access client data
+      let userId = req.user!.id;
+      
+      if (requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        userId = requestedUserId;
+      }
 
       let whereClause: any = { userId };
       if (unreadOnly === 'true') {
@@ -472,7 +571,18 @@ export class AnalyticsController {
   // Milestone Achievements
   static async getMilestoneAchievements(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
+      const { userId: requestedUserId } = req.params;
+      
+      // Use authenticated user's ID or allow trainers to access client data
+      let userId = req.user!.id;
+      
+      if (requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        userId = requestedUserId;
+      }
 
       const milestones = await prisma.milestoneAchievement.findMany({
         where: { userId },
@@ -489,7 +599,18 @@ export class AnalyticsController {
   // Dashboard Data
   static async getDashboardData(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId } = req.params;
+      const { userId: requestedUserId } = req.params;
+      
+      // Use authenticated user's ID or allow trainers to access client data
+      let userId = req.user!.id;
+      
+      if (requestedUserId !== req.user!.id) {
+        if (req.user!.role !== 'trainer' && req.user!.role !== 'admin') {
+          res.status(403).json({ message: 'Access denied' });
+          return;
+        }
+        userId = requestedUserId;
+      }
 
       // Get user basic info
       const user = await prisma.user.findUnique({

@@ -5,7 +5,6 @@ import { BodyMeasurement, MeasurementSession, MEASUREMENT_TYPES } from '@/types/
 import PhotoUpload from './PhotoUpload';
 
 interface MeasurementTrackerProps {
-  userId: string;
   onSave: (measurement: BodyMeasurement) => Promise<void>;
   onCancel: () => void;
   initialData?: Partial<BodyMeasurement>;
@@ -32,14 +31,12 @@ const MEASUREMENT_FIELDS: MeasurementField[] = [
 ];
 
 export default function MeasurementTracker({
-  userId,
   onSave,
   onCancel,
   initialData,
   isOpen
 }: MeasurementTrackerProps) {
   const [formData, setFormData] = useState<Partial<BodyMeasurement>>({
-    userId,
     measurementDate: new Date().toISOString().split('T')[0],
     weight: undefined,
     bodyFatPercentage: undefined,

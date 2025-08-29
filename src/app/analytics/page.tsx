@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BodyMeasurement } from '@/types/analytics';
 import { analyticsApi } from '@/lib/api/analytics';
+import { useAuth } from '@/contexts/AuthContext';
 import MeasurementTracker from '@/components/features/Analytics/MeasurementTracker';
 import ProgressChart from '@/components/features/Analytics/ProgressChart';
 import MultiLineChart from '@/components/features/Analytics/MultiLineChart';
@@ -11,6 +12,7 @@ import PhotoGallery from '@/components/features/Analytics/PhotoGallery';
 import Toast from '@/components/shared/Toast';
 
 export default function AnalyticsPage() {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
@@ -20,17 +22,31 @@ export default function AnalyticsPage() {
   const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos'>('overview');
   // const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
 
-  // Mock user ID - in real app this would come from authentication context
-  const userId = 'mock-user-id';
+  // Redirect to login if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    window.location.href = '/login';
+    return null;
+  }
+
+  // Show loading while auth is initializing
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   useEffect(() => {
-    loadMeasurements();
-  }, []);
+    if (user?.id) {
+      loadMeasurements();
+    }
+  }, [user?.id]);
 
   const loadMeasurements = async () => {
     try {
       setIsLoading(true);
-      const data = await analyticsApi.getBodyMeasurements(userId);
+      const data = await analyticsApi.getBodyMeasurements();
       setMeasurements(data);
     } catch (error) {
       console.error('Failed to load measurements:', error);
@@ -502,7 +518,6 @@ export default function AnalyticsPage() {
 
       {/* Measurement Tracker Modal */}
       <MeasurementTracker
-        userId={userId}
         onSave={handleSaveMeasurement}
         onCancel={() => {
           setIsTrackerOpen(false);
