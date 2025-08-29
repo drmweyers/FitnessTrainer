@@ -902,6 +902,131 @@ class ClientService {
     // Return updated client with tags
     return this.getClientById(trainerId, clientId);
   }
+
+  // =====================================
+  // CLIENT-FACING METHODS
+  // =====================================
+
+  /**
+   * Get client's trainer information
+   */
+  async getClientTrainer(clientId: string) {
+    const trainerClient = await prisma.trainerClient.findFirst({
+      where: {
+        clientId,
+        status: { in: [ClientStatus.active, ClientStatus.pending] }
+      },
+      include: {
+        trainer: {
+          include: {
+            userProfile: true,
+            trainerCertifications: true,
+            trainerSpecializations: true
+          }
+        }
+      },
+      orderBy: { connectedAt: 'desc' }
+    });
+
+    if (!trainerClient) {
+      throw new Error('No trainer found for this client');
+    }
+
+    return trainerClient;
+  }
+
+  /**
+   * Get pending invitations for a client by email
+   */
+  async getClientInvitations(clientEmail: string) {
+    return prisma.clientInvitation.findMany({
+      where: {
+        clientEmail,
+        status: InvitationStatus.pending,
+        expiresAt: {
+          gt: new Date()
+        }
+      },
+      include: {
+        trainer: {
+          include: {
+            userProfile: true
+          }
+        }
+      },
+      orderBy: { sentAt: 'desc' }
+    });
+  }
+
+  /**
+   * Decline client invitation
+   */
+  async declineInvitation(invitationId: string, clientEmail: string) {
+    const invitation = await prisma.clientInvitation.findUnique({
+      where: { id: invitationId }
+    });
+
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
+
+    if (invitation.clientEmail !== clientEmail) {
+      throw new Error('Not authorized to decline this invitation');
+    }
+
+    if (invitation.status !== InvitationStatus.pending) {
+      throw new Error('Invitation has already been processed');
+    }
+
+    // Update invitation status
+    const updatedInvitation = await prisma.clientInvitation.update({
+      where: { id: invitationId },
+      data: {
+        status: InvitationStatus.expired // Using expired status for declined
+      }
+    });
+
+    return updatedInvitation;
+  }
+
+  /**
+   * Disconnect trainer from client (client-initiated)
+   */
+  async disconnectTrainer(clientId: string) {
+    const trainerClient = await prisma.trainerClient.findFirst({
+      where: {
+        clientId,
+        status: { in: [ClientStatus.active, ClientStatus.pending] }
+      }
+    });
+
+    if (!trainerClient) {
+      throw new Error('No trainer connection found');
+    }
+
+    // Update status to archived instead of deleting
+    const disconnectedRelation = await prisma.trainerClient.update({
+      where: {
+        trainerId_clientId: {
+          trainerId: trainerClient.trainerId,
+          clientId
+        }
+      },
+      data: {
+        status: ClientStatus.archived,
+        archivedAt: new Date()
+      },
+      include: {
+        trainer: {
+          include: {
+            userProfile: true
+          }
+        }
+      }
+    });
+
+    return disconnectedRelation;
+  }
 }
 
 export const clientService = new ClientService();

@@ -669,4 +669,110 @@ router.put('/:id/tags', trainerOnly, async (req: Request, res: Response) => {
   }
 });
 
+// =====================================
+// CLIENT-FACING ENDPOINTS
+// =====================================
+
+// GET /api/clients/my-trainer - Get client's trainer (for authenticated clients)
+router.get('/my-trainer', authenticate, async (req: Request, res: Response) => {
+  try {
+    if (req.user?.role !== 'client') {
+      return res.status(403).json({ error: 'Access denied. Client role required.' });
+    }
+
+    const trainerClient = await clientService.getClientTrainer(req.user.id);
+
+    return res.json({
+      success: true,
+      data: trainerClient
+    });
+  } catch (error) {
+    console.error('Error fetching client trainer:', error);
+    
+    if (error instanceof Error && error.message === 'No trainer found for this client') {
+      return res.status(404).json({ error: error.message });
+    }
+
+    return res.status(500).json({ error: 'Failed to fetch trainer information' });
+  }
+});
+
+// GET /api/clients/my-invitations - Get pending invitations for client
+router.get('/my-invitations', authenticate, async (req: Request, res: Response) => {
+  try {
+    if (req.user?.role !== 'client') {
+      return res.status(403).json({ error: 'Access denied. Client role required.' });
+    }
+
+    const invitations = await clientService.getClientInvitations(req.user.email);
+
+    return res.json({
+      success: true,
+      data: invitations
+    });
+  } catch (error) {
+    console.error('Error fetching client invitations:', error);
+    return res.status(500).json({ error: 'Failed to fetch invitations' });
+  }
+});
+
+// POST /api/clients/invitations/:id/decline - Decline invitation (for clients)
+router.post('/invitations/:id/decline', authenticate, async (req: Request, res: Response) => {
+  try {
+    if (req.user?.role !== 'client') {
+      return res.status(403).json({ error: 'Access denied. Client role required.' });
+    }
+
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: 'Invitation ID is required' });
+    }
+
+    const invitation = await clientService.declineInvitation(id, req.user.email);
+
+    return res.json({
+      success: true,
+      data: invitation,
+      message: 'Invitation declined successfully'
+    });
+  } catch (error) {
+    console.error('Error declining invitation:', error);
+    
+    if (error instanceof Error && (
+      error.message === 'Invitation not found' ||
+      error.message === 'Invitation has already been processed' ||
+      error.message === 'Not authorized to decline this invitation'
+    )) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(500).json({ error: 'Failed to decline invitation' });
+  }
+});
+
+// DELETE /api/clients/disconnect-trainer - Remove trainer connection (for clients)
+router.delete('/disconnect-trainer', authenticate, async (req: Request, res: Response) => {
+  try {
+    if (req.user?.role !== 'client') {
+      return res.status(403).json({ error: 'Access denied. Client role required.' });
+    }
+
+    const result = await clientService.disconnectTrainer(req.user.id);
+
+    return res.json({
+      success: true,
+      data: result,
+      message: 'Trainer connection removed successfully'
+    });
+  } catch (error) {
+    console.error('Error disconnecting trainer:', error);
+    
+    if (error instanceof Error && error.message === 'No trainer connection found') {
+      return res.status(404).json({ error: error.message });
+    }
+
+    return res.status(500).json({ error: 'Failed to disconnect trainer' });
+  }
+});
+
 export { router as clientRoutes };

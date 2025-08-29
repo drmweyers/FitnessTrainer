@@ -42,7 +42,8 @@
       "Bash(cat:*)",
       "Bash(PORT=3002 timeout 8s npm run dev)",
       "Bash(grep:*)",
-      "Read(C:\\/**)"
+      "Read(C:\\/**)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],

@@ -206,3 +206,72 @@ export interface NotesResponse {
     totalPages: number;
   };
 }
+
+// Additional types for trainer-client connection system
+
+export interface TrainerCertification {
+  id: string;
+  certificationName: string;
+  issuingOrganization: string;
+  credentialId?: string;
+  issueDate?: string;
+  expiryDate?: string;
+  documentUrl?: string;
+  isVerified: boolean;
+  verifiedAt?: string;
+  createdAt: string;
+}
+
+export interface TrainerSpecialization {
+  id: string;
+  specialization: string;
+  yearsExperience?: number;
+  description?: string;
+}
+
+export interface TrainerProfile {
+  id: string;
+  email: string;
+  role: 'trainer';
+  userProfile?: UserProfile;
+  trainerCertifications?: TrainerCertification[];
+  trainerSpecializations?: TrainerSpecialization[];
+}
+
+export interface TrainerInvitation {
+  id: string;
+  trainerId: string;
+  clientEmail: string;
+  token: string;
+  status: InvitationStatus;
+  customMessage?: string;
+  sentAt: string;
+  expiresAt: string;
+  acceptedAt?: string;
+  trainer: TrainerProfile;
+}
+
+export interface TrainerConnection {
+  id: string;
+  status: ClientStatus;
+  connectedAt: string;
+  archivedAt?: string;
+  trainer: TrainerProfile;
+}
+
+export interface ClientConnection {
+  id: string;
+  status: ClientStatus;
+  connectedAt: string;
+  archivedAt?: string;
+  client: Client;
+}
+
+// API Response wrapper
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  details?: any[];
+}
