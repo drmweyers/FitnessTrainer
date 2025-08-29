@@ -41,7 +41,8 @@
       "Bash(npm uninstall:*)",
       "Bash(cat:*)",
       "Bash(PORT=3002 timeout 8s npm run dev)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Read(C:\\/**)"
     ],
     "deny": [],
     "ask": [],

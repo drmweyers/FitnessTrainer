@@ -17,13 +17,15 @@ import {
   Tag,
   MessageSquare,
   FileText,
-  MoreVertical
+  MoreVertical,
+  Dumbbell
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
 import ClientNotes from '@/components/clients/ClientNotes';
 import ClientTags from '@/components/clients/ClientTags';
 import ClientForm from '@/components/clients/ClientForm';
+import ClientProgramDashboard from '@/components/features/ClientDashboard/ClientProgramDashboard';
 import { useClient } from '@/hooks/useClients';
 import { ClientStatus, FitnessLevel } from '@/types/client';
 
@@ -142,6 +144,7 @@ export default function ClientDetailsPage() {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
+    { id: 'programs', label: 'Programs', icon: Dumbbell },
     { id: 'notes', label: 'Notes', icon: MessageSquare },
     { id: 'tags', label: 'Tags', icon: Tag },
     { id: 'activity', label: 'Activity', icon: Activity },
@@ -415,6 +418,10 @@ export default function ClientDetailsPage() {
                   </Card>
                 )}
               </div>
+            )}
+
+            {activeTab === 'programs' && (
+              <ClientProgramDashboard clientId={clientId} />
             )}
 
             {activeTab === 'notes' && (

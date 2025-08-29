@@ -1387,3 +1387,9 @@ src/controllers/exerciseController.ts(171,105): error TS2345: Argument of type '
     at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
     at Object.require.extensions.<computed> [as .js] (/app/node_modules/ts-node/src/index.ts:1608:43)
     at Module.load (node:internal/modules/cjs/loader:1203:32)
+2025-08-29 04:08:23 [error]: Error: Socket closed unexpectedly
+    at Socket.<anonymous> (/app/node_modules/@redis/client/dist/lib/client/socket.js:194:118)
+    at Object.onceWrapper (node:events:632:26)
+    at Socket.emit (node:events:517:28)
+    at Socket.emit (node:domain:489:12)
+    at TCP.<anonymous> (node:net:350:12)

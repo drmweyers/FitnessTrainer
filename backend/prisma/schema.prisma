@@ -71,6 +71,16 @@ model User {
   trainerAssignments  ProgramAssignment[] @relation("TrainerProgramAssignments")
   createdTemplates    ProgramTemplate[]  @relation("CreatedTemplates")
 
+  // Relations - Progress Analytics (Epic 007)
+  performanceMetrics  PerformanceMetric[] @relation("UserPerformanceMetrics")
+  trainingLoad        TrainingLoad[]      @relation("UserTrainingLoad")
+  userInsights        UserInsight[]       @relation("UserInsights")
+  milestoneAchievements MilestoneAchievement[] @relation("UserMilestones")
+  chartPreferences    ChartPreference[]   @relation("UserChartPreferences")
+  comparisonBaselines ComparisonBaseline[] @relation("UserComparisonBaselines")
+  analyticsReports    AnalyticsReport[]   @relation("UserAnalyticsReports")
+  trainerReports      AnalyticsReport[]   @relation("TrainerAnalyticsReports")
+
   @@map("users")
 }
 
@@ -311,6 +321,7 @@ model UserGoal {
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalProgress GoalProgress[] @relation("GoalProgressTracking")
 
   @@map("user_goals")
 }
@@ -539,6 +550,7 @@ model Exercise {
   collectionExercises CollectionExercise[]
   usageHistory      ExerciseUsage[]
   workoutExercises  WorkoutExercise[] @relation("WorkoutExercises")
+  performanceMetrics PerformanceMetric[] @relation("ExercisePerformanceMetrics")
 
   @@map("exercises")
 }
@@ -802,4 +814,170 @@ model ExerciseSearchHistory {
   user         User      @relation("UserExerciseSearchHistory", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("exercise_search_history")
+}
+
+// =====================================
+// EPIC 007: PROGRESS ANALYTICS
+// =====================================
+
+enum MetricType {
+  one_rm
+  volume
+  endurance
+  power
+  speed
+  body_weight
+  body_fat
+  muscle_mass
+}
+
+enum InsightPriority {
+  low
+  medium
+  high
+}
+
+// Performance metrics tracking
+model PerformanceMetric {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String     @map("user_id") @db.Uuid
+  exerciseId   String?    @map("exercise_id") @db.Uuid
+  metricType   MetricType @map("metric_type")
+  value        Decimal    @db.Decimal(10, 2)
+  unit         String     @db.VarChar(20)
+  recordedAt   DateTime   @default(now()) @map("recorded_at")
+  workoutLogId String?    @map("workout_log_id") @db.Uuid
+  notes        String?    @db.Text
+
+  // Relations
+  user         User       @relation("UserPerformanceMetrics", fields: [userId], references: [id], onDelete: Cascade)
+  exercise     Exercise?  @relation("ExercisePerformanceMetrics", fields: [exerciseId], references: [id])
+
+  @@map("performance_metrics")
+}
+
+// Training load calculations
+model TrainingLoad {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String   @map("user_id") @db.Uuid
+  weekStartDate         DateTime @map("week_start_date") @db.Date
+  totalVolume           Decimal  @map("total_volume") @db.Decimal(10, 2)
+  totalSets             Int      @map("total_sets")
+  totalReps             Int      @map("total_reps")
+  trainingDays          Int      @map("training_days")
+  averageIntensity      Decimal? @map("average_intensity") @db.Decimal(5, 2)
+  bodyPartDistribution  Json?    @map("body_part_distribution") @db.JsonB
+  acuteLoad             Decimal  @map("acute_load") @db.Decimal(10, 2) // 7-day rolling
+  chronicLoad           Decimal  @map("chronic_load") @db.Decimal(10, 2) // 28-day rolling
+  loadRatio             Decimal  @map("load_ratio") @db.Decimal(4, 2) // acute:chronic
+  calculatedAt          DateTime @default(now()) @map("calculated_at")
+
+  // Relations
+  user                  User     @relation("UserTrainingLoad", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStartDate])
+  @@map("training_load")
+}
+
+// Goal progress tracking
+model GoalProgress {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  goalId            String   @map("goal_id") @db.Uuid
+  recordedDate      DateTime @map("recorded_date") @db.Date
+  currentValue      Decimal  @map("current_value") @db.Decimal(10, 2)
+  percentageComplete Decimal @map("percentage_complete") @db.Decimal(5, 2)
+  notes             String?  @db.Text
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  // Relations
+  goal              UserGoal @relation("GoalProgressTracking", fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@map("goal_progress")
+}
+
+// Analytics reports
+model AnalyticsReport {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  trainerId    String?  @map("trainer_id") @db.Uuid
+  reportType   String   @map("report_type") @db.VarChar(50)
+  periodStart  DateTime @map("period_start") @db.Date
+  periodEnd    DateTime @map("period_end") @db.Date
+  reportData   Json     @map("report_data") @db.JsonB
+  fileUrl      String?  @map("file_url") @db.VarChar(500)
+  generatedAt  DateTime @default(now()) @map("generated_at")
+  
+  // Relations
+  user         User     @relation("UserAnalyticsReports", fields: [userId], references: [id], onDelete: Cascade)
+  trainer      User?    @relation("TrainerAnalyticsReports", fields: [trainerId], references: [id])
+
+  @@map("analytics_reports")
+}
+
+// AI-powered insights
+model UserInsight {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String          @map("user_id") @db.Uuid
+  insightType   String          @map("insight_type") @db.VarChar(50)
+  title         String          @db.VarChar(255)
+  description   String          @db.Text
+  data          Json?           @db.JsonB
+  priority      InsightPriority
+  isRead        Boolean         @default(false) @map("is_read")
+  actionTaken   Boolean         @default(false) @map("action_taken")
+  expiresAt     DateTime?       @map("expires_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  // Relations
+  user          User            @relation("UserInsights", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_insights")
+}
+
+// Milestone achievements
+model MilestoneAchievement {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  milestoneType String   @map("milestone_type") @db.VarChar(50)
+  title         String   @db.VarChar(255)
+  description   String   @db.Text
+  achievedValue Decimal? @map("achieved_value") @db.Decimal(10, 2)
+  achievedAt    DateTime @default(now()) @map("achieved_at")
+
+  // Relations
+  user          User     @relation("UserMilestones", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("milestone_achievements")
+}
+
+// Chart preferences
+model ChartPreference {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String  @map("user_id") @db.Uuid
+  chartType    String  @map("chart_type") @db.VarChar(50)
+  preferences  Json    @map("preferences") @db.JsonB // colors, ranges, display options
+  isDefault    Boolean @default(false) @map("is_default")
+
+  // Relations
+  user         User    @relation("UserChartPreferences", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chartType])
+  @@map("chart_preferences")
+}
+
+// Comparison baselines
+model ComparisonBaseline {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  baselineName    String   @map("baseline_name") @db.VarChar(100)
+  baselineDate    DateTime @map("baseline_date") @db.Date
+  measurements    Json?    @map("measurements") @db.JsonB
+  performanceData Json?    @map("performance_data") @db.JsonB
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user            User     @relation("UserComparisonBaselines", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comparison_baselines")
 }

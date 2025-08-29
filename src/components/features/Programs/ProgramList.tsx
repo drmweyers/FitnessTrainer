@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ProgramCard from './ProgramCard'
+import BulkAssignmentModal from './BulkAssignmentModal'
 import { 
   Program, 
   ProgramFilters as ProgramFiltersType,
@@ -11,6 +12,7 @@ import {
 } from '@/types/program'
 import { fetchPrograms, deleteProgram, duplicateProgram } from '@/lib/api/programs'
 import { Loader2, Plus, Users, Calendar, AlertCircle } from 'lucide-react'
+import { useToast, ToastContainer } from '@/components/shared/Toast'
 
 interface ProgramListProps {
   filters: ProgramFiltersType
@@ -21,7 +23,12 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
   const [programs, setPrograms] = useState<Program[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [assignmentModal, setAssignmentModal] = useState<{
+    isOpen: boolean;
+    program: Program | null;
+  }>({ isOpen: false, program: null })
   const router = useRouter()
+  const { toasts, success, error: showError, removeToast } = useToast()
 
   const loadPrograms = async () => {
     try {
@@ -105,7 +112,47 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
   }
 
   const handleAssign = (program: Program) => {
-    router.push(`/programs/${program.id}/assign`)
+    setAssignmentModal({ isOpen: true, program })
+  }
+
+  const handleBulkAssign = async (clientIds: string[], customizations: any) => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        router.push('/auth/login')
+        return
+      }
+
+      // Mock API call - in real app, send to backend
+      console.log('Assigning program:', assignmentModal.program?.id)
+      console.log('To clients:', clientIds)
+      console.log('With customizations:', customizations)
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // Show success notification
+      success(
+        'Program Assigned Successfully!',
+        `"${assignmentModal.program?.name}" has been assigned to ${clientIds.length} client${clientIds.length !== 1 ? 's' : ''}.`,
+        6000
+      )
+      
+      // Clear any existing errors
+      setError(null)
+      
+      // Close modal
+      setAssignmentModal({ isOpen: false, program: null })
+      
+      // Optionally reload programs to update assignment counts
+      await loadPrograms()
+      
+    } catch (err) {
+      console.error('Error assigning program:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to assign program'
+      showError('Assignment Failed', errorMessage)
+      setError(errorMessage)
+    }
   }
 
   const handleCreateProgram = () => {
@@ -284,6 +331,19 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
       )}
 
       {/* Load More / Pagination could go here */}
+      
+      {/* Bulk Assignment Modal */}
+      {assignmentModal.program && (
+        <BulkAssignmentModal
+          program={assignmentModal.program}
+          isOpen={assignmentModal.isOpen}
+          onClose={() => setAssignmentModal({ isOpen: false, program: null })}
+          onAssign={handleBulkAssign}
+        />
+      )}
+      
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
   )
 }

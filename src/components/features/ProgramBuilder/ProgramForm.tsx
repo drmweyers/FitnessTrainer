@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useProgramBuilder } from './ProgramBuilderContext';
+import TemplateLibrary from './TemplateLibrary';
 import { ProgramType, DifficultyLevel } from '@/types/program';
-import { Target, Dumbbell, Clock, Tag } from 'lucide-react';
+import { Target, Dumbbell, Clock, Tag, FileText, Plus } from 'lucide-react';
 
 const programTypes = [
   { value: 'strength', label: 'Strength Training' },
@@ -68,6 +69,7 @@ interface ProgramFormProps {
 
 const ProgramForm: React.FC<ProgramFormProps> = ({ onNext, onPrev }) => {
   const { state, dispatch } = useProgramBuilder();
+  const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
 
   const handleBasicInfoChange = (field: string, value: any) => {
     dispatch({
@@ -90,10 +92,37 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onNext, onPrev }) => {
     handleBasicInfoChange('equipmentNeeded', newEquipment);
   };
 
+  const handleApplyTemplate = (template: any) => {
+    // Apply template data to form
+    dispatch({
+      type: 'SET_BASIC_INFO',
+      payload: {
+        name: template.name,
+        description: template.description,
+        programType: template.programType,
+        difficultyLevel: template.difficultyLevel,
+        durationWeeks: template.durationWeeks,
+        goals: template.tags || [], // Use tags as goals for now
+        equipmentNeeded: [] // Would be derived from template exercises
+      }
+    });
+    setShowTemplateLibrary(false);
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Program Information</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Program Information</h2>
+          <button
+            type="button"
+            onClick={() => setShowTemplateLibrary(true)}
+            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Browse Templates
+          </button>
+        </div>
         <p className="text-gray-600 mb-6">
           Let's start by setting up the basic information for your training program.
         </p>
@@ -281,6 +310,24 @@ const ProgramForm: React.FC<ProgramFormProps> = ({ onNext, onPrev }) => {
           Next
         </button>
       </div>
+
+      {/* Template Library Modal */}
+      {showTemplateLibrary && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowTemplateLibrary(false)} />
+            
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <TemplateLibrary 
+                  onSelectTemplate={handleApplyTemplate}
+                  onClose={() => setShowTemplateLibrary(false)}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

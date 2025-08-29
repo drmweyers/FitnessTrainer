@@ -23,6 +23,7 @@ import {
 import { Button } from '@/components/shared/Button'
 import { Textarea } from '@/components/shared/Textarea'
 import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext'
+import ProgressionBuilder from './ProgressionBuilder'
 import { ProgramData, WorkoutType, SetType } from '@/types/program'
 
 interface ProgramPreviewProps {
@@ -304,10 +305,11 @@ function WeekSummary({ week, weekIndex, isExpanded, onToggle }: WeekSummaryProps
 }
 
 export default function ProgramPreview({ onNext, onPrev, onSave }: ProgramPreviewProps) {
-  const { state } = useProgramBuilder()
+  const { state, dispatch } = useProgramBuilder()
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set([0]))
   const [saveAsTemplate, setSaveAsTemplate] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [showProgressionBuilder, setShowProgressionBuilder] = useState(false)
 
   // Calculate program statistics
   const totalWeeks = state.weeks.length
@@ -343,6 +345,17 @@ export default function ProgramPreview({ onNext, onPrev, onSave }: ProgramPrevie
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleUpdateProgression = (updatedWeeks: any[]) => {
+    // Update the weeks with progression data
+    const updatedState = {
+      ...state,
+      weeks: updatedWeeks
+    };
+    
+    // Update via dispatch
+    dispatch({ type: 'UPDATE_WEEKS', payload: updatedWeeks });
   }
 
   // Validation checks
@@ -567,6 +580,15 @@ export default function ProgramPreview({ onNext, onPrev, onSave }: ProgramPrevie
           </Button>
           
           <Button
+            variant="outline"
+            onClick={() => setShowProgressionBuilder(true)}
+            leftIcon={<TrendingUp size={16} />}
+            disabled={totalExercises === 0}
+          >
+            Add Progression
+          </Button>
+          
+          <Button
             onClick={handleSave}
             disabled={!isReadyToSave || isSaving}
             leftIcon={isSaving ? undefined : <Save size={16} />}
@@ -583,6 +605,21 @@ export default function ProgramPreview({ onNext, onPrev, onSave }: ProgramPrevie
           </Button>
         </div>
       </div>
+
+      {/* Progression Builder Modal */}
+      {showProgressionBuilder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <ProgressionBuilder
+                weeks={state.weeks}
+                onUpdateWeeks={handleUpdateProgression}
+                onClose={() => setShowProgressionBuilder(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

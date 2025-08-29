@@ -17,12 +17,15 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
-  Zap
+  Zap,
+  Link
 } from 'lucide-react'
 import { Button } from '@/components/shared/Button'
 import { Input } from '@/components/shared/Input'
 import { Textarea } from '@/components/shared/Textarea'
 import { useProgramBuilder } from './ProgramBuilderContext'
+import SupersetBuilder from './SupersetBuilder'
+import RPEIntegration from './RPEIntegration'
 import { WorkoutExerciseData, ExerciseConfigurationData, SetType } from '@/types/program'
 import { ExerciseWithUserData, ExerciseFilters } from '@/types/exercise'
 import { searchExercises, getFilterOptions } from '@/services/exerciseService'
@@ -513,6 +516,8 @@ export default function ExerciseSelector({ onNext, onPrev }: ExerciseSelectorPro
     targetMuscles: []
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [showSupersetBuilder, setShowSupersetBuilder] = useState(false)
+  const [showRPEIntegration, setShowRPEIntegration] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [filterOptions, setFilterOptions] = useState({ bodyParts: [], equipments: [], targetMuscles: [], secondaryMuscles: [] })
   
@@ -686,6 +691,27 @@ export default function ExerciseSelector({ onNext, onPrev }: ExerciseSelectorPro
     })
   }
 
+  const handleUpdateExercisesFromSuperset = (updatedExercises: WorkoutExerciseData[]) => {
+    if (!currentWorkout) return
+
+    const updatedWorkout = {
+      ...currentWorkout,
+      exercises: updatedExercises.map((exercise, index) => ({
+        ...exercise,
+        orderIndex: index
+      }))
+    }
+    
+    dispatch({
+      type: 'UPDATE_WORKOUT',
+      payload: {
+        weekIndex: state.currentWeekIndex,
+        workoutIndex: state.currentWorkoutIndex,
+        workout: updatedWorkout
+      }
+    })
+  }
+
   const validateAndNext = () => {
     const hasExercises = state.weeks.some(week => 
       week.workouts?.some(workout => 
@@ -834,9 +860,35 @@ export default function ExerciseSelector({ onNext, onPrev }: ExerciseSelectorPro
 
         {/* Selected Exercises */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">
-            Selected Exercises ({selectedExercises.length})
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900">
+              Selected Exercises ({selectedExercises.length})
+            </h3>
+            <div className="flex space-x-2">
+              {selectedExercises.length > 1 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSupersetBuilder(true)}
+                  leftIcon={<Link size={16} />}
+                  className="text-sm"
+                >
+                  Create Supersets
+                </Button>
+              )}
+              {selectedExercises.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRPEIntegration(true)}
+                  leftIcon={<Target size={16} />}
+                  className="text-sm"
+                >
+                  Set RPE/RIR
+                </Button>
+              )}
+            </div>
+          </div>
 
           {selectedExercises.length > 0 ? (
             <div className="space-y-3">
@@ -882,6 +934,36 @@ export default function ExerciseSelector({ onNext, onPrev }: ExerciseSelectorPro
           Continue to Preview
         </Button>
       </div>
+
+      {/* Superset Builder Modal */}
+      {showSupersetBuilder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <SupersetBuilder
+                exercises={selectedExercises}
+                onUpdateExercises={handleUpdateExercisesFromSuperset}
+                onClose={() => setShowSupersetBuilder(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RPE Integration Modal */}
+      {showRPEIntegration && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <RPEIntegration
+                exercises={selectedExercises}
+                onUpdateExercises={handleUpdateExercisesFromSuperset}
+                onClose={() => setShowRPEIntegration(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
