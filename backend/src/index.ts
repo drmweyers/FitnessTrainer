@@ -29,10 +29,18 @@ import { requestLogger } from '@/middleware/requestLogger';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Initialize Prisma
-export const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+// Initialize Prisma with singleton pattern to prevent multiple instances in development
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
 // Initialize Redis
 export const redis = createClient({
