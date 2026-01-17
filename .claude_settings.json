@@ -1,0 +1,34 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read(./**)",
+      "Write(./**)",
+      "Edit(./**)",
+      "Glob(./**)",
+      "Grep(./**)",
+      "Read(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Write(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Edit(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Glob(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Grep(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Read(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready\\.auto-claude\\specs\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Write(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready\\.auto-claude\\specs\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Edit(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude\\worktrees\\tasks\\003-task-1-fix-database-connection-glm-4-5-ready\\.auto-claude\\specs\\003-task-1-fix-database-connection-glm-4-5-ready/**)",
+      "Read(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude/**)",
+      "Write(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude/**)",
+      "Edit(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude/**)",
+      "Glob(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude/**)",
+      "Grep(C:\\Users\\drmwe\\claude_Code_Workspace\\EvoFitTrainer\\.auto-claude/**)",
+      "Bash(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "mcp__context7__resolve-library-id(*)",
+      "mcp__context7__get-library-docs(*)"
+    ]
+  }
+}

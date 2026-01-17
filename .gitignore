@@ -60,3 +60,6 @@ nul
 # Build artifacts
 *.zip
 *.json.zip
+
+# Auto Claude data directory
+.auto-claude/
