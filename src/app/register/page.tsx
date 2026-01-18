@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import type { RegisterRequest, UserRole } from '@/types/auth';
+import type { RegisterRequest } from '@/types/auth';
 
 export default function RegisterPage() {
   const router = useRouter();

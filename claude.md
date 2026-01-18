@@ -1,665 +1,603 @@
-# FitnessTrainer Project - Claude CTO Configuration
+# EvoFit Trainer - Claude AI Instructions
 
-## Documentation Organization Notice
+## Project Overview
 
-**🔗 IMPORTANT**: The comprehensive CTO instructions and project documentation have been organized into focused, easy-to-navigate files. Please refer to:
+**Project**: EvoFit Trainer
+**Type**: Full-Stack Web Application
+**Purpose**: Fitness tracking and training application
+**Tech Stack**: Next.js, React, TypeScript, Tailwind CSS, Node.js
 
-### 📚 **Main Documentation Index**
-**File**: [`docs/documentation-index.md`](./docs/documentation-index.md)
-- Complete overview of all documentation
-- Quick reference guides
-- Navigation tips and best practices
+---
 
-### 🎯 **Core Reference Files**
-1. **CTO Instructions**: [`docs/cto-instructions.md`](./docs/cto-instructions.md)
-2. **BMAD Method Guide**: [`docs/bmad-method-guide.md`](./docs/bmad-method-guide.md)
-3. **Development Workflow**: [`docs/development-workflow.md`](./docs/development-workflow.md)
-4. **Claude Router Config**: [`docs/claude-code-router-config.md`](./docs/claude-code-router-config.md)
-5. **Deployment Guide**: [`docs/deployment-maintenance-guide.md`](./docs/deployment-maintenance-guide.md)
+# 🚀 AUTO-CLAUDE INTEGRATION
 
-## Quick Project Context
+## Auto-Claude Location
+- **Installation**: `C:\Users\drmwe\Auto-Claude`
+- **Start**: Double-click "Auto-Claude" desktop shortcut
+- **Project Path**: `C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer`
 
-### Project Overview
-EvoFit (FitnessTrainer) - A comprehensive platform for personal trainers to manage clients, create workout programs, and track progress.
+## Quick Start Templates for EvoFit
 
-### Current Status
-- ✅ **Completed**: Full BMAD documentation, project structure, Git setup
-- 🚧 **In Progress**: Authentication system (Epic 002)
-- 📋 **Next**: User Profiles, Client Management, Exercise Library
+### Template 1: New Feature with TDD
+```
+Create a Ralph Loop task for implementing [FEATURE_NAME] in EvoFit:
 
-### Technical Stack & Approach
-**📋 Full details in**: [`docs/cto-instructions.md`](./docs/cto-instructions.md)
-- **Backend**: Node.js + Express + TypeScript + Prisma
-- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
-- **Database**: PostgreSQL with Redis caching
-- **Epic-based development** following BMAD methodology
-- **⚠️ CRITICAL**: ALWAYS run development in Docker (`docker-compose --profile dev up -d`)
+Phase 1 - Planning (PM + Architect):
+- Define user stories for fitness feature
+- Design component architecture
+- Plan state management (React Context/Zustand)
+- Identify data models and API endpoints
+- Create wireframes/mockups
 
-## How to Use This Configuration
+Phase 2 - TDD Implementation (Test Engineer → Developer):
+- Write Playwright GUI tests first
+- Write Jest unit tests for components
+- Write failing tests (RED)
+- Implement React components (GREEN)
+- Refactor for clean code (REFACTOR)
+- Ensure 100% test coverage
 
-### For Claude CTO Sessions
-1. **Start with**: `@docs/documentation-index.md` for navigation
-2. **Reference**: Specific guides as needed during development
-3. **Follow**: BMAD methodology from `@docs/bmad-method-guide.md`
-4. **Use**: Development workflow from `@docs/development-workflow.md`
+Phase 3 - Quality Assurance:
+- @code-reviewer for React/TypeScript best practices
+- @security-auditor for OWASP compliance
+- GUI testing with @webapp-testing (Playwright)
+- Performance testing with Lighthouse
+- Mobile responsiveness testing
 
-### Quick Commands
-- **Project Overview**: `@docs/cto-instructions.md`
-- **Development Setup**: `@docs/development-workflow.md`
-- **BMAD Process**: `@docs/bmad-method-guide.md`
-- **Model Switching**: `@docs/claude-code-router-config.md`
-- **Deployment**: `@docs/deployment-maintenance-guide.md`
+Phase 4 - Documentation:
+- Component documentation with Storybook
+- API documentation
+- User guide for fitness feature
+```
 
-## Workflow Stages and Responsibilities
+### Template 2: GUI Testing Task
+```
+Create GUI testing task for [EVOFIT_FEATURE]:
 
-### BMAD Integration Overview
-As your CTO, I'll guide you through the BMAD (Business-Model-Agile-Development) Method for structured, AI-driven planning and development. BMAD provides a proven framework for creating high-quality software with minimal technical expertise required from you.
+Test Scenarios:
+1. User registration and onboarding flow
+2. Workout creation and management
+3. Exercise tracking and logging
+4. Progress visualization (charts/graphs)
+5. Mobile responsive design
+6. Form validation and error handling
+7. Accessibility (WCAG 2.1 AA compliance)
+8. Performance (Lighthouse score >90)
+9. Cross-browser testing (Chrome, Firefox, Safari)
+10. Touch gestures for mobile
 
-#### BMAD Planning Workflow (Web UI or Powerful IDE Agents)
-Before development begins, we'll follow BMAD's structured planning workflow:
+Tools:
+- Playwright for E2E testing
+- Claude Chrome Extension for visual testing
+- @webapp-testing skill
+- Jest + React Testing Library for unit tests
+- MSW for API mocking
 
-1. **Optional Analyst Research**: Market research, competitor analysis, brainstorming
-2. **Project Brief Creation**: Clear definition of your project goals
-3. **PRD Development**: Create Product Requirements Document with functional/non-functional requirements, epics, and stories
-4. **Optional UX Design**: Create front-end specifications if needed
-5. **Architecture Design**: Technical blueprint based on PRD (and UX spec if created)
-6. **Optional Early QA**: Risk assessment for high-risk areas
-7. **Document Alignment Check**: Ensure all planning documents are consistent
-8. **Document Sharding**: Break down PRD and Architecture into manageable pieces for development
+Success Criteria:
+- All tests pass
+- 100% critical user path coverage
+- No accessibility issues
+- Lighthouse score >90
+```
 
-### Phase 1: Concept & Product Definition (BMAD-Enhanced PRD Generation)
-- **Action**: Begin by helping the User define their product concept using BMAD methodology.
-- **Prompting**: Ask clarifying questions about the app's purpose, target users, key features, and desired outcomes.
-- **BMAD Process**:
-  - **Optional Analyst Stage**: "Would you like me to conduct market research or competitor analysis first?"
-  - **Project Brief**: "Let me help you create a clear project brief that defines your goals."
-  - **PRD Creation**: Generate comprehensive PRD with functional requirements (FRs), non-functional requirements (NFRs), epics, and user stories
-- **Artifacts**: 
-  - `docs/prd.md`: Product Requirements Document following BMAD template
-  - `docs/project-brief.md`: Clear project definition (if created separately)
-- **Tooling**: Utilize BMAD templates and knowledge base for structured requirements gathering
-- **Example Prompt to User**: "Let's start by defining your product using the BMAD method. What problem will it solve, who is it for, and what are its main features? I can also help with market research if needed."
+### Template 3: API Development Task
+```
+Create Ralph Loop task for [API_ENDPOINT]:
 
-### Phase 2: Project Planning & Architecture (BMAD Architecture & Sharding)
-- **Action**: Create technical architecture from PRD and prepare for development using BMAD's structured approach.
-- **BMAD Architecture Process**:
-  - **Architecture Creation**: "Based on your PRD, I'll create a detailed technical architecture following BMAD standards."
-  - **Optional UX Specification**: "Do you need a detailed UI/UX specification? This can guide our front-end development."
-  - **Optional Early QA Risk Assessment**: "For complex features, we can perform early risk assessment to prevent issues."
-  - **Document Alignment**: "I'll ensure all planning documents (PRD, Architecture, UX if created) are perfectly aligned."
-- **BMAD Document Sharding**:
-  - **Epic Sharding**: Break PRD into individual epic files in `docs/epics/`
-  - **Story Preparation**: Prepare user stories in `docs/stories/` for sequential development
-  - **Architecture Sharding**: Split architecture into focused documents (coding standards, tech stack, project structure)
-- **Artifacts (BMAD Standard Paths)**:
-  - `docs/prd.md`: Product Requirements Document
-  - `docs/architecture.md`: Technical Architecture
-  - `docs/epics/`: Sharded epic files
-  - `docs/stories/`: Individual story files
-  - `docs/architecture/coding-standards.md`: Development standards
-  - `docs/architecture/tech-stack.md`: Technology decisions
-  - `docs/architecture/project-structure.md`: Project organization
-- **Tooling**:
-  - Use BMAD templates for consistent documentation
-  - Leverage BMAD knowledge base for best practices
-  - Apply think/mega-think/ultra-think for complex architectural decisions
-- **Example Prompt to User**: "I've created the technical architecture based on your PRD. Should we also create a UX specification, or proceed directly to development preparation?"
+Phase 1 - Planning:
+- Define REST API contract (OpenAPI spec)
+- Design database schema (PostgreSQL)
+- Plan authentication/authorization
+- Identify error scenarios
 
-### Phase 3: Development & Implementation (BMAD Core Development Cycle)
-- **Action**: Execute development following BMAD's structured Core Development Cycle.
-- **BMAD Development Workflow**:
-  1. **Story Review**: "I'll review previous story development/QA notes before starting the next story."
-  2. **Story Drafting**: "I'll draft the next story from the sharded epic and architecture."
-  3. **Optional High-Risk Assessment**: "For complex stories, we can perform early QA risk assessment."
-  4. **User Approval**: "Please review and approve this story before I begin implementation."
-  5. **Sequential Task Execution**: "I'll implement each task in the story sequentially."
-  6. **Testing Integration**: "I'll write tests alongside the implementation."
-  7. **Optional Mid-Dev QA**: "We can perform requirements tracing or NFR checks during development."
-  8. **Validation & Review**: "I'll run all validations and mark the story ready for your review."
-- **Development Server Setup**:
-  - **ALWAYS start the development server using Docker**: Run `docker-compose --profile dev up -d` to ensure consistent development environment
-  - **Check Docker status first**: Run `docker ps` to verify Docker is running before starting development
-  - **Access points**: Configure based on project (common: Frontend at http://localhost:4000, Backend API at http://localhost:4000/api)
-- **BMAD Story Execution**:
-  - **Story Files**: Work from sharded stories in `docs/stories/`
-  - **Architecture Reference**: Always load relevant architecture files (coding standards, tech stack, project structure)
-  - **Test-Driven**: Write tests for each acceptance criterion
-  - **Quality Gates**: Optional QA review with pass/concerns/fail status
+Phase 2 - TDD Implementation:
+- Write API integration tests first
+- Implement endpoint with Next.js API routes
+- Add input validation with Zod
+- Implement error handling
+- Add database migrations
 
-#### Development Workflow Guidelines
+Phase 3 - Quality:
+- @security-auditor for SQL injection/XSS prevention
+- @performance-tuner for query optimization
+- Load testing with k6
+- API documentation with Swagger
 
-**Before Starting Any Development Task:**
-1. **ALWAYS** ensure you're on the correct primary branch (commonly `main` or `develop`)
-2. **ALWAYS** start Docker development environment first (if applicable)
-3. Check git status: `git status`
-4. Pull latest changes: `git pull origin <primary-branch>`
-5. Create feature branch: `git checkout -b feature/<description>`
+Phase 4 - Documentation:
+- OpenAPI/Swagger documentation
+- Example requests/responses
+- Error response documentation
+```
 
-**Branch Management Strategy:**
+---
+
+# 🎯 RALPH LOOP TDD FOR EVOFIT
+
+## The Ralph Loop Process
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              PHASE 1: PLANNING & DESIGN                      │
+│  • Define fitness feature requirements                     │
+│  • Create user stories with acceptance criteria             │
+│  • Design React component architecture                     │
+│  • Plan state management (Context/Zustand/Redux)          │
+│  • Design database schema                                  │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│           PHASE 2: TEST-DRIVEN DEVELOPMENT                   │
+│  • Write Playwright GUI tests (user flows)                 │
+│  • Write Jest unit tests (components, hooks, utils)        │
+│  • Write failing tests (RED)                               │
+│  • Implement React components (GREEN)                       │
+│  • Refactor code (REFACTOR)                                │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PHASE 3: QUALITY GATE                           │
+│  • @code-reviewer (React/TypeScript best practices)        │
+│  • @security-auditor (OWASP Top 10, authentication)       │
+│  • @webapp-testing (Playwright E2E tests)                  │
+│  • @performance-tuner (bundle size, rendering)            │
+│  • Accessibility audit (WCAG 2.1 AA)                      │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│             PHASE 4: DOCUMENTATION                           │
+│  • Component documentation (Storybook)                     │
+│  • API documentation (OpenAPI)                             │
+│  • User guides and walkthroughs                           │
+│  • Code comments and JSDoc                                │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ▼
+           [TASK COMPLETE - MERGE TO MAIN]
+```
+
+## Ralph Loop Rules for EvoFit
+
+1. **Tests First**: Always write tests before implementation
+2. **Red-Green-Refactor**: Follow strict TDD cycle
+3. **GUI Tests Required**: All user-facing features need Playwright tests
+4. **Quality Gate**: No code merges without @code-reviewer approval
+5. **Security First**: All features must pass @security-auditor review
+6. **Performance**: Lighthouse score >90, bundle size monitoring
+7. **Accessibility**: WCAG 2.1 AA compliance required
+8. **Documentation**: Every feature documented before merge
+
+---
+
+# 🛠️ DEVELOPMENT WORKFLOWS
+
+## Creating a New Feature
+
 ```bash
-# Always start from primary branch
-git checkout main  # or primary development branch
-git pull origin main
+# 1. Start Auto-Claude
+Double-click "Auto-Claude" desktop shortcut
 
-# For feature work
-git checkout -b feature/your-feature-name
-# ... do work ...
-git add .
-git commit -m "type(scope): descriptive message"
-git push origin feature/your-feature-name
+# 2. Create new task
+- Click "New Task"
+- Select "EvoFit Trainer" project
+- Paste "Template 1: New Feature with TDD"
+- Customize for your feature
+- Click "Create Task"
 
-# Merge back when ready
-git checkout main
-git merge feature/your-feature-name
-git push origin main
+# 3. Auto-Claude runs Ralph Loop
+- Planning phase (PM + Architect)
+- TDD implementation (Test Engineer + Developer)
+- Quality gate (Code Reviewer + Security Auditor)
+- Documentation (Docs Writer)
+
+# 4. Review and merge
+- Review generated code
+- Run tests locally
+- Merge to main branch
 ```
 
-**Branch Synchronization Process (CTO Guidance):**
-When projects have multiple active branches (e.g., main/production and develop/staging):
+## GUI Testing with Playwright
 
 ```bash
-# Step 1: Ensure you're on primary with latest changes
-git checkout main
-git pull origin main
+# Run GUI tests
+npm run test:e2e
 
-# Step 2: Switch to development branch  
-git checkout develop
-git status  # Must be clean
+# Run specific test
+npx playwright test tests/workouts.spec.ts
 
-# Step 3: Merge primary into development to sync branches
-git merge main --no-edit
+# Run with UI
+npx playwright test --ui
 
-# Step 4: Push synchronized development branch
-git push origin develop
-
-# Step 5: Return to primary branch
-git checkout main
+# Run in headed mode
+npx playwright test --headed
 ```
 
-**CTO Instructions - When to guide User through branch sync:**
-- ✅ After new features are committed to primary branch
-- ✅ Before starting development on secondary branches
-- ✅ After production hotfixes
-- ✅ Weekly as part of regular maintenance
+## Running Tests Locally
 
-**During Development:**
-1. Use TodoWrite tool to track all tasks
-2. Test changes in appropriate environment (Docker/local)
-3. Run linting before commits: `npm run lint` (or equivalent)
-4. Ensure type checking passes: `npm run typecheck` (if applicable)
-
-**After Task Completion:**
-1. Test all changes thoroughly
-2. Commit with descriptive messages using conventional commits
-3. Update documentation if needed
-4. Mark todos as completed
-
-- **Tooling for Parallel Development & Execution**:
-  - **Git Worktrees**: Utilize Git worktrees to allow multiple agents (or multiple Claude Code instances) to work on different features or branches in parallel within isolated environments, preventing conflicts.
-    - **Custom Command (/create_worktree)**: Create a custom slash command that automates the creation of a Git worktree and a new Claude Code instance within it, pre-configured for a specific sub-agent's task.
-  - **MCP Servers (.mcp.json)**:
-    - **GitHub CLI/MCP**: For managing Git operations, issues, pull requests, and code reviews.
-      • **Installation**: `npm install -g @modelcontextprotocol/server-github`
-      • **Configuration**: Add to your `.mcp.json`:
-        ```json
-        {
-          "servers": {
-            "github": {
-              "command": "npx",
-              "args": ["@modelcontextprotocol/server-github"],
-              "env": {
-                "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-              }
-            }
-          }
-        }
-        ```
-      • **Usage**: Create issues, manage PRs, review code, manage releases
-    - **Puppeteer MCP**: For visual feedback loops (taking screenshots of UI, comparing to mockups for refinement).
-    - **Email/Discord MCPs**: For automated notifications or specific integrations as defined in the PRD.
-    - **Database MCPs**: Postgres, MongoDB, etc. for direct database operations
-    - **Testing MCPs**: Test Sprite for automated testing and diagnosis
-    - **Documentation MCPs**: Context 7 for up-to-date technical documentation
-    - **Web Scraping MCPs**: FireCrawl, Bright Data for data collection
-    - **Other MCPs**: Integrate specialized MCPs (e.g., ShadCN UI MCP for UI components, n8n MCP for automation workflows) as needed based on the project's requirements.
-  - **Hooks & Monitoring**: Implement Claude Code hooks (PreToolUse, PostToolUse, Notification, Stop) to automate tasks like code formatting, running tests after file changes, generating documentation, logging, or sending notifications.
-    - **Multi-Agent Observability**: Use hooks to send events to central monitoring system for tracking all tool calls and status updates
-- **Context Management during Execution**:
-  - **Isolated Contexts**: Each sub-agent maintains its own context window, preventing context pollution
-  - **Inter-agent Communication**: Agents communicate via shared markdown files (product-strategy-analysis.md, code_report.md, UI_flow_report.md)
-  - **Clear Context**: Regularly use `/clear` to clear conversation history, especially after a significant task or checkpoint, to reduce hallucinations and save on token costs.
-  - **Session Summary**: Use a custom command or explicit prompt to add a session summary to claude.md after major progress, ensuring persistent memory across sessions.
-  - **File Referencing**: Use `@` to link relevant files and `#` to add data to Claude's memory within prompts, ensuring Claude focuses on specific parts of the codebase.
-- **Advanced Workflow Guidelines**:
-  - **"Think" Modes**: Use keywords like `think`, `mega-think`, or `ultra-think` for complex reasoning (ultra-think uses ~32,000 tokens)
-  - **Model Selection**: Use Opus for planning, Sonnet for execution to optimize costs
-  - **Workflow Rules**: 
-    - "Always read planning.md at the start of every new conversation"
-    - "Check tasks.md before starting work and mark completed tasks immediately"
-    - "Add any new discovered tasks to tasks.md"
-    - "Make every task and code change as simple as possible, impacting minimal code"
-    - "Provide high-level explanations of changes made at every step"
-    - "Add a review section to project_plan.md with summary of changes and relevant information"
-
-### Phase 4: Testing & Quality Assurance (BMAD Test Architecture)
-- **Action**: Leverage BMAD's Test Architect (QA Agent) capabilities throughout development.
-- **BMAD QA Commands** (Optional but recommended for complex features):
-  - **Risk Assessment**: `*risk {story}` - Identify risks before development
-  - **Test Design**: `*design {story}` - Create comprehensive test strategy
-  - **Requirements Tracing**: `*trace {story}` - Verify test coverage during development
-  - **NFR Assessment**: `*nfr {story}` - Check security, performance, reliability, maintainability
-  - **Full Review**: `*review {story}` - Comprehensive assessment with quality gate decision
-  - **Gate Update**: `*gate {story}` - Update quality gate status after fixes
-- **BMAD Quality Standards**:
-  - **No Flaky Tests**: Ensure reliability through proper async handling
-  - **No Hard Waits**: Dynamic waiting strategies only
-  - **Stateless & Parallel-Safe**: Tests run independently
-  - **Self-Cleaning**: Tests manage their own test data
-  - **Appropriate Test Levels**: Unit for logic, integration for interactions, E2E for journeys
-- **Quality Gate Meanings**:
-  - **PASS**: All critical requirements met
-  - **CONCERNS**: Non-critical issues found, team should review
-  - **FAIL**: Critical issues that should be addressed
-  - **WAIVED**: Issues acknowledged but explicitly accepted
-- **Tooling**:
-  - BMAD QA templates and assessment tools
-  - Test Sprite MCP for automated testing
-  - Pre-commit hooks for code quality
-
-### Phase 5: Deployment & Maintenance
-
-• **Action**: Guide the User through the complete deployment process with detailed explanations at each step.
-
-• **Pre-Deployment Process (CTO Checklist)**:
-  ◦ **Testing**: "Running complete test suite to ensure everything works..."
-  ◦ **Build Verification**: "Building production version to verify no compile errors..."
-  ◦ **Security Check**: "Scanning for exposed secrets or sensitive data..."
-  ◦ **Change Review**: "Here's a summary of what we're deploying: [detailed list]"
-  ◦ **User Confirmation**: "Ready to deploy. Should I proceed?"
-
-• **GitHub Release Process**:
-  ◦ **CTO Explanation**: "I'm creating a tagged release in GitHub to document this deployment"
-  ◦ **Commands with Explanations**:
-    ```bash
-    # CTO: "Committing final changes"
-    git add . && git commit -m "feat(release): prepare v1.0.0"
-    
-    # CTO: "Pushing to GitHub"
-    git push origin main
-    
-    # CTO: "Creating release tag"
-    git tag -a v1.0.0 -m "Release version 1.0.0"
-    git push origin v1.0.0
-    
-    # CTO: "Creating GitHub release with notes"
-    gh release create v1.0.0 --notes "Release notes here"
-    ```
-
-• **Deployment Methods**:
-  
-  **1. Container-Based Deployment (Docker)**:
-  ◦ **CTO Process**:
-    - "Building production Docker image..."
-    - "Tagging image for registry..."
-    - "Pushing to container registry..."
-    - "Triggering deployment..."
-  ◦ **Manual Fallback**: If automated deployment fails, CTO guides through manual dashboard deployment
-  
-  **2. Platform-Specific Deployment**:
-  ◦ **Vercel/Netlify**: "Pushing to main branch will trigger automatic deployment"
-  ◦ **AWS/Azure**: "Using CLI to deploy: [specific commands]"
-  ◦ **DigitalOcean**: "Accessing app platform for deployment"
-  ◦ **Heroku**: "Using Git-based deployment: git push heroku main"
-  
-  **3. Traditional Server Deployment**:
-  ◦ **SSH Access**: "Connecting to production server..."
-  ◦ **Code Update**: "Pulling latest changes from GitHub..."
-  ◦ **Service Restart**: "Restarting application services..."
-
-• **Post-Deployment Verification**:
-  ◦ **Health Checks**: "Verifying application is responding..."
-  ◦ **Functionality Tests**: "Testing core features work correctly..."
-  ◦ **Performance Monitoring**: "Checking response times and resource usage..."
-  ◦ **Error Monitoring**: "Reviewing logs for any errors..."
-
-• **Rollback Procedures**:
-  ◦ **Automatic Detection**: "Issue detected in deployment. Initiating rollback..."
-  ◦ **Manual Rollback Steps**:
-    1. "Reverting to previous version in deployment platform"
-    2. "Or using Git: `git checkout [previous-version]`"
-    3. "Rebuilding and redeploying previous version"
-
-• **Maintenance Procedures**:
-  ◦ **Regular Updates**: Schedule and plan updates
-  ◦ **Database Migrations**: Handle with care, always backup first
-  ◦ **Security Patches**: Apply promptly with testing
-  ◦ **Performance Optimization**: Monitor and improve as needed
-
-• **CTO Communication Style During Deployment**:
-  ◦ **Status Updates**: "Step 1 of 5: Building application... (2-3 minutes)"
-  ◦ **Error Handling**: "Encountered issue: [explanation]. Trying alternative approach..."
-  ◦ **Success Confirmation**: "Deployment successful! Application live at [URL]"
-  ◦ **Next Steps**: "Monitoring for 15 minutes to ensure stability..."
-
-### Cost Optimization & Performance
-• **Context Management**: Regularly use `/clear` command to free up context after significant tasks to reduce token usage and prevent hallucinations
-• **Model Selection**: Use Kimmy K2 model for cost savings on routine tasks, Opus for complex planning, Sonnet for balanced execution
-• **Token Efficiency**: Use ultra-think mode sparingly (consumes ~32,000 tokens), prefer structured thinking for complex tasks
-
-### Version Control & GitHub Operations
-
-#### CTO GitHub Workflow Management
-When the CTO manages GitHub operations, it provides detailed explanations and transparency:
-
-• **Commit Strategy & Checkpointing**:
-  - **Frequency**: Commit after every significant change or completed task
-  - **CTO Communication**: "I'm committing these changes to create a checkpoint. This allows us to roll back if needed."
-  - **Message Format**: 
-    ```
-    type(scope): brief description
-    
-    - Detailed change 1
-    - Detailed change 2
-    ```
-  - **Types**: feat (new feature), fix (bug fix), docs (documentation), style (formatting), refactor (code restructuring), test (testing), chore (maintenance)
-
-• **Branch Management**:
-  - **Creation**: `git checkout -b feature/descriptive-name`
-  - **CTO Explanation**: "Creating a new feature branch to isolate these changes and keep our main branch stable"
-  - **Naming Convention**: feature/, bugfix/, hotfix/, chore/
-  - **Parallel Development**: Use Git worktrees for multiple agents working simultaneously
-
-• **Pre-Push Quality Checks**:
-  The CTO automatically performs:
-  1. Run tests: `npm test` or language-appropriate test command
-  2. Lint code: `npm run lint` or appropriate linter
-  3. Type checking: `npm run typecheck` (for TypeScript projects)
-  4. Review changes: `git diff --staged`
-  5. Security scan: Check for exposed secrets or API keys
-
-• **Pull Request Creation**:
-  - **CTO Process Explanation**: "I'm creating a pull request to merge our changes. Let me explain what's included..."
-  - **PR Template**:
-    ```bash
-    gh pr create --title "Type: Brief Description" \
-                 --body "## Summary
-    [What changes were made and why]
-    
-    ## Testing
-    - [ ] Unit tests passing
-    - [ ] Integration tests passing
-    - [ ] Manual testing completed
-    
-    ## Checklist
-    - [ ] Code follows project style
-    - [ ] Documentation updated
-    - [ ] No secrets exposed"
-    ```
-
-• **GitHub Issue Integration**:
-  - Link commits to issues: `fix: resolve login bug #123`
-  - Close issues via PR: Include "Closes #123" in PR description
-  - Track progress: Update issue status as work progresses
-
-• **Rollback Procedures**:
-  If issues arise, the CTO guides:
-  1. Identify problem: `git log --oneline`
-  2. Revert commit: `git revert <commit-hash>`
-  3. Or reset: `git reset --hard <commit-hash>`
-  4. Force push carefully: `git push --force-with-lease`
-
-### Advanced Multi-Agent Frameworks
-• **"Super Claude" Framework**: Consider community-built frameworks that provide structured commands, flags, and personas (front-end, backend, security) for comprehensive developer workflows
-• **Custom Command Sets**: Develop project-specific slash commands for common multi-agent workflows
-• **Agent Orchestration Patterns**: Define standard patterns for agent collaboration (sequential, parallel, hierarchical)
-
-## Continuous Improvement & Learning
-- **Learning from Claude**: Encourage the User to ask the CCA-CTO to explain new functionality or complex code segments. "Explain the functionality and code just built out in detail. Walk me through what was changed and how it works, acting like a senior engineer teaching code." This helps the User understand the underlying processes without needing to code.
-- **Iterative Refinement**: Emphasize that development is an iterative process, and the CCA-CTO is here to refine and improve as needed.
-- **Utilize Conversation History**: If the User closes a conversation, remind them to use the continue or resume flag to pick up where they left off, or to press escape twice to navigate conversation history.
-
-## Session Management
-- **Memory Persistence**: Important decisions and progress should be documented in this file
-- **Context Switching**: Use @filename to reference specific files when context switching
-- **Checkpoints**: Use TodoWrite tool for task management and progress tracking
-
-## BMAD Method Quick Reference for CTO
-
-### BMAD Core Concepts
-- **Business-Model-Agile-Development**: AI-driven methodology for structured software development
-- **Planning First**: Comprehensive planning before any code is written
-- **Document-Driven**: All decisions captured in structured documents
-- **Quality Gates**: Optional but recommended quality checkpoints
-- **Sharding**: Breaking large documents into manageable, focused pieces
-
-### BMAD Document Structure
-```
-project-root/
-├── docs/
-│   ├── prd.md                    # Product Requirements Document
-│   ├── architecture.md           # Technical Architecture
-│   ├── project-brief.md          # Optional initial brief
-│   ├── epics/                    # Sharded epic files
-│   │   ├── epic-001-auth.md
-│   │   └── epic-002-dashboard.md
-│   ├── stories/                  # Individual story files
-│   │   ├── auth.login.md
-│   │   └── auth.register.md
-│   ├── architecture/             # Sharded architecture
-│   │   ├── coding-standards.md
-│   │   ├── tech-stack.md
-│   │   └── project-structure.md
-│   └── qa/                       # Quality assurance
-│       ├── assessments/          # QA analysis files
-│       └── gates/                # Quality gate decisions
-└── .bmad-core/                   # BMAD configuration
-    ├── core-config.yaml
-    └── data/
-        └── technical-preferences.md
-```
-
-### BMAD Workflow Commands for CTO
-
-#### Planning Phase Commands
-- **Start Project**: "Let's begin with BMAD planning. Do you have a project brief, or should we start from scratch?"
-- **Market Research**: "Would you like me to conduct market research and competitor analysis first?"
-- **Create PRD**: "I'll create a comprehensive PRD with functional requirements, non-functional requirements, epics, and user stories."
-- **Architecture Design**: "Based on your PRD, I'll design the technical architecture following BMAD standards."
-- **UX Planning**: "Do you need a detailed UX specification before we begin development?"
-
-#### Development Phase Commands
-- **Story Selection**: "Let me review the next story from our sharded epics."
-- **Risk Assessment**: "This looks like a complex story. Should we perform a risk assessment first?"
-- **Implementation**: "I'll implement this story following our architecture and coding standards."
-- **Quality Check**: "Would you like me to run a quality assessment on this story?"
-
-#### Quality Assurance Commands (When Acting as QA)
-- **Risk Profile**: "I'll assess the risks in this story using BMAD's risk profiling."
-- **Test Design**: "Let me create a comprehensive test strategy for this story."
-- **Coverage Check**: "I'll trace requirements to ensure we have adequate test coverage."
-- **NFR Validation**: "Let me check security, performance, reliability, and maintainability."
-- **Full Review**: "I'll perform a complete test architecture review with quality gate decision."
-
-### BMAD Best Practices for CTO
-
-1. **Always Start with Planning**
-   - Don't skip the PRD even for "simple" projects
-   - Architecture document prevents technical debt
-   - Sharding makes large projects manageable
-
-2. **Follow the Story Workflow**
-   - One story at a time, sequential execution
-   - Review previous notes before starting new story
-   - Get user approval before implementation
-   - Commit after each story completion
-
-3. **Leverage Optional QA**
-   - Use risk assessment for complex features
-   - Run NFR checks for security-critical code
-   - Quality gates are advisory, not blocking
-
-4. **Document Everything**
-   - Update documents as understanding evolves
-   - Keep architecture docs lean and focused
-   - Add discovered tasks to backlog immediately
-
-5. **Context Management**
-   - Load only necessary architecture files
-   - Use sharded documents to reduce context
-   - Clear context between major milestones
-
-## Current Session Status
-- **CCA-CTO System**: Successfully configured and ready for project initialization
-- **BMAD Method**: Integrated and ready to guide structured development
-- **Next Step**: Ready to begin BMAD Phase 1 (Concept & Product Definition) when User provides project requirements
-
-## Advanced Best Practices Reference
-- **Medina Strategy**: For comprehensive Claude Code best practices and advanced techniques, consult `Claude_Strategy.md`
-- **Location**: Available in both global (`~/.claude/`) and local project directories
-- **Key Topics**: MCP servers (Serena), PRP framework, sub-agents, parallel development, optimization strategies
-
-## Development Environment Guidelines
-- **⚠️ CRITICAL REQUIREMENT**: ALWAYS use Docker for ALL development work - NO EXCEPTIONS
-- **NEVER run services locally** via npm/node directly - ALWAYS use Docker containers
-- **Start development**: `docker-compose --profile dev up -d`
-- **Stop development**: `docker-compose --profile dev down`
-- **View logs**: `docker logs <container-name> -f`
-- **Restart after changes**: `docker-compose --profile dev restart <service-name>`
-- **Database**: PostgreSQL runs in Docker, Redis runs in Docker, MailHog runs in Docker
-- **Backend API**: Runs in Docker container, NOT via `npm run dev` locally
-
-### Common Docker Commands
 ```bash
-# Check Docker is running
-docker ps
+# Unit tests
+npm test
 
-# Start development environment
-docker-compose --profile dev up -d
+# Unit tests with coverage
+npm run test:coverage
 
-# Stop development environment  
-docker-compose --profile dev down
+# E2E tests
+npm run test:e2e
 
-# View container logs
-docker logs <container-name> -f
+# Linting
+npm run lint
 
-# Restart containers
-docker-compose --profile dev restart
-
-# Rebuild after dependencies change
-docker-compose --profile dev up -d --build
+# Type checking
+npm run type-check
 ```
 
-### Testing Guidelines
-1. **Always test in appropriate environment first** (Docker/local)
-2. Use project-provided test scripts for specific features
-3. Check browser console for errors (web applications)
-4. Test all user roles and permissions
-5. Verify responsive design on different screen sizes (web applications)
+---
 
-### Security Considerations
-- Never commit `.env` files or sensitive configuration
-- Use environment variables for sensitive data
-- Validate all user inputs
-- Implement proper authentication checks
-- Sanitize data before processing (especially for PDF generation, database queries, etc.)
+# 📱 EVOFIT-SPECIFIC GUIDELINES
 
-### Common Issues & Solutions
-- **Import errors**: Check module resolution and alias configuration
-- **Database connection**: Ensure database container/service is running
-- **Build failures**: Check dependencies and build scripts
-- **Port conflicts**: Verify port configuration and availability
+## Component Development
 
-## Claude Code Router Configuration
+### React Component Template
+```typescript
+// Use TDD approach
+// 1. Write tests first
+// 2. Implement component
+// 3. Ensure accessibility
 
-### Overview
-Claude Code Router is configured to use native Claude models by default. Alternative models (like Qwen) can be used when needed.
+import { useState } from 'react';
 
-### Running Claude Code
+interface ComponentProps {
+  // Define props with TypeScript
+}
 
-#### Default: Use Native Claude Models
-```powershell
-cd <project-directory>
-claude code
-```
-This uses Claude models directly through your Anthropic account.
-
-#### Alternative: Use with Router Proxy (when needed)
-```powershell
-cd <project-directory>
-claude code --api-proxy http://127.0.0.1:8080
-```
-This routes through the proxy but still uses native Claude by default.
-
-### Switching to Alternative Models
-
-#### When Claude Credits Run Out
-Switch to Qwen models using the `/model` command within Claude Code:
-
-**Available Qwen Models:**
-- `/model openrouter-qwen,qwen/qwen-2.5-72b-instruct` - General purpose (recommended)
-- `/model openrouter-qwen,qwen/qwen-2.5-coder-32b-instruct` - Optimized for coding
-- `/model openrouter-qwen,qwen/qwq-32b-preview` - Best for reasoning tasks
-- `/model openrouter-qwen,qwen/qwen-2-vl-72b-instruct` - Vision-language model
-
-**Other Available Models via OpenRouter:**
-- `/model openrouter,google/gemini-2.5-pro-preview` - Gemini Pro
-- `/model openrouter,anthropic/claude-3.5-sonnet` - Claude via OpenRouter
-- `/model openrouter,deepseek/deepseek-chat` - DeepSeek
-
-### Quick Alias for PowerShell
-Add to your PowerShell profile for quick access:
-```powershell
-function claude-qwen {
-    claude code --api-proxy http://127.0.0.1:8080 --model openrouter-qwen,qwen/qwen-2.5-72b-instruct
+export function Component({ prop }: ComponentProps) {
+  // Component logic
+  return (
+    <div className="component">
+      {/* JSX with accessibility attributes */}
+    </div>
+  );
 }
 ```
 
-### Router Service Management
+### State Management Guidelines
+- Use React Context for global state (user, workouts)
+- Use useState for local component state
+- Use Zustand for complex state if needed
+- Always type state with TypeScript
 
-#### Check Router Status
-```powershell
-Get-Process | Where-Object {$_.CommandLine -like "*claude-code-router*"}
+### API Integration
+```typescript
+// Use Next.js API routes
+// Example: app/api/workouts/route.ts
+
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const schema = z.object({
+  name: z.string(),
+  exercises: z.array(z.object({
+    name: z.string(),
+    sets: z.number(),
+    reps: z.number(),
+  })),
+});
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const data = schema.parse(body);
+  // Process data
+  return NextResponse.json({ success: true });
+}
 ```
 
-#### Restart Router Service
-```powershell
-# Stop existing service
-Get-Process | Where-Object {$_.CommandLine -like "*claude-code-router*"} | Stop-Process -Force
+## Styling Guidelines
 
-# Start service
-Start-Process node -ArgumentList "C:\Users\drmwe\AppData\Roaming\npm\node_modules\@musistudio\claude-code-router\dist\cli.js", "start" -NoNewWindow
+```typescript
+// Use Tailwind CSS
+// Follow utility-first approach
+// Ensure responsive design
+
+<div className="
+  flex flex-col md:flex-row
+  p-4 md:p-6
+  bg-white dark:bg-gray-800
+  rounded-lg shadow-md
+">
+  {/* Content */}
+</div>
 ```
 
-### Configuration Location
-- Router config: `~/.claude-code-router/config.json`
-- Logs: `~/.claude-code-router/claude-code-router.log`
+---
 
-### Best Practices
-1. Use native Claude models by default for all tasks
-2. Only switch to alternative models (like Qwen) when absolutely necessary
-3. Monitor usage to maintain optimal performance
-4. Prioritize Claude models for their superior capabilities and consistency
+# 🧪 TESTING REQUIREMENTS
 
-### Model Switching (Only When Necessary)
+## Unit Tests (Jest + React Testing Library)
 
-**NOTE**: Model switching should only be used when Claude credits are exhausted or for specific testing purposes.
+```typescript
+// Example test
+import { render, screen } from '@testing-library/react';
+import { WorkoutForm } from './WorkoutForm';
 
-If you need to switch models, first ensure Claude Code is running with the router:
-```powershell
-claude code --api-proxy http://127.0.0.1:8080
+describe('WorkoutForm', () => {
+  it('renders workout input fields', () => {
+    render(<WorkoutForm />);
+    expect(screen.getByLabelText('Workout Name')).toBeInTheDocument();
+  });
+
+  it('submits form with valid data', async () => {
+    const user = userEvent.setup();
+    render(<WorkoutForm />);
+
+    await user.type(screen.getByLabelText('Workout Name'), 'Morning Yoga');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(screen.getByText('Workout saved')).toBeInTheDocument();
+  });
+});
 ```
 
-Then use these commands within Claude Code:
+## E2E Tests (Playwright)
 
-#### When you say "change to qwen3":
-```
-/model openrouter,qwen/qwen3-coder:free
+```typescript
+// Example E2E test
+import { test, expect } from '@playwright/test';
+
+test('user can create a workout', async ({ page }) => {
+  // Navigate to app
+  await page.goto('/workouts');
+
+  // Click create button
+  await page.click('button:has-text("Create Workout")');
+
+  // Fill form
+  await page.fill('[name="workoutName"]', 'Upper Body Strength');
+  await page.selectOption('[name="difficulty"]', 'intermediate');
+
+  // Submit
+  await page.click('button:has-text("Save")');
+
+  // Verify
+  await expect(page.locator('text=Upper Body Strength')).toBeVisible();
+});
 ```
 
-#### Other Quick Commands:
-- **"change to qwen coder"**: `/model openrouter-qwen,qwen/qwen-2.5-coder-32b-instruct`
-- **"change to qwen general"**: `/model openrouter-qwen,qwen/qwen-2.5-72b-instruct`
-- **"change to qwen reasoning"**: `/model openrouter-qwen,qwen/qwq-32b-preview`
-- **"change to local qwen"**: `/model ollama,qwen2.5-coder:latest`
-- **"change to gemini"**: `/model openrouter,google/gemini-2.5-pro-preview`
-- **"change to deepseek"**: `/model openrouter,deepseek/deepseek-chat`
+---
+
+# 🔒 SECURITY REQUIREMENTS
+
+## Authentication & Authorization
+
+- All API routes must validate JWT tokens
+- Implement role-based access control (RBAC)
+- Sanitize all user inputs
+- Use parameterized queries to prevent SQL injection
+- Implement CSRF protection for forms
+- Rate limit API endpoints
+
+## Data Protection
+
+- Encrypt sensitive data at rest
+- Use HTTPS in production
+- Implement secure password hashing (bcrypt)
+- Never expose API keys in client code
+- Validate and sanitize all inputs
+
+---
+
+# 📊 PERFORMANCE REQUIREMENTS
+
+## Bundle Size Limits
+- Initial JS bundle: <200KB gzipped
+- Each route chunk: <100KB gzipped
+- Total page weight: <500KB
+
+## Rendering Performance
+- First Contentful Paint (FCP): <1.5s
+- Largest Contentful Paint (LCP): <2.5s
+- Time to Interactive (TTI): <3.5s
+- Cumulative Layout Shift (CLS): <0.1
+
+## Monitoring
+```bash
+# Run Lighthouse audit
+npm run lighthouse
+
+# Check bundle size
+npm run analyze
+```
+
+---
+
+# ♿ ACCESSIBILITY REQUIREMENTS
+
+## WCAG 2.1 AA Compliance
+
+- All interactive elements must be keyboard accessible
+- Form inputs must have associated labels
+- Images must have alt text
+- Color contrast ratio ≥4.5:1
+- Focus indicators must be visible
+- ARIA labels for complex components
+
+## Testing
+```bash
+# Run accessibility audit
+npm run test:a11y
+
+# Check with axe DevTools
+# Install axe DevTools Chrome extension
+```
+
+---
+
+# 🎨 DESIGN SYSTEM
+
+## Colors
+- Primary: `bg-blue-600`
+- Secondary: `bg-purple-600`
+- Success: `bg-green-600`
+- Error: `bg-red-600`
+- Warning: `bg-yellow-600`
+
+## Typography
+- Headings: `font-bold text-xl`
+- Body: `text-base`
+- Small: `text-sm`
+
+## Spacing
+- Container: `max-w-7xl mx-auto px-4`
+- Sections: `py-8 md:py-12`
+- Cards: `p-6`
+
+---
+
+# 📦 PROJECT STRUCTURE
+
+```
+EvoFitTrainer/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   └── register/
+│   ├── (dashboard)/
+│   ├── (workouts)/
+│   ├── api/              # API routes
+│   └── layout.tsx
+├── components/
+│   ├── ui/              # Reusable UI components
+│   ├── forms/           # Form components
+│   └── features/        # Feature-specific components
+├── lib/
+│   ├── db/              # Database utilities
+│   ├── auth/            # Authentication
+│   └── utils/           # Helper functions
+├── tests/
+│   ├── unit/            # Jest tests
+│   └── e2e/             # Playwright tests
+├── public/
+│   └── images/
+├── .auto-claude/
+│   └── specs/           # Auto-Claude task specifications
+└── CLAUDE.md            # This file
+```
+
+---
+
+# 🚀 DEPLOYMENT
+
+## Build Commands
+```bash
+# Development
+npm run dev
+
+# Production build
+npm run build
+
+# Start production
+npm start
+
+# Run tests before deployment
+npm run test:ci
+```
+
+## Environment Variables
+```env
+# Database
+DATABASE_URL=
+
+# Authentication
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=
+
+# API Keys
+OPENAI_API_KEY=
+```
+
+---
+
+# 📝 DEVELOPMENT BEST PRACTICES
+
+## Git Workflow
+```bash
+# Create feature branch
+git checkout -b feature/workout-management
+
+# Make changes
+git add .
+git commit -m "feat: add workout management"
+
+# Push and create PR
+git push origin feature/workout-management
+```
+
+## Commit Message Conventions
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `refactor:` Code refactoring
+- `test:` Adding tests
+- `chore:` Maintenance
+
+## Code Review Checklist
+- [ ] Tests pass (unit + E2E)
+- [ ] No TypeScript errors
+- [ ] No ESLint warnings
+- [ ] Accessibility verified
+- [ ] Performance benchmarks met
+- [ ] Security review passed
+- [ ] Documentation complete
+
+---
+
+# 🐛 DEBUGGING
+
+## Common Issues
+
+### Tests Failing
+```bash
+# Run tests in verbose mode
+npm test -- --verbose
+
+# Debug Playwright test
+npx playwright test --debug
+```
+
+### Build Errors
+```bash
+# Clear Next.js cache
+rm -rf .next
+
+# Clear node_modules and reinstall
+rm -rf node_modules
+npm install
+```
+
+### Type Errors
+```bash
+# Run type check
+npm run type-check
+
+# Generate type coverage
+npm run type-coverage
+```
+
+---
+
+# 📚 LEARNING RESOURCES
+
+## Internal Documentation
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Playwright Documentation](https://playwright.dev)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+
+## Auto-Claude Resources
+- Global CLAUDE.md: `C:\Users\drmwe\.claude\CLAUDE.md`
+- Auto-Claude App: `C:\Users\drmwe\Auto-Claude`
+
+---
+
+Last updated: 2026-01-17

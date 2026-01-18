@@ -16,6 +16,38 @@ jest.mock('../src/config/logger', () => ({
   },
 }));
 
+// Mock EmailService to prevent actual email sending and transporter initialization issues
+jest.mock('../src/services/emailService', () => {
+  const mockSendEmail = jest.fn().mockResolvedValue(undefined);
+  const mockSendEmailVerification = jest.fn().mockResolvedValue(undefined);
+  const mockSendPasswordReset = jest.fn().mockResolvedValue(undefined);
+  const mockSendWelcomeEmail = jest.fn().mockResolvedValue(undefined);
+  const mockSendClientInvitation = jest.fn().mockResolvedValue(undefined);
+  const mockSendSecurityNotification = jest.fn().mockResolvedValue(undefined);
+  const mockVerifyConnection = jest.fn().mockResolvedValue(true);
+
+  return {
+    emailService: {
+      sendEmail: mockSendEmail,
+      sendEmailVerification: mockSendEmailVerification,
+      sendPasswordReset: mockSendPasswordReset,
+      sendWelcomeEmail: mockSendWelcomeEmail,
+      sendClientInvitation: mockSendClientInvitation,
+      sendSecurityNotification: mockSendSecurityNotification,
+      verifyConnection: mockVerifyConnection,
+    },
+    EmailService: jest.fn().mockImplementation(() => ({
+      sendEmail: mockSendEmail,
+      sendEmailVerification: mockSendEmailVerification,
+      sendPasswordReset: mockSendPasswordReset,
+      sendWelcomeEmail: mockSendWelcomeEmail,
+      sendClientInvitation: mockSendClientInvitation,
+      sendSecurityNotification: mockSendSecurityNotification,
+      verifyConnection: mockVerifyConnection,
+    })),
+  };
+});
+
 // Setup test database and Redis connections
 beforeAll(async () => {
   // For tests, we'll use a mock or test database

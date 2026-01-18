@@ -1,13 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import Header from '@/components/layout/Header'
-import Sidebar from '@/components/layout/Sidebar'
 import BadgeList from '@/components/features/Badges/BadgeList'
 import { useToast } from '@/components/shared'
 import { Card } from '@/components/shared'
 import Link from 'next/link'
 import { PlusCircle, Award } from 'lucide-react'
+import Layout from '@/components/layout/Layout'
 
 interface Badge {
   id: string
@@ -146,45 +145,39 @@ export default function BadgesPage() {
   }
   
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      
-      <div className="flex-1 ml-60">
-        <Header />
-        
-        <main className="p-6">
-          <div className="mb-6 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Badges</h1>
-              <p className="text-gray-600">Manage achievement badges for users</p>
-            </div>
-            {badges.length > 0 && (
-              <Link 
-                href="/badges/add" 
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <PlusCircle className="w-5 h-5 mr-2" />
-                Create New Badge
-              </Link>
-            )}
+    <Layout>
+      <main className="p-6">
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Badges</h1>
+            <p className="text-gray-600">Manage achievement badges for users</p>
           </div>
-          
-          <Card className="overflow-hidden">
-            {badges.length > 0 && (
-              <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 className="text-lg font-medium">All Badges</h2>
-                <div className="text-sm text-gray-500">
-                  {badges.length} {badges.length === 1 ? 'badge' : 'badges'} total
-                </div>
+          {badges.length > 0 && (
+            <Link
+              href="/badges/add"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <PlusCircle className="w-5 h-5 mr-2" />
+              Create New Badge
+            </Link>
+          )}
+        </div>
+
+        <Card className="overflow-hidden">
+          {badges.length > 0 && (
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-lg font-medium">All Badges</h2>
+              <div className="text-sm text-gray-500">
+                {badges.length} {badges.length === 1 ? 'badge' : 'badges'} total
               </div>
-            )}
-            
-            <div className="p-4">
-              {renderContent()}
             </div>
-          </Card>
-        </main>
-      </div>
-    </div>
+          )}
+
+          <div className="p-4">
+            {renderContent()}
+          </div>
+        </Card>
+      </main>
+    </Layout>
   )
 }

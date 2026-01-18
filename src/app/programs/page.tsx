@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Layout from '@/components/layout/Layout'
 import ProgramList from '@/components/features/Programs/ProgramList'
 import ProgramFilters from '@/components/features/Programs/ProgramFilters'
@@ -8,12 +9,12 @@ import { Plus } from 'lucide-react'
 import { ProgramFilters as ProgramFiltersType } from '@/types/program'
 
 export default function ProgramsPage() {
+  const router = useRouter()
   const [filters, setFilters] = useState<ProgramFiltersType>({})
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const handleCreateProgram = () => {
-    // TODO: Navigate to program creation page
-    console.log('Navigate to create program')
+    router.push('/programs/new')
   }
 
   return (

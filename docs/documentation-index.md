@@ -70,9 +70,17 @@ This document provides an organized index to all FitnessTrainer project document
 - **Test Strategy**: [`qa/test-strategy.md`](./qa/test-strategy.md)
 
 ### Reports and Analysis
-- **Implementation Reports**: [`implementation-reports/`](./implementation-reports/)
+- **Implementation Reports**: [`implementation-reports/`](./implementation-reports/) - Epic completion reports
 - **Meal Planning Analysis**: [`meal-planning-features-analysis.md`](./meal-planning-features-analysis.md)
 - **Session Summaries**: Various session summary files
+
+### Session Documentation 🆕
+- **Latest Session Summary**: [`SESSION_SUMMARY_2025-01-07.md`](./SESSION_SUMMARY_2025-01-07.md) - January 7, 2025 comprehensive analysis
+- **Next Steps Guide**: [`TOMORROW_NEXT_STEPS.md`](./TOMORROW_NEXT_STEPS.md) - Action plan for continued development
+
+### Traceability and Inventory 🆕
+- **Story Inventory**: [`qa/traceability/story-inventory.md`](./qa/traceability/story-inventory.md) - Complete catalog of all 108 stories
+- **Traceability Matrix**: [`qa/traceability/traceability-matrix.md`](./qa/traceability/traceability-matrix.md) - Requirements to tests mapping
 
 ## Quick Reference
 
@@ -81,10 +89,18 @@ This document provides an organized index to all FitnessTrainer project document
 2. Review [`bmad-method-guide.md`](./bmad-method-guide.md) for methodology
 3. Set up development environment using [`development-workflow.md`](./development-workflow.md)
 
-### For Development Work
-1. Follow [`development-workflow.md`](./development-workflow.md) for Git and Docker procedures
-2. Reference relevant epic documents in [`epics/`](./epics/)
-3. Use [`bmad-method-guide.md`](./bmad-method-guide.md) for structured development
+### For Daily Development Work 🆕
+1. **START HERE**: [`TOMORROW_NEXT_STEPS.md`](./TOMORROW_NEXT_STEPS.md) - Your action plan for today
+2. Review [`SESSION_SUMMARY_2025-01-07.md`](./SESSION_SUMMARY_2025-01-07.md) for context on recent work
+3. Check [`story-inventory.md`](./qa/traceability/story-inventory.md) for story assignments
+4. Reference individual story files in [`stories/`](./stories/)
+5. Follow [`development-workflow.md`](./development-workflow.md) for Git and Docker procedures
+
+### For Sprint Planning
+1. Review all stories in [`story-inventory.md`](./qa/traceability/story-inventory.md)
+2. Reference epic documents in [`epics/`](./epics/) for context
+3. Use [`bmad-method-guide.md`](./bmad-method-guide.md) for BMAD process
+4. Check implementation status and dependencies
 
 ### For Deployment and Operations
 1. Follow [`deployment-maintenance-guide.md`](./deployment-maintenance-guide.md)

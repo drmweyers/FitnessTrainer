@@ -8,22 +8,17 @@ import {
   Target,
   Zap,
   CheckCircle,
-  SkipForward,
   Eye,
   Star,
   TrendingUp,
   Activity,
   MessageSquare,
-  AlertCircle,
-  ChevronRight,
   Dumbbell,
-  Timer,
   Award
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
 import { WorkoutLog, WorkoutSession } from '@/types/workoutLog';
-import { ProgramAssignment } from '@/types/workoutLog';
 
 interface DailyWorkoutViewProps {
   clientId: string;
@@ -87,63 +82,58 @@ const DailyWorkoutView: React.FC<DailyWorkoutViewProps> = ({
   const loadDailyWorkouts = async () => {
     setLoading(true);
     try {
-      // Mock data - in real app, fetch from API
-      const mockWorkouts: TodayWorkout[] = [
-        {
-          id: 'workout-1',
-          name: 'Upper Body Strength',
-          programName: 'Strength Foundation Program',
-          programId: 'prog-1',
-          assignmentId: 'assign-1',
-          scheduledDate: selectedDate,
-          estimatedDuration: 60,
-          workoutType: 'strength',
-          isCompleted: false,
-          exercises: [
-            {
-              id: 'ex-1',
-              name: 'Bench Press',
-              sets: [
-                { reps: '8-10', weight: '135 lbs', restTime: 180 },
-                { reps: '8-10', weight: '135 lbs', restTime: 180 },
-                { reps: '8-10', weight: '135 lbs', restTime: 180 }
-              ],
-              equipment: 'Barbell',
-              bodyPart: 'Chest',
-              targetMuscle: 'Pectorals'
-            },
-            {
-              id: 'ex-2',
-              name: 'Bent Over Row',
-              sets: [
-                { reps: '8-10', weight: '115 lbs', restTime: 180 },
-                { reps: '8-10', weight: '115 lbs', restTime: 180 },
-                { reps: '8-10', weight: '115 lbs', restTime: 180 }
-              ],
-              equipment: 'Barbell',
-              bodyPart: 'Back',
-              targetMuscle: 'Latissimus Dorsi'
-            },
-            {
-              id: 'ex-3',
-              name: 'Overhead Press',
-              sets: [
-                { reps: '8-10', weight: '85 lbs', restTime: 180 },
-                { reps: '8-10', weight: '85 lbs', restTime: 180 },
-                { reps: '8-10', weight: '85 lbs', restTime: 180 }
-              ],
-              equipment: 'Barbell',
-              bodyPart: 'Shoulders',
-              targetMuscle: 'Deltoids'
-            }
-          ],
-          trainerNotes: 'Focus on controlled tempo. 3 seconds down, 1 second pause, explosive up.'
-        }
-      ];
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const token = localStorage.getItem('accessToken');
 
-      setTodaysWorkouts(mockWorkouts);
+      const response = await fetch(`${API_URL}/workouts/today`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        // Transform API data to match component structure
+        const transformedWorkout: TodayWorkout = {
+          id: result.data.id,
+          name: result.data.name,
+          programName: result.data.programName,
+          programId: result.data.programId,
+          assignmentId: result.data.assignmentId,
+          scheduledDate: result.data.scheduledDate || selectedDate,
+          estimatedDuration: result.data.estimatedDuration || 60,
+          workoutType: result.data.workoutType || 'strength',
+          isCompleted: result.data.isCompleted || false,
+          lastAttempt: result.data.lastAttempt,
+          exercises: result.data.exercises?.map((ex: any) => ({
+            id: ex.id,
+            name: ex.name,
+            sets: ex.sets?.map((set: any) => ({
+              reps: set.reps || '8-10',
+              weight: set.weight ? `${set.weight} lbs` : undefined,
+              restTime: set.restTime || 180,
+            })) || [],
+            equipment: ex.equipment || 'N/A',
+            bodyPart: ex.bodyPart || 'N/A',
+            targetMuscle: ex.targetMuscle || 'N/A',
+          })) || [],
+          trainerNotes: result.data.trainerNotes,
+        };
+
+        setTodaysWorkouts([transformedWorkout]);
+      } else {
+        // No workout scheduled for today
+        setTodaysWorkouts([]);
+      }
     } catch (error) {
       console.error('Failed to load daily workouts:', error);
+      setTodaysWorkouts([]);
     } finally {
       setLoading(false);
     }
@@ -458,7 +448,7 @@ const DailyWorkoutView: React.FC<DailyWorkoutViewProps> = ({
                 <div className="mb-4">
                   <h4 className="font-medium text-gray-900 mb-3">Exercise Preview</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {workout.exercises.slice(0, 6).map((exercise, index) => (
+                    {workout.exercises.slice(0, 6).map((exercise) => (
                       <div key={exercise.id} className="bg-gray-50 rounded-lg p-3">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium text-sm text-gray-900">{exercise.name}</span>

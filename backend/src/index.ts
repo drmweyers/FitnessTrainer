@@ -66,13 +66,14 @@ app.use(requestLogger);
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
-// Temporarily disabled for debugging
-// app.use('/api/exercises', exerciseRoutes);
-// app.use('/api/programs', programRoutes);
-// app.use('/api/workouts', workoutRoutes);
-// app.use('/api/analytics', analyticsRoutes);
+app.use('/api/exercises', exerciseRoutes);
+app.use('/api/programs', programRoutes);
+app.use('/api/workouts', workoutRoutes);
+app.use('/api/analytics', analyticsRoutes);
+// TODO: Re-enable full profile routes after fixing import issues
+// app.use('/api/profile', profileRoutes);
 // app.use('/api/profile', workingProfileRoutes);
-// app.use('/api/clients', clientRoutes);
+app.use('/api/clients', clientRoutes);
 // TODO: Re-enable full profile routes after fixing import issues
 // app.use('/api/profile', profileRoutes);
 
@@ -157,3 +158,4 @@ process.on('unhandledRejection', (err: Error) => {
 });
 
 startServer();
+

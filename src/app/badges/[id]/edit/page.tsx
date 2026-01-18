@@ -1,12 +1,11 @@
-// src/app/levels/[id]/edit/page.tsx
+// src/app/badges/[id]/edit/page.tsx
 "use client";
 
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
 import BadgeForm from "@/components/features/Badges/BadgeForm";
-import {useToast} from "@/components/shared/use-toast";
+import {useToast} from "@/components/shared";
+import Layout from "@/components/layout/Layout";
 
 interface PageProps {
 	params: {
@@ -75,44 +74,34 @@ export default function EditBadgePage({params}: PageProps) {
 
 	if (isLoading) {
 		return (
-			<div className="flex min-h-screen bg-gray-50">
-				<Sidebar />
-				<div className="flex-1 ml-60">
-					<Header />
-					<main className="p-6">
-						<div className="animate-pulse">
-							<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-							<div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-							<div className="space-y-4">
-								<div className="h-32 bg-gray-200 rounded"></div>
-								<div className="h-32 bg-gray-200 rounded"></div>
-							</div>
+			<Layout>
+				<main className="p-6">
+					<div className="animate-pulse">
+						<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+						<div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+						<div className="space-y-4">
+							<div className="h-32 bg-gray-200 rounded"></div>
+							<div className="h-32 bg-gray-200 rounded"></div>
 						</div>
-					</main>
-				</div>
-			</div>
+					</div>
+				</main>
+			</Layout>
 		);
 	}
 
 	return (
-		<div className="flex min-h-screen bg-gray-50">
-			<Sidebar />
-
-			<div className="flex-1 ml-60">
-				<Header />
-
-				<main className="p-6">
-					<div className="mb-6">
-						<h1 className="text-2xl font-bold text-gray-800">Edit Badge</h1>
-						<p className="text-gray-600">Update badge information</p>
-					</div>
-					<BadgeForm
-						initialData={badge}
-						onSubmit={handleSubmit}
-						isSubmitting={isSubmitting}
-					/>
-				</main>
-			</div>
-		</div>
+		<Layout>
+			<main className="p-6">
+				<div className="mb-6">
+					<h1 className="text-2xl font-bold text-gray-800">Edit Badge</h1>
+					<p className="text-gray-600">Update badge information</p>
+				</div>
+				<BadgeForm
+					initialData={badge}
+					onSubmit={handleSubmit}
+					isSubmitting={isSubmitting}
+				/>
+			</main>
+		</Layout>
 	);
 }

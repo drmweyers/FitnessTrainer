@@ -106,4 +106,89 @@ router.post('/:id/assign', validateBody(assignProgramSchema), programController.
 // Client programs
 router.get('/client/:clientId', programController.getClientPrograms);
 
+// Exercise Group Management (Supersets/Circuits)
+/**
+ * @route GET /api/programs/workouts/:workoutId/groups
+ * @desc Get all exercise groups in a workout
+ * @access Private (Trainer)
+ * @param {string} workoutId - Workout UUID
+ */
+router.get('/workouts/:workoutId/groups', programController.getWorkoutGroups);
+
+/**
+ * @route POST /api/programs/workouts/:workoutId/groups
+ * @desc Create exercise group (superset, circuit, or giant set)
+ * @access Private (Trainer)
+ * @param {string} workoutId - Workout UUID
+ * @body {string} name - Group name
+ * @body {string} groupType - Type of group (superset, circuit, giant_set)
+ * @body {string[]} exerciseIds - Array of exercise IDs
+ * @body {number} [rounds] - Number of rounds (for circuits)
+ * @body {number} [restBetweenExercises] - Rest between exercises in seconds
+ * @body {number} [restBetweenSets] - Rest between sets in seconds
+ */
+router.post('/workouts/:workoutId/groups', programController.createExerciseGroup);
+
+/**
+ * @route PUT /api/programs/groups/:groupId
+ * @desc Update exercise group
+ * @access Private (Trainer)
+ * @param {string} groupId - Group ID format: {workoutId}-{groupIdentifier}
+ * @body {string} [name] - Group name
+ * @body {number} [restBetweenExercises] - Rest between exercises in seconds
+ * @body {number} [restBetweenSets] - Rest between sets in seconds
+ */
+router.put('/groups/:groupId', programController.updateExerciseGroup);
+
+/**
+ * @route DELETE /api/programs/groups/:groupId/ungroup
+ * @desc Ungroup exercises (remove group identifier)
+ * @access Private (Trainer)
+ * @param {string} groupId - Group ID format: {workoutId}-{groupIdentifier}
+ */
+router.delete('/groups/:groupId/ungroup', programController.ungroupExercises);
+
+/**
+ * @route POST /api/programs/groups/:groupId/duplicate
+ * @desc Duplicate exercise group
+ * @access Private (Trainer)
+ * @param {string} groupId - Group ID format: {workoutId}-{groupIdentifier}
+ * @body {string} [targetGroupIdentifier] - Target group identifier (auto-assigned if not provided)
+ */
+router.post('/groups/:groupId/duplicate', programController.duplicateGroup);
+
+// Progressive Overload Management
+/**
+ * @route POST /api/programs/:id/progressive-overload
+ * @desc Apply progressive overload to a program
+ * @access Private (Trainer)
+ * @param {string} id - Program UUID
+ * @body {string} overloadType - Type of overload (linear, percentage, custom)
+ * @body {string[]} [targetExercises] - Optional array of exercise IDs to target
+ * @body {number} [weeklyIncrease] - Weekly increase percentage (for percentage type)
+ * @body {number} [maxWeeks] - Maximum number of weeks to apply
+ */
+router.post('/:id/progressive-overload', programController.applyProgressiveOverload);
+
+/**
+ * @route POST /api/programs/progression-suggestions
+ * @desc Get progression suggestions for an exercise
+ * @access Private (Trainer)
+ * @body {string} exerciseId - Exercise UUID
+ * @body {object} currentConfig - Current exercise configuration
+ * @body {string} currentConfig.reps - Current reps
+ * @body {string} [currentConfig.weight] - Current weight
+ * @body {number} currentConfig.sets - Current sets
+ */
+router.post('/progression-suggestions', programController.getProgressionSuggestions);
+
+/**
+ * @route GET /api/programs/clients/:clientId/progression
+ * @desc Get client progression history
+ * @access Private (Trainer)
+ * @param {string} clientId - Client UUID
+ * @query {string} [exerciseId] - Optional exercise ID to filter
+ */
+router.get('/clients/:clientId/progression', programController.getClientProgression);
+
 export default router;

@@ -341,8 +341,8 @@ export const workoutService = {
         ...updateData,
         completedSets,
         totalDuration,
-        totalVolume: totalVolumeResult._sum.weight || 0,
-        averageRpe: averageRpeResult._avg.rpe || undefined,
+        totalVolume: totalVolumeResult._sum.weight?.toNumber() || 0,
+        averageRpe: averageRpeResult._avg.rpe?.toNumber() || undefined,
         adherenceScore,
       };
     }
@@ -855,5 +855,169 @@ export const workoutService = {
         lastActivity: session.updatedAt?.toISOString() || '',
       };
     });
+  },
+
+  // Get today's scheduled workout for a client
+  async getTodaysWorkout(clientId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Find active program assignment for this client
+    const programAssignment = await prisma.programAssignment.findFirst({
+      where: {
+        clientId,
+        isActive: true,
+        startDate: { lte: new Date() },
+        OR: [
+          { endDate: { gte: new Date() } },
+          { endDate: null }
+        ]
+      },
+      include: {
+        program: {
+          include: {
+            weeks: {
+              include: {
+                workouts: {
+                  include: {
+                    exercises: {
+                      include: {
+                        exercise: true,
+                        configurations: true,
+                      },
+                      orderBy: {
+                        orderIndex: 'asc',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!programAssignment || !programAssignment.program) {
+      return null;
+    }
+
+    // Calculate which week/day of the program we're on
+    const daysSinceStart = Math.floor(
+      (Date.now() - new Date(programAssignment.startDate).getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    // Find all weeks and their workouts
+    const allWorkouts: Array<any> = [];
+    for (const week of programAssignment.program.weeks) {
+      for (const workout of week.workouts) {
+        allWorkouts.push({
+          ...workout,
+          weekNumber: week.weekNumber,
+        });
+      }
+    }
+
+    // Determine which workout is scheduled for today based on day of week
+    const dayOfWeek = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const todayWorkout = allWorkouts.find(w => w.dayNumber === (dayOfWeek === 0 ? 7 : dayOfWeek));
+
+    if (!todayWorkout) {
+      return null;
+    }
+
+    // Check if session already exists for today
+    const existingSession = await prisma.workoutSession.findFirst({
+      where: {
+        clientId,
+        workoutId: todayWorkout.id,
+        scheduledDate: {
+          gte: today,
+          lt: tomorrow,
+        },
+      },
+      include: {
+        workout: true,
+      },
+    });
+
+    // Get previous performance for this workout type
+    const previousSession = await prisma.workoutSession.findFirst({
+      where: {
+        clientId,
+        workout: {
+          workoutType: todayWorkout.workoutType,
+        },
+        status: 'completed',
+      },
+      include: {
+        workout: true,
+      },
+      orderBy: {
+        scheduledDate: 'desc',
+      },
+    });
+
+    // Calculate equipment needed
+    const equipmentNeeded = new Set<string>();
+    const exercises = todayWorkout.exercises.map((ex: any) => {
+      if (ex.exercise.equipment) {
+        equipmentNeeded.add(ex.exercise.equipment);
+      }
+      return {
+        id: ex.exercise.id,
+        name: ex.exercise.name,
+        bodyPart: ex.exercise.primaryMuscle || '',
+        targetMuscle: ex.exercise.secondaryMuscles || '',
+        equipment: ex.exercise.equipment || 'Bodyweight',
+        thumbnail: ex.exercise.gifUrl,
+        sets: ex.configurations.map((config: any) => ({
+          setNumber: config.setNumber,
+          setType: config.setType,
+          reps: config.reps,
+          weightGuidance: config.weightGuidance,
+          restSeconds: config.restSeconds,
+        })),
+      };
+    });
+
+    // Calculate estimated duration (sum of all set times + rest times)
+    let estimatedDuration = 0;
+    todayWorkout.exercises.forEach((ex: any) => {
+      ex.configurations.forEach((config: any) => {
+        // Assume 45 seconds per set + rest time
+        estimatedDuration += 45 + (config.restSeconds || 90);
+      });
+    });
+    estimatedDuration = Math.ceil(estimatedDuration / 60); // Convert to minutes
+
+    return {
+      id: existingSession?.id || `pending-${todayWorkout.id}`,
+      workoutId: todayWorkout.id,
+      name: todayWorkout.name,
+      description: todayWorkout.notes,
+      workoutType: todayWorkout.workoutType,
+      programName: programAssignment.program.name,
+      programId: programAssignment.programId,
+      assignmentId: programAssignment.id,
+      scheduledDate: today.toISOString(),
+      estimatedDuration,
+      isCompleted: existingSession?.status === 'completed',
+      isStarted: existingSession?.status === 'in_progress',
+      sessionId: existingSession?.id,
+      status: existingSession?.status || 'scheduled',
+      exercises,
+      equipment: Array.from(equipmentNeeded),
+      trainerNotes: todayWorkout.notes,
+      previousPerformance: previousSession ? {
+        lastCompletedDate: previousSession.scheduledDate,
+        totalVolume: previousSession.totalVolume || 0,
+        exercisesCompleted: previousSession.completedSets || 0,
+        averageRpe: previousSession.averageRpe,
+        notes: previousSession.clientNotes,
+      } : null,
+    };
   },
 };

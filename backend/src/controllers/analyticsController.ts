@@ -62,7 +62,7 @@ export class AnalyticsController {
         
         // TODO: Add trainer-client relationship verification
         // For now, trainers and admins can access any user's data
-        userId = requestedUserId;
+        userId = requestedUserId!;
       }
 
       let whereClause: any = { userId };
@@ -312,7 +312,7 @@ export class AnalyticsController {
           res.status(403).json({ message: 'Access denied' });
           return;
         }
-        userId = requestedUserId;
+        userId = requestedUserId!;
       }
 
       const personalBests = await prisma.performanceMetric.groupBy({
@@ -364,7 +364,7 @@ export class AnalyticsController {
           res.status(403).json({ message: 'Access denied' });
           return;
         }
-        userId = requestedUserId;
+        userId = requestedUserId!;
       }
 
       const trainingLoad = await prisma.trainingLoad.findMany({
@@ -513,7 +513,7 @@ export class AnalyticsController {
           res.status(403).json({ message: 'Access denied' });
           return;
         }
-        userId = requestedUserId;
+        userId = requestedUserId!;
       }
 
       let whereClause: any = { userId };
@@ -581,7 +581,7 @@ export class AnalyticsController {
           res.status(403).json({ message: 'Access denied' });
           return;
         }
-        userId = requestedUserId;
+        userId = requestedUserId!;
       }
 
       const milestones = await prisma.milestoneAchievement.findMany({
@@ -609,7 +609,7 @@ export class AnalyticsController {
           res.status(403).json({ message: 'Access denied' });
           return;
         }
-        userId = requestedUserId;
+        userId = requestedUserId!;
       }
 
       // Get user basic info

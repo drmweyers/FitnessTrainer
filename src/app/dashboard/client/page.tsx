@@ -7,14 +7,16 @@ import DashboardLayout from '@/components/shared/DashboardLayout';
 import StatCard from '@/components/shared/StatCard';
 import ActivityFeed from '@/components/shared/ActivityFeed';
 import QuickActions from '@/components/shared/QuickActions';
-import { 
-  TodaysWorkout, 
-  ProgressSummary, 
-  ActiveProgram, 
-  RecentWorkout, 
+import DailyWorkoutView from '@/components/features/WorkoutExecution/DailyWorkoutView';
+import { WorkoutSession } from '@/types/workoutLog';
+import {
+  TodaysWorkout,
+  ProgressSummary,
+  ActiveProgram,
+  RecentWorkout,
   UpcomingWorkout,
-  ActivityFeedItem, 
-  QuickAction 
+  ActivityFeedItem,
+  QuickAction
 } from '@/types/dashboard';
 
 /**
@@ -338,72 +340,16 @@ export default function ClientDashboard() {
 
         {/* Today's Workout and Active Program */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Today's Workout */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Today's Workout</h3>
-            {todaysWorkout ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xl font-semibold text-gray-900">
-                      {todaysWorkout.name}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {todaysWorkout.programName}
-                    </p>
-                  </div>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium capitalize ${
-                    todaysWorkout.difficulty === 'beginner' 
-                      ? 'bg-green-100 text-green-800'
-                      : todaysWorkout.difficulty === 'intermediate'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {todaysWorkout.difficulty}
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {todaysWorkout.estimatedTime} minutes
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    {todaysWorkout.exercises} exercises
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  {todaysWorkout.completed ? (
-                    <div className="flex items-center text-green-600">
-                      <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Completed! Great job!
-                    </div>
-                  ) : (
-                    <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium">
-                      Start Workout
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <p className="text-gray-500">No workout scheduled for today</p>
-                <p className="text-sm text-gray-400 mt-1">Take a rest day or choose a workout</p>
-              </div>
-            )}
+          {/* Today's Workout - Using real API component */}
+          <div className="bg-white rounded-lg border border-gray-200">
+            <DailyWorkoutView
+              clientId={user?.id || ''}
+              onStartWorkout={(session: WorkoutSession) => {
+                console.log('Starting workout:', session);
+                // TODO: Navigate to workout execution page
+                // router.push(`/workouts/execute/${session.workoutLog.id}`);
+              }}
+            />
           </div>
 
           {/* Active Program */}

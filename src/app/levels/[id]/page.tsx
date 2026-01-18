@@ -4,26 +4,25 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import LevelDetail from '@/components/features/Levels/LevelDetail'
-import { useToast } from '@/components/shared/use-toast'
-import Sidebar from '@/components/layout/Sidebar'
-import Header from '@/components/layout/Header'
+import { useToast } from '@/components/shared'
+import Layout from '@/components/layout/Layout'
 
 export default function LevelDetailPage() {
   const params = useParams()
   const { toast } = useToast()
   const [level, setLevel] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
-  
+
   useEffect(() => {
     const fetchLevel = async () => {
       setIsLoading(true)
       try {
         const response = await fetch(`/api/levels/${params.id}`)
-        
+
         if (!response.ok) {
           throw new Error('Level not found')
         }
-        
+
         const data = await response.json()
         setLevel(data)
       } catch (error) {
@@ -36,28 +35,21 @@ export default function LevelDetailPage() {
         setIsLoading(false)
       }
     }
-    
+
     fetchLevel()
   }, [params.id, toast])
-  
+
   if (isLoading) return <div>Loading...</div>
   if (!level) return <div>Level not found</div>
-  
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
-    <Sidebar />
-    
-    <div className="flex-1 ml-60">
-      <Header />
-      
+    <Layout>
       <main className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Level {params.id}</h1>
         </div>
-        <LevelDetail level={level} />   
+        <LevelDetail level={level} />
       </main>
-    </div>
-    </div>
-  
+    </Layout>
   )
 }

@@ -4,7 +4,7 @@
 
 ## Overview
 
-This is the game development expansion of BMad-Method (Breakthrough Method of Agile AI-driven Development), specializing in creating 2D games using Unity and C#. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments, specifically optimized for game development workflows.
+This is the game development expansion of BMad-Method (Breakthrough Method of Agile AI-driven Development), specializing in creating 2D games using Unity and C#. The v6 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments, specifically optimized for game development workflows.
 
 ### Key Features for Game Development
 
@@ -182,7 +182,7 @@ npx bmad-method install
 
 ## Core Configuration for Game Development (core-config.yaml)
 
-**New in V4**: The `expansion-packs/bmad-2d-unity-game-dev/core-config.yaml` file enables BMad to work seamlessly with any Unity project structure, providing maximum flexibility for game development.
+**New in V6**: The `expansion-packs/bmad-2d-unity-game-dev/core-config.yaml` file enables BMad to work seamlessly with any Unity project structure, providing maximum flexibility for game development.
 
 ### Game Development Configuration
 
@@ -192,13 +192,13 @@ The expansion pack follows the standard BMad configuration patterns. Copy your c
 markdownExploder: true
 prd:
   prdFile: docs/prd.md
-  prdVersion: v4
+  prdVersion: v6
   prdSharded: true
   prdShardedLocation: docs/prd
   epicFilePattern: epic-{n}*.md
 architecture:
   architectureFile: docs/architecture.md
-  architectureVersion: v4
+  architectureVersion: v6
   architectureSharded: true
   architectureShardedLocation: docs/architecture
 gdd:

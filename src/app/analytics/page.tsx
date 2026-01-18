@@ -9,7 +9,7 @@ import ProgressChart from '@/components/features/Analytics/ProgressChart';
 import MultiLineChart from '@/components/features/Analytics/MultiLineChart';
 import BodyCompositionChart from '@/components/features/Analytics/BodyCompositionChart';
 import PhotoGallery from '@/components/features/Analytics/PhotoGallery';
-import Toast from '@/components/shared/Toast';
+import { useToast, ToastContainer } from '@/components/shared/Toast';
 
 export default function AnalyticsPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -17,7 +17,7 @@ export default function AnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
   const [selectedMeasurement, setSelectedMeasurement] = useState<BodyMeasurement | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const { success, error: showError, toasts, removeToast } = useToast();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '3m' | '6m' | '1y'>('3m');
   const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos'>('overview');
   // const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
@@ -50,7 +50,7 @@ export default function AnalyticsPage() {
       setMeasurements(data);
     } catch (error) {
       console.error('Failed to load measurements:', error);
-      showToast('Failed to load measurements', 'error');
+      showError('Failed to load measurements', 'Please try again later');
     } finally {
       setIsLoading(false);
     }
@@ -60,10 +60,10 @@ export default function AnalyticsPage() {
     try {
       if (selectedMeasurement?.id) {
         await analyticsApi.updateBodyMeasurement(selectedMeasurement.id, measurement);
-        showToast('Measurement updated successfully!', 'success');
+        success('Measurement Updated', 'Your measurement has been updated successfully');
       } else {
         await analyticsApi.saveBodyMeasurement(measurement);
-        showToast('Measurement saved successfully!', 'success');
+        success('Measurement Saved', 'Your measurement has been saved successfully');
       }
       
       await loadMeasurements();
@@ -71,7 +71,7 @@ export default function AnalyticsPage() {
       setSelectedMeasurement(null);
     } catch (error) {
       console.error('Failed to save measurement:', error);
-      showToast('Failed to save measurement', 'error');
+      showError('Save Failed', 'Failed to save measurement. Please try again.');
     }
   };
 
@@ -86,17 +86,13 @@ export default function AnalyticsPage() {
     try {
       await analyticsApi.deleteBodyMeasurement(id);
       await loadMeasurements();
-      showToast('Measurement deleted successfully!', 'success');
+      success('Measurement Deleted', 'Your measurement has been deleted successfully');
     } catch (error) {
       console.error('Failed to delete measurement:', error);
-      showToast('Failed to delete measurement', 'error');
+      showError('Delete Failed', 'Failed to delete measurement. Please try again.');
     }
   };
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 5000);
-  };
 
   const openNewMeasurementTracker = () => {
     setSelectedMeasurement(null);
@@ -437,12 +433,12 @@ export default function AnalyticsPage() {
                     }}
                     onShare={(photoIds) => {
                       console.log('Share photos:', photoIds);
-                      showToast('Share link created!', 'success');
+                      success('Share Link Created', 'Your photos have been shared successfully');
                     }}
                     onDelete={(photoId) => {
                       console.log('Delete photo:', photoId);
                       // In real app, this would delete from backend
-                      showToast('Photo deleted', 'success');
+                      success('Photo Deleted', 'Your photo has been deleted successfully');
                     }}
                   />
                   
@@ -528,13 +524,7 @@ export default function AnalyticsPage() {
       />
 
       {/* Toast Notifications */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
   );
 }

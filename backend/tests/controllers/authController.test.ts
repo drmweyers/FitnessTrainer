@@ -29,7 +29,7 @@ jest.mock('../../src/index', () => ({
 
 jest.mock('../../src/services/tokenService');
 jest.mock('../../src/services/passwordService');
-jest.mock('../../src/services/emailService');
+// Note: emailService is mocked globally in setup.ts
 
 describe('AuthController', () => {
   const mockPrisma = require('../../src/index').prisma;
@@ -43,18 +43,18 @@ describe('AuthController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockRequest = {
       body: {},
       ip: '127.0.0.1',
       get: jest.fn().mockReturnValue('Test User Agent'),
     };
-    
+
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
     };
-    
+
     mockNext = jest.fn();
   });
 
@@ -452,7 +452,7 @@ describe('AuthController', () => {
       mockRequest.body = { refreshToken: 'refresh-token' };
       mockRequest.user = { id: 'user-id', email: 'test@example.com', role: 'client', isActive: true, isVerified: true };
       mockRequest.tokenId = 'token-id';
-      
+
       mockTokenService.revokeRefreshToken.mockResolvedValue(undefined);
       mockTokenService.blacklistToken.mockResolvedValue(undefined);
       mockPrisma.securityAuditLog.create.mockResolvedValue({});
@@ -473,7 +473,7 @@ describe('AuthController', () => {
       mockRequest.body = { logoutFromAll: true };
       mockRequest.user = { id: 'user-id', email: 'test@example.com', role: 'client', isActive: true, isVerified: true };
       mockRequest.tokenId = 'token-id';
-      
+
       mockTokenService.revokeAllUserTokens.mockResolvedValue(3);
       mockTokenService.blacklistToken.mockResolvedValue(undefined);
 

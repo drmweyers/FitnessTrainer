@@ -15,7 +15,8 @@ import {
   getClientWorkoutHistory,
   getLiveWorkoutData,
   addTrainerFeedback,
-  getEditableWorkoutSession
+  getEditableWorkoutSession,
+  getTodaysWorkout
 } from '@/controllers/workoutController';
 import { authenticate } from '@/middleware/auth';
 import { authorize } from '@/middleware/authorize';
@@ -84,6 +85,10 @@ router.put('/set-logs/:id', updateSetLog);
 // Get workout analytics for current user
 // GET /api/workouts/analytics?period=month&startDate=2024-01-01&endDate=2024-12-31
 router.get('/analytics', getWorkoutAnalytics);
+
+// Get today's workout
+// GET /api/workouts/today?clientId=optional (for trainers viewing client workouts)
+router.get('/today', getTodaysWorkout);
 
 // Trainer-Only Routes
 

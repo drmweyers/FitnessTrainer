@@ -69,6 +69,34 @@ export const getWorkoutSession = asyncHandler(async (req: Request, res: Response
   });
 });
 
+// Get today's scheduled workout
+export const getTodaysWorkout = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+  const userRole = req.user!.role;
+
+  // Clients can only get their own workout, trainers can get client workouts
+  let clientId = userId;
+  if (userRole === 'trainer' && req.query.clientId) {
+    clientId = req.query.clientId as string;
+  }
+
+  const todaysWorkout = await workoutService.getTodaysWorkout(clientId);
+
+  if (!todaysWorkout) {
+    res.json({
+      success: true,
+      data: null,
+      message: 'No workout scheduled for today'
+    });
+    return;
+  }
+
+  res.json({
+    success: true,
+    data: todaysWorkout
+  });
+});
+
 // Update workout session (progress, status, feedback)
 export const updateWorkoutSession = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -249,10 +277,11 @@ export const getClientWorkoutHistory = asyncHandler(async (req: Request, res: Re
   const userRole = req.user!.role;
 
   if (userRole !== 'trainer') {
-    return res.status(403).json({
+    res.status(403).json({
       success: false,
       message: 'Access denied. Trainer access required.'
     });
+    return;
   }
 
   // TODO: Verify trainer has access to this client
@@ -285,10 +314,11 @@ export const getLiveWorkoutData = asyncHandler(async (req: Request, res: Respons
   const userRole = req.user!.role;
 
   if (userRole !== 'trainer') {
-    return res.status(403).json({
+    res.status(403).json({
       success: false,
       message: 'Access denied. Trainer access required.'
     });
+    return;
   }
 
   const liveData = await workoutService.getLiveWorkoutData(trainerId);
@@ -386,10 +416,11 @@ export const addTrainerFeedback = asyncHandler(async (req: Request, res: Respons
   const userRole = req.user!.role;
 
   if (userRole !== 'trainer') {
-    return res.status(403).json({
+    res.status(403).json({
       success: false,
       message: 'Access denied. Trainer access required.'
     });
+    return;
   }
 
   // Note: This updates as trainer, so we need a different method or modify the service

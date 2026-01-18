@@ -3,13 +3,13 @@ qa:
   qaLocation: docs/qa
 prd:
   prdFile: docs/prd.md
-  prdVersion: v4
+  prdVersion: v6
   prdSharded: true
   prdShardedLocation: docs/prd
   epicFilePattern: epic-{n}*.md
 architecture:
   architectureFile: docs/architecture.md
-  architectureVersion: v4
+  architectureVersion: v6
   architectureSharded: true
   architectureShardedLocation: docs/architecture
 customTechnicalDocuments: null

@@ -3,8 +3,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/layout/Header'
-import Sidebar from '@/components/layout/Sidebar'
 import BadgeForm from '@/components/features/Badges/BadgeForm'
 import { useToast } from '@/components/shared'
 import Layout from '@/components/layout/Layout';

@@ -3,9 +3,8 @@
 
 import {useRouter} from "next/navigation";
 import LevelForm from "@/components/features/Levels/LevelForm";
-import {useToast} from "@/components/shared/use-toast";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import {useToast} from "@/components/shared";
+import Layout from "@/components/layout/Layout";
 
 export default function AddLevelPage() {
 	const router = useRouter();
@@ -47,19 +46,13 @@ export default function AddLevelPage() {
 	};
 
 	return (
-		<div className="flex min-h-screen bg-gray-50">
-			<Sidebar />
-
-			<div className="flex-1 ml-60">
-				<Header />
-
-				<main className="p-6">
-					<div className="mb-6">
-						<h1 className="text-2xl font-bold text-gray-800">Add New Level</h1>
-					</div>
-					<LevelForm onSubmit={handleSubmit} />
-				</main>
-			</div>
-		</div>
+		<Layout>
+			<main className="p-6">
+				<div className="mb-6">
+					<h1 className="text-2xl font-bold text-gray-800">Add New Level</h1>
+				</div>
+				<LevelForm onSubmit={handleSubmit} />
+			</main>
+		</Layout>
 	);
 }

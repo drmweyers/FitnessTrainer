@@ -4,9 +4,8 @@
 import {useState, useEffect} from "react";
 import {useParams, useRouter} from "next/navigation";
 import LevelForm from "@/components/features/Levels/LevelForm";
-import {useToast} from "@/components/shared/use-toast";
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
+import {useToast} from "@/components/shared";
+import Layout from "@/components/layout/Layout";
 
 export default function EditLevelPage() {
 	const params = useParams();
@@ -74,21 +73,15 @@ export default function EditLevelPage() {
 	if (!level) return <div>Level not found</div>;
 
 	return (
-		<div className="flex min-h-screen bg-gray-50">
-			<Sidebar />
-
-			<div className="flex-1 ml-60">
-				<Header />
-
-				<main className="p-6">
-					<div className="mb-6">
-						<h1 className="text-2xl font-bold text-gray-800">
-							Level {params.id}
-						</h1>
-					</div>
-					<LevelForm initialData={level} onSubmit={handleSubmit} />
-				</main>
-			</div>
-		</div>
+		<Layout>
+			<main className="p-6">
+				<div className="mb-6">
+					<h1 className="text-2xl font-bold text-gray-800">
+						Level {params.id}
+					</h1>
+				</div>
+				<LevelForm initialData={level} onSubmit={handleSubmit} />
+			</main>
+		</Layout>
 	);
 }

@@ -636,3 +636,353 @@ export const removeExerciseFromCollection = async (req: Request, res: Response):
     });
   }
 };
+
+/**
+ * Get user's favorite exercises
+ * GET /api/exercises/favorites
+ */
+export const getFavorites = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = req.user!.id;
+    const { sort } = req.query as { sort?: 'date_added' | 'name' | 'usage' };
+
+    const favorites = await prisma.exerciseFavorite.findMany({
+      where: { userId },
+      include: {
+        exercise: {
+          select: {
+            id: true,
+            exerciseId: true,
+            name: true,
+            bodyPart: true,
+            equipment: true,
+            targetMuscle: true,
+            gifUrl: true,
+            difficulty: true,
+          },
+        },
+      },
+      orderBy: sort === 'name' ? { exercise: { name: 'asc' } } : { favoritedAt: 'desc' },
+    });
+
+    // Get usage counts for each exercise
+    const exerciseIds = favorites.map((f: any) => f.exercise.id);
+    const usageCounts = await prisma.exerciseUsage.groupBy({
+      by: ['exerciseId'],
+      where: {
+        exerciseId: { in: exerciseIds },
+      },
+      _count: true,
+    });
+
+    const usageMap = new Map(
+      usageCounts.map((u: any) => [u.exerciseId, u._count] as [string, number])
+    );
+
+    const formattedFavorites = favorites.map((fav: any) => ({
+      id: fav.id,
+      favoritedAt: fav.favoritedAt,
+      exercise: {
+        ...fav.exercise,
+        usageCount: usageMap.get(fav.exercise.id) || 0,
+      },
+    }));
+
+    res.json({
+      success: true,
+      data: formattedFavorites,
+      count: formattedFavorites.length,
+    });
+  } catch (error: any) {
+    logger.error('Error getting favorites:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to get favorites',
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
+    });
+  }
+};
+
+/**
+ * Check if exercise is favorited by user
+ * GET /api/exercises/:id/favorite-status
+ */
+export const getFavoriteStatus = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const userId = req.user!.id;
+
+    // Find exercise
+    const exercise = await prisma.exercise.findFirst({
+      where: {
+        OR: [{ id }, { exerciseId: id }],
+        isActive: true,
+      },
+    });
+
+    if (!exercise) {
+      return res.status(404).json({
+        success: false,
+        message: 'Exercise not found',
+      });
+    }
+
+    const favorite = await prisma.exerciseFavorite.findFirst({
+      where: {
+        userId,
+        exerciseId: exercise.id,
+      },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        isFavorited: !!favorite,
+        favoritedAt: favorite?.favoritedAt || null,
+      },
+    });
+  } catch (error: any) {
+    logger.error('Error getting favorite status:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to get favorite status',
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
+    });
+  }
+};
+
+/**
+ * Bulk remove multiple favorites
+ * POST /api/exercises/favorites/bulk-unfavorite
+ */
+export const bulkUnfavorite = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = req.user!.id;
+    const { exerciseIds } = req.body;
+
+    if (!Array.isArray(exerciseIds) || exerciseIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Exercise IDs array is required',
+      });
+    }
+
+    // Find exercises to get actual IDs
+    const exercises = await prisma.exercise.findMany({
+      where: {
+        OR: exerciseIds.map((id: string) => ({ id })),
+        isActive: true,
+      },
+      select: { id: true },
+    });
+
+    const actualIds = exercises.map((e) => e.id);
+
+    // Delete all favorites
+    const result = await prisma.exerciseFavorite.deleteMany({
+      where: {
+        userId,
+        exerciseId: { in: actualIds },
+      },
+    });
+
+    logger.info(`Bulk unfavorited ${result.count} exercises for user ${userId}`);
+
+    res.json({
+      success: true,
+      message: `Removed ${result.count} exercises from favorites`,
+      data: { count: result.count },
+    });
+  } catch (error: any) {
+    logger.error('Error bulk unfavoriting:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to bulk unfavorite',
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
+    });
+  }
+};
+
+/**
+ * Update exercise collection
+ * PUT /api/exercises/collections/:collectionId
+ */
+export const updateCollection = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { collectionId } = req.params;
+    const userId = req.user!.id;
+    const { name, description, isPublic } = req.body;
+
+    // Verify collection ownership
+    const existing = await prisma.exerciseCollection.findFirst({
+      where: {
+        id: collectionId,
+        userId,
+      },
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: 'Collection not found',
+      });
+    }
+
+    const updated = await prisma.exerciseCollection.update({
+      where: { id: collectionId },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(isPublic !== undefined && { isPublic }),
+      },
+      include: {
+        _count: {
+          select: {
+            exercises: true,
+          },
+        },
+      },
+    });
+
+    const formattedCollection: ExerciseCollectionResponse = {
+      id: updated.id,
+      name: updated.name,
+      description: updated.description,
+      isPublic: updated.isPublic,
+      exerciseCount: updated._count.exercises,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
+    };
+
+    logger.info(`Collection updated: ${collectionId} by user ${userId}`);
+
+    res.json({
+      success: true,
+      message: 'Collection updated successfully',
+      data: formattedCollection,
+    });
+  } catch (error: any) {
+    logger.error('Error updating collection:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update collection',
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
+    });
+  }
+};
+
+/**
+ * Delete exercise collection
+ * DELETE /api/exercises/collections/:collectionId
+ */
+export const deleteCollection = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { collectionId } = req.params;
+    const userId = req.user!.id;
+
+    // Verify collection ownership
+    const existing = await prisma.exerciseCollection.findFirst({
+      where: {
+        id: collectionId,
+        userId,
+      },
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: 'Collection not found',
+      });
+    }
+
+    // Delete all exercises in collection first (cascade delete should handle this)
+    await prisma.exerciseCollection.delete({
+      where: { id: collectionId },
+    });
+
+    logger.info(`Collection deleted: ${collectionId} by user ${userId}`);
+
+    res.json({
+      success: true,
+      message: 'Collection deleted successfully',
+    });
+  } catch (error: any) {
+    logger.error('Error deleting collection:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to delete collection',
+      error: process.env === 'development' ? error : undefined,
+    });
+  }
+};
+
+/**
+ * Get single collection with exercises
+ * GET /api/exercises/collections/:collectionId
+ */
+export const getCollection = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { collectionId } = req.params;
+    const userId = req.user!.id;
+
+    const collection = await prisma.exerciseCollection.findFirst({
+      where: {
+        id: collectionId,
+        userId,
+      },
+      include: {
+        exercises: {
+          include: {
+            exercise: {
+              select: {
+                id: true,
+                exerciseId: true,
+                name: true,
+                bodyPart: true,
+                equipment: true,
+                targetMuscle: true,
+                gifUrl: true,
+              },
+            },
+          },
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+
+    if (!collection) {
+      return res.status(404).json({
+        success: false,
+        message: 'Collection not found',
+      });
+    }
+
+    const formattedCollection = {
+      id: collection.id,
+      name: collection.name,
+      description: collection.description,
+      isPublic: collection.isPublic,
+      exercises: collection.exercises.map((ce: any) => ({
+        id: ce.id,
+        position: ce.position,
+        addedAt: ce.addedAt,
+        exercise: ce.exercise,
+      })),
+      exerciseCount: collection.exercises.length,
+      createdAt: collection.createdAt,
+      updatedAt: collection.updatedAt,
+    };
+
+    res.json({
+      success: true,
+      data: formattedCollection,
+    });
+  } catch (error: any) {
+    logger.error('Error getting collection:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to get collection',
+      error: process.env === 'development' ? error : undefined,
+    });
+  }
+};

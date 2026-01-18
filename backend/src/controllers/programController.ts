@@ -140,3 +140,167 @@ export const getTemplates = asyncHandler(async (req: Request, res: Response) => 
     count: templates.length
   });
 });
+
+// =====================================
+// Exercise Group Management (Supersets/Circuits)
+// =====================================
+
+/**
+ * Create exercise group (superset, circuit, or giant set)
+ * POST /api/programs/workouts/:workoutId/groups
+ */
+export const createExerciseGroup = asyncHandler(async (req: Request, res: Response) => {
+  const { workoutId } = req.params;
+  const trainerId = req.user!.id;
+
+  const group = await programService.createExerciseGroup(workoutId, trainerId, req.body);
+
+  logger.info(`Exercise group created: ${group.id} by trainer ${trainerId}`);
+
+  res.status(201).json({
+    success: true,
+    message: 'Exercise group created successfully',
+    data: group,
+  });
+});
+
+/**
+ * Update exercise group
+ * PUT /api/programs/groups/:groupId
+ */
+export const updateExerciseGroup = asyncHandler(async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const trainerId = req.user!.id;
+
+  // Parse groupId to get workoutId and groupIdentifier
+  const [workoutId, groupIdentifier] = groupId.split('-');
+
+  const group = await programService.updateExerciseGroup(
+    workoutId,
+    trainerId,
+    groupIdentifier,
+    req.body
+  );
+
+  logger.info(`Exercise group updated: ${groupId} by trainer ${trainerId}`);
+
+  res.json({
+    success: true,
+    message: 'Exercise group updated successfully',
+    data: group,
+  });
+});
+
+/**
+ * Ungroup exercises (remove group identifier)
+ * DELETE /api/programs/groups/:groupId/ungroup
+ */
+export const ungroupExercises = asyncHandler(async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const trainerId = req.user!.id;
+
+  // Parse groupId to get workoutId and groupIdentifier
+  const [workoutId, groupIdentifier] = groupId.split('-');
+
+  const result = await programService.ungroupExercises(workoutId, trainerId, groupIdentifier);
+
+  logger.info(`Exercises ungrouped in group ${groupId} by trainer ${trainerId}`);
+
+  res.json({
+    success: true,
+    message: result.message,
+    data: { count: result.count },
+  });
+});
+
+/**
+ * Duplicate exercise group
+ * POST /api/programs/groups/:groupId/duplicate
+ */
+export const duplicateGroup = asyncHandler(async (req: Request, res: Response) => {
+  const { groupId } = req.params;
+  const trainerId = req.user!.id;
+
+  // Parse groupId to get workoutId and groupIdentifier
+  const [workoutId, sourceGroupIdentifier] = groupId.split('-');
+
+  const group = await programService.duplicateGroup(workoutId, trainerId, sourceGroupIdentifier, req.body?.targetGroupIdentifier);
+
+  logger.info(`Exercise group duplicated: ${sourceGroupIdentifier} -> ${group.groupIdentifier} by trainer ${trainerId}`);
+
+  res.status(201).json({
+    success: true,
+    message: 'Exercise group duplicated successfully',
+    data: group,
+  });
+});
+
+/**
+ * Get all groups in a workout
+ * GET /api/programs/workouts/:workoutId/groups
+ */
+export const getWorkoutGroups = asyncHandler(async (req: Request, res: Response) => {
+  const { workoutId } = req.params;
+
+  const groups = await programService.getWorkoutGroups(workoutId);
+
+  res.json({
+    success: true,
+    data: groups,
+    count: groups.length,
+  });
+});
+
+// =====================================
+// Progressive Overload Management
+// =====================================
+
+/**
+ * Apply progressive overload to a program
+ * POST /api/programs/:id/progressive-overload
+ */
+export const applyProgressiveOverload = asyncHandler(async (req: Request, res: Response) => {
+  const { id: programId } = req.params;
+  const trainerId = req.user!.id;
+
+  const result = await programService.applyProgressiveOverload(programId, trainerId, req.body);
+
+  logger.info(`Progressive overload applied to program ${programId} by trainer ${trainerId}`);
+
+  res.json({
+    success: true,
+    message: result.message,
+    data: result.data,
+  });
+});
+
+/**
+ * Get progression suggestions for an exercise
+ * POST /api/programs/progression-suggestions
+ */
+export const getProgressionSuggestions = asyncHandler(async (req: Request, res: Response) => {
+  const { exerciseId, currentConfig } = req.body;
+
+  const suggestions = await programService.getProgressionSuggestions(exerciseId, currentConfig);
+
+  res.json({
+    success: true,
+    data: suggestions,
+  });
+});
+
+/**
+ * Get client progression history
+ * GET /api/programs/clients/:clientId/progression
+ */
+export const getClientProgression = asyncHandler(async (req: Request, res: Response) => {
+  const { clientId } = req.params;
+  const { exerciseId } = req.query;
+
+  const progression = await programService.getClientProgression(clientId, exerciseId as string);
+
+  res.json({
+    success: true,
+    data: progression,
+  });
+});

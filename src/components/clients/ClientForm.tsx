@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, User, Heart, Target, Phone, Mail, Plus, Trash2 } from 'lucide-react';
+import { X, User, Heart, Target, Phone, Plus } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { Textarea } from '@/components/shared/Textarea';
-import { Card } from '@/components/shared/Card';
 import { Client, CreateClientData, FitnessLevel } from '@/types/client';
 
 interface ClientFormProps {
@@ -321,13 +320,15 @@ export default function ClientForm({ client, onSubmit, onCancel }: ClientFormPro
 
             {currentTab === 'goals' && (
               <div className="space-y-6">
-                <Textarea
-                  label="Primary Fitness Goal"
-                  value={formData.goals?.primaryGoal || ''}
-                  onChange={(e) => handleNestedChange('goals', 'primaryGoal', e.target.value)}
-                  placeholder="Describe the client's main fitness objective..."
-                  rows={3}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Primary Fitness Goal</label>
+                  <Textarea
+                    value={formData.goals?.primaryGoal || ''}
+                    onChange={(e) => handleNestedChange('goals', 'primaryGoal', e.target.value)}
+                    placeholder="Describe the client's main fitness objective..."
+                    rows={3}
+                  />
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input
@@ -354,13 +355,15 @@ export default function ClientForm({ client, onSubmit, onCancel }: ClientFormPro
                   placeholder="6 months, 1 year, etc."
                 />
 
-                <Textarea
-                  label="Additional Notes"
-                  value={formData.goals?.additionalNotes || ''}
-                  onChange={(e) => handleNestedChange('goals', 'additionalNotes', e.target.value)}
-                  placeholder="Any additional information about goals..."
-                  rows={3}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
+                  <Textarea
+                    value={formData.goals?.additionalNotes || ''}
+                    onChange={(e) => handleNestedChange('goals', 'additionalNotes', e.target.value)}
+                    placeholder="Any additional information about goals..."
+                    rows={3}
+                  />
+                </div>
 
                 {/* Equipment Access */}
                 <div>
@@ -612,13 +615,15 @@ export default function ClientForm({ client, onSubmit, onCancel }: ClientFormPro
                   placeholder="(555) 123-4567"
                 />
 
-                <Textarea
-                  label="Special Requests or Notes"
-                  value={formData.preferences?.specialRequests || ''}
-                  onChange={(e) => handleNestedChange('preferences', 'specialRequests', e.target.value)}
-                  placeholder="Any special accommodations, preferences, or notes..."
-                  rows={4}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Special Requests or Notes</label>
+                  <Textarea
+                    value={formData.preferences?.specialRequests || ''}
+                    onChange={(e) => handleNestedChange('preferences', 'specialRequests', e.target.value)}
+                    placeholder="Any special accommodations, preferences, or notes..."
+                    rows={4}
+                  />
+                </div>
               </div>
             )}
           </form>

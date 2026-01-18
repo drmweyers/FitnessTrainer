@@ -4,7 +4,7 @@
 
 ## Overview
 
-BMAD-METHOD™ (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
+BMAD-METHOD™ (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v6 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
 
 ### Key Features
 
@@ -230,13 +230,13 @@ architectureVersion: v3
 architectureSharded: false
 ```
 
-**V4 Optimized Project**:
+**V6 Optimized Project**:
 
 ```yaml
-prdVersion: v4
+prdVersion: v6
 prdSharded: true
 prdShardedLocation: docs/prd
-architectureVersion: v4
+architectureVersion: v6
 architectureSharded: true
 architectureShardedLocation: docs/architecture
 ```
