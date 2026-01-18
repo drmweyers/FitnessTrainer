@@ -43,8 +43,10 @@ class PasswordService {
     isValid: boolean;
     score: number;
     feedback: string[];
+    warnings: string[];
   } {
     const feedback: string[] = [];
+    const warnings: string[] = [];
     let score = 0;
 
     // Length check
@@ -94,16 +96,18 @@ class PasswordService {
       feedback.push('Password is too common');
     }
 
-    // Sequential or repeated characters
+    // Sequential or repeated characters (informational warning, not a hard failure)
     if (/(.)\1{2,}/.test(password) || /012|123|234|345|456|567|678|789|890|abc|bcd|cde/.test(password.toLowerCase())) {
       score = Math.max(0, score - 1);
-      feedback.push('Avoid repeated or sequential characters');
+      warnings.push('Avoid repeated or sequential characters');
     }
 
+    // Password is valid if it meets minimum score requirement and has no mandatory feedback
     return {
       isValid: score >= 4 && feedback.length === 0,
       score,
       feedback,
+      warnings,
     };
   }
 

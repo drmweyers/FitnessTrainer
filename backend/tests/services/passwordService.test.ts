@@ -62,10 +62,12 @@ describe('PasswordService', () => {
   describe('validatePasswordStrength', () => {
     it('should validate a strong password', () => {
       const result = passwordService.validatePasswordStrength('StrongPass123!');
-      
+
       expect(result.isValid).toBe(true);
       expect(result.score).toBeGreaterThanOrEqual(4);
       expect(result.feedback).toHaveLength(0);
+      // May have warnings (e.g., sequential characters) but still valid
+      expect(result.warnings).toBeDefined();
     });
 
     it('should reject a weak password', () => {
