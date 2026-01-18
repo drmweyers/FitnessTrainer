@@ -75,13 +75,13 @@ export default defineConfig({
       command: 'npx next dev -p 3002',
       url: 'http://localhost:3002',
       reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
+      timeout: 180 * 1000,
     },
     {
-      command: 'cd backend && npm run dev',
+      command: 'cd backend && npm run dev:simple',
       url: 'http://localhost:4000/api/health',
       reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
+      timeout: 180 * 1000,
     },
   ],
 

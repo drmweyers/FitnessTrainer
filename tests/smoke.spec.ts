@@ -66,13 +66,14 @@ test.describe('Smoke Tests - Basic Application Functionality', () => {
     // Check frontend
     const frontendResponse = await page.goto('/');
     expect(frontendResponse?.ok()).toBeTruthy();
-    
-    // Check backend API health endpoint
-    const apiResponse = await page.request.get('/api/health');
+
+    // Check backend API health endpoint (using absolute URL to backend)
+    const apiResponse = await page.request.get('http://localhost:4000/api/health');
     expect(apiResponse.ok()).toBeTruthy();
-    
+
     const healthData = await apiResponse.json();
-    expect(healthData).toHaveProperty('status');
+    expect(healthData).toHaveProperty('success');
+    expect(healthData.success).toBe(true);
   });
 
   test('should handle basic responsive design', async ({ page }) => {

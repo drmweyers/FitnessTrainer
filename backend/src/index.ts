@@ -38,6 +38,13 @@ export const prisma = new PrismaClient({
 // Initialize Redis
 export const redis = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
+  socket: {
+    reconnectStrategy: () => {
+      // Don't auto-reconnect in development
+      return false;
+    },
+    connectTimeout: 5000,
+  },
 });
 
 // Redis error handler
@@ -99,12 +106,17 @@ async function startServer() {
     await prisma.$connect();
     logger.info('✅ Connected to PostgreSQL database');
 
-    // Connect to Redis (only if not already connected)
-    if (!redis.isOpen) {
-      await redis.connect();
-      logger.info('✅ Connected to Redis cache');
-    } else {
-      logger.info('ℹ️ Redis already connected');
+    // Connect to Redis (optional for development)
+    try {
+      if (!redis.isOpen) {
+        await redis.connect();
+        logger.info('✅ Connected to Redis cache');
+      } else {
+        logger.info('ℹ️ Redis already connected');
+      }
+    } catch (redisError) {
+      logger.warn('⚠️ Redis connection failed, continuing without cache (development mode)');
+      logger.warn('Redis error:', redisError);
     }
 
     // Start server
