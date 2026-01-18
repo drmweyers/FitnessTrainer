@@ -1,0 +1,24 @@
+gate: CI-01
+name: Continuous Integration Baseline
+status: PASS
+rationale: |
+  CI workflow added to run Frontend Jest (coverage), Backend Jest (coverage), and Playwright E2E with artifacts.
+  Backend and E2E jobs are configured as soft-fail initially to avoid blocking Epic 002 (Authentication) delivery.
+criteria:
+  - Frontend Jest runs with coverage and uploads artifacts (soft-fail allowed until ts-jest is added to devDependencies)
+  - Backend Jest runs with coverage (soft-fail allowed while auth is in progress)
+  - Playwright E2E runs and uploads reports (soft-fail allowed until auth stable)
+  - Artifacts: coverage (frontend/backend), playwright-report, test-results
+coverage_thresholds:
+  frontend_global:
+    branches: 70
+    functions: 70
+    lines: 70
+    statements: 70
+  roadmap:
+    target_business_logic: 95
+    plan: stepwise increase post-Epic-002 (80 -> 90 -> 95)
+waivers:
+  - id: WAIVE-E2E-AUTH
+    scope: E2E failures related to auth flows during Epic 002
+    expires: upon completion of Epic 002

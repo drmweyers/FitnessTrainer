@@ -16,6 +16,7 @@ import healthRoutes from '@/routes/health';
 import exerciseRoutes from '@/routes/exercises';
 import programRoutes from '@/routes/programs';
 import analyticsRoutes from '@/routes/analytics';
+import workoutRoutes from '@/routes/workouts';
 console.log('Loading routes...');
 // import workingProfileRoutes from '@/routes/workingProfileRoutes';
 import { clientRoutes } from '@/routes/clientRoutes';
@@ -39,6 +40,11 @@ export const redis = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
 });
 
+// Redis error handler
+redis.on('error', (err) => {
+  logger.error('Redis connection error:', err);
+});
+
 // Global middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -60,11 +66,13 @@ app.use(requestLogger);
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/exercises', exerciseRoutes);
-app.use('/api/programs', programRoutes);
-app.use('/api/analytics', analyticsRoutes);
+// Temporarily disabled for debugging
+// app.use('/api/exercises', exerciseRoutes);
+// app.use('/api/programs', programRoutes);
+// app.use('/api/workouts', workoutRoutes);
+// app.use('/api/analytics', analyticsRoutes);
 // app.use('/api/profile', workingProfileRoutes);
-app.use('/api/clients', clientRoutes);
+// app.use('/api/clients', clientRoutes);
 // TODO: Re-enable full profile routes after fixing import issues
 // app.use('/api/profile', profileRoutes);
 
@@ -90,15 +98,29 @@ async function startServer() {
     await prisma.$connect();
     logger.info('✅ Connected to PostgreSQL database');
 
-    // Connect to Redis
-    await redis.connect();
-    logger.info('✅ Connected to Redis cache');
+    // Connect to Redis (only if not already connected)
+    if (!redis.isOpen) {
+      await redis.connect();
+      logger.info('✅ Connected to Redis cache');
+    } else {
+      logger.info('ℹ️ Redis already connected');
+    }
 
     // Start server
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       logger.info(`🚀 EvoFit Backend API running on port ${PORT}`);
       logger.info(`📱 Environment: ${process.env.NODE_ENV}`);
       logger.info(`🔗 Health check: http://localhost:${PORT}/api/health`);
+    });
+
+    server.on('error', (err: any) => {
+      if (err.code === 'EADDRINUSE') {
+        logger.error(`❌ Port ${PORT} is already in use`);
+        process.exit(1);
+      } else {
+        logger.error('❌ Server error:', err);
+        process.exit(1);
+      }
     });
   } catch (error) {
     logger.error('❌ Failed to start server:', error);

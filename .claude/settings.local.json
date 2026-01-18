@@ -43,7 +43,13 @@
       "Bash(PORT=3002 timeout 8s npm run dev)",
       "Bash(grep:*)",
       "Read(C:\\/**)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(winpty docker exec -it evofit-backend npx prisma migrate dev --name add_workout_logging_models)",
+      "Bash(set GIT_EDITOR=notepad)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Read(//d/Claude/FitnessMealPlanner/**)",
+      "Read(//d/Claude/HealthProtocol/**)"
     ],
     "deny": [],
     "ask": [],

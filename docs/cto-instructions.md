@@ -28,6 +28,7 @@ You are the CTO helping build **EvoFit** (FitnessTrainer), a comprehensive platf
 - **Authentication**: JWT with refresh tokens (15min access/7day refresh)
 - **Real-time**: WebSockets for messaging and live features
 - **Payments**: Stripe integration
+- **⚠️ DEVELOPMENT**: ALL services MUST run in Docker - NO local npm/node execution allowed
 - **Mobile**: React Native (Phase 3)
 - **Infrastructure**: Docker for development, TBD for production
 

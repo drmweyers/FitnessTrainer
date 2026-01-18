@@ -1,0 +1,33 @@
+# Traceability Matrix (PRD ↔ Tests)
+
+Purpose: Map Product Requirements (FR/NFR) to existing tests and identify gaps. Update as features evolve.
+
+Legend:
+- Levels: U = Unit, I = Integration, E2E = End-to-End
+- Status: Covered, Partial, Gap
+
+| Requirement ID | Title                                       | Levels | Frontend Tests (path)                         | Backend Tests (path)                                  | E2E Tests (path)                         | Status  | Notes/Gaps |
+|----------------|---------------------------------------------|--------|-----------------------------------------------|-------------------------------------------------------|------------------------------------------|---------|------------|
+| FR-001         | Workout Program Builder & Delivery          | U/I/E2E| tests/*.spec.ts; src/**/__tests__ (if any)     | backend/tests/services/*, controllers/*               | tests/*program*.spec.ts                  | Partial | Verify unit tests for builder utils |
+| FR-001.2       | Exercise Library & Custom Exercises         | U/I/E2E| tests/exercise-library*.spec.ts                | backend/tests/services/*exercise*                     | tests/exercise-library*.spec.ts          | Partial | Add CRUD API integration tests |
+| FR-001.3       | Advanced Programming Tools                  | U/I    | —                                             | backend/tests/services/program/*                      | —                                        | Gap     | Plan unit coverage for progression helpers |
+| FR-002         | Habit & Task Coaching                       | U/I/E2E| —                                             | —                                                     | —                                        | Gap     | Not implemented |
+| FR-003         | Client Check-ins & Accountability           | U/I/E2E| —                                             | backend/tests/controllers/*client*                     | tests/client-management.spec.ts          | Partial | Add check-in flows |
+| FR-004         | Communication & Community Tools             | U/I/E2E| —                                             | —                                                     | —                                        | Gap     | Future scope |
+| FR-005         | Progress Tracking & Analytics               | U/I    | —                                             | backend/tests/services/analytics/*                     | —                                        | Gap     | Plan analytics tests |
+| FR-006         | AI-Powered Assistant                        | I      | —                                             | backend/tests/services/ai/*                           | —                                        | Gap     | Future integration |
+| FR-007         | Automation & Scalability (Autoflow)         | I/E2E  | —                                             | —                                                     | —                                        | Gap     | Future scope |
+| FR-008         | On-Demand Content & Self-Service Programs   | U/I/E2E| —                                             | —                                                     | —                                        | Gap     | Future scope |
+| FR-009         | Forms & Assessments                         | U/I/E2E| —                                             | —                                                     | —                                        | Gap     | Future scope |
+| FR-010         | Payment Integration & Packages              | I      | —                                             | backend/tests/services/payment/*                      | —                                        | Gap     | Stripe integration pending |
+| FR-011         | Branding & Customization                    | U      | —                                             | —                                                     | —                                        | Gap     | Visual checks, not automated yet |
+| FR-012         | Multi-Coach Team Support                    | I/E2E  | —                                             | —                                                     | —                                        | Gap     | Future scope |
+| FR-013         | Advanced Progress Tracking                  | U/I    | —                                             | backend/tests/services/analytics/*                     | —                                        | Gap     | Future scope |
+| FR-014         | Workout Video Flow & Export                 | U/I/E2E| —                                             | backend/tests/services/video-flow/*                    | —                                        | Gap     | Not yet implemented |
+| NFR (Perf)     | Performance                                 | NFR    | —                                             | —                                                     | Add timing checks in Playwright          | Gap     | Add basic timing assertions |
+| NFR (Sec)      | Security                                    | NFR    | —                                             | backend/tests/middleware/auth*.test.ts                | auth E2E (post-auth)                     | Partial | Expand JWT/roles tests |
+| NFR (A11y)     | Accessibility                               | NFR    | —                                             | —                                                     | Add axe checks in Playwright             | Gap     | Integrate axe-core |
+
+Notes:
+- Initial status reflects current repo tests discovered under tests/ and backend/tests/.
+- Update this matrix as Epic 002 (Authentication) lands to link new tests (auth controller, middleware, E2E login).

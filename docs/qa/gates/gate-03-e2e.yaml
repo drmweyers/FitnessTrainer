@@ -1,0 +1,13 @@
+gate: CI-03
+name: E2E Stability
+status: WAIVED
+rationale: |
+  E2E tests depend on working authentication and backend stability. Temporarily waived to avoid blocking Epic 002.
+  Still executed in CI with reports uploaded for visibility.
+criteria:
+  - E2E suite executes across Chromium/Firefox/WebKit (or a minimal subset on CI)
+  - Reports (HTML/JUnit/JSON) are uploaded as artifacts
+exit_conditions:
+  - Complete Epic 002 (Authentication)
+  - Add test accounts/seed data for CI
+  - Remove continue-on-error and enforce stability

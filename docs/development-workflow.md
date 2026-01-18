@@ -31,11 +31,14 @@ docker-compose --profile dev up -d --build
 ```
 
 ### Development Environment Guidelines
-- **IMPORTANT**: Always use Docker for development to ensure consistency (when applicable)
-- **Start development**: `docker-compose --profile dev up -d` (or project-specific command)
+- **⚠️ CRITICAL REQUIREMENT**: ALWAYS use Docker for ALL development work - NO EXCEPTIONS
+- **NEVER run services locally** via npm/node directly - ALWAYS use Docker containers
+- **Start development**: `docker-compose --profile dev up -d`
 - **Stop development**: `docker-compose --profile dev down`
 - **View logs**: `docker logs <container-name> -f`
-- **Database**: Check project configuration for database setup and access details
+- **Restart after changes**: `docker-compose --profile dev restart <service-name>`
+- **Database**: PostgreSQL runs in Docker, Redis runs in Docker, MailHog runs in Docker
+- **Backend API**: Runs in Docker container, NOT via `npm run dev` locally
 
 ## Git Workflow and Branch Management
 
@@ -43,7 +46,7 @@ docker-compose --profile dev up -d --build
 
 **Before Starting Any Development Task:**
 1. **ALWAYS** ensure you're on the correct primary branch (commonly `main` or `develop`)
-2. **ALWAYS** start Docker development environment first (if applicable)
+2. **⚠️ MANDATORY**: Start Docker development environment first: `docker-compose --profile dev up -d`
 3. Check git status: `git status`
 4. Pull latest changes: `git pull origin <primary-branch>`
 5. Create feature branch: `git checkout -b feature/<description>`

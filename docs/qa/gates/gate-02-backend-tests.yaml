@@ -1,0 +1,14 @@
+gate: CI-02
+name: Backend Tests Parity
+status: CONCERNS
+rationale: |
+  Backend tests exist (backend/tests/**), but environment dependencies (DB, Prisma) may not be fully provisioned in CI yet.
+  Job currently soft-fails to prevent blocking authentication work. Convert to hard-fail once Epic 002 stabilizes and DB is available in CI.
+criteria:
+  - Run backend Jest with coverage
+  - Upload backend coverage artifact
+  - No flaky tests (stabilize before hard-fail)
+actions:
+  - Add ephemeral DB (PostgreSQL) service in CI
+  - Run migrations and seed for integration tests
+  - Tighten coverage thresholds by module

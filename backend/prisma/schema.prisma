@@ -71,6 +71,10 @@ model User {
   trainerAssignments  ProgramAssignment[] @relation("TrainerProgramAssignments")
   createdTemplates    ProgramTemplate[]  @relation("CreatedTemplates")
 
+  // Relations - Workout Execution & Logging (Epic 006)
+  clientWorkoutSessions  WorkoutSession[]   @relation("ClientWorkoutSessions")
+  trainerWorkoutSessions WorkoutSession[]   @relation("TrainerWorkoutSessions")
+
   // Relations - Progress Analytics (Epic 007)
   performanceMetrics  PerformanceMetric[] @relation("UserPerformanceMetrics")
   trainingLoad        TrainingLoad[]      @relation("UserTrainingLoad")
@@ -550,6 +554,7 @@ model Exercise {
   collectionExercises CollectionExercise[]
   usageHistory      ExerciseUsage[]
   workoutExercises  WorkoutExercise[] @relation("WorkoutExercises")
+  workoutLogs       WorkoutExerciseLog[] @relation("ExerciseWorkoutLogs")
   performanceMetrics PerformanceMetric[] @relation("ExercisePerformanceMetrics")
 
   @@map("exercises")
@@ -694,6 +699,7 @@ model ProgramWorkout {
   // Relations
   week              ProgramWeek  @relation(fields: [programWeekId], references: [id], onDelete: Cascade)
   exercises         WorkoutExercise[]
+  workoutSessions   WorkoutSession[]
 
   @@unique([programWeekId, dayNumber])
   @@map("program_workouts")
@@ -714,6 +720,7 @@ model WorkoutExercise {
   workout       ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exercise      Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
   configurations ExerciseConfiguration[]
+  workoutLogs   WorkoutExerciseLog[] @relation("WorkoutExerciseLogs")
 
   @@unique([workoutId, orderIndex])
   @@map("workout_exercises")
@@ -759,6 +766,7 @@ model ProgramAssignment {
   program       Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
   client        User      @relation("ClientProgramAssignments", fields: [clientId], references: [id], onDelete: Cascade)
   trainer       User      @relation("TrainerProgramAssignments", fields: [trainerId], references: [id], onDelete: Cascade)
+  workoutSessions WorkoutSession[]
 
   @@unique([programId, clientId, startDate])
   @@map("program_assignments")
@@ -817,6 +825,128 @@ model ExerciseSearchHistory {
 }
 
 // =====================================
+// EPIC 006: WORKOUT EXECUTION & LOGGING
+// =====================================
+
+enum WorkoutStatus {
+  scheduled
+  in_progress
+  completed
+  skipped
+  missed
+}
+
+// Workout sessions - main workout logging table
+model WorkoutSession {
+  id                    String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  programAssignmentId   String        @map("program_assignment_id") @db.Uuid
+  workoutId             String        @map("workout_id") @db.Uuid
+  clientId              String        @map("client_id") @db.Uuid
+  trainerId             String        @map("trainer_id") @db.Uuid
+  
+  // Scheduling & timing
+  scheduledDate         DateTime      @map("scheduled_date") @db.Date
+  actualStartTime       DateTime?     @map("actual_start_time")
+  actualEndTime         DateTime?     @map("actual_end_time")
+  totalDuration         Int?          @map("total_duration") // in minutes
+  totalPausedTime       Int?          @map("total_paused_time") // in seconds
+  
+  // Status and progress
+  status                WorkoutStatus @default(scheduled)
+  currentExerciseIndex  Int?          @map("current_exercise_index")
+  currentSetIndex       Int?          @map("current_set_index")
+  
+  // Session metrics
+  totalVolume           Decimal?      @map("total_volume") @db.Decimal(10, 2)
+  totalSets             Int?          @map("total_sets")
+  completedSets         Int?          @map("completed_sets")
+  averageRpe            Decimal?      @map("average_rpe") @db.Decimal(3, 1)
+  adherenceScore        Decimal?      @map("adherence_score") @db.Decimal(5, 2) // percentage
+  
+  // User feedback
+  effortRating          Int?          @map("effort_rating") // 1-10
+  enjoymentRating       Int?          @map("enjoyment_rating") // 1-10
+  energyBefore          Int?          @map("energy_before") // 1-10
+  energyAfter           Int?          @map("energy_after") // 1-10
+  clientNotes           String?       @map("client_notes") @db.Text
+  trainerFeedback       String?       @map("trainer_feedback") @db.Text
+  
+  // Timestamps
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime?     @updatedAt @map("updated_at")
+  
+  // Relations
+  programAssignment     ProgramAssignment @relation(fields: [programAssignmentId], references: [id], onDelete: Cascade)
+  workout               ProgramWorkout @relation(fields: [workoutId], references: [id])
+  client                User @relation("ClientWorkoutSessions", fields: [clientId], references: [id], onDelete: Cascade)
+  trainer               User @relation("TrainerWorkoutSessions", fields: [trainerId], references: [id], onDelete: Cascade)
+  exerciseLogs          WorkoutExerciseLog[]
+  performanceMetrics    PerformanceMetric[] @relation("WorkoutSessionMetrics")
+
+  @@map("workout_sessions")
+}
+
+// Exercise logs within workout sessions
+model WorkoutExerciseLog {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutSessionId    String              @map("workout_session_id") @db.Uuid
+  workoutExerciseId   String              @map("workout_exercise_id") @db.Uuid
+  exerciseId          String              @map("exercise_id") @db.Uuid
+  orderIndex          Int                 @map("order_index")
+  supersetGroup       String?             @map("superset_group") @db.VarChar(10)
+  
+  // Exercise execution
+  skipped             Boolean             @default(false)
+  totalVolume         Decimal?            @map("total_volume") @db.Decimal(10, 2)
+  personalBest        Boolean             @default(false) @map("personal_best")
+  notes               String?             @db.Text
+  startTime           DateTime?           @map("start_time")
+  endTime             DateTime?           @map("end_time")
+  
+  // Timestamps
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime?           @updatedAt @map("updated_at")
+  
+  // Relations
+  workoutSession      WorkoutSession      @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  workoutExercise     WorkoutExercise     @relation("WorkoutExerciseLogs", fields: [workoutExerciseId], references: [id])
+  exercise            Exercise            @relation("ExerciseWorkoutLogs", fields: [exerciseId], references: [id])
+  setLogs             WorkoutSetLog[]
+
+  @@unique([workoutSessionId, orderIndex])
+  @@map("workout_exercise_logs")
+}
+
+// Set logs within exercise logs
+model WorkoutSetLog {
+  id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  exerciseLogId         String               @map("exercise_log_id") @db.Uuid
+  setNumber             Int                  @map("set_number")
+  
+  // Set data
+  plannedReps           String?              @map("planned_reps") @db.VarChar(20) // "8-10", "AMRAP", "30s"
+  actualReps            Int?                 @map("actual_reps")
+  weight                Decimal?             @db.Decimal(8, 2)
+  rpe                   Decimal?             @db.Decimal(3, 1) // 1-10 scale
+  rir                   Int?                 // Reps in Reserve
+  duration              Int?                 // in seconds for timed exercises
+  restTime              Int?                 @map("rest_time") // actual rest taken in seconds
+  tempo                 String?              @db.VarChar(20) // "3-1-2-0"
+  
+  // Set status
+  completed             Boolean              @default(false)
+  skipped               Boolean              @default(false)
+  notes                 String?              @db.Text
+  timestamp             DateTime?            // when the set was completed
+  
+  // Relations
+  exerciseLog           WorkoutExerciseLog   @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseLogId, setNumber])
+  @@map("workout_set_logs")
+}
+
+// =====================================
 // EPIC 007: PROGRESS ANALYTICS
 // =====================================
 
@@ -846,12 +976,13 @@ model PerformanceMetric {
   value        Decimal    @db.Decimal(10, 2)
   unit         String     @db.VarChar(20)
   recordedAt   DateTime   @default(now()) @map("recorded_at")
-  workoutLogId String?    @map("workout_log_id") @db.Uuid
-  notes        String?    @db.Text
+  workoutSessionId String? @map("workout_session_id") @db.Uuid
+  notes            String? @db.Text
 
   // Relations
-  user         User       @relation("UserPerformanceMetrics", fields: [userId], references: [id], onDelete: Cascade)
-  exercise     Exercise?  @relation("ExercisePerformanceMetrics", fields: [exerciseId], references: [id])
+  user            User            @relation("UserPerformanceMetrics", fields: [userId], references: [id], onDelete: Cascade)
+  exercise        Exercise?       @relation("ExercisePerformanceMetrics", fields: [exerciseId], references: [id])
+  workoutSession  WorkoutSession? @relation("WorkoutSessionMetrics", fields: [workoutSessionId], references: [id])
 
   @@map("performance_metrics")
 }

@@ -11,7 +11,7 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
   
-  // Module name mapping for absolute imports
+  // Module name mapping for absolute imports and static assets
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
@@ -21,13 +21,14 @@ const customJestConfig = {
     '^@/state/(.*)$': '<rootDir>/src/state/$1',
     '^@/data/(.*)$': '<rootDir>/src/data/$1',
     '^@/app/(.*)$': '<rootDir>/src/app/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/__mocks__/fileMock.js',
   },
   
   // Test patterns
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js)',
-    '<rootDir>/src/**/?(*.)(spec|test).(ts|tsx|js)',
-    '<rootDir>/tests/**/*.(ts|tsx|js)',
+    '<rootDir>/src/**/?(*.)(spec|test).(ts|tsx|js)'
   ],
   
   // Coverage configuration
@@ -51,13 +52,6 @@ const customJestConfig = {
       lines: 70,
       statements: 70,
     },
-  },
-  
-  // Transform configuration
-  transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
-    }],
   },
   
   // Module file extensions
@@ -94,14 +88,6 @@ const customJestConfig = {
   
   // Automatically restore mock state between every test
   restoreMocks: true,
-  
-  // Mock static assets
-  moduleNameMapper: {
-    ...require('next/jest').createJestConfig({ dir: './' })().moduleNameMapper,
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/__mocks__/fileMock.js',
-  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

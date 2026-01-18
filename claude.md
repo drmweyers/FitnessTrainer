@@ -33,6 +33,7 @@ EvoFit (FitnessTrainer) - A comprehensive platform for personal trainers to mana
 - **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
 - **Database**: PostgreSQL with Redis caching
 - **Epic-based development** following BMAD methodology
+- **⚠️ CRITICAL**: ALWAYS run development in Docker (`docker-compose --profile dev up -d`)
 
 ## How to Use This Configuration
 
@@ -518,11 +519,14 @@ project-root/
 - **Key Topics**: MCP servers (Serena), PRP framework, sub-agents, parallel development, optimization strategies
 
 ## Development Environment Guidelines
-- **IMPORTANT**: Always use Docker for development to ensure consistency (when applicable)
-- **Start development**: `docker-compose --profile dev up -d` (or project-specific command)
+- **⚠️ CRITICAL REQUIREMENT**: ALWAYS use Docker for ALL development work - NO EXCEPTIONS
+- **NEVER run services locally** via npm/node directly - ALWAYS use Docker containers
+- **Start development**: `docker-compose --profile dev up -d`
 - **Stop development**: `docker-compose --profile dev down`
 - **View logs**: `docker logs <container-name> -f`
-- **Database**: Check project configuration for database setup and access details
+- **Restart after changes**: `docker-compose --profile dev restart <service-name>`
+- **Database**: PostgreSQL runs in Docker, Redis runs in Docker, MailHog runs in Docker
+- **Backend API**: Runs in Docker container, NOT via `npm run dev` locally
 
 ### Common Docker Commands
 ```bash
