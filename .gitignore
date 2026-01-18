@@ -63,3 +63,8 @@ nul
 
 # Auto Claude data directory
 .auto-claude/
+
+# Claude local settings
+.claude/settings.local.json
+.claude/settings.*
+!.claude/settings.json
