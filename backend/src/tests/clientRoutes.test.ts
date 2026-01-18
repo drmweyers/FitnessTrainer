@@ -2,6 +2,12 @@ import request from 'supertest';
 import express from 'express';
 import { clientRoutes } from '../routes/clientRoutes';
 
+// Mock token service - must be declared before jest.mock
+const mockTokenService = {
+  verifyAccessToken: jest.fn(),
+  isTokenBlacklisted: jest.fn(),
+};
+
 // Mock Prisma
 const mockPrismaClientClient = {
   user: {
@@ -38,11 +44,6 @@ jest.mock('../index', () => ({
 }));
 
 // Mock token service
-const mockTokenService = {
-  verifyAccessToken: jest.fn(),
-  isTokenBlacklisted: jest.fn(),
-};
-
 jest.mock('../services/tokenService', () => ({
   tokenService: mockTokenService,
 }));
@@ -123,7 +124,7 @@ describe('Client Routes', () => {
   describe('GET /api/clients', () => {
     it('should return all clients for trainer', async () => {
       // Mock trainer-client relationships
-      mockPrismaClient.trainerClient.findMany.mockResolvedValue([
+      mockPrismaClientClient.trainerClient.findMany.mockResolvedValue([
         {
           id: 'relation-1',
           trainerId,
@@ -140,7 +141,7 @@ describe('Client Routes', () => {
         }
       ]);
 
-      mockPrismaClient.trainerClient.count.mockResolvedValue(1);
+      mockPrismaClientClient.trainerClient.count.mockResolvedValue(1);
 
       const response = await request(app)
         .get('/api/clients')
@@ -153,15 +154,15 @@ describe('Client Routes', () => {
     });
 
     it('should filter clients by status', async () => {
-      mockPrismaClient.trainerClient.findMany.mockResolvedValue([]);
-      mockPrismaClient.trainerClient.count.mockResolvedValue(0);
+      mockPrismaClientClient.trainerClient.findMany.mockResolvedValue([]);
+      mockPrismaClientClient.trainerClient.count.mockResolvedValue(0);
 
       await request(app)
         .get('/api/clients?status=active')
         .set('Authorization', trainerToken)
         .expect(200);
 
-      expect(mockPrismaClient.trainerClient.findMany).toHaveBeenCalledWith(
+      expect(mockPrismaClientClient.trainerClient.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             trainerId,
@@ -199,7 +200,7 @@ describe('Client Routes', () => {
         }
       };
 
-      mockPrismaClient.trainerClient.findUnique.mockResolvedValue(mockClient);
+      mockPrismaClientClient.trainerClient.findUnique.mockResolvedValue(mockClient);
 
       const response = await request(app)
         .get('/api/clients/client-1')
@@ -211,7 +212,7 @@ describe('Client Routes', () => {
     });
 
     it('should return 404 for non-existent client', async () => {
-      mockPrismaClient.trainerClient.findUnique.mockResolvedValue(null);
+      mockPrismaClientClient.trainerClient.findUnique.mockResolvedValue(null);
 
       const response = await request(app)
         .get('/api/clients/non-existent')
@@ -239,13 +240,13 @@ describe('Client Routes', () => {
       };
 
       // Mock no existing invitation
-      mockPrismaClient.clientInvitation.findFirst.mockResolvedValue(null);
+      mockPrismaClientClient.clientInvitation.findFirst.mockResolvedValue(null);
       // Mock no existing client
-      mockPrismaClient.user.findUnique.mockResolvedValue(null);
+      mockPrismaClientClient.user.findUnique.mockResolvedValue(null);
       // Mock no existing relationship
-      mockPrismaClient.trainerClient.findUnique.mockResolvedValue(null);
+      mockPrismaClientClient.trainerClient.findUnique.mockResolvedValue(null);
       // Mock invitation creation
-      mockPrismaClient.clientInvitation.create.mockResolvedValue(mockInvitation);
+      mockPrismaClientClient.clientInvitation.create.mockResolvedValue(mockInvitation);
 
       const response = await request(app)
         .post('/api/clients/invite')
@@ -301,13 +302,13 @@ describe('Client Routes', () => {
       };
 
       // Mock no existing client
-      mockPrismaClient.user.findUnique.mockResolvedValue(null);
+      mockPrismaClientClient.user.findUnique.mockResolvedValue(null);
       // Mock client creation
-      mockPrismaClient.user.create.mockResolvedValue(mockClient);
+      mockPrismaClientClient.user.create.mockResolvedValue(mockClient);
       // Mock client profile creation
-      mockPrismaClient.clientProfile.create.mockResolvedValue({});
+      mockPrismaClientClient.clientProfile.create.mockResolvedValue({});
       // Mock trainer-client relationship creation
-      mockPrismaClient.trainerClient.create.mockResolvedValue(mockTrainerClient);
+      mockPrismaClientClient.trainerClient.create.mockResolvedValue(mockTrainerClient);
 
       const response = await request(app)
         .post('/api/clients')
@@ -352,7 +353,7 @@ describe('Client Routes', () => {
         }
       };
 
-      mockPrismaClient.trainerClient.update.mockResolvedValue(mockUpdatedClient);
+      mockPrismaClientClient.trainerClient.update.mockResolvedValue(mockUpdatedClient);
 
       const response = await request(app)
         .put('/api/clients/client-1/status')
@@ -394,7 +395,7 @@ describe('Client Routes', () => {
         }
       };
 
-      mockPrismaClient.trainerClient.update.mockResolvedValue(mockArchivedClient);
+      mockPrismaClientClient.trainerClient.update.mockResolvedValue(mockArchivedClient);
 
       const response = await request(app)
         .delete('/api/clients/client-1')
@@ -435,11 +436,11 @@ describe('Client Routes', () => {
       };
 
       // Mock invitation lookup
-      mockPrismaClient.clientInvitation.findUnique.mockResolvedValue(mockInvitation);
+      mockPrismaClientClient.clientInvitation.findUnique.mockResolvedValue(mockInvitation);
       // Mock invitation update
-      mockPrismaClient.clientInvitation.update.mockResolvedValue({});
+      mockPrismaClientClient.clientInvitation.update.mockResolvedValue({});
       // Mock trainer-client relationship creation
-      mockPrismaClient.trainerClient.create.mockResolvedValue(mockTrainerClient);
+      mockPrismaClientClient.trainerClient.create.mockResolvedValue(mockTrainerClient);
 
       const response = await request(app)
         .post('/api/clients/invitations/accept')
@@ -455,7 +456,7 @@ describe('Client Routes', () => {
 
     it('should reject invalid invitation token', async () => {
       // Mock no invitation found
-      mockPrismaClient.clientInvitation.findUnique.mockResolvedValue(null);
+      mockPrismaClientClient.clientInvitation.findUnique.mockResolvedValue(null);
 
       const response = await request(app)
         .post('/api/clients/invitations/accept')
@@ -472,7 +473,7 @@ describe('Client Routes', () => {
   describe('Authorization', () => {
     it('should deny access to clients trying to manage other clients', async () => {
       // Mock client user lookup
-      mockPrismaClient.user.findUnique.mockImplementation((args) => {
+      mockPrismaClientClient.user.findUnique.mockImplementation((args) => {
         if (args.where.id === clientId) {
           return Promise.resolve({
             id: clientId,

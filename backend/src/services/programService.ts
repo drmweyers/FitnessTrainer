@@ -1092,7 +1092,7 @@ export class ProgramService {
                 // Increase weight by percentage
                 if (configItem.weightGuidance && config.weeklyIncrease) {
                   const weightMatch = configItem.weightGuidance.match(/(\d+)/);
-                  if (weightMatch) {
+                  if (weightMatch && weightMatch[1]) {
                     const weight = parseInt(weightMatch[1]);
                     const increase = Math.round(weight * (config.weeklyIncrease / 100) * week.weekNumber);
                     newWeight = `${weight + increase}${configItem.weightGuidance.replace(/\d+/, '')}`;
@@ -1172,7 +1172,7 @@ export class ProgramService {
     // Intensity increase suggestions
     if (currentConfig.weight) {
       const weightMatch = currentConfig.weight.match(/(\d+)/);
-      if (weightMatch) {
+      if (weightMatch && weightMatch[1]) {
         const weight = parseInt(weightMatch[1]);
         const increase = weight < 100 ? 5 : 10;
         suggestions.push({
@@ -1215,72 +1215,67 @@ export class ProgramService {
    * Get workout history for a client to track progression
    */
   async getClientProgression(clientId: string, exerciseId?: string) {
-    const where: any = {
-      workoutLog: {
-        clientWorkout: {
-          client: {
-            trainerId: clientId,
-          },
+    // Get exercise logs with completed workouts
+    const exerciseLogs = await prisma.workoutExerciseLog.findMany({
+      where: {
+        ...(exerciseId && { exerciseId }),
+        workoutSession: {
+          clientId,
+          status: 'completed',
         },
       },
-    };
-
-    if (exerciseId) {
-      where.exerciseId = exerciseId;
-    }
-
-    const history = await prisma.loggedSet.findMany({
-      where,
       include: {
-        workoutExercise: {
-          include: {
-            exercise: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+        exercise: {
+          select: {
+            id: true,
+            name: true,
           },
         },
-        workoutLog: {
-          include: {
-            clientWorkout: {
-              select: {
-                client: {
-                  select: {
-                    id: true,
-                    firstName: true,
-                    lastName: true,
-                  },
-                },
-              },
-            },
+        workoutSession: {
+          select: {
+            scheduledDate: true,
+          },
+        },
+        setLogs: {
+          where: {
+            completed: true,
+          },
+          orderBy: {
+            weight: 'desc',
           },
         },
       },
-      orderBy: { workoutLog: { date: 'asc' } },
+      orderBy: {
+        workoutSession: {
+          scheduledDate: 'asc',
+        },
+      },
     });
 
     // Group by exercise and calculate progression
-    const progression = {};
+    const progression: any = {};
 
-    for (const set of history) {
-      const exerciseId = set.workoutExercise.exercise.id;
-      const exerciseName = set.workoutExercise.exercise.name;
+    for (const log of exerciseLogs) {
+      const exId = log.exercise.id;
+      const exName = log.exercise.name;
 
-      if (!progression[exerciseId]) {
-        progression[exerciseId] = {
-          exerciseName,
+      if (!progression[exId]) {
+        progression[exId] = {
+          exerciseName: exName,
           entries: [],
         };
       }
 
-      progression[exerciseId].entries.push({
-        date: set.workoutLog.date,
-        weight: set.weight,
-        reps: set.reps,
-        rpe: set.rpe,
-      });
+      // Get best set from this exercise log
+      const bestSet = log.setLogs[0];
+      if (bestSet) {
+        progression[exId].entries.push({
+          date: log.workoutSession.scheduledDate,
+          weight: bestSet.weight?.toString(),
+          reps: bestSet.actualReps,
+          rpe: bestSet.rpe?.toString(),
+        });
+      }
     }
 
     return Object.values(progression);

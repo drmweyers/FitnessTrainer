@@ -454,7 +454,7 @@ export const getEditableWorkoutSession = asyncHandler(async (req: Request, res: 
     totalExercises: session.exerciseLogs?.length || 0,
     totalSets: session.totalSets || 0,
     completedSets: session.completedSets || 0,
-    progressPercentage: session.totalSets 
+    progressPercentage: session.totalSets
       ? ((session.completedSets || 0) / session.totalSets) * 100
       : 0,
   };
@@ -462,5 +462,76 @@ export const getEditableWorkoutSession = asyncHandler(async (req: Request, res: 
   res.json({
     success: true,
     data: editableSession
+  });
+});
+
+// =====================================
+// PERSONAL RECORDS TRACKING
+// =====================================
+
+/**
+ * Get user's personal records
+ * GET /api/workouts/personal-records
+ */
+export const getUserPersonalRecords = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+  const { exerciseId } = req.query;
+
+  const records = await workoutService.getUserPersonalRecords(userId, exerciseId as string);
+
+  res.json({
+    success: true,
+    data: records,
+    count: records.length,
+  });
+});
+
+/**
+ * Check if current performance is a personal record
+ * POST /api/workouts/exercise-logs/:id/check-record
+ */
+export const checkPersonalRecord = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: 'Exercise log ID is required',
+    });
+    return;
+  }
+
+  const result = await workoutService.checkPersonalRecord(id);
+
+  logger.info(`Personal record check for exercise log ${id}: ${result.isRecord ? 'NEW RECORD!' : 'No record'}`);
+
+  res.json({
+    success: true,
+    data: result,
+  });
+});
+
+/**
+ * Get personal record history for an exercise
+ * GET /api/workouts/personal-records/exercises/:exerciseId/history
+ */
+export const getExerciseRecordHistory = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { exerciseId } = req.params;
+  const userId = req.user!.id;
+
+  if (!exerciseId) {
+    res.status(400).json({
+      success: false,
+      message: 'Exercise ID is required',
+    });
+    return;
+  }
+
+  const history = await workoutService.getExerciseRecordHistory(userId, exerciseId);
+
+  res.json({
+    success: true,
+    data: history,
+    count: history.length,
   });
 });

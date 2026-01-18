@@ -1641,3 +1641,674 @@ src/controllers/exerciseSearchController.ts(84,49): error TS7030: Not all code p
     at Module.load (node:internal/modules/cjs/loader:1465:32)
     at Function._load (node:internal/modules/cjs/loader:1282:12)
     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 21:49:48 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 21:57:23 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 21:58:09 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 21:58:38 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 21:59:21 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 21:59:45 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:00:19 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:00:40 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:01:19 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:01:42 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:02:05 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:02:27 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:03:11 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:04:04 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:04:43 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/exerciseController.ts(914,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+src/controllers/exerciseController.ts(985,14): error TS2367: This comparison appears to be unintentional because the types 'ProcessEnv' and 'string' have no overlap.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:07:29 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(156,58): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(176,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(179,5): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(203,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(205,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(225,46): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(227,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(245,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(266,64): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(300,65): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:08:26 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(156,58): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(176,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(179,5): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(203,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(205,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(225,46): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(227,53): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(245,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(266,64): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(300,65): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:09:17 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(156,58): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(176,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(179,5): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(203,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(205,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(220,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(256,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(287,64): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(321,65): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:09:39 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(156,58): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(176,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(179,5): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(203,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(205,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(220,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(256,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(283,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(328,65): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:10:01 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(156,58): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(176,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(179,5): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(203,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(205,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(220,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(256,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(283,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(324,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:10:34 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(156,58): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(176,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(179,5): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(203,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(205,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(220,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(256,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(283,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(324,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:11:32 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(152,49): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(178,49): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(224,40): error TS18048: 'groupId' is possibly 'undefined'.
+src/controllers/programController.ts(226,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/programController.ts(241,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(277,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(304,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(345,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-17 22:11:54 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(152,49): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(178,49): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(219,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(255,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(291,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(318,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(359,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:12:50 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(219,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(255,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(291,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(318,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(359,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:13:12 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(224,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(234,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(255,44): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(291,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(318,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(359,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:13:40 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(224,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(234,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(260,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(270,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(291,46): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(318,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(359,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:14:02 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(224,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(234,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(260,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(270,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(295,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(318,54): error TS7030: Not all code paths return a value.
+src/controllers/programController.ts(359,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:14:22 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(224,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(234,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(260,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(270,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(295,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(323,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(359,50): error TS7030: Not all code paths return a value.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:14:45 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(224,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(234,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(260,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(270,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(295,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(323,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(364,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:15:58 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(157,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(183,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(193,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(224,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(234,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(260,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(270,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(295,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(323,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(364,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:19:29 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(184,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(194,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(225,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(235,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(261,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(271,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(325,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(366,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:19:59 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(195,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(237,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(274,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(328,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(369,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:20:28 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(276,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(330,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(371,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:21:27 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(276,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+src/controllers/programController.ts(372,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:22:20 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/programController.ts(276,5): error TS2322: Type 'Response<any, Record<string, any>>' is not assignable to type 'void'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:24:13 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/controllers/workoutController.ts(496,59): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/controllers/workoutController.ts(514,73): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 13:25:49 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1045,34): error TS2551: Property 'exerciseLog' does not exist on type 'PrismaClient<{ log: ("info" | "query" | "warn" | "error")[]; }, never, DefaultArgs>'. Did you mean 'exercise'?
+src/services/workoutService.ts(1106,38): error TS2551: Property 'exerciseLog' does not exist on type 'PrismaClient<{ log: ("info" | "query" | "warn" | "error")[]; }, never, DefaultArgs>'. Did you mean 'exercise'?
+src/services/workoutService.ts(1138,39): error TS2551: Property 'exerciseLog' does not exist on type 'PrismaClient<{ log: ("info" | "query" | "warn" | "error")[]; }, never, DefaultArgs>'. Did you mean 'exercise'?
+src/services/workoutService.ts(1203,20): error TS2551: Property 'exerciseLog' does not exist on type 'PrismaClient<{ log: ("info" | "query" | "warn" | "error")[]; }, never, DefaultArgs>'. Did you mean 'exercise'?
+src/services/workoutService.ts(1209,20): error TS2551: Property 'exerciseLog' does not exist on type 'PrismaClient<{ log: ("info" | "query" | "warn" | "error")[]; }, never, DefaultArgs>'. Did you mean 'exercise'?
+src/services/workoutService.ts(1246,34): error TS2551: Property 'exerciseLog' does not exist on type 'PrismaClient<{ log: ("info" | "query" | "warn" | "error")[]; }, never, DefaultArgs>'. Did you mean 'exercise'?
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)

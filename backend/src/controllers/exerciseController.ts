@@ -911,7 +911,7 @@ export const deleteCollection = async (req: Request, res: Response): Promise<any
     return res.status(500).json({
       success: false,
       message: 'Failed to delete collection',
-      error: process.env === 'development' ? error : undefined,
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
     });
   }
 };
@@ -982,7 +982,7 @@ export const getCollection = async (req: Request, res: Response): Promise<any> =
     return res.status(500).json({
       success: false,
       message: 'Failed to get collection',
-      error: process.env === 'development' ? error : undefined,
+      error: process.env.NODE_ENV === 'development' ? error : undefined,
     });
   }
 };

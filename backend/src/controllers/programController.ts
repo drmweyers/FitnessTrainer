@@ -149,9 +149,17 @@ export const getTemplates = asyncHandler(async (req: Request, res: Response) => 
  * Create exercise group (superset, circuit, or giant set)
  * POST /api/programs/workouts/:workoutId/groups
  */
-export const createExerciseGroup = asyncHandler(async (req: Request, res: Response) => {
+export const createExerciseGroup = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { workoutId } = req.params;
   const trainerId = req.user!.id;
+
+  if (!workoutId) {
+    res.status(400).json({
+      success: false,
+      message: 'Workout ID is required',
+    });
+    return;
+  }
 
   const group = await programService.createExerciseGroup(workoutId, trainerId, req.body);
 
@@ -168,12 +176,28 @@ export const createExerciseGroup = asyncHandler(async (req: Request, res: Respon
  * Update exercise group
  * PUT /api/programs/groups/:groupId
  */
-export const updateExerciseGroup = asyncHandler(async (req: Request, res: Response) => {
+export const updateExerciseGroup = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { groupId } = req.params;
   const trainerId = req.user!.id;
 
+  if (!groupId) {
+    res.status(400).json({
+      success: false,
+      message: 'Group ID is required',
+    });
+    return;
+  }
+
   // Parse groupId to get workoutId and groupIdentifier
   const [workoutId, groupIdentifier] = groupId.split('-');
+
+  if (!workoutId || !groupIdentifier) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid group ID format',
+    });
+    return;
+  }
 
   const group = await programService.updateExerciseGroup(
     workoutId,
@@ -195,12 +219,28 @@ export const updateExerciseGroup = asyncHandler(async (req: Request, res: Respon
  * Ungroup exercises (remove group identifier)
  * DELETE /api/programs/groups/:groupId/ungroup
  */
-export const ungroupExercises = asyncHandler(async (req: Request, res: Response) => {
+export const ungroupExercises = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { groupId } = req.params;
   const trainerId = req.user!.id;
 
+  if (!groupId) {
+    res.status(400).json({
+      success: false,
+      message: 'Group ID is required',
+    });
+    return;
+  }
+
   // Parse groupId to get workoutId and groupIdentifier
   const [workoutId, groupIdentifier] = groupId.split('-');
+
+  if (!workoutId || !groupIdentifier) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid group ID format',
+    });
+    return;
+  }
 
   const result = await programService.ungroupExercises(workoutId, trainerId, groupIdentifier);
 
@@ -217,12 +257,28 @@ export const ungroupExercises = asyncHandler(async (req: Request, res: Response)
  * Duplicate exercise group
  * POST /api/programs/groups/:groupId/duplicate
  */
-export const duplicateGroup = asyncHandler(async (req: Request, res: Response) => {
+export const duplicateGroup = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { groupId } = req.params;
   const trainerId = req.user!.id;
 
+  if (!groupId) {
+    res.status(400).json({
+      success: false,
+      message: 'Group ID is required',
+    });
+    return;
+  }
+
   // Parse groupId to get workoutId and groupIdentifier
   const [workoutId, sourceGroupIdentifier] = groupId.split('-');
+
+  if (!workoutId || !sourceGroupIdentifier) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid group ID format',
+    });
+    return;
+  }
 
   const group = await programService.duplicateGroup(workoutId, trainerId, sourceGroupIdentifier, req.body?.targetGroupIdentifier);
 
@@ -239,8 +295,16 @@ export const duplicateGroup = asyncHandler(async (req: Request, res: Response) =
  * Get all groups in a workout
  * GET /api/programs/workouts/:workoutId/groups
  */
-export const getWorkoutGroups = asyncHandler(async (req: Request, res: Response) => {
+export const getWorkoutGroups = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { workoutId } = req.params;
+
+  if (!workoutId) {
+    res.status(400).json({
+      success: false,
+      message: 'Workout ID is required',
+    });
+    return;
+  }
 
   const groups = await programService.getWorkoutGroups(workoutId);
 
@@ -259,9 +323,17 @@ export const getWorkoutGroups = asyncHandler(async (req: Request, res: Response)
  * Apply progressive overload to a program
  * POST /api/programs/:id/progressive-overload
  */
-export const applyProgressiveOverload = asyncHandler(async (req: Request, res: Response) => {
+export const applyProgressiveOverload = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { id: programId } = req.params;
   const trainerId = req.user!.id;
+
+  if (!programId) {
+    res.status(400).json({
+      success: false,
+      message: 'Program ID is required',
+    });
+    return;
+  }
 
   const result = await programService.applyProgressiveOverload(programId, trainerId, req.body);
 
@@ -278,7 +350,7 @@ export const applyProgressiveOverload = asyncHandler(async (req: Request, res: R
  * Get progression suggestions for an exercise
  * POST /api/programs/progression-suggestions
  */
-export const getProgressionSuggestions = asyncHandler(async (req: Request, res: Response) => {
+export const getProgressionSuggestions = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { exerciseId, currentConfig } = req.body;
 
   const suggestions = await programService.getProgressionSuggestions(exerciseId, currentConfig);
@@ -293,11 +365,19 @@ export const getProgressionSuggestions = asyncHandler(async (req: Request, res: 
  * Get client progression history
  * GET /api/programs/clients/:clientId/progression
  */
-export const getClientProgression = asyncHandler(async (req: Request, res: Response) => {
+export const getClientProgression = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { clientId } = req.params;
   const { exerciseId } = req.query;
 
-  const progression = await programService.getClientProgression(clientId, exerciseId as string);
+  if (!clientId) {
+    res.status(400).json({
+      success: false,
+      message: 'Client ID is required',
+    });
+    return;
+  }
+
+  const progression = await programService.getClientProgression(clientId, exerciseId as string | undefined);
 
   res.json({
     success: true,

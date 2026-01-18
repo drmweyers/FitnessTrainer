@@ -1020,4 +1020,289 @@ export const workoutService = {
       } : null,
     };
   },
+
+  // =====================================
+  // PERSONAL RECORDS TRACKING
+  // =====================================
+
+  /**
+   * Get all personal records for a user
+   */
+  async getUserPersonalRecords(userId: string, exerciseId?: string) {
+    const where: any = {
+      personalBest: true,
+      workoutSession: {
+        clientWorkout: {
+          clientId: userId,
+        },
+      },
+    };
+
+    if (exerciseId) {
+      where.exerciseId = exerciseId;
+    }
+
+    const records = await prisma.exerciseLog.findMany({
+      where,
+      include: {
+        exercise: {
+          select: {
+            id: true,
+            name: true,
+            bodyPart: true,
+            equipment: true,
+            gifUrl: true,
+          },
+        },
+        workoutSession: {
+          select: {
+            scheduledDate: true,
+            actualStartTime: true,
+          },
+        },
+        sets: {
+          where: {
+            setType: 'working',
+          },
+          orderBy: {
+            weight: 'desc',
+          },
+        },
+      },
+      orderBy: {
+        workoutSession: {
+          scheduledDate: 'desc',
+        },
+      },
+    });
+
+    // Group by exercise and get the best performance
+    const bestRecords = new Map();
+
+    for (const record of records) {
+      const exerciseId = record.exercise.id;
+
+      if (!bestRecords.has(exerciseId)) {
+        bestRecords.set(exerciseId, {
+          exercise: record.exercise,
+          dateAchieved: record.workoutSession.scheduledDate,
+          totalVolume: record.totalVolume?.toString() || '0',
+          setsCompleted: record.sets.length,
+          bestSet: record.sets[0] ? {
+            weight: record.sets[0].weight,
+            reps: record.sets[0].reps,
+          } : null,
+        });
+      }
+    }
+
+    return Array.from(bestRecords.values());
+  },
+
+  /**
+   * Check if current performance is a personal record
+   */
+  async checkPersonalRecord(exerciseLogId: string) {
+    const exerciseLog = await prisma.exerciseLog.findFirst({
+      where: { id: exerciseLogId },
+      include: {
+        exercise: true,
+        sets: {
+          where: {
+            setType: 'working',
+          },
+          orderBy: {
+            weight: 'desc',
+          },
+        },
+        workoutSession: {
+          include: {
+            clientWorkout: {
+              include: {
+                client: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!exerciseLog) {
+      throw createError(404, 'Exercise log not found');
+    }
+
+    const clientId = exerciseLog.workoutSession.clientWorkout.clientId;
+    const exerciseId = exerciseLog.exerciseId;
+
+    // Get all previous logs for this exercise
+    const previousLogs = await prisma.exerciseLog.findMany({
+      where: {
+        exerciseId,
+        personalBest: true,
+        workoutSession: {
+          clientWorkout: {
+            clientId,
+          },
+        },
+        id: {
+          not: exerciseLogId,
+        },
+      },
+      include: {
+        sets: {
+          where: {
+            setType: 'working',
+          },
+        },
+      },
+    });
+
+    // Calculate current best set
+    const currentBestSet = exerciseLog.sets[0];
+    const currentVolume = parseFloat(exerciseLog.totalVolume?.toString() || '0');
+
+    let isRecord = false;
+    let recordType = null;
+
+    if (previousLogs.length === 0) {
+      isRecord = true;
+      recordType = 'first_performance';
+    } else {
+      // Check if current performance beats previous records
+      for (const prevLog of previousLogs) {
+        const prevBestSet = prevLog.sets[0];
+        const prevVolume = parseFloat(prevLog.totalVolume?.toString() || '0');
+
+        if (currentBestSet && prevBestSet) {
+          const currentWeight = parseFloat(currentBestSet.weight);
+          const prevWeight = parseFloat(prevBestSet.weight);
+
+          if (currentWeight > prevWeight) {
+            isRecord = true;
+            recordType = 'weight';
+            break;
+          }
+
+          if (currentBestSet.reps > prevBestSet.reps && currentWeight >= prevWeight) {
+            isRecord = true;
+            recordType = 'reps';
+            break;
+          }
+        }
+
+        if (currentVolume > prevVolume) {
+          isRecord = true;
+          recordType = 'volume';
+          break;
+        }
+      }
+    }
+
+    // Update the exercise log with personal best flag
+    if (isRecord) {
+      await prisma.exerciseLog.update({
+        where: { id: exerciseLogId },
+        data: { personalBest: true },
+      });
+
+      // Unset previous records for this exercise
+      await prisma.exerciseLog.updateMany({
+        where: {
+          exerciseId,
+          personalBest: true,
+          id: {
+            not: exerciseLogId,
+          },
+          workoutSession: {
+            clientWorkout: {
+              clientId,
+            },
+          },
+        },
+        data: { personalBest: false },
+      });
+    }
+
+    return {
+      isRecord,
+      recordType,
+      currentPerformance: {
+        weight: currentBestSet?.weight,
+        reps: currentBestSet?.reps,
+        volume: currentVolume,
+      },
+      previousBest: previousLogs.length > 0 ? {
+        weight: previousLogs[0].sets[0]?.weight,
+        reps: previousLogs[0].sets[0]?.reps,
+        volume: previousLogs[0].totalVolume?.toString(),
+      } : null,
+    };
+  },
+
+  /**
+   * Get personal record history for an exercise
+   */
+  async getExerciseRecordHistory(userId: string, exerciseId: string) {
+    const records = await prisma.exerciseLog.findMany({
+      where: {
+        exerciseId,
+        personalBest: true,
+        workoutSession: {
+          clientWorkout: {
+            clientId: userId,
+          },
+        },
+      },
+      include: {
+        exercise: {
+          select: {
+            id: true,
+            name: true,
+            bodyPart: true,
+            equipment: true,
+          },
+        },
+        workoutSession: {
+          select: {
+            scheduledDate: true,
+            clientWorkout: {
+              select: {
+                client: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        sets: {
+          where: {
+            setType: 'working',
+          },
+          orderBy: {
+            weight: 'desc',
+          },
+          take: 1,
+        },
+      },
+      orderBy: {
+        workoutSession: {
+          scheduledDate: 'desc',
+        },
+      },
+      take: 10,
+    });
+
+    return records.map((record: any) => ({
+      date: record.workoutSession.scheduledDate,
+      totalVolume: record.totalVolume?.toString() || '0',
+      bestSet: record.sets[0] ? {
+        weight: record.sets[0].weight,
+        reps: record.sets[0].reps,
+      } : null,
+      notes: record.notes,
+    }));
+  },
 };

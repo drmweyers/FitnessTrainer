@@ -16,7 +16,10 @@ import {
   getLiveWorkoutData,
   addTrainerFeedback,
   getEditableWorkoutSession,
-  getTodaysWorkout
+  getTodaysWorkout,
+  getUserPersonalRecords,
+  checkPersonalRecord,
+  getExerciseRecordHistory
 } from '@/controllers/workoutController';
 import { authenticate } from '@/middleware/auth';
 import { authorize } from '@/middleware/authorize';
@@ -115,6 +118,20 @@ router.post(
 // Get client workout analytics (trainers viewing client data)
 // GET /api/workouts/analytics?clientId=client-uuid&period=month
 // (Uses the same analytics endpoint with clientId param - handled in controller)
+
+// Personal Records Tracking
+
+// Get user's personal records
+// GET /api/workouts/personal-records?exerciseId=optional
+router.get('/personal-records', getUserPersonalRecords);
+
+// Check if current performance is a personal record
+// POST /api/workouts/exercise-logs/:id/check-record
+router.post('/exercise-logs/:id/check-record', checkPersonalRecord);
+
+// Get personal record history for an exercise
+// GET /api/workouts/personal-records/exercises/:exerciseId/history
+router.get('/personal-records/exercises/:exerciseId/history', getExerciseRecordHistory);
 
 // Bulk Operations (future enhancement)
 
