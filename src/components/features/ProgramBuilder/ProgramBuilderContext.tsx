@@ -139,17 +139,18 @@ const validateCurrentStep = (state: ProgramBuilderState): boolean => {
 function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilderAction): ProgramBuilderState {
   switch (action.type) {
     case 'SET_BASIC_INFO':
-      const newState = { 
-        ...state, 
+      // Create new state with proper field replacement to prevent concatenation
+      const newState: ProgramBuilderState = {
+        ...state,
         ...action.payload,
-        isDirty: true 
+        isDirty: true
       }
-      
+
       // Auto-generate weeks if duration changed
       if (action.payload.durationWeeks && action.payload.durationWeeks !== state.durationWeeks) {
         newState.weeks = createInitialWeeks(action.payload.durationWeeks)
       }
-      
+
       return newState
 
     case 'UPDATE_WEEKS':
