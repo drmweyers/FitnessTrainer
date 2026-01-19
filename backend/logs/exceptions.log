@@ -2312,3 +2312,476 @@ src/services/workoutService.ts(1246,34): error TS2551: Property 'exerciseLog' do
     at Module.load (node:internal/modules/cjs/loader:1465:32)
     at Function._load (node:internal/modules/cjs/loader:1282:12)
     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:40:02 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1063,9): error TS2353: Object literal may only specify known properties, and 'sets' does not exist in type 'WorkoutExerciseLogInclude<DefaultArgs>'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1152,9): error TS2353: Object literal may only specify known properties, and 'sets' does not exist in type 'WorkoutExerciseLogInclude<DefaultArgs>'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:43:59 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1152,9): error TS2353: Object literal may only specify known properties, and 'sets' does not exist in type 'WorkoutExerciseLogInclude<DefaultArgs>'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:45:25 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1152,9): error TS2353: Object literal may only specify known properties, and 'sets' does not exist in type 'WorkoutExerciseLogInclude<DefaultArgs>'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:46:47 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1154,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:47:33 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1154,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:48:25 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1154,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:49:47 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1154,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+src/services/workoutService.ts(1282,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:51:11 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1065,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1083,33): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1087,28): error TS2551: Property 'exercise' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'exerciseId'?
+src/services/workoutService.ts(1088,32): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1090,33): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1091,27): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1092,28): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1093,26): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1112,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1120,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1134,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1143,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1154,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1161,40): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1173,37): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1217,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1235,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1235,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1236,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1236,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1237,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1251,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1268,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+src/services/workoutService.ts(1282,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:55:35 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1083,33): error TS2339: Property 'setLogs' does not exist on type '{ exercise: { id: string; name: string; gifUrl: string; bodyPart: string; equipment: string; }; workoutSession: { clientId: string; scheduledDate: Date; actualStartTime: Date | null; }; } & { ...; }'.
+src/services/workoutService.ts(1084,27): error TS2339: Property 'setLogs' does not exist on type '{ exercise: { id: string; name: string; gifUrl: string; bodyPart: string; equipment: string; }; workoutSession: { clientId: string; scheduledDate: Date; actualStartTime: Date | null; }; } & { ...; }'.
+src/services/workoutService.ts(1085,28): error TS2339: Property 'setLogs' does not exist on type '{ exercise: { id: string; name: string; gifUrl: string; bodyPart: string; equipment: string; }; workoutSession: { clientId: string; scheduledDate: Date; actualStartTime: Date | null; }; } & { ...; }'.
+src/services/workoutService.ts(1086,26): error TS2339: Property 'setLogs' does not exist on type '{ exercise: { id: string; name: string; gifUrl: string; bodyPart: string; equipment: string; }; workoutSession: { clientId: string; scheduledDate: Date; actualStartTime: Date | null; }; } & { ...; }'.
+src/services/workoutService.ts(1105,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1113,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1127,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1136,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1147,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1154,40): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1166,37): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1210,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1228,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1228,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1229,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1229,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1230,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1244,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1261,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+src/services/workoutService.ts(1275,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-18 14:56:21 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/services/workoutService.ts(1102,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1110,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionInclude<DefaultArgs>'.
+src/services/workoutService.ts(1124,34): error TS2551: Property 'workoutSession' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'. Did you mean 'workoutSessionId'?
+src/services/workoutService.ts(1133,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1144,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+src/services/workoutService.ts(1151,40): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1163,37): error TS2339: Property 'setLogs' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1207,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1225,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1225,33): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1226,15): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1226,31): error TS2339: Property 'sets' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date | null; exerciseId: string; orderIndex: number; supersetGroup: string | null; notes: string | null; totalVolume: Decimal | null; ... 5 more ...; endTime: Date | null; }'.
+src/services/workoutService.ts(1227,17): error TS2532: Object is possibly 'undefined'.
+src/services/workoutService.ts(1241,11): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type '(Without<WorkoutSessionRelationFilter, WorkoutSessionWhereInput> & WorkoutSessionWhereInput) | (Without<...> & WorkoutSessionRelationFilter)'.
+src/services/workoutService.ts(1258,13): error TS2353: Object literal may only specify known properties, and 'clientWorkout' does not exist in type 'WorkoutSessionSelect<DefaultArgs>'.
+src/services/workoutService.ts(1272,13): error TS2353: Object literal may only specify known properties, and 'setType' does not exist in type 'WorkoutSetLogWhereInput'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:10:07 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:11:53 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:39:31 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:40:32 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:41:27 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:42:32 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)

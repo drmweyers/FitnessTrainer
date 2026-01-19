@@ -44,12 +44,6 @@ export default function AdminDashboard() {
     }
   });
 
-  const [userGrowthData] = useState<UserGrowthData[]>([
-    { date: '2024-01', totalUsers: 950, newSignups: 45, trainers: 68, clients: 882 },
-    { date: '2024-02', totalUsers: 1028, newSignups: 78, trainers: 72, clients: 956 },
-    { date: '2024-03', totalUsers: 1156, newSignups: 128, trainers: 81, clients: 1075 },
-    { date: '2024-04', totalUsers: 1247, newSignups: 91, trainers: 89, clients: 1158 }
-  ]);
 
   const [recentSignups] = useState<RecentSignup[]>([
     { id: '1', name: 'Sarah Johnson', email: 'sarah@example.com', role: 'trainer', signupDate: new Date().toISOString(), status: 'active' },

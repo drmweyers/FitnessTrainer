@@ -76,6 +76,7 @@ export default function PhotoComparison({ photos, onClose }: PhotoComparisonProp
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
+    return undefined;
   }, [isSliding]);
 
   const formatDate = (dateString: string) => {

@@ -6,7 +6,6 @@ import { Input } from '@/components/shared/Input'
 import { Textarea } from '@/components/shared/Textarea'
 import NumberInput from '@/components/shared/NumberInput'
 import { Button } from '@/components/shared/Button'
-import { Badge } from '@/types/badge'
 
 interface BadgeFormData {
   name: string

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import ClientListItem from './ClientListItem'
 import FilterBar from './FilterBar'
 import ClientModal from './ClientModal'
-import { Client, getClients } from '../api/clientsApi'
+import { Client } from '../api/clientsApi'
 
 export default function ClientList() {
   const [searchTerm, setSearchTerm] = useState('')

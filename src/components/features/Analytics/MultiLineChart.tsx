@@ -144,7 +144,7 @@ export default function MultiLineChart({
           color: '#374151',
           font: {
             size: 12,
-            weight: 'normal',
+            weight: 'normal' as const,
           },
         },
         beginAtZero: false,

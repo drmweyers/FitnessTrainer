@@ -1042,7 +1042,7 @@ export const workoutService = {
       where.exerciseId = exerciseId;
     }
 
-    const records = await prisma.exerciseLog.findMany({
+    const records = await prisma.workoutExerciseLog.findMany({
       where,
       include: {
         exercise: {
@@ -1058,14 +1058,7 @@ export const workoutService = {
           select: {
             scheduledDate: true,
             actualStartTime: true,
-          },
-        },
-        sets: {
-          where: {
-            setType: 'working',
-          },
-          orderBy: {
-            weight: 'desc',
+            clientId: true,
           },
         },
       },
@@ -1087,11 +1080,8 @@ export const workoutService = {
           exercise: record.exercise,
           dateAchieved: record.workoutSession.scheduledDate,
           totalVolume: record.totalVolume?.toString() || '0',
-          setsCompleted: record.sets.length,
-          bestSet: record.sets[0] ? {
-            weight: record.sets[0].weight,
-            reps: record.sets[0].reps,
-          } : null,
+          setsCompleted: 0, // Will be calculated if needed
+          bestWeight: record.totalVolume?.toString() || '0',
         });
       }
     }
@@ -1103,11 +1093,11 @@ export const workoutService = {
    * Check if current performance is a personal record
    */
   async checkPersonalRecord(exerciseLogId: string) {
-    const exerciseLog = await prisma.exerciseLog.findFirst({
+    const exerciseLog = await prisma.workoutExerciseLog.findFirst({
       where: { id: exerciseLogId },
       include: {
         exercise: true,
-        sets: {
+        setLogs: {
           where: {
             setType: 'working',
           },
@@ -1135,7 +1125,7 @@ export const workoutService = {
     const exerciseId = exerciseLog.exerciseId;
 
     // Get all previous logs for this exercise
-    const previousLogs = await prisma.exerciseLog.findMany({
+    const previousLogs = await prisma.workoutExerciseLog.findMany({
       where: {
         exerciseId,
         personalBest: true,
@@ -1149,7 +1139,7 @@ export const workoutService = {
         },
       },
       include: {
-        sets: {
+        setLogs: {
           where: {
             setType: 'working',
           },
@@ -1158,7 +1148,7 @@ export const workoutService = {
     });
 
     // Calculate current best set
-    const currentBestSet = exerciseLog.sets[0];
+    const currentBestSet = exerciseLog.setLogs[0];
     const currentVolume = parseFloat(exerciseLog.totalVolume?.toString() || '0');
 
     let isRecord = false;
@@ -1170,12 +1160,12 @@ export const workoutService = {
     } else {
       // Check if current performance beats previous records
       for (const prevLog of previousLogs) {
-        const prevBestSet = prevLog.sets[0];
+        const prevBestSet = prevLog.setLogs[0];
         const prevVolume = parseFloat(prevLog.totalVolume?.toString() || '0');
 
         if (currentBestSet && prevBestSet) {
-          const currentWeight = parseFloat(currentBestSet.weight);
-          const prevWeight = parseFloat(prevBestSet.weight);
+          const currentWeight = parseFloat(currentBestSet.weight?.toString() || '0');
+          const prevWeight = parseFloat(prevBestSet.weight?.toString() || '0');
 
           if (currentWeight > prevWeight) {
             isRecord = true;
@@ -1183,7 +1173,7 @@ export const workoutService = {
             break;
           }
 
-          if (currentBestSet.reps > prevBestSet.reps && currentWeight >= prevWeight) {
+          if (currentBestSet.actualReps && prevBestSet.actualReps && currentWeight >= prevWeight) {
             isRecord = true;
             recordType = 'reps';
             break;
@@ -1200,13 +1190,13 @@ export const workoutService = {
 
     // Update the exercise log with personal best flag
     if (isRecord) {
-      await prisma.exerciseLog.update({
+      await prisma.workoutExerciseLog.update({
         where: { id: exerciseLogId },
         data: { personalBest: true },
       });
 
       // Unset previous records for this exercise
-      await prisma.exerciseLog.updateMany({
+      await prisma.workoutExerciseLog.updateMany({
         where: {
           exerciseId,
           personalBest: true,
@@ -1243,7 +1233,7 @@ export const workoutService = {
    * Get personal record history for an exercise
    */
   async getExerciseRecordHistory(userId: string, exerciseId: string) {
-    const records = await prisma.exerciseLog.findMany({
+    const records = await prisma.workoutExerciseLog.findMany({
       where: {
         exerciseId,
         personalBest: true,
@@ -1277,7 +1267,7 @@ export const workoutService = {
             },
           },
         },
-        sets: {
+        setLogs: {
           where: {
             setType: 'working',
           },
@@ -1298,9 +1288,9 @@ export const workoutService = {
     return records.map((record: any) => ({
       date: record.workoutSession.scheduledDate,
       totalVolume: record.totalVolume?.toString() || '0',
-      bestSet: record.sets[0] ? {
-        weight: record.sets[0].weight,
-        reps: record.sets[0].reps,
+      bestSet: record.setLogs[0] ? {
+        weight: record.setLogs[0].weight?.toString(),
+        reps: record.setLogs[0].actualReps,
       } : null,
       notes: record.notes,
     }));

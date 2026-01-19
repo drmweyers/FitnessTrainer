@@ -2,21 +2,19 @@
 
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { 
-  ArrowLeft, 
-  Edit, 
-  Mail, 
-  Phone, 
-  Calendar, 
+import {
+  ArrowLeft,
+  Edit,
+  Mail,
+  Phone,
+  Calendar,
   Activity,
   Heart,
   AlertTriangle,
   User,
   Target,
-  Clock,
   Tag,
   MessageSquare,
-  FileText,
   MoreVertical,
   Dumbbell
 } from 'lucide-react';
@@ -517,7 +515,7 @@ export default function ClientDetailsPage() {
       {showEditForm && (
         <ClientForm
           client={client}
-          onSubmit={async (data) => {
+          onSubmit={async (_data) => {
             // Handle update
             setShowEditForm(false);
             refreshClient();

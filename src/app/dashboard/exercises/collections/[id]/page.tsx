@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  ArrowLeft, 
-  Edit3, 
-  Trash2, 
+import {
+  ArrowLeft,
+  Edit3,
+  Trash2,
   Share2,
   Users,
   Lock,
@@ -15,9 +15,7 @@ import {
   Grid3X3,
   List,
   Search,
-  Filter,
-  Plus,
-  Download
+  Plus
 } from 'lucide-react'
 import Layout from '@/components/layout/Layout'
 import { ExerciseCard } from '@/components/features/ExerciseLibrary/ExerciseCard'

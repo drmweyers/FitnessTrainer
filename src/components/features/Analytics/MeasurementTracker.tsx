@@ -91,7 +91,7 @@ export default function MeasurementTracker({
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear errors when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev: Record<string, string>) => ({ ...prev, [field]: undefined as any }));
     }
   };
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Filter, Download, Search, Users, UserPlus } from 'lucide-react';
+import { Plus, Download, Search, Users, UserPlus } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import ClientCard from '@/components/clients/ClientCard';
@@ -41,13 +41,12 @@ export default function ClientManagementPage() {
     archiveClient,
   } = useClients();
 
-  const { invitations, inviteClient } = useInvitations();
+  const { inviteClient } = useInvitations();
 
   // Modal states
   const [showClientForm, setShowClientForm] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
 
   // Search and filter handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

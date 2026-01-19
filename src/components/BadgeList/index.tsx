@@ -1,7 +1,6 @@
 import React from 'react';
 import { Badge } from '@/types/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 

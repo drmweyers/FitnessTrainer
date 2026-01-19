@@ -2,37 +2,32 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
-  Heart, 
-  Grid3X3, 
-  List, 
-  Search, 
-  Filter,
+import {
+  Heart,
+  Grid3X3,
+  List,
+  Search,
   Trash2,
-  Download,
-  Share2,
   ArrowLeft,
   SortAsc,
   SortDesc
 } from 'lucide-react'
 import Layout from '@/components/layout/Layout'
 import { ExerciseCard } from '@/components/features/ExerciseLibrary/ExerciseCard'
-import { ExerciseGrid } from '@/components/features/ExerciseLibrary/ExerciseGrid'
 import { ExerciseGridSkeleton } from '@/components/features/ExerciseLibrary/ExerciseGridSkeleton'
 import { useFavorites } from '@/hooks/useFavorites'
-import { ExerciseWithUserData, ExerciseSearchState } from '@/types/exercise'
+import { ExerciseWithUserData } from '@/types/exercise'
 import { getExercisesByIds } from '@/services/exerciseService'
 
 type SortOption = 'name' | 'dateAdded' | 'usage' | 'lastUsed'
 type SortOrder = 'asc' | 'desc'
 
 export default function FavoritesPage() {
-  const { 
-    favorites, 
-    favoriteExerciseIds, 
-    isLoading, 
-    error, 
-    toggleFavorite, 
+  const {
+    favorites,
+    isLoading,
+    error,
+    toggleFavorite,
     clearFavorites,
     refreshFavorites
   } = useFavorites()
@@ -44,23 +39,7 @@ export default function FavoritesPage() {
   const [selectedExercises, setSelectedExercises] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<SortOption>('dateAdded')
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
-  const [showBulkActions, setShowBulkActions] = useState(false)
 
-  const searchState: ExerciseSearchState = {
-    query: searchQuery,
-    filters: {
-      bodyParts: [],
-      equipments: [],
-      targetMuscles: [],
-      search: searchQuery,
-      favorites: true
-    },
-    sortBy: 'name',
-    sortOrder: 'asc',
-    viewMode,
-    pageSize: 20,
-    currentPage: 1
-  }
 
   // Load favorite exercises when favorites change
   useEffect(() => {
@@ -79,8 +58,6 @@ export default function FavoritesPage() {
         
         // Enhance with user data and ensure they're marked as favorited
         const exercisesWithUserData: ExerciseWithUserData[] = exercises.map(exercise => {
-          const favorite = favorites.find(fav => fav.exerciseId === exercise.exerciseId)
-          
           return {
             ...exercise,
             isFavorited: true,
@@ -174,7 +151,7 @@ export default function FavoritesPage() {
     )
   }
 
-  const handleSelectAll = () => {
+  const _handleSelectAll = () => {
     if (selectedExercises.length === filteredExercises.length) {
       setSelectedExercises([])
     } else {

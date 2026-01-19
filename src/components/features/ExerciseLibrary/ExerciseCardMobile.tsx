@@ -51,7 +51,7 @@ export default function ExerciseCardMobile({
   const isMobile = useIsMobile()
   const touchStyles = useTouchFriendlyStyles()
   const cardRef = useRef<HTMLDivElement>(null)
-  const swipeStartX = useRef<number>(0)
+  const _swipeStartX = useRef<number>(0)
   const maxSwipeOffset = 120 // Maximum swipe distance to reveal actions
 
   // Swipe actions for mobile
@@ -156,10 +156,13 @@ export default function ExerciseCardMobile({
   }, [isMobile])
 
   // Combine refs
-  const setRefs = (node: HTMLDivElement) => {
-    cardRef.current = node
-    if (gestureRef) {
-      gestureRef.current = node
+  const setRefs = (node: HTMLDivElement | null) => {
+    if (node) {
+      // cardRef is mutable
+      (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+      if (typeof gestureRef === 'object' && gestureRef !== null) {
+        (gestureRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+      }
     }
   }
 

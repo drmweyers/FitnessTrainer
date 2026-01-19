@@ -40,9 +40,10 @@ export default function ClientTags({ clientId }: ClientTagsProps) {
         tagsApi.getTags(),
         clientsApi.getClientById(clientId)
       ]);
-      
-      setAllTags(tagsResponse.data || []);
-      setClientTags(clientResponse.data?.tags || []);
+
+      setAllTags(Array.isArray(tagsResponse) ? tagsResponse : (tagsResponse.data || []));
+      const clientData = 'data' in clientResponse ? clientResponse.data : clientResponse;
+      setClientTags(clientData?.tags || []);
     } catch (err) {
       const errorMessage = err instanceof ApiError 
         ? err.message 

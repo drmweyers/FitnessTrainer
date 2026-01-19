@@ -11,8 +11,8 @@ import { useToast, ToastContainer } from '@/components/shared/Toast';
 export default function WorkoutTrackerPage() {
   const [currentView, setCurrentView] = useState<'daily' | 'execution'>('daily');
   const [activeSession, setActiveSession] = useState<WorkoutSession | null>(null);
-  const [clientId, setClientId] = useState<string>('client-1'); // In real app, get from auth
-  const router = useRouter();
+  const [clientId, _setClientId] = useState<string>('client-1'); // In real app, get from auth
+  const _router = useRouter();
   const { toasts, success, error, removeToast } = useToast();
 
   // Check for active session on mount (in case of page refresh)

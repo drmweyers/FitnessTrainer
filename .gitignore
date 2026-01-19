@@ -60,15 +60,11 @@ nul
 # Build artifacts
 *.zip
 *.json.zip
-. a u t o - c l a u d e / 
-.auto-claude/
- 
- 
 
-# Auto Claude generated files
-.auto-claude-security.json
-.auto-claude-status
-.claude_settings.json
-.worktrees/
-.security-key
-logs/security/
+# Auto Claude data directory
+.auto-claude/
+
+# Claude local settings
+.claude/settings.local.json
+.claude/settings.*
+!.claude/settings.json

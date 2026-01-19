@@ -37,15 +37,7 @@ export default function ClientDashboard() {
   const [isDataLoading, setIsDataLoading] = useState(true);
 
   // Mock data - in production, these would come from API calls
-  const [todaysWorkout] = useState<TodaysWorkout | null>({
-    id: 'w1',
-    name: 'Upper Body Strength',
-    programName: 'Advanced Strength Training',
-    exercises: 8,
-    estimatedTime: 45,
-    difficulty: 'intermediate',
-    completed: false
-  });
+
 
   const [progressSummary] = useState<ProgressSummary>({
     currentWeight: 165,
@@ -464,7 +456,7 @@ export default function ClientDashboard() {
                           <svg
                             key={i}
                             className={`h-4 w-4 ${
-                              i < workout.rating ? 'text-yellow-400' : 'text-gray-300'
+                              i < (workout.rating || 0) ? 'text-yellow-400' : 'text-gray-300'
                             }`}
                             fill="currentColor"
                             viewBox="0 0 20 20"

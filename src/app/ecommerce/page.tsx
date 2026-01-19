@@ -2,9 +2,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Globe, ChevronDown, ShoppingCart, Menu, User, Search, ChevronLeft, ChevronRight, Star, Clock } from 'lucide-react'
+import { MapPin, Globe, ChevronDown, ShoppingCart, Menu, Search, ChevronLeft, ChevronRight, Star, Clock } from 'lucide-react'
 
 // Mock Data
 const categories = [
@@ -37,7 +36,6 @@ const topDeals = [
 // Header Component
 function Header() {
   const [isLocationOpen, setIsLocationOpen] = useState(false)
-  const [isAccountOpen, setIsAccountOpen] = useState(false)
   
   return (
     <header className="bg-[#131921] text-white">
@@ -120,7 +118,7 @@ function Header() {
 // SearchBar Component
 function SearchBar() {
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState('All')
+  const [category, _setCategory] = useState('All')
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   
   const handleSearch = (e: React.FormEvent) => {
@@ -221,7 +219,7 @@ interface CategoryCardProps {
   link: string;
 }
 
-function CategoryCard({ title, imageUrl, link }: CategoryCardProps) {
+function CategoryCard({ title, imageUrl: _imageUrl, link }: CategoryCardProps) {
   return (
     <div className="bg-white p-4 rounded shadow">
       <h3 className="text-lg font-bold mb-2">{title}</h3>

@@ -4,11 +4,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
-import { createClient } from 'redis';
+import { createClient, RedisClientType } from 'redis';
 
 import { logger } from '@/config/logger';
 import { corsOptions } from '@/config/cors';
 import { rateLimitConfig } from '@/config/rateLimit';
+import { withRetry } from '@/utils/database-retry';
 
 // Routes
 import authRoutes from '@/routes/auth';
@@ -16,43 +17,63 @@ import healthRoutes from '@/routes/health';
 import exerciseRoutes from '@/routes/exercises';
 import programRoutes from '@/routes/programs';
 import analyticsRoutes from '@/routes/analytics';
-import workoutRoutes from '@/routes/workouts';
-console.log('Loading routes...');
-// import workingProfileRoutes from '@/routes/workingProfileRoutes';
 import { clientRoutes } from '@/routes/clientRoutes';
-console.log('Routes loaded.');
-// import profileRoutes from '@/routes/profileRoutes';
 
 // Middleware
 import { errorHandler } from '@/middleware/errorHandler';
 import { requestLogger } from '@/middleware/requestLogger';
 
+// ============================================================================
+// Configuration
+// ============================================================================
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Initialize Prisma
-export const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+// ============================================================================
+// Database: Prisma Client Singleton
+// ============================================================================
+
+/**
+ * Initialize Prisma with singleton pattern to prevent multiple instances in development
+ *
+ * This prevents connection pool exhaustion caused by hot reloads in development.
+ * Uses globalThis to persist the PrismaClient instance across module reloads.
+ *
+ * @see https://www.prisma.io/docs/support/help-articles/nextjs-prisma-client-dev-practices
+ */
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 });
 
-// Initialize Redis
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
+
+// ============================================================================
+// Cache: Redis Client
+// ============================================================================
+
+/**
+ * Initialize Redis client for caching and session management
+ *
+ * Redis is used for:
+ * - Session storage
+ * - API response caching
+ * - Rate limiting counters
+ */
 export const redis = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
-  socket: {
-    reconnectStrategy: () => {
-      // Don't auto-reconnect in development
-      return false;
-    },
-    connectTimeout: 5000,
-  },
-});
+}) as RedisClientType;
 
-// Redis error handler
-redis.on('error', (err) => {
-  logger.error('Redis connection error:', err);
-});
+// ============================================================================
+// Middleware Configuration
+// ============================================================================
 
-// Global middleware
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -70,24 +91,25 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(requestLogger);
 
-// Routes
+// ============================================================================
+// API Routes
+// ============================================================================
+
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/programs', programRoutes);
-app.use('/api/workouts', workoutRoutes);
 app.use('/api/analytics', analyticsRoutes);
-// TODO: Re-enable full profile routes after fixing import issues
-// app.use('/api/profile', profileRoutes);
-// app.use('/api/profile', workingProfileRoutes);
 app.use('/api/clients', clientRoutes);
-// TODO: Re-enable full profile routes after fixing import issues
-// app.use('/api/profile', profileRoutes);
 
-// Global error handler
+// ============================================================================
+// Error Handlers
+// ============================================================================
+
+// Global error handler (must be last)
 app.use(errorHandler);
 
-// 404 handler
+// 404 handler (must be after error handler)
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -100,40 +122,92 @@ app.use('*', (req, res) => {
   });
 });
 
-async function startServer() {
-  try {
-    // Connect to database
-    await prisma.$connect();
-    logger.info('✅ Connected to PostgreSQL database');
+// ============================================================================
+// Connection Management
+// ============================================================================
 
-    // Connect to Redis (optional for development)
-    try {
-      if (!redis.isOpen) {
-        await redis.connect();
-        logger.info('✅ Connected to Redis cache');
-      } else {
-        logger.info('ℹ️ Redis already connected');
-      }
-    } catch (redisError) {
-      logger.warn('⚠️ Redis connection failed, continuing without cache (development mode)');
-      logger.warn('Redis error:', redisError);
+/**
+ * Connect to PostgreSQL database with retry logic
+ *
+ * Uses exponential backoff retry wrapper to handle transient failures.
+ * This improves resilience during database restarts or temporary network issues.
+ *
+ * @throws Error if connection fails after max retries
+ */
+async function connectDatabase(): Promise<void> {
+  await withRetry(
+    async () => {
+      await prisma.$connect();
+      logger.info('✅ Connected to PostgreSQL database');
+    },
+    {
+      maxRetries: 3,
+      baseDelay: 1000,
+      useJitter: 500,
     }
+  );
+}
 
-    // Start server
-    const server = app.listen(PORT, () => {
+/**
+ * Connect to Redis cache with retry logic
+ *
+ * Uses exponential backoff retry wrapper to handle transient failures.
+ * Redis is optional for basic operation but recommended for production.
+ *
+ * @throws Error if connection fails after max retries
+ */
+async function connectRedis(): Promise<void> {
+  await withRetry(
+    async () => {
+      await redis.connect();
+      logger.info('✅ Connected to Redis cache');
+    },
+    {
+      maxRetries: 3,
+      baseDelay: 1000,
+      useJitter: 500,
+    }
+  );
+}
+
+/**
+ * Disconnect all connections gracefully
+ *
+ * Called during shutdown to ensure clean connection closure.
+ * Prevents connection leaks and ensures data consistency.
+ */
+async function disconnectAll(): Promise<void> {
+  try {
+    await prisma.$disconnect();
+    await redis.disconnect();
+    logger.info('✅ All connections closed');
+  } catch (error) {
+    logger.error('❌ Error during disconnection:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// Server Startup
+// ============================================================================
+
+/**
+ * Start the Express server
+ *
+ * Initializes database and Redis connections before listening for requests.
+ * Uses retry logic for resilient connection establishment.
+ */
+async function startServer(): Promise<void> {
+  try {
+    // Connect to database and Redis with retry logic
+    await connectDatabase();
+    await connectRedis();
+
+    // Start HTTP server
+    app.listen(PORT, () => {
       logger.info(`🚀 EvoFit Backend API running on port ${PORT}`);
       logger.info(`📱 Environment: ${process.env.NODE_ENV}`);
       logger.info(`🔗 Health check: http://localhost:${PORT}/api/health`);
-    });
-
-    server.on('error', (err: any) => {
-      if (err.code === 'EADDRINUSE') {
-        logger.error(`❌ Port ${PORT} is already in use`);
-        process.exit(1);
-      } else {
-        logger.error('❌ Server error:', err);
-        process.exit(1);
-      }
     });
   } catch (error) {
     logger.error('❌ Failed to start server:', error);
@@ -141,14 +215,17 @@ async function startServer() {
   }
 }
 
-// Graceful shutdown
+// ============================================================================
+// Graceful Shutdown Handlers
+// ============================================================================
+
+/**
+ * Handle SIGINT (Ctrl+C) for graceful shutdown
+ */
 process.on('SIGINT', async () => {
-  logger.info('🛑 Shutting down gracefully...');
-  
+  logger.info('🛑 SIGINT received, shutting down gracefully...');
   try {
-    await prisma.$disconnect();
-    await redis.disconnect();
-    logger.info('✅ Connections closed');
+    await disconnectAll();
     process.exit(0);
   } catch (error) {
     logger.error('❌ Error during shutdown:', error);
@@ -156,18 +233,31 @@ process.on('SIGINT', async () => {
   }
 });
 
+/**
+ * Handle SIGTERM for graceful shutdown (e.g., Docker, Kubernetes)
+ */
 process.on('SIGTERM', async () => {
   logger.info('🛑 SIGTERM received, shutting down...');
-  await prisma.$disconnect();
-  await redis.disconnect();
-  process.exit(0);
+  try {
+    await disconnectAll();
+    process.exit(0);
+  } catch (error) {
+    logger.error('❌ Error during shutdown:', error);
+    process.exit(1);
+  }
 });
 
-// Handle unhandled rejections
+/**
+ * Handle unhandled promise rejections
+ * Prevents process from exiting silently with unhandled errors
+ */
 process.on('unhandledRejection', (err: Error) => {
   logger.error('🚨 Unhandled Promise Rejection:', err);
   process.exit(1);
 });
 
-startServer();
+// ============================================================================
+// Start Server
+// ============================================================================
 
+startServer();

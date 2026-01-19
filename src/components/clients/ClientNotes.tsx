@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, X, MessageSquare, Clock } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Textarea } from '@/components/shared/Textarea';
 import { Card } from '@/components/shared/Card';

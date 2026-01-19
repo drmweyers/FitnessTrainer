@@ -111,8 +111,8 @@ export default function BodyCompositionChart({
           },
           filter: function(item, chart) {
             // Only show legend items that have data
-            const dataset = chart.data.datasets[item.datasetIndex!];
-            return dataset.data.some((value: any) => value !== null && value !== undefined);
+            const dataset = (chart as any).data.datasets[item.datasetIndex!];
+            return Array.isArray(dataset.data) && dataset.data.some((value: any) => value !== null && value !== undefined);
           },
         },
       },
@@ -174,7 +174,6 @@ export default function BodyCompositionChart({
       x: {
         grid: {
           color: 'rgba(0, 0, 0, 0.1)',
-          drawBorder: false,
         },
         ticks: {
           color: '#6B7280',
@@ -189,7 +188,6 @@ export default function BodyCompositionChart({
         position: 'left',
         grid: {
           color: 'rgba(0, 0, 0, 0.1)',
-          drawBorder: false,
         },
         ticks: {
           color: '#6B7280',

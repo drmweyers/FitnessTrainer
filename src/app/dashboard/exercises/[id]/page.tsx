@@ -18,7 +18,7 @@ export default function ExerciseDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const { favorites, toggleFavorite, isFavorited } = useFavorites()
+  const { toggleFavorite, isFavorited } = useFavorites()
 
   useEffect(() => {
     const fetchExercise = async () => {
@@ -60,7 +60,7 @@ export default function ExerciseDetailPage() {
     router.back()
   }
 
-  const handleFavorite = async (exerciseId: string) => {
+  const handleFavorite = async (_exerciseId: string) => {
     try {
       if (exercise) {
         await toggleFavorite(exercise.exerciseId)

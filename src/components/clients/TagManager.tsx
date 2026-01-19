@@ -42,7 +42,7 @@ export default function TagManager({ onClose }: TagManagerProps) {
       setLoading(true);
       setError(null);
       const response = await tagsApi.getTags();
-      setTags(response.data || []);
+      setTags(Array.isArray(response) ? response : (response.data || []));
     } catch (err) {
       const errorMessage = err instanceof ApiError 
         ? err.message 

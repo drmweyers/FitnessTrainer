@@ -92,7 +92,7 @@ export default function ProgressChart({
       pointHoverRadius: 0,
       borderWidth: 1,
       borderDash: [5, 5],
-    });
+    } as any);
   }
 
   const options = {

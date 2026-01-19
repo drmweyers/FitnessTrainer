@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, Calendar, CheckCircle, Clock } from 'lucide-react'
+import { Activity, CheckCircle, Clock } from 'lucide-react'
 
 interface TrainingOverviewProps {
   client: {
