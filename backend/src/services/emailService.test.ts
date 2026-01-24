@@ -15,6 +15,15 @@ jest.mock('../config/logger', () => ({
   },
 }));
 
+// Helper function to safely get call arguments
+function getFirstCallArgs(mock: jest.Mock | jest.Mocked<any>) {
+  const calls = mock.mock?.calls || mock.calls;
+  if (calls.length === 0) {
+    throw new Error('No calls were made to the mock function');
+  }
+  return calls[0][0];
+}
+
 describe('EmailService', () => {
   let emailService: EmailService;
   let mockTransporter: jest.Mocked<nodemailer.Transporter>;
@@ -195,28 +204,28 @@ describe('EmailService', () => {
     it('should include verification URL in email', async () => {
       await emailService.sendEmailVerification('user@example.com', 'token-456');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('http://localhost:3000/auth/verify-email?token=token-456');
     });
 
     it('should personalize email with user name', async () => {
       await emailService.sendEmailVerification('user@example.com', 'token-789', 'John');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Hi John!');
     });
 
     it('should handle missing user name gracefully', async () => {
       await emailService.sendEmailVerification('user@example.com', 'token-789');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Hi!');
     });
 
     it('should include security note about expiration', async () => {
       await emailService.sendEmailVerification('user@example.com', 'token-123');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('24 hours');
     });
   });
@@ -236,28 +245,28 @@ describe('EmailService', () => {
     it('should include reset URL in email', async () => {
       await emailService.sendPasswordReset('user@example.com', 'reset-token-456');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('http://localhost:3000/auth/reset-password?token=reset-token-456');
     });
 
     it('should personalize email with user name', async () => {
       await emailService.sendPasswordReset('user@example.com', 'reset-token-789', 'Jane');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Hi Jane!');
     });
 
     it('should include security note about 1 hour expiration', async () => {
       await emailService.sendPasswordReset('user@example.com', 'reset-token-123');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('1 hour');
     });
 
     it('should include security recommendations', async () => {
       await emailService.sendPasswordReset('user@example.com', 'reset-token-123');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Never share this reset link');
       expect(callArgs.html).toContain('Create a strong, unique password');
     });
@@ -288,7 +297,7 @@ describe('EmailService', () => {
     it('should include trainer-specific content', async () => {
       await emailService.sendWelcomeEmail('trainer@example.com', 'Mike', 'trainer');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Ready to Train Clients?');
       expect(callArgs.html).toContain('Create customized workout programs');
     });
@@ -296,7 +305,7 @@ describe('EmailService', () => {
     it('should include client-specific content', async () => {
       await emailService.sendWelcomeEmail('client@example.com', 'Sarah', 'client');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Ready to Transform Your Fitness?');
       expect(callArgs.html).toContain('Follow personalized workout programs');
     });
@@ -304,7 +313,7 @@ describe('EmailService', () => {
     it('should include dashboard link', async () => {
       await emailService.sendWelcomeEmail('user@example.com', 'Test', 'trainer');
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('http://localhost:3000/dashboard');
     });
   });
@@ -333,7 +342,7 @@ describe('EmailService', () => {
         'invite-token-456'
       );
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('http://localhost:3000/accept-invitation?token=invite-token-456');
     });
 
@@ -345,7 +354,7 @@ describe('EmailService', () => {
         'invite-token-789'
       );
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Coach Sarah');
       expect(callArgs.html).toContain('sarah@example.com');
     });
@@ -358,7 +367,7 @@ describe('EmailService', () => {
         'invite-token-123'
       );
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Access personalized workout programs');
       expect(callArgs.html).toContain('Track your progress and achievements');
       expect(callArgs.html).toContain('Communicate directly with your trainer');
@@ -372,7 +381,7 @@ describe('EmailService', () => {
         'invite-token-123'
       );
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('7 days');
     });
   });
@@ -400,7 +409,7 @@ describe('EmailService', () => {
         timestamp: new Date('2024-01-01T12:00:00Z'),
       });
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Password changed');
       expect(callArgs.html).toContain('192.168.1.1');
       expect(callArgs.html).toContain('Chrome on Windows');
@@ -409,7 +418,7 @@ describe('EmailService', () => {
     it('should handle missing optional details', async () => {
       await emailService.sendSecurityNotification('user@example.com', 'New login', {});
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('New login');
       // Should not throw error
     });
@@ -419,7 +428,7 @@ describe('EmailService', () => {
         ipAddress: '192.168.1.1',
       });
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.html).toContain('Change your password immediately');
       expect(callArgs.html).toContain('Enable two-factor authentication');
     });
@@ -427,6 +436,8 @@ describe('EmailService', () => {
 
   describe('verifyConnection', () => {
     it('should verify connection successfully', async () => {
+      mockTransporter.verify.mockResolvedValueOnce(true);
+
       const result = await emailService.verifyConnection();
 
       expect(result).toBe(true);
@@ -434,7 +445,7 @@ describe('EmailService', () => {
     });
 
     it('should return false when verification fails', async () => {
-      mockTransporter.verify.mockRejectedValue(new Error('Connection failed'));
+      mockTransporter.verify.mockRejectedValueOnce(new Error('Connection failed'));
 
       const result = await emailService.verifyConnection();
 
@@ -442,12 +453,18 @@ describe('EmailService', () => {
     });
 
     it('should return false when transporter not initialized', async () => {
+      // Create a service without mocking createTransport to get null transporter
+      const originalCreateTransport = nodemailer.createTransport;
+      jest.spyOn(nodemailer, 'createTransport').mockReturnValueOnce(null as any);
+
       const brokenService = new EmailService();
-      (brokenService as any).transporter = null;
 
       const result = await brokenService.verifyConnection();
 
       expect(result).toBe(false);
+
+      // Restore original
+      (nodemailer.createTransport as jest.Mock).mockRestore();
     });
   });
 
@@ -459,7 +476,7 @@ describe('EmailService', () => {
         html: '<p>Paragraph</p><div>Division</div>',
       });
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.text).toBe('Paragraph Division');
     });
 
@@ -470,7 +487,7 @@ describe('EmailService', () => {
         html: '<h1>Title</h1><p>Text</p><a href="#">Link</a>',
       });
 
-      const callArgs = mockTransporter.sendMail.mock.calls[0][0];
+      const callArgs = getFirstCallArgs(mockTransporter.sendMail);
       expect(callArgs.text).toContain('Title');
       expect(callArgs.text).toContain('Text');
     });

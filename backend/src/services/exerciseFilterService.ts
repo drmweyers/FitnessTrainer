@@ -222,10 +222,17 @@ export class ExerciseFilterService {
 
   /**
    * Get a specific preset by ID
+   * Supports both kebab-case (e.g., 'upper-body') and camelCase (e.g., 'upperBody')
    */
   getPresetById(presetId: string): FilterPreset | null {
     const presets = this.getDefaultPresets();
-    return presets[presetId] || null;
+    // Try direct key lookup first
+    if (presets[presetId]) {
+      return presets[presetId];
+    }
+    // Try converting kebab-case to camelCase
+    const camelCaseId = presetId.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    return presets[camelCaseId] || null;
   }
 
   /**

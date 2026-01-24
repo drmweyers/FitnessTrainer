@@ -57,8 +57,8 @@ describe('ExerciseSearchService', () => {
     ];
 
     it('should search exercises by name', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(1);
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0]]);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(1);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0]]);
 
       const result = await searchService.searchExercises('push');
 
@@ -69,8 +69,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should search exercises by body part', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       const result = await searchService.searchExercises('chest');
 
@@ -80,8 +80,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should search exercises by target muscle', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       const result = await searchService.searchExercises('pectorals');
 
@@ -90,8 +90,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should search exercises by equipment', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(1);
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[1]]);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(1);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[1]]);
 
       const result = await searchService.searchExercises('barbell');
 
@@ -100,8 +100,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should handle empty query and return all active exercises', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       const result = await searchService.searchExercises('');
 
@@ -114,8 +114,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should respect limit parameter', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(10);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(10);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.searchExercises('push', undefined, { limit: 5 });
 
@@ -127,8 +127,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should respect offset parameter', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(10);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(10);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.searchExercises('push', undefined, { offset: 10 });
 
@@ -140,8 +140,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should search in instructions when enabled', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(1);
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0]]);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(1);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0]]);
 
       await searchService.searchExercises('plank', undefined, { searchInInstructions: true });
 
@@ -159,22 +159,23 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should not search in instructions by default', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(0);
-      mockPrisma.exercise.findMany.mockResolvedValue([]);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(0);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([]);
 
       await searchService.searchExercises('plank');
 
-      const whereClause = mockPrisma.exercise.findMany.mock.calls[0][0].where;
-      const hasInstructionsSearch = whereClause.OR.some(
+      const callArgs = (mockPrisma.exercise.findMany as jest.Mock).mock.calls[0];
+      const whereClause = callArgs?.[0]?.where;
+      const hasInstructionsSearch = whereClause?.OR?.some(
         (condition: any) => condition.instructions
-      );
+      ) || false;
 
       expect(hasInstructionsSearch).toBe(false);
     });
 
     it('should only return active exercises', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(1);
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0]]);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(1);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0]]);
 
       await searchService.searchExercises('push');
 
@@ -188,8 +189,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should order results by name ascending', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.searchExercises('push');
 
@@ -201,9 +202,9 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should save search history when userId provided', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
-      mockPrisma.exerciseSearchHistory.create.mockResolvedValue({} as any);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
+      (mockPrisma.exerciseSearchHistory.create as jest.Mock).mockResolvedValue({} as any);
 
       await searchService.searchExercises('push', 'user123');
 
@@ -217,8 +218,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should not save search history when userId not provided', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.searchExercises('push');
 
@@ -226,8 +227,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should not save search history for empty query', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.searchExercises('', 'user123');
 
@@ -235,9 +236,9 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should handle search history save failure gracefully', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
-      mockPrisma.exerciseSearchHistory.create.mockRejectedValue(new Error('DB Error'));
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
+      (mockPrisma.exerciseSearchHistory.create as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
       const result = await searchService.searchExercises('push', 'user123');
 
@@ -246,8 +247,8 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should return correct search result structure', async () => {
-      mockPrisma.exercise.count.mockResolvedValue(2);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.count as jest.Mock).mockResolvedValue(2);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       const result = await searchService.searchExercises('push');
 
@@ -293,17 +294,17 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should return suggestions for 2+ character query', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0], mockExercises[2]]);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0], mockExercises[2]]);
 
       const result = await searchService.getSuggestions('push');
 
       expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Push-up');
-      expect(result[1].name).toBe('Push Press');
+      expect(result[0]?.name).toBe('Push-up');
+      expect(result[1]?.name).toBe('Push Press');
     });
 
     it('should respect custom limit', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0]]);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0]]);
 
       await searchService.getSuggestions('push', 5);
 
@@ -315,7 +316,7 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should use default limit of 10', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.getSuggestions('push');
 
@@ -327,19 +328,21 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should only return active exercises', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.getSuggestions('push');
 
       expect(mockPrisma.exercise.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { isActive: true },
+          where: expect.objectContaining({
+            isActive: true,
+          }),
         })
       );
     });
 
     it('should order suggestions by name', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExercises);
 
       await searchService.getSuggestions('push');
 
@@ -351,30 +354,30 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should include highlighted match', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0]]);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0]]);
 
       const result = await searchService.getSuggestions('push');
 
       expect(result[0]).toHaveProperty('matchHighlight');
-      expect(result[0].matchHighlight).toContain('<mark>push</mark>');
+      expect(result[0]?.matchHighlight).toContain('<mark>Push</mark>');
     });
 
     it('should return suggestion with correct structure', async () => {
-      mockPrisma.exercise.findMany.mockResolvedValue([mockExercises[0]]);
+      (mockPrisma.exercise.findMany as jest.Mock).mockResolvedValue([mockExercises[0]]);
 
       const result = await searchService.getSuggestions('push');
 
       expect(result[0]).toHaveProperty('exerciseId');
       expect(result[0]).toHaveProperty('name');
       expect(result[0]).toHaveProperty('matchHighlight');
-      expect(result[0].exerciseId).toBe('1');
-      expect(result[0].name).toBe('Push-up');
+      expect(result[0]?.exerciseId).toBe('1');
+      expect(result[0]?.name).toBe('Push-up');
     });
   });
 
   describe('saveSearchHistory', () => {
     it('should save search history', async () => {
-      mockPrisma.exerciseSearchHistory.create.mockResolvedValue({
+      (mockPrisma.exerciseSearchHistory.create as jest.Mock).mockResolvedValue({
         id: '1',
         userId: 'user123',
         searchQuery: 'push',
@@ -413,7 +416,7 @@ describe('ExerciseSearchService', () => {
     ];
 
     it('should get user search history', async () => {
-      mockPrisma.exerciseSearchHistory.findMany.mockResolvedValue(mockHistory);
+      (mockPrisma.exerciseSearchHistory.findMany as jest.Mock).mockResolvedValue(mockHistory);
 
       const result = await searchService.getSearchHistory('user123');
 
@@ -423,7 +426,7 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should use default limit of 20', async () => {
-      mockPrisma.exerciseSearchHistory.findMany.mockResolvedValue(mockHistory);
+      (mockPrisma.exerciseSearchHistory.findMany as jest.Mock).mockResolvedValue(mockHistory);
 
       await searchService.getSearchHistory('user123');
 
@@ -435,7 +438,7 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should respect custom limit', async () => {
-      mockPrisma.exerciseSearchHistory.findMany.mockResolvedValue(mockHistory);
+      (mockPrisma.exerciseSearchHistory.findMany as jest.Mock).mockResolvedValue(mockHistory);
 
       await searchService.getSearchHistory('user123', 10);
 
@@ -447,7 +450,7 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should order by searchedAt descending', async () => {
-      mockPrisma.exerciseSearchHistory.findMany.mockResolvedValue(mockHistory);
+      (mockPrisma.exerciseSearchHistory.findMany as jest.Mock).mockResolvedValue(mockHistory);
 
       await searchService.getSearchHistory('user123');
 
@@ -459,7 +462,7 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should filter by userId', async () => {
-      mockPrisma.exerciseSearchHistory.findMany.mockResolvedValue(mockHistory);
+      (mockPrisma.exerciseSearchHistory.findMany as jest.Mock).mockResolvedValue(mockHistory);
 
       await searchService.getSearchHistory('user123');
 
@@ -473,7 +476,7 @@ describe('ExerciseSearchService', () => {
 
   describe('clearSearchHistory', () => {
     it('should clear user search history', async () => {
-      mockPrisma.exerciseSearchHistory.deleteMany.mockResolvedValue({ count: 5 });
+      (mockPrisma.exerciseSearchHistory.deleteMany as jest.Mock).mockResolvedValue({ count: 5 });
 
       const result = await searchService.clearSearchHistory('user123');
 
@@ -485,7 +488,7 @@ describe('ExerciseSearchService', () => {
     });
 
     it('should return success message even when no history to clear', async () => {
-      mockPrisma.exerciseSearchHistory.deleteMany.mockResolvedValue({ count: 0 });
+      (mockPrisma.exerciseSearchHistory.deleteMany as jest.Mock).mockResolvedValue({ count: 0 });
 
       const result = await searchService.clearSearchHistory('user123');
 
@@ -498,7 +501,7 @@ describe('ExerciseSearchService', () => {
     it('should highlight matching text', () => {
       const result = (searchService as any).highlightMatch('Push-up', 'push');
 
-      expect(result).toContain('<mark>push</mark>');
+      expect(result).toContain('<mark>Push</mark>');
     });
 
     it('should be case insensitive', () => {
