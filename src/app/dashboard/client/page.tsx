@@ -393,7 +393,7 @@ export default function ClientDashboard() {
         {/* Upcoming Workouts */}
         <div className="bg-white rounded-lg border border-gray-200">
           <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">This Week's Schedule</h3>
+            <h3 className="text-lg font-medium text-gray-900">This Week&apos;s Schedule</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
             {upcomingWorkouts.map((workout) => (
@@ -445,7 +445,7 @@ export default function ClientDashboard() {
                       </div>
                       {workout.notes && (
                         <p className="text-xs text-gray-500 mt-1 italic">
-                          "{workout.notes}"
+                          &ldquo;{workout.notes}&rdquo;
                         </p>
                       )}
                     </div>

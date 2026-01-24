@@ -129,7 +129,7 @@ export default function ClientDashboardPage() {
       <div className="p-6">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-800">{client.name}'s Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{client.name}&apos;s Dashboard</h1>
             <div className="ml-4 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
               Active Client
             </div>

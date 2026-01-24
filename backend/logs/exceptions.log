@@ -2785,3 +2785,487 @@ src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call
     at Module.load (node:internal/modules/cjs/loader:1465:32)
     at Function._load (node:internal/modules/cjs/loader:1282:12)
     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:46:06 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:46:22 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:52:21 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 18:53:51 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:20:45 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:21:37 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:22:18 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:22:35 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:23:25 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:23:42 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:24:05 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:24:22 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:24:59 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:25:29 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:26:54 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:33:59 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:35:11 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:35:35 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:35:58 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:38:08 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:38:30 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2026-01-19 20:38:58 [error]: TSError: ⨯ Unable to compile TypeScript:
+src/utils/database-retry.ts(255,11): error TS2322: Type 'Promise<any[]>' is not assignable to type 'Promise<T>'.
+  Type 'any[]' is not assignable to type 'T'.
+    'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.
+src/utils/database-retry.ts(255,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(arg: PrismaPromise<any>[], options?: { isolationLevel?: TransactionIsolationLevel | undefined; } | undefined): Promise<any[]>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type 'PrismaPromise<any>[]'.
+  Overload 2 of 2, '(fn: (prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>, options?: { ...; } | undefined): Promise<...>', gave the following error.
+    Argument of type '(tx: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<...>' is not assignable to parameter of type '(prisma: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => Promise<...>'.
+      Types of parameters 'tx' and 'prisma' are incompatible.
+        Property '$extends' is missing in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">' but required in type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">'.
+
+    at createTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\drmwe\claude_Code_Workspace\EvoFitTrainer\backend\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)

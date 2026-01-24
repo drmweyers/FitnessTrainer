@@ -237,7 +237,7 @@ export default function CollectionDetailPage() {
               {error || 'Collection not found'}
             </h3>
             <p className="text-gray-500 mb-6">
-              The collection you're looking for doesn't exist or has been removed.
+              The collection you&apos;re looking for doesn&apos;t exist or has been removed.
             </p>
             <Link
               href="/dashboard/exercises/collections"

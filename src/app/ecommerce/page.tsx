@@ -106,7 +106,7 @@ function Header() {
           <li className="mr-4"><Link href="/mx-player" className="hover:outline hover:outline-1 hover:outline-white p-1">MX Player</Link></li>
           <li className="mr-4"><Link href="/sell" className="hover:outline hover:outline-1 hover:outline-white p-1">Sell</Link></li>
           <li className="mr-4"><Link href="/bestsellers" className="hover:outline hover:outline-1 hover:outline-white p-1">Bestsellers</Link></li>
-          <li className="mr-4"><Link href="/deals" className="hover:outline hover:outline-1 hover:outline-white p-1">Today's Deals</Link></li>
+          <li className="mr-4"><Link href="/deals" className="hover:outline hover:outline-1 hover:outline-white p-1">Today&apos;s Deals</Link></li>
           <li className="mr-4"><Link href="/mobiles" className="hover:outline hover:outline-1 hover:outline-white p-1">Mobiles</Link></li>
           <li className="mr-4"><Link href="/prime" className="hover:outline hover:outline-1 hover:outline-white p-1">Prime</Link></li>
           <li className="mr-4"><Link href="/customer-service" className="hover:outline hover:outline-1 hover:outline-white p-1">Customer Service</Link></li>
@@ -475,7 +475,7 @@ export default function HomePage() {
           </section>
           
           <DealSection
-            title="Today's Deals"
+            title="Today&apos;s Deals"
             deals={topDeals}
             viewAllLink="/deals"
           />

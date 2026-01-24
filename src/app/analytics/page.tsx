@@ -22,6 +22,26 @@ export default function AnalyticsPage() {
   const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos'>('overview');
   // const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
 
+  // Load measurements when user changes
+  const loadMeasurements = async () => {
+    try {
+      setIsLoading(true);
+      const data = await analyticsApi.getBodyMeasurements();
+      setMeasurements(data);
+    } catch (error) {
+      console.error('Failed to load measurements:', error);
+      showError('Failed to load measurements', 'Please try again later');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id) {
+      loadMeasurements();
+    }
+  }, [user?.id]);
+
   // Redirect to login if not authenticated
   if (!authLoading && !isAuthenticated) {
     window.location.href = '/login';
@@ -36,25 +56,6 @@ export default function AnalyticsPage() {
       </div>
     );
   }
-
-  useEffect(() => {
-    if (user?.id) {
-      loadMeasurements();
-    }
-  }, [user?.id]);
-
-  const loadMeasurements = async () => {
-    try {
-      setIsLoading(true);
-      const data = await analyticsApi.getBodyMeasurements();
-      setMeasurements(data);
-    } catch (error) {
-      console.error('Failed to load measurements:', error);
-      showError('Failed to load measurements', 'Please try again later');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSaveMeasurement = async (measurement: BodyMeasurement) => {
     try {

@@ -1,0 +1,140 @@
+# Ralphy Configuration for EvoFit Trainer
+# BMAD + Ralph Loop TDD Integration
+
+project:
+  name: "EvoFit Trainer"
+  language: "TypeScript"
+  framework: "Next.js"
+  version: "14"
+
+# Commands for quality gates
+commands:
+  test: "npm test"
+  test:coverage: "npm run test:coverage"
+  test:e2e: "npm run test:e2e"
+  lint: "npm run lint"
+  type-check: "npm run type-check"
+  build: "npm run build"
+  dev: "npm run dev"
+
+# BMAD Method Rules
+rules:
+  # Ralph Loop TDD - Always follow RED-GREEN-REFACTOR
+  - "ALWAYS write tests BEFORE implementation (TDD approach)"
+  - "Follow RED-GREEN-REFACTOR cycle: write failing test, implement to pass, refactor"
+  - "Never implement features without corresponding tests"
+
+  # TypeScript Safety
+  - "All code must have zero TypeScript errors before commit"
+  - "Use explicit type annotations, avoid 'any'"
+  - "Enable strict null checks"
+  - "Fix all TypeScript errors before moving to next task"
+
+  # Testing Requirements
+  - "Unit tests: Jest + React Testing Library"
+  - "E2E tests: Playwright for all user-facing features"
+  - "Target: 80%+ test coverage for new code"
+  - "All tests must pass before commit"
+
+  # Code Quality
+  - "Run ESLint and fix all errors before commit"
+  - "Follow existing component patterns in codebase"
+  - "Use existing UI components from Radix UI"
+  - "Proper error handling with user-friendly messages"
+
+  # Security
+  - "Never expose API keys or secrets in client code"
+  - "Sanitize all user inputs"
+  - "Use parameterized queries for database operations"
+  - "Implement proper authentication checks"
+
+  # Accessibility
+  - "All components must meet WCAG 2.1 AA standards"
+  - "Form inputs must have associated labels"
+  - "Images must have alt text"
+  - "Keyboard navigation must work for all features"
+
+# BMAD Phase Boundaries - What each phase can touch
+boundaries:
+  planning_phase:
+    can_touch:
+      - "docs/**"
+      - ".ralphy/**"
+      - "CLAUDE.md"
+    never_touch:
+      - "src/**"
+      - "tests/**"
+
+  development_phase:
+    can_touch:
+      - "src/**"
+      - "tests/**"
+      - "backend/**"
+    never_touch:
+      - "docs/prd.md"
+      - "docs/architecture.md"
+
+  testing_phase:
+    can_touch:
+      - "tests/**"
+      - "backend/tests/**"
+      - "tests/e2e/**"
+    never_touch:
+      - "src/app/**"  # Only tests during test phase
+
+# Parallel Execution Groups
+parallel_groups:
+  group_1_parallel_features:
+    - "Fix TypeScript errors in dashboard pages"
+    - "Fix TypeScript errors in ProgramBuilder components"
+    - "Fix TypeScript errors in ExerciseLibrary components"
+    description: "These can run in parallel - different feature areas"
+
+  group_2_parallel_tests:
+    - "Fix WorkoutBuilder test failures"
+    - "Fix emailService test failures"
+    - "Fix TypeScript compilation test failures"
+    description: "Test fixes can run in parallel"
+
+  group_3_sequential:
+    - "Run full test suite"
+    - "Generate coverage report"
+    - "Update documentation"
+    description: "Must run sequentially - depends on fixes"
+
+# Capabilities
+capabilities:
+  browser: "auto"  # Auto-detect for E2E testing
+  parallel: true
+  max_parallel: 5
+
+# Quality Gates
+quality_gates:
+  before_commit:
+    - "npm run type-check"  # Zero TypeScript errors
+    - "npm run lint"        # Zero ESLint errors
+    - "npm test"            # All unit tests pass
+    - "npm run test:e2e"    # All E2E tests pass
+
+  before_pr:
+    - "npm run build"       # Build succeeds
+    - "npm run test:coverage"  # Coverage measured
+    - "Coverage ≥ 20%"      # Minimum threshold (growing to 80%)
+
+# BMAD Phase Tracking
+phases:
+  current: "development"
+  history:
+    - name: "planning"
+      status: "complete"
+      date: "2025-01-19"
+    - name: "development"
+      status: "in_progress"
+      date: "2025-01-20"
+
+# Task Metadata
+metadata:
+  methodology: "BMAD + Ralph Loop TDD"
+  version: "1.0"
+  last_updated: "2025-01-20"
+  session: "qa-session-3-followup"

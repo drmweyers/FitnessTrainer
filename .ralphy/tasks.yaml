@@ -1,0 +1,254 @@
+# EvoFit Trainer - BMAD Task List
+# Ralph Loop TDD Approach
+# Generated: 2025-01-20
+
+tasks:
+  # ============================================================
+  # PHASE 1: CRITICAL FIXES (Sequential - Dependencies)
+  # ============================================================
+
+  - title: "Fix Toast component props in analytics page"
+    description: "Add missing id and title props to Toast component"
+    priority: "critical"
+    parallel_group: 1
+    files:
+      - "src/app/analytics/page.tsx"
+    acceptance_criteria:
+      - "Toast component has id prop"
+      - "Toast component has title prop"
+      - "TypeScript errors reduced to ~142"
+      - "Tests pass for analytics page"
+
+  - title: "Fix Sidebar component props across all pages"
+    description: "Add missing isOpen, onClose, isCollapsed, setIsCollapsed props to Sidebar"
+    priority: "critical"
+    parallel_group: 1
+    files:
+      - "src/app/dashboard/admin/page.tsx"
+      - "src/app/dashboard/client/page.tsx"
+      - "src/app/programs/new/page.tsx"
+      - "src/app/workouts/page.tsx"
+    acceptance_criteria:
+      - "All Sidebar components have required props"
+      - "TypeScript errors reduced to ~138"
+      - "All dashboard pages render correctly"
+
+  - title: "Fix Header component props"
+    description: "Add missing onMenuClick prop to Header components"
+    priority: "critical"
+    parallel_group: 1
+    files:
+      - "src/app/programs/new/page.tsx"
+      - "src/app/workouts/page.tsx"
+    acceptance_criteria:
+      - "All Header components have onMenuClick prop"
+      - "TypeScript errors reduced to ~136"
+      - "Mobile menu functionality works"
+
+  # ============================================================
+  # PHASE 2: PARALLEL FEATURE FIXES (Can run simultaneously)
+  # ============================================================
+
+  - title: "Fix ProgramBuilder TypeScript errors"
+    description: "Fix component prop types and remove unused imports in ProgramBuilder"
+    priority: "high"
+    parallel_group: 2
+    files:
+      - "src/components/features/ProgramBuilder/ExerciseSelector.tsx"
+      - "src/components/features/ProgramBuilder/ProgramPreview.tsx"
+      - "src/components/features/ProgramBuilder/SupersetBuilder.tsx"
+      - "src/components/features/ProgramBuilder/ProgramBuilder.tsx"
+    acceptance_criteria:
+      - "All ProgramBuilder components type-safe"
+      - "Unused imports removed"
+      - "Component props properly typed"
+      - "Tests pass for ProgramBuilder"
+
+  - title: "Fix Dashboard component TypeScript errors"
+    description: "Fix type conflicts in QuickAction and ActivityFeedItem components"
+    priority: "high"
+    parallel_group: 2
+    files:
+      - "src/components/features/ClientDashboard/EnhancedClientDashboard.tsx"
+      - "src/components/features/TrainerDashboard/EnhancedTrainerDashboard.tsx"
+      - "src/components/features/TrainerDashboard/TrainerProgressDashboard.tsx"
+    acceptance_criteria:
+      - "QuickAction types resolved"
+      - "ActivityFeedItem types resolved"
+      - "Color types properly constrained"
+      - "Dashboard tests pass"
+
+  - title: "Fix other component TypeScript errors"
+    description: "Fix errors in ClientNotes, ExerciseCard, Button, Textarea, UserMenu"
+    priority: "high"
+    parallel_group: 2
+    files:
+      - "src/components/clients/ClientNotes.tsx"
+      - "src/components/clients/ClientTags.tsx"
+      - "src/components/clients/TagManager.tsx"
+      - "src/components/features/ExerciseLibrary/ExerciseCard.tsx"
+      - "src/components/shared/Button.tsx"
+      - "src/components/shared/Textarea.tsx"
+      - "src/components/navigation/UserMenu.tsx"
+    acceptance_criteria:
+      - "All components type-safe"
+      - "Proper null checks added"
+      - "Unused imports removed"
+      - "Component tests pass"
+
+  # ============================================================
+  # PHASE 3: PARALLEL TEST FIXES (Can run simultaneously)
+  # ============================================================
+
+  - title: "Fix WorkoutBuilder test failures"
+    description: "Fix 2 failing tests in WorkoutBuilder.test.tsx"
+    priority: "high"
+    parallel_group: 3
+    files:
+      - "src/components/features/ProgramBuilder/WorkoutBuilder.test.tsx"
+      - "src/components/features/ProgramBuilder/WorkoutBuilder.tsx"
+    acceptance_criteria:
+      - "All WorkoutBuilder tests pass"
+      - "Test coverage maintained"
+      - "Component functionality verified"
+
+  - title: "Fix emailService test failures"
+    description: "Fix 33 failing tests in emailService.test.ts"
+    priority: "high"
+    parallel_group: 3
+    files:
+      - "backend/src/services/emailService.test.ts"
+      - "backend/src/services/emailService.ts"
+    acceptance_criteria:
+      - "All emailService tests pass"
+      - "Test mode properly mocked"
+      - "Email functionality verified"
+
+  - title: "Fix TypeScript compilation test failures"
+    description: "Fix 28 test failures due to TypeScript compilation errors"
+    priority: "high"
+    parallel_group: 3
+    files:
+      - "backend/src/**/*.test.ts"
+    acceptance_criteria:
+      - "All backend tests compile"
+      - "TypeScript errors resolved"
+      - "Test suite runs successfully"
+
+  # ============================================================
+  # PHASE 4: QUALITY GATES (Sequential)
+  # ============================================================
+
+  - title: "Run full test suite and generate coverage report"
+    description: "Execute all tests and generate coverage baseline"
+    priority: "medium"
+    parallel_group: 4
+    depends_on:
+      - "Fix TypeScript compilation test failures"
+    acceptance_criteria:
+      - "All unit tests pass"
+      - "All E2E smoke tests pass"
+      - "Coverage report generated"
+      - "Baseline documented"
+
+  - title: "Verify zero TypeScript errors"
+    description: "Run type-check and confirm zero errors"
+    priority: "critical"
+    parallel_group: 4
+    depends_on:
+      - "Fix other component TypeScript errors"
+    acceptance_criteria:
+      - "npm run type-check passes with zero errors"
+      - "No 'any' types in new code"
+      - "Strict null checks enabled"
+
+  - title: "Run ESLint and fix all warnings"
+    description: "Execute ESLint and auto-fix all fixable issues"
+    priority: "medium"
+    parallel_group: 4
+    acceptance_criteria:
+      - "npm run lint passes with zero errors"
+      - "All auto-fixable issues resolved"
+      - "Code style consistent"
+
+  # ============================================================
+  # PHASE 5: DOCUMENTATION (Sequential)
+  # ============================================================
+
+  - title: "Update bug tracking documentation"
+    description: "Close bug-004 and update README.md with final status"
+    priority: "low"
+    parallel_group: 5
+    depends_on:
+      - "Verify zero TypeScript errors"
+    files:
+      - "docs/qa/bugs/bug-004-frontend-typescript-errors.md"
+      - "docs/qa/bugs/README.md"
+    acceptance_criteria:
+      - "bug-004 marked as closed"
+      - "Progress documented"
+      - "Summary statistics updated"
+
+  - title: "Generate final QA session report"
+    description: "Create comprehensive report for stabilization phase"
+    priority: "low"
+    parallel_group: 5
+    depends_on:
+      - "Run full test suite and generate coverage report"
+    files:
+      - "docs/qa/reports/STABILIZATION-COMPLETE.md"
+    acceptance_criteria:
+      - "All tasks documented"
+      - "Metrics tracked"
+      - "Next steps defined"
+
+  - title: "Update coverage roadmap"
+    description: "Revise 24-week roadmap based on progress"
+    priority: "low"
+    parallel_group: 5
+    files:
+      - "docs/qa/reports/COVERAGE-REPORT.md"
+    acceptance_criteria:
+      - "Baseline updated"
+      - "Week 1-4 targets adjusted"
+      - "Progress tracking setup"
+
+# ============================================================
+# SUMMARY
+# ============================================================
+
+summary:
+  total_tasks: 16
+  critical: 7
+  high: 6
+  medium: 2
+  low: 2
+  parallel_groups: 5
+  estimated_time: "8-12 hours with 5 parallel agents"
+
+# ============================================================
+# RALPH LOOP TDD INSTRUCTIONS
+# ============================================================
+
+ralph_loop_tdd:
+  phase_1_red:
+    - "Write failing test for the fix"
+    - "Verify test fails (RED)"
+    - "Document expected behavior"
+
+  phase_2_green:
+    - "Implement minimal code to pass test"
+    - "Verify test passes (GREEN)"
+    - "No extra code, just enough to pass"
+
+  phase_3_refactor:
+    - "Clean up code while tests pass"
+    - "Improve structure and readability"
+    - "Ensure tests still pass (REFACTOR)"
+
+  quality_gate:
+    - "All tests pass"
+    - "Zero TypeScript errors"
+    - "Zero ESLint errors"
+    - "Code reviewed"
+    - "Documentation updated"

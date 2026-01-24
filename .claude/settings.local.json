@@ -1,7 +1,28 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(cut:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm test:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(npm run lint)",
+      "Bash(npm install:*)",
+      "Bash(npx eslint:*)",
+      "Bash(git worktree:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh repo view:*)",
+      "Bash(vercel:*)",
+      "Bash(if:*)",
+      "Bash(then cat vercel.json)",
+      "Bash(else echo \"No vercel.json found\")",
+      "Bash(fi:*)",
+      "Bash(npm run build:*)",
+      "Bash(powershell -Command:*)"
     ]
   }
 }

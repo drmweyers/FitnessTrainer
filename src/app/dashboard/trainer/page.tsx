@@ -426,7 +426,7 @@ export default function TrainerDashboard() {
 
         {/* Performance Metrics */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">This Month's Performance</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">This Month&apos;s Performance</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <p className="text-2xl font-bold text-blue-600">{programStats.totalPrograms}</p>
