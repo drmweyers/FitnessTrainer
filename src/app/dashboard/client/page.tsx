@@ -10,7 +10,6 @@ import QuickActions from '@/components/shared/QuickActions';
 import DailyWorkoutView from '@/components/features/WorkoutExecution/DailyWorkoutView';
 import { WorkoutSession } from '@/types/workoutLog';
 import {
-  TodaysWorkout,
   ProgressSummary,
   ActiveProgram,
   RecentWorkout,

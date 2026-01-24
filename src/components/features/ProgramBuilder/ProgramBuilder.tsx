@@ -7,19 +7,17 @@ import WeekBuilder from './WeekBuilder';
 import WorkoutBuilder from './WorkoutBuilder';
 import ExerciseSelector from './ExerciseSelector';
 import ProgramPreview from './ProgramPreview';
-import { ChevronLeft, ChevronRight, Save, X } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 import { ProgramData } from '@/types/program';
 
 interface ProgramBuilderProps {
   onSave?: (programData: ProgramData, saveAsTemplate: boolean) => Promise<void>;
   onCancel?: () => void;
-  isLoading?: boolean;
 }
 
-const ProgramBuilder: React.FC<ProgramBuilderProps> = ({ 
-  onSave, 
-  onCancel, 
-  isLoading = false 
+const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
+  onSave,
+  onCancel
 }) => {
   const { state, dispatch } = useProgramBuilder();
 
@@ -56,13 +54,12 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
     }
   };
 
-  const handleSave = async (saveAsTemplate: boolean = false) => {
+  const handleSave = async (programData: ProgramData, saveAsTemplate: boolean) => {
     if (onSave) {
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
-        const programData = programBuilderHelpers.toApiFormat(state);
         await onSave(programData, saveAsTemplate);
-        
+
         // Clear draft after successful save
         programBuilderHelpers.clearDraft();
         dispatch({ type: 'RESET_STATE' });

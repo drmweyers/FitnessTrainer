@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import ClientConnectionList from '@/components/features/ClientManagement/ClientConnectionList';
 import InviteClientModal from '@/components/features/ClientManagement/InviteClientModal';
@@ -9,19 +8,18 @@ import StatCard from '@/components/shared/StatCard';
 import ActivityFeed from '@/components/shared/ActivityFeed';
 import QuickActions from '@/components/shared/QuickActions';
 import { clientConnectionService, InviteClientData } from '@/services/clientConnectionService';
-import { 
-  Users, 
-  UserPlus, 
-  TrendingUp, 
-  Calendar, 
-  Award, 
+import {
+  Users,
+  UserPlus,
+  TrendingUp,
+  Calendar,
+  Award,
   Activity,
   CheckCircle,
-  Clock,
-  Pause,
-  Archive
+  Clock
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { QuickAction, ActivityFeedItem } from '@/types/dashboard';
 
 interface DashboardStats {
   totalClients: number;
@@ -31,27 +29,8 @@ interface DashboardStats {
   averageRating: number;
 }
 
-interface ActivityFeedItem {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  timestamp: string;
-  user?: { id: string; name: string };
-}
-
-interface QuickAction {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  href?: string;
-  onClick?: () => void;
-  color: string;
-}
-
 const EnhancedTrainerDashboard: React.FC = () => {
-  const { user } = useAuth();
+  // const { user } = useAuth(); // Not used, keeping for auth context
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalClients: 0,
@@ -89,7 +68,7 @@ const EnhancedTrainerDashboard: React.FC = () => {
       setRecentActivities([
         {
           id: '1',
-          type: 'client_signup',
+          type: 'client_signup' as const,
           title: 'New Client Connection',
           description: 'A client accepted your training invitation',
           timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
@@ -97,7 +76,7 @@ const EnhancedTrainerDashboard: React.FC = () => {
         },
         {
           id: '2',
-          type: 'invitation_sent',
+          type: 'system_event' as const,
           title: 'Invitation Sent',
           description: 'Invitation sent to potential client',
           timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
@@ -137,7 +116,7 @@ const EnhancedTrainerDashboard: React.FC = () => {
       description: 'Design a new workout program',
       icon: <TrendingUp className="h-5 w-5" />,
       href: '/programs/new',
-      color: 'blue'
+      color: 'blue' as const
     },
     {
       id: '2',
@@ -145,7 +124,7 @@ const EnhancedTrainerDashboard: React.FC = () => {
       description: 'Send invitation to new client',
       icon: <UserPlus className="h-5 w-5" />,
       onClick: () => setShowInviteModal(true),
-      color: 'green'
+      color: 'green' as const
     },
     {
       id: '3',
@@ -153,7 +132,7 @@ const EnhancedTrainerDashboard: React.FC = () => {
       description: 'Manage appointments and sessions',
       icon: <Calendar className="h-5 w-5" />,
       href: '/calendar',
-      color: 'purple'
+      color: 'purple' as const
     },
     {
       id: '4',
@@ -161,7 +140,7 @@ const EnhancedTrainerDashboard: React.FC = () => {
       description: 'View progress and analytics',
       icon: <Activity className="h-5 w-5" />,
       href: '/analytics',
-      color: 'yellow'
+      color: 'yellow' as const
     }
   ];
 

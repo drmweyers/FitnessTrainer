@@ -155,14 +155,16 @@ export default function ExerciseCardMobile({
     }
   }, [isMobile])
 
-  // Combine refs
+  // Combine refs using callback ref pattern
   const setRefs = (node: HTMLDivElement | null) => {
-    if (node) {
-      // cardRef is mutable
+    // Update cardRef
+    if (cardRef && 'current' in cardRef) {
       (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node
-      if (typeof gestureRef === 'object' && gestureRef !== null) {
-        (gestureRef as React.MutableRefObject<HTMLDivElement | null>).current = node
-      }
+    }
+
+    // Update gestureRef
+    if (gestureRef && 'current' in gestureRef) {
+      (gestureRef as React.MutableRefObject<HTMLDivElement | null>).current = node
     }
   }
 

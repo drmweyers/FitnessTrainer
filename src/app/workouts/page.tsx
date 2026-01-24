@@ -43,7 +43,16 @@ export default function WorkoutBuilderPage() {
             />
           </div>
           <div>
-            <ExerciseLibrary onAddExercise={handleAddExercise} />
+            <ExerciseLibrary
+              exercises={[]}
+              viewMode="grid"
+              isLoading={false}
+              currentPage={1}
+              totalPages={1}
+              hasNextPage={false}
+              onPageChange={() => {}}
+              onAddExercise={handleAddExercise}
+            />
           </div>
         </div>
       </div>

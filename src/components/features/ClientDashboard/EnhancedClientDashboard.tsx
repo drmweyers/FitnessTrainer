@@ -8,49 +8,28 @@ import StatCard from '@/components/shared/StatCard';
 import ActivityFeed from '@/components/shared/ActivityFeed';
 import QuickActions from '@/components/shared/QuickActions';
 import { clientConnectionService, TrainerConnection } from '@/services/clientConnectionService';
-import { 
-  User, 
-  UserCheck, 
-  Calendar, 
-  TrendingUp, 
-  Award, 
+import {
+  UserCheck,
+  Calendar,
+  TrendingUp,
+  Award,
   Activity,
   Clock,
   Target,
   Dumbbell,
   MessageCircle,
   Users,
-  Phone,
   Mail,
-  CheckCircle,
-  AlertCircle
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { QuickAction, ActivityFeedItem } from '@/types/dashboard';
 
 interface ClientStats {
   completedWorkouts: number;
   currentStreak: number;
   programProgress: number;
   achievedGoals: number;
-}
-
-interface ActivityFeedItem {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  timestamp: string;
-  user?: { id: string; name: string };
-}
-
-interface QuickAction {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  href?: string;
-  onClick?: () => void;
-  color: string;
 }
 
 const EnhancedClientDashboard: React.FC = () => {
@@ -96,14 +75,14 @@ const EnhancedClientDashboard: React.FC = () => {
       setRecentActivities([
         {
           id: '1',
-          type: 'workout_completed',
+          type: 'workout_completed' as const,
           title: 'Workout Completed',
           description: 'Upper Body Strength - Session 12',
           timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
         },
         {
           id: '2',
-          type: 'goal_achieved',
+          type: 'milestone_reached' as const,
           title: 'Goal Achievement',
           description: 'Reached weekly workout target',
           timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
@@ -172,7 +151,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Begin your scheduled workout',
       icon: <Dumbbell className="h-5 w-5" />,
       href: '/workout',
-      color: 'blue'
+      color: 'blue' as const
     },
     {
       id: '2',
@@ -180,7 +159,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Check your training program',
       icon: <Target className="h-5 w-5" />,
       href: '/programs',
-      color: 'green'
+      color: 'green' as const
     },
     {
       id: '3',
@@ -188,7 +167,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Chat with your trainer',
       icon: <MessageCircle className="h-5 w-5" />,
       href: '/messages',
-      color: 'purple'
+      color: 'purple' as const
     },
     {
       id: '4',
@@ -196,7 +175,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Log measurements and photos',
       icon: <TrendingUp className="h-5 w-5" />,
       href: '/progress',
-      color: 'yellow'
+      color: 'yellow' as const
     }
   ] : [
     {
@@ -205,7 +184,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Explore our exercise library',
       icon: <Dumbbell className="h-5 w-5" />,
       href: '/exercises',
-      color: 'blue'
+      color: 'blue' as const
     },
     {
       id: '2',
@@ -213,7 +192,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Define your fitness objectives',
       icon: <Target className="h-5 w-5" />,
       href: '/goals',
-      color: 'green'
+      color: 'green' as const
     },
     {
       id: '3',
@@ -221,7 +200,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Connect with personal trainers',
       icon: <Users className="h-5 w-5" />,
       href: '/trainers',
-      color: 'purple'
+      color: 'purple' as const
     },
     {
       id: '4',
@@ -229,7 +208,7 @@ const EnhancedClientDashboard: React.FC = () => {
       description: 'Log your fitness journey',
       icon: <TrendingUp className="h-5 w-5" />,
       href: '/progress',
-      color: 'yellow'
+      color: 'yellow' as const
     }
   ];
 

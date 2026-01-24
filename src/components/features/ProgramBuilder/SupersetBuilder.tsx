@@ -1,12 +1,9 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { 
-  Link, 
-  Unlink, 
-  Plus, 
-  Minus,
-  Shuffle,
+import React, { useState } from 'react';
+import {
+  Link,
+  Unlink,
   Timer,
   Info,
   AlertCircle
@@ -158,34 +155,6 @@ const SupersetBuilder: React.FC<SupersetBuilderProps> = ({
     });
   };
 
-  const moveExerciseBetweenGroups = (exerciseId: string, fromGroup: string, toGroup: string) => {
-    setSupersetGroups(prev => {
-      return prev.map(group => {
-        if (group.letter === fromGroup) {
-          return {
-            ...group,
-            exercises: group.exercises.filter(ex => ex.exerciseId !== exerciseId)
-          };
-        } else if (group.letter === toGroup) {
-          const exercise = prev
-            .find(g => g.letter === fromGroup)
-            ?.exercises.find(ex => ex.exerciseId === exerciseId);
-          
-          if (exercise) {
-            return {
-              ...group,
-              exercises: [...group.exercises, {
-                ...exercise,
-                supersetGroup: toGroup === '' ? undefined : toGroup
-              }]
-            };
-          }
-        }
-        return group;
-      }).filter(group => group.exercises.length > 0);
-    });
-  };
-
   const updateRestTimes = (groupLetter: string, restBetween: number, restAfter: number) => {
     setSupersetGroups(prev => 
       prev.map(group => 
@@ -269,9 +238,9 @@ const SupersetBuilder: React.FC<SupersetBuilderProps> = ({
 
       {/* Superset Groups */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {supersetGroups.map((group, groupIndex) => (
-          <div 
-            key={group.letter || 'ungrouped'} 
+        {supersetGroups.map((group) => (
+          <div
+            key={group.letter || 'ungrouped'}
             className={`border-2 rounded-lg p-4 ${group.color} ${
               group.letter === '' ? 'border-dashed' : 'border-solid'
             }`}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Save, X, MessageSquare } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, MessageSquare, Clock as ClockIcon } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Textarea } from '@/components/shared/Textarea';
 import { Card } from '@/components/shared/Card';
@@ -279,7 +279,7 @@ export default function ClientNotes({ clientId }: ClientNotesProps) {
                     {/* Header */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
-                        <Clock className="h-3 w-3" />
+                        <ClockIcon className="h-3 w-3" />
                         <span>{formatDate(note.createdAt)}</span>
                         {note.updatedAt && note.updatedAt !== note.createdAt && (
                           <span>(edited {formatDate(note.updatedAt)})</span>

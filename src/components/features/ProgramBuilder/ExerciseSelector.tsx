@@ -1,14 +1,12 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { 
-  Search, 
-  Plus, 
-  Trash2, 
+import {
+  Search,
+  Plus,
+  Trash2,
   GripVertical,
-  Clock,
   Target,
-  Hash,
   Settings,
   Save,
   X,
@@ -17,7 +15,6 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
-  Zap,
   Link
 } from 'lucide-react'
 import { Button } from '@/components/shared/Button'
@@ -27,7 +24,7 @@ import { useProgramBuilder } from './ProgramBuilderContext'
 import SupersetBuilder from './SupersetBuilder'
 import RPEIntegration from './RPEIntegration'
 import { WorkoutExerciseData, ExerciseConfigurationData, SetType } from '@/types/program'
-import { ExerciseWithUserData, ExerciseFilters } from '@/types/exercise'
+import { ExerciseWithUserData, ExerciseFilters, FilterOptions } from '@/types/exercise'
 import { searchExercises, getFilterOptions } from '@/services/exerciseService'
 
 interface ExerciseSelectorProps {
@@ -115,7 +112,7 @@ function ExerciseCard({ exercise, onAdd, isAdded }: ExerciseCardProps) {
         
         <Button
           size="sm"
-          variant={isAdded ? "outline" : "primary"}
+          variant={isAdded ? "outline" : "default"}
           onClick={() => onAdd(exercise)}
           disabled={isAdded}
           leftIcon={isAdded ? <Star size={14} /> : <Plus size={14} />}
@@ -273,16 +270,20 @@ function SelectedExercise({
           {isEditing ? (
             <div className="space-y-6">
               {/* Exercise Notes */}
-              <Textarea
-                label="Exercise Notes (Optional)"
-                value={editingExercise.notes || ''}
-                onChange={(e) => setEditingExercise({ 
-                  ...editingExercise, 
-                  notes: e.target.value 
-                })}
-                placeholder="Special instructions or modifications for this exercise"
-                rows={2}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Exercise Notes (Optional)
+                </label>
+                <Textarea
+                  value={editingExercise.notes || ''}
+                  onChange={(e) => setEditingExercise({
+                    ...editingExercise,
+                    notes: e.target.value
+                  })}
+                  placeholder="Special instructions or modifications for this exercise"
+                  rows={2}
+                />
+              </div>
 
               {/* Set Configurations */}
               <div>
@@ -337,13 +338,13 @@ function SelectedExercise({
                           Reps
                         </label>
                         <Input
-                          size="sm"
                           value={config.reps}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
                             reps: e.target.value
                           })}
                           placeholder="8-12"
+                          className="text-sm"
                         />
                       </div>
 
@@ -352,9 +353,8 @@ function SelectedExercise({
                           Rest (sec)
                         </label>
                         <Input
-                          size="sm"
                           type="number"
-                          value={config.restSeconds || ''}
+                          value={config.restSeconds?.toString() || ''}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
                             restSeconds: e.target.value ? parseInt(e.target.value) : undefined
@@ -368,7 +368,6 @@ function SelectedExercise({
                           Weight
                         </label>
                         <Input
-                          size="sm"
                           value={config.weightGuidance || ''}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
@@ -385,11 +384,10 @@ function SelectedExercise({
                           RPE (1-10)
                         </label>
                         <Input
-                          size="sm"
                           type="number"
                           min="1"
                           max="10"
-                          value={config.rpe || ''}
+                          value={config.rpe?.toString() || ''}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
                             rpe: e.target.value ? parseInt(e.target.value) : undefined
@@ -403,11 +401,10 @@ function SelectedExercise({
                           RIR
                         </label>
                         <Input
-                          size="sm"
                           type="number"
                           min="0"
                           max="5"
-                          value={config.rir || ''}
+                          value={config.rir?.toString() || ''}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
                             rir: e.target.value ? parseInt(e.target.value) : undefined
@@ -421,7 +418,6 @@ function SelectedExercise({
                           Tempo
                         </label>
                         <Input
-                          size="sm"
                           value={config.tempo || ''}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
@@ -434,9 +430,10 @@ function SelectedExercise({
 
                     {config.notes && (
                       <div className="mt-3">
+                        <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                          Set Notes
+                        </label>
                         <Textarea
-                          label="Set Notes"
-                          size="sm"
                           value={config.notes}
                           onChange={(e) => updateConfiguration(configIndex, {
                             ...config,
@@ -519,7 +516,12 @@ export default function ExerciseSelector({ onNext, onPrev }: ExerciseSelectorPro
   const [showSupersetBuilder, setShowSupersetBuilder] = useState(false)
   const [showRPEIntegration, setShowRPEIntegration] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [filterOptions, setFilterOptions] = useState({ bodyParts: [], equipments: [], targetMuscles: [], secondaryMuscles: [] })
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    bodyParts: [],
+    equipments: [],
+    targetMuscles: [],
+    secondaryMuscles: []
+  })
   
   // Exercise Data
   const [exercises, setExercises] = useState<ExerciseWithUserData[]>([])

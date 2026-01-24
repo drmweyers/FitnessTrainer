@@ -160,7 +160,6 @@ export default function NewProgramPage() {
             <ProgramBuilder
               onSave={handleSave}
               onCancel={handleCancel}
-              isLoading={isLoading}
             />
           </div>
         </div>

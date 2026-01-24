@@ -348,7 +348,9 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                   <div className="flex items-center space-x-2 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{template.name}</h3>
                     {template.creator.verified && (
-                      <Award size={16} className="text-blue-500" title="Verified Creator" />
+                      <div title="Verified Creator">
+                        <Award size={16} className="text-blue-500" />
+                      </div>
                     )}
                   </div>
                   <p className="text-sm text-gray-600 mb-3 line-clamp-2">

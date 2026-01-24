@@ -23,15 +23,17 @@ interface ExerciseCardProps {
   onFavorite?: (exerciseId: string) => void
   onAddToCollection?: (exerciseId: string) => void
   onQuickView?: (exercise: ExerciseWithUserData) => void
+  onAddExercise?: (exercise: ExerciseWithUserData) => void
   className?: string
 }
 
-export function ExerciseCard({ 
-  exercise, 
+export function ExerciseCard({
+  exercise,
   viewMode = 'grid',
   onFavorite,
   onAddToCollection,
   onQuickView,
+  onAddExercise,
   className = ''
 }: ExerciseCardProps) {
   const [isGifPlaying, setIsGifPlaying] = useState(false)

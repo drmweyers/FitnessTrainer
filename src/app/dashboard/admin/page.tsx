@@ -7,7 +7,7 @@ import DashboardLayout from '@/components/shared/DashboardLayout';
 import StatCard from '@/components/shared/StatCard';
 import ActivityFeed from '@/components/shared/ActivityFeed';
 import QuickActions from '@/components/shared/QuickActions';
-import { SystemMetrics, UserGrowthData, RecentSignup, ActivityFeedItem, QuickAction } from '@/types/dashboard';
+import { SystemMetrics, RecentSignup, ActivityFeedItem, QuickAction } from '@/types/dashboard';
 
 /**
  * Admin Dashboard

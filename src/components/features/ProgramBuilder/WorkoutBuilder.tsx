@@ -1,11 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { 
-  Plus, 
-  Trash2, 
-  Calendar, 
-  Clock, 
+import {
+  Plus,
+  Trash2,
+  Calendar,
   Dumbbell,
   ChevronDown,
   ChevronUp,
@@ -13,7 +12,6 @@ import {
   Save,
   X,
   AlertTriangle,
-  CheckCircle,
   Coffee,
   Activity
 } from 'lucide-react'

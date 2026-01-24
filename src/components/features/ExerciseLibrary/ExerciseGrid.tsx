@@ -10,13 +10,15 @@ interface ExerciseGridProps {
   viewMode: 'grid' | 'list'
   isLoading?: boolean
   className?: string
+  onAddExercise?: (exercise: ExerciseWithUserData) => void
 }
 
 export function ExerciseGrid({
   exercises,
   viewMode,
   isLoading = false,
-  className = ''
+  className = '',
+  onAddExercise
 }: ExerciseGridProps) {
 
   if (isLoading) {
@@ -72,6 +74,7 @@ export function ExerciseGrid({
           key={exercise.exerciseId || exercise.id}
           exercise={exercise}
           viewMode={viewMode}
+          onAddExercise={onAddExercise}
         />
       ))}
     </div>

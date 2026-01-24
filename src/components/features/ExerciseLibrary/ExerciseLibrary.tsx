@@ -13,19 +13,21 @@ interface ExerciseLibraryProps {
   totalPages: number
   hasNextPage: boolean
   onPageChange: (page: number) => void
+  onAddExercise?: (exercise: ExerciseWithUserData) => void
 }
 
-export function ExerciseLibrary({ 
-  exercises, 
-  viewMode, 
+export function ExerciseLibrary({
+  exercises,
+  viewMode,
   isLoading = false,
   currentPage,
   totalPages,
   hasNextPage,
-  onPageChange
+  onPageChange,
+  onAddExercise
 }: ExerciseLibraryProps) {
   if (isLoading) {
-    return <ExerciseGridSkeleton count={20} viewMode={viewMode} />
+    return <ExerciseGridSkeleton viewMode={viewMode} />
   }
   
   return (
@@ -35,6 +37,7 @@ export function ExerciseLibrary({
         exercises={exercises}
         viewMode={viewMode}
         isLoading={false}
+        onAddExercise={onAddExercise}
       />
       
       {/* Pagination */}

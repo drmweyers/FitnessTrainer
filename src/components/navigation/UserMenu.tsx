@@ -137,7 +137,9 @@ export default function UserMenu() {
                       {userRole.label}
                     </span>
                     {user.isVerified && (
-                      <Shield size={14} className="text-green-500" title="Verified Account" />
+                      <div title="Verified Account">
+                        <Shield size={14} className="text-green-500" />
+                      </div>
                     )}
                   </div>
                 </div>

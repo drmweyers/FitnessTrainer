@@ -116,12 +116,12 @@ const validateStep2 = (state: ProgramBuilderState): boolean => {
 }
 
 const validateStep3 = (state: ProgramBuilderState): boolean => {
-  return state.weeks.some(week => week.workouts.length > 0)
+  return state.weeks.some(week => week.workouts && week.workouts.length > 0)
 }
 
 const validateStep4 = (state: ProgramBuilderState): boolean => {
-  return state.weeks.some(week => 
-    week.workouts.some(workout => workout.exercises && workout.exercises.length > 0)
+  return state.weeks.some(week =>
+    week.workouts && week.workouts.some(workout => workout.exercises && workout.exercises.length > 0)
   )
 }
 

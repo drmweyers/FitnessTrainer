@@ -145,9 +145,9 @@ export default function GifPlayerMobile({
         await containerRef.current.requestFullscreen()
         setIsFullscreen(true)
         // Enable screen orientation lock on mobile
-        if (screen.orientation && screen.orientation.lock) {
+        if ('orientation' in screen && typeof (screen as any).orientation?.lock === 'function') {
           try {
-            await screen.orientation.lock('landscape')
+            await (screen as any).orientation.lock('landscape')
           } catch (e) {
             // Orientation lock not supported or failed
           }
@@ -227,12 +227,17 @@ export default function GifPlayerMobile({
   }
 
   // Combine refs
-  const setRefs = useCallback((node: HTMLDivElement) => {
-    containerRef.current = node
-    if (gestureRef) {
-      gestureRef.current = node
+  const setRefs = useCallback((node: HTMLDivElement | null) => {
+    // Update containerRef
+    if (containerRef && 'current' in containerRef) {
+      (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node
     }
-  }, [gestureRef])
+
+    // Update gestureRef
+    if (gestureRef && 'current' in gestureRef) {
+      (gestureRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+    }
+  }, [])
 
   if (hasError) {
     return (

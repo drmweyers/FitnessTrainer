@@ -1,20 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, 
-  Clock, 
-  Play, 
+import {
+  Calendar,
+  Clock,
+  Play,
   CheckCircle,
   AlertCircle,
   Eye,
-  Edit,
   MessageSquare,
   Target,
   TrendingUp,
-  BarChart3,
-  Settings,
-  ChevronRight,
   Filter,
   Search
 } from 'lucide-react';
