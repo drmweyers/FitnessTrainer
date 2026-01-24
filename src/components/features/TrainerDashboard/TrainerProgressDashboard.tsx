@@ -12,25 +12,18 @@ import {
   Play,
   Pause,
   Target,
-  Award,
   MessageSquare,
   Eye,
-  Filter,
   RefreshCw,
   Download,
-  Bell,
-  ChevronRight,
   BarChart3,
-  PieChart,
   Zap
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
-import { 
-  TrainerDashboardData, 
-  LiveWorkoutData, 
-  ClientProgress,
-  WorkoutAnalytics 
+import {
+  TrainerDashboardData,
+  LiveWorkoutData
 } from '@/types/workoutLog';
 
 interface TrainerProgressDashboardProps {
@@ -45,7 +38,7 @@ const TrainerProgressDashboard: React.FC<TrainerProgressDashboardProps> = ({ tra
 
   useEffect(() => {
     loadDashboardData();
-    
+
     // Set up real-time updates
     const interval = setInterval(loadDashboardData, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
@@ -223,12 +216,6 @@ const TrainerProgressDashboard: React.FC<TrainerProgressDashboardProps> = ({ tra
     if (diffHours < 24) return `${diffHours}h ago`;
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays}d ago`;
-  };
-
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
   if (loading) {

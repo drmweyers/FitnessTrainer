@@ -1,30 +1,22 @@
 'use client'
 
 import React, { useState } from 'react'
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Calendar, 
-  Clock, 
-  Target, 
-  Settings,
+import {
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  Target,
   Dumbbell,
   Save,
-  FileText,
   CheckCircle,
   AlertCircle,
-  Star,
-  Users,
   TrendingUp,
-  BarChart3,
-  Download,
   Eye
 } from 'lucide-react'
 import { Button } from '@/components/shared/Button'
-import { Textarea } from '@/components/shared/Textarea'
 import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext'
 import ProgressionBuilder from './ProgressionBuilder'
-import { ProgramData, WorkoutType, SetType } from '@/types/program'
+import { ProgramData, WorkoutType, SetType, ProgramWorkout, WorkoutExercise, ExerciseConfiguration, ProgramWeekData } from '@/types/program'
 
 interface ProgramPreviewProps {
   onNext: () => void
@@ -33,14 +25,22 @@ interface ProgramPreviewProps {
 }
 
 interface WeekSummaryProps {
-  week: any
+  week: ProgramWeekData
   weekIndex: number
   isExpanded: boolean
   onToggle: () => void
 }
 
 interface WorkoutSummaryProps {
-  workout: any
+  workout: {
+    name: string
+    dayNumber: number
+    isRestDay?: boolean
+    workoutType?: WorkoutType
+    estimatedDuration?: number
+    description?: string
+    exercises?: WorkoutExercise[]
+  }
   workoutIndex: number
   isExpanded: boolean
   onToggle: () => void
@@ -67,7 +67,7 @@ const SET_TYPE_LABELS = {
 
 function WorkoutSummary({ workout, workoutIndex, isExpanded, onToggle }: WorkoutSummaryProps) {
   const exercises = workout.exercises || []
-  const totalSets = exercises.reduce((sum: number, exercise: any) => {
+  const totalSets = exercises.reduce((sum: number, exercise: WorkoutExercise) => {
     return sum + (exercise.configurations?.length || 0)
   }, 0)
 
@@ -106,7 +106,7 @@ function WorkoutSummary({ workout, workoutIndex, isExpanded, onToggle }: Workout
               {!workout.isRestDay && workout.workoutType && (
                 <>
                   <span>•</span>
-                  <span>{WORKOUT_TYPE_LABELS[workout.workoutType] || workout.workoutType}</span>
+                  <span>{WORKOUT_TYPE_LABELS[workout.workoutType as WorkoutType] || workout.workoutType}</span>
                 </>
               )}
               {workout.estimatedDuration && !workout.isRestDay && (
@@ -148,7 +148,7 @@ function WorkoutSummary({ workout, workoutIndex, isExpanded, onToggle }: Workout
             </div>
           ) : exercises.length > 0 ? (
             <div className="space-y-4">
-              {exercises.map((exercise: any, exerciseIndex: number) => (
+              {exercises.map((exercise: WorkoutExercise, exerciseIndex: number) => (
                 <div key={exerciseIndex} className="border border-gray-200 rounded-lg p-3">
                   <div className="flex items-center space-x-3 mb-3">
                     <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-sm font-medium flex items-center justify-center">
@@ -168,12 +168,12 @@ function WorkoutSummary({ workout, workoutIndex, isExpanded, onToggle }: Workout
                   {exercise.configurations && exercise.configurations.length > 0 ? (
                     <div className="space-y-2">
                       <h6 className="text-sm font-medium text-gray-700">Set Configuration:</h6>
-                      {exercise.configurations.map((config: any, setIndex: number) => (
+                      {exercise.configurations.map((config: ExerciseConfiguration, setIndex: number) => (
                         <div key={setIndex} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
                           <div className="flex items-center space-x-3">
                             <span className="font-medium">Set {config.setNumber}</span>
                             <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
-                              {SET_TYPE_LABELS[config.setType] || config.setType}
+                              {SET_TYPE_LABELS[config.setType as SetType] || config.setType}
                             </span>
                             <span>{config.reps} reps</span>
                             {config.weightGuidance && <span>{config.weightGuidance}</span>}
@@ -207,7 +207,7 @@ function WorkoutSummary({ workout, workoutIndex, isExpanded, onToggle }: Workout
   )
 }
 
-function WeekSummary({ week, weekIndex, isExpanded, onToggle }: WeekSummaryProps) {
+function WeekSummary({ week, isExpanded, onToggle }: WeekSummaryProps) {
   const workouts = week.workouts || []
   const trainingDays = workouts.filter((w: any) => !w.isRestDay).length
   const restDays = workouts.filter((w: any) => w.isRestDay).length
@@ -304,7 +304,7 @@ function WeekSummary({ week, weekIndex, isExpanded, onToggle }: WeekSummaryProps
   )
 }
 
-export default function ProgramPreview({ onNext, onPrev, onSave }: ProgramPreviewProps) {
+export default function ProgramPreview({ onPrev, onSave }: ProgramPreviewProps) {
   const { state, dispatch } = useProgramBuilder()
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set([0]))
   const [saveAsTemplate, setSaveAsTemplate] = useState(false)
@@ -348,12 +348,6 @@ export default function ProgramPreview({ onNext, onPrev, onSave }: ProgramPrevie
   }
 
   const handleUpdateProgression = (updatedWeeks: any[]) => {
-    // Update the weeks with progression data
-    const updatedState = {
-      ...state,
-      weeks: updatedWeeks
-    };
-    
     // Update via dispatch
     dispatch({ type: 'UPDATE_WEEKS', payload: updatedWeeks });
   }

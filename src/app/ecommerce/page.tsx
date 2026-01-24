@@ -36,7 +36,8 @@ const topDeals = [
 // Header Component
 function Header() {
   const [isLocationOpen, setIsLocationOpen] = useState(false)
-  
+  const [isAccountOpen, setIsAccountOpen] = useState(false)
+
   return (
     <header className="bg-[#131921] text-white">
       <div className="flex items-center p-2 px-4">

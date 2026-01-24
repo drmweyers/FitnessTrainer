@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useProgramBuilder } from './ProgramBuilderContext';
-import { ProgramType, DifficultyLevel } from '@/types/program';
-import { Target, Dumbbell, Clock, Plus, X } from 'lucide-react';
+import { Target, Dumbbell, Plus, X, Clock } from 'lucide-react';
 
 const programTypes = [
   { value: 'strength', label: 'Strength Training' },

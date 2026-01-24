@@ -9,11 +9,9 @@ export * from './recipe';
 export * from './badge';
 
 // Workout types (with aliased Exercise to avoid conflicts)
-export type { 
+export type {
   Exercise as WorkoutExercise,
-  Workout,
-  WorkoutSet,
-  WorkoutRoutine
+  Workout
 } from './workout';
 
 // Legacy Level interface (keeping for backward compatibility)

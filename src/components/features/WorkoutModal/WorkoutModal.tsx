@@ -2,9 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { Search, Share2, MoreHorizontal, ChevronDown, List, Grid, Plus, Filter, X } from 'lucide-react'
-import Layout from '../../layout/Layout'
 
 // Types
 interface Exercise {
@@ -12,15 +10,6 @@ interface Exercise {
   name: string
   category: string
   thumbnail: string
-}
-
-interface WorkoutSection {
-  id: string
-  name: string
-  format: string
-  type: string
-  duration: number
-  exercises: ExerciseConfig[]
 }
 
 interface ExerciseConfig {

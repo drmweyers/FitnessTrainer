@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { Program } from '@/types/program';
-import { Client, ClientStatus } from '@/types/client';
+import { Client, ClientStatus, FitnessLevel } from '@/types/client';
 
 interface BulkAssignmentModalProps {
   program: Program;
@@ -104,16 +104,36 @@ const BulkAssignmentModal: React.FC<BulkAssignmentModalProps> = ({
           id: '1',
           displayName: 'John Smith',
           email: 'john@example.com',
+          role: 'client',
+          isActive: true,
+          isVerified: true,
+          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
           isSelected: false,
-          trainerClient: { status: ClientStatus.ACTIVE },
-          userProfile: { phone: '+1-555-0123' },
-          clientProfile: { 
+          trainerClient: {
+            id: 'tc1',
+            trainerId: 'trainer1',
+            clientId: '1',
+            status: ClientStatus.ACTIVE
+          },
+          userProfile: {
+            id: 'up1',
+            userId: '1',
+            preferredUnits: 'imperial',
+            isPublic: true,
+            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          clientProfile: {
+            id: 'cp1',
+            userId: '1',
             goals: { primaryGoal: 'Lose weight' },
-            fitnessLevel: 'intermediate'
+            fitnessLevel: FitnessLevel.INTERMEDIATE,
+            medicalConditions: [],
+            medications: [],
+            allergies: [],
+            injuries: []
           },
           tags: [],
           notesCount: 3,
-          isVerified: true,
           lastActivity: '2 days ago',
           lastLoginAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
         },
@@ -121,16 +141,36 @@ const BulkAssignmentModal: React.FC<BulkAssignmentModalProps> = ({
           id: '2',
           displayName: 'Sarah Johnson',
           email: 'sarah@example.com',
+          role: 'client',
+          isActive: true,
+          isVerified: true,
+          createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
           isSelected: false,
-          trainerClient: { status: ClientStatus.ACTIVE },
-          userProfile: { phone: '+1-555-0124' },
-          clientProfile: { 
+          trainerClient: {
+            id: 'tc2',
+            trainerId: 'trainer1',
+            clientId: '2',
+            status: ClientStatus.ACTIVE
+          },
+          userProfile: {
+            id: 'up2',
+            userId: '2',
+            preferredUnits: 'metric',
+            isPublic: true,
+            createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          clientProfile: {
+            id: 'cp2',
+            userId: '2',
             goals: { primaryGoal: 'Build muscle' },
-            fitnessLevel: 'beginner'
+            fitnessLevel: FitnessLevel.BEGINNER,
+            medicalConditions: [],
+            medications: [],
+            allergies: [],
+            injuries: []
           },
           tags: [],
           notesCount: 1,
-          isVerified: true,
           lastActivity: '1 day ago',
           lastLoginAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
         },
@@ -138,18 +178,38 @@ const BulkAssignmentModal: React.FC<BulkAssignmentModalProps> = ({
           id: '3',
           displayName: 'Mike Wilson',
           email: 'mike@example.com',
+          role: 'client',
+          isActive: true,
+          isVerified: true,
+          createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
           isSelected: false,
-          trainerClient: { status: ClientStatus.NEED_PROGRAMMING },
-          userProfile: { phone: '+1-555-0125' },
-          clientProfile: { 
-            goals: { primaryGoal: 'Improve strength' },
-            fitnessLevel: 'advanced'
+          trainerClient: {
+            id: 'tc3',
+            trainerId: 'trainer1',
+            clientId: '3',
+            status: ClientStatus.NEED_PROGRAMMING
+          },
+          userProfile: {
+            id: 'up3',
+            userId: '3',
+            preferredUnits: 'imperial',
+            isPublic: true,
+            createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          clientProfile: {
+            id: 'cp3',
+            userId: '3',
+            goals: { primaryGoal: 'Increase strength' },
+            fitnessLevel: FitnessLevel.ADVANCED,
+            medicalConditions: [],
+            medications: [],
+            allergies: [],
+            injuries: []
           },
           tags: [],
           notesCount: 0,
-          isVerified: true,
-          lastActivity: '5 days ago',
-          lastLoginAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+          lastActivity: '3 days ago',
+          lastLoginAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
         }
       ];
 

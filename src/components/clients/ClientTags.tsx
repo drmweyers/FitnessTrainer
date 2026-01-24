@@ -41,8 +41,9 @@ export default function ClientTags({ clientId }: ClientTagsProps) {
         clientsApi.getClientById(clientId)
       ]);
 
-      setAllTags(Array.isArray(tagsResponse) ? tagsResponse : (tagsResponse.data || []));
-      const clientData = 'data' in clientResponse ? clientResponse.data : clientResponse;
+      const tagsData = tagsResponse as any;
+      setAllTags(Array.isArray(tagsData) ? tagsData : (tagsData.data || []));
+      const clientData = 'data' in clientResponse ? (clientResponse.data as any) : (clientResponse as any);
       setClientTags(clientData?.tags || []);
     } catch (err) {
       const errorMessage = err instanceof ApiError 

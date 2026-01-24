@@ -37,6 +37,7 @@ export default function FavoritesPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedExercises, setSelectedExercises] = useState<string[]>([])
+  const [showBulkActions, setShowBulkActions] = useState(false)
   const [sortBy, setSortBy] = useState<SortOption>('dateAdded')
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
 
@@ -149,14 +150,6 @@ export default function FavoritesPage() {
         ? prev.filter(id => id !== exerciseId)
         : [...prev, exerciseId]
     )
-  }
-
-  const _handleSelectAll = () => {
-    if (selectedExercises.length === filteredExercises.length) {
-      setSelectedExercises([])
-    } else {
-      setSelectedExercises(filteredExercises.map(ex => ex.id))
-    }
   }
 
   const handleBulkRemove = async () => {

@@ -60,24 +60,22 @@ function SortableExerciseItem({ exercise, onRemove }: { exercise: Exercise, onRe
       <div className="flex-1">
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-md overflow-hidden mr-3">
-            <img 
-              src={exercise.thumbnail} 
-              alt={exercise.name} 
+            <img
+              src={exercise.gifUrl}
+              alt={exercise.name}
               className="h-full w-full object-cover"
             />
           </div>
           <div>
             <h4 className="text-sm font-medium">{exercise.name}</h4>
-            <p className="text-xs text-gray-500 capitalize">{exercise.muscleGroup} • {exercise.equipment}</p>
+            <p className="text-xs text-gray-500 capitalize">{exercise.targetMuscles[0]} • {exercise.equipments[0]}</p>
           </div>
         </div>
       </div>
       <div className="flex items-center space-x-2">
-        {exercise.hasVideo && (
-          <button className="text-blue-500">
-            <Video size={16} />
-          </button>
-        )}
+        <button className="text-blue-500">
+          <Video size={16} />
+        </button>
         <button 
           className="text-gray-500 hover:text-red-500"
           onClick={() => onRemove(exercise.id)}
