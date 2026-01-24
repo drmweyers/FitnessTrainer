@@ -11,13 +11,11 @@ export enum ProgramType {
   CARDIO = 'cardio',
   FLEXIBILITY = 'flexibility',
   REHABILITATION = 'rehabilitation',
-  SPORTS_SPECIFIC = 'sports_specific',
+  SPORT_SPECIFIC = 'sports_specific',
   GENERAL_FITNESS = 'general_fitness',
   WEIGHT_LOSS = 'weight_loss',
   MUSCLE_GAIN = 'muscle_gain',
-  HYBRID = 'hybrid',
-  BODYBUILDING = 'bodybuilding',
-  SPORT_SPECIFIC = 'sport_specific'
+  HYBRID = 'hybrid'
 }
 
 export enum DifficultyLevel {
