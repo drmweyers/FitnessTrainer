@@ -68,3 +68,5 @@ nul
 .claude/settings.local.json
 .claude/settings.*
 !.claude/settings.json
+.vercel
+.env*.local

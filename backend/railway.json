@@ -1,0 +1,29 @@
+# Railway Configuration
+
+## Environment Variables Required
+
+## Services Configuration
+
+{
+  "services": {
+    "evofit-backend": {
+      "type": "app",
+      "root": "backend",
+      "build": {
+        "commands": {
+          "build": "npm run build",
+          "start": "npm start"
+        }
+      }
+    },
+    "evofit-db": {
+      "type": "postgres",
+      "version": "16.x",
+      "ipAllowlist": ["0.0.0.0/0"]
+    },
+    "evofit-redis": {
+      "type": "redis",
+      "version": "7.x"
+    }
+  }
+}

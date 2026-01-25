@@ -42,7 +42,15 @@
       "Bash(npx prisma db execute:*)",
       "Bash(node:*)",
       "Bash(npx ts-node:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(VERCEL_PROJECT_NAME=evofit-trainer npx vercel:*)",
+      "Bash(git remote get-url:*)",
+      "Bash(git checkout:*)",
+      "Bash(du:*)",
+      "Bash(ralphy:*)",
+      "Bash(ralphy --help:*)",
+      "Bash(npx:*)",
+      "Bash(railway:*)"
     ]
   }
 }
