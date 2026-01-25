@@ -60,15 +60,16 @@
     // Path Mapping - Makes imports cleaner and more maintainable
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/state/*": ["./src/state/*"],
-      "@/data/*": ["./src/data/*"],
-      "@/app/*": ["./src/app/*"],
-      "@/styles/*": ["./src/styles/*"]
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/types/*": ["./types/*"],
+      "@/state/*": ["./state/*"],
+      "@/data/*": ["./data/*"],
+      "@/app/*": ["./app/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/public/*": ["./public/*"]
     }
   },
   "include": [
@@ -76,7 +77,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/**/*",
+    "lib/**/*",
+    "app/**/*",
     "tailwind.config.js"
   ],
   "exclude": [
@@ -91,7 +93,10 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "jest.config.js",
-    "backend/**/*"
+    "backend/**/*",
+    "scripts/**/*",
+    "docs/**/*",
+    "exerciseDB/**/*"
   ],
   "ts-node": {
     "compilerOptions": {
