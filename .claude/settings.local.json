@@ -22,7 +22,27 @@
       "Bash(else echo \"No vercel.json found\")",
       "Bash(fi:*)",
       "Bash(npm run build:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(git config:*)",
+      "Bash(ls:*)",
+      "Bash(for route in admin/trainers admin/clients admin/users trainer/clients trainer/programs trainer/schedule trainer/analytics client/workouts client/programs client/progress client/goals client/achievements client/profile)",
+      "Bash(do:*)",
+      "Bash([ ! -d \"src/app/$route\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(done:*)",
+      "Bash(npm run db:seed:*)",
+      "Bash(findstr:*)",
+      "Bash(psql:*)",
+      "Bash(docker:*)",
+      "Bash(dir:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx prisma db execute:*)",
+      "Bash(node:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx vercel:*)"
     ]
   }
 }

@@ -51,21 +51,23 @@ These accounts should be automatically created when:
 For API testing with authentication:
 ```bash
 # Login as trainer
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"trainer.test@evofitmeals.com","password":"TestTrainer123!"}'
 
 # Login as client
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"customer.test@evofitmeals.com","password":"TestCustomer123!"}'
 
 # Login as admin
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@fitmeal.pro","password":"AdminPass123"}'
 ```
 
 ---
-**Last Updated**: August 29, 2025
+**Last Updated**: January 24, 2026
+**Backend Port**: 4000
+**Frontend Port**: 3001
 **Do Not Modify Without Team Approval**
