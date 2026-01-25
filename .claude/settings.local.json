@@ -50,7 +50,9 @@
       "Bash(ralphy:*)",
       "Bash(ralphy --help:*)",
       "Bash(npx:*)",
-      "Bash(railway:*)"
+      "Bash(railway:*)",
+      "WebSearch",
+      "Bash(npm search:*)"
     ]
   }
 }
