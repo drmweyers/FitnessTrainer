@@ -1,0 +1,82 @@
+# Large data directories
+exerciseDB
+public
+web-bundles
+_bmad
+screenshots
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Environment
+.env
+.env.local
+.env.development
+.env*.local
+.env*.production
+
+# Testing
+coverage
+.nyc_output
+.playwright
+playwright-report
+
+# Logs
+logs
+*.log
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+.cache
+tmp
+temp
+*.tmp
+
+# Auto-Claude
+.claude
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Backend
+backend
+
+# Test files
+tests
+test-screenshots
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__
+
+# Images and screenshots
+*.png
+*.jpg
+*.jpeg
+*.gif
+final-test-failure.png
+program-builder-page.png
+navigation-test-failure.png
+page-content.html
