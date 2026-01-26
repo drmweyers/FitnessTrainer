@@ -1,9 +1,9 @@
 /**
- * Login API Route
+ * Register API Route
  *
- * POST /api/auth/login
+ * POST /api/auth/register
  *
- * Authenticates user with email/password and returns JWT tokens
+ * Registers a new user with email/password and returns JWT tokens
  * Platform-agnostic: Works on Vercel and Digital Ocean
  */
 
@@ -14,86 +14,65 @@ import { prisma } from '@/lib/db/prisma';
 import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
 import { checkRateLimit } from '@/lib/middleware/rate-limit';
+import { registerSchema } from '@/lib/types/auth';
 
 /**
- * Login request schema
- */
-const loginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  rememberMe: z.boolean().optional(),
-});
-
-/**
- * POST /api/auth/login
+ * POST /api/auth/register
  *
- * Authenticates user and returns JWT access + refresh tokens
+ * Registers a new user and returns JWT access + refresh tokens
  */
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting disabled for testing
     // const rateLimitResponse = await checkRateLimit(request, {
-    //   limit: 5,
-    //   window: 900, // 15 minutes
+    //   limit: 3,
+    //   window: 3600, // 1 hour
     // });
     // if (rateLimitResponse) return rateLimitResponse;
 
     // Parse and validate request body
     const body = await request.json();
-    const validatedData = loginSchema.parse(body);
-    const { email, password, rememberMe } = validatedData;
+    const validatedData = registerSchema.parse(body);
+    const { email, password, role, trainerId } = validatedData;
 
-    // Find user by email
-    const user = await prisma.user.findUnique({
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
+      select: { id: true },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Email already registered',
+          error: { code: 'EMAIL_EXISTS' },
+        },
+        { status: 409 }
+      );
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await prisma.user.create({
+      data: {
+        email: email.toLowerCase(),
+        passwordHash,
+        role: role || 'client',
+        trainerId,
+        isActive: true,
+        isVerified: true, // Auto-verify for MVP (add email verification later)
+      },
       select: {
         id: true,
         email: true,
-        passwordHash: true,
         role: true,
         isActive: true,
         isVerified: true,
-        deletedAt: true,
       },
     });
-
-    // Check if user exists
-    if (!user || user.deletedAt) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid email or password',
-          error: { code: 'INVALID_CREDENTIALS' },
-        },
-        { status: 401 }
-      );
-    }
-
-    // Check if user account is active
-    if (!user.isActive) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Account is deactivated',
-          error: { code: 'ACCOUNT_DEACTIVATED' },
-        },
-        { status: 403 }
-      );
-    }
-
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid email or password',
-          error: { code: 'INVALID_CREDENTIALS' },
-        },
-        { status: 401 }
-      );
-    }
 
     // Generate tokens
     const accessToken = tokenService.generateAccessToken({
@@ -125,7 +104,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Login successful',
+        message: 'Registration successful',
         data: {
           accessToken,
           refreshToken,
@@ -137,13 +116,7 @@ export async function POST(request: NextRequest) {
           },
         },
       },
-      {
-        status: 200,
-        headers: {
-          // Set token expiry based on rememberMe
-          'Cache-Control': rememberMe ? 'private, max-age=604800' : 'private, max-age=3600',
-        },
-      }
+      { status: 201 }
     );
   } catch (error) {
     return handleApiError(error);

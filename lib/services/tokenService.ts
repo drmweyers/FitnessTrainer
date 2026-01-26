@@ -19,14 +19,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '@/lib/db/prisma';
 import { redis } from '@/lib/db/redis';
 
-// Logger (simple console for now, can be upgraded to Winston)
-const logger = {
-  debug: (msg: string, meta?: any) => console.debug(`[TokenService] ${msg}`, meta || ''),
-  info: (msg: string, meta?: any) => console.info(`[TokenService] ${msg}`, meta || ''),
-  warn: (msg: string, meta?: any) => console.warn(`[TokenService] ${msg}`, meta || ''),
-  error: (msg: string, meta?: any) => console.error(`[TokenService] ${msg}`, meta || ''),
-};
-
 interface TokenPayload {
   sub: string; // user_id
   email: string;
@@ -54,6 +46,7 @@ class TokenService {
     this.accessTokenExpiry = process.env.JWT_ACCESS_EXPIRE || '15m';
     this.refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRE || '7d';
 
+    // Production validation check
     if (process.env.NODE_ENV === 'production') {
       if (!this.accessTokenSecret || this.accessTokenSecret.includes('dev-')) {
         throw new Error('JWT_ACCESS_SECRET not configured for production');
@@ -83,15 +76,7 @@ class TokenService {
       jti: tokenId,
     };
 
-    const token = jwt.sign(payload, this.accessTokenSecret);
-
-    logger.debug('Generated access token', {
-      userId: user.id,
-      tokenId,
-      expiresIn: this.accessTokenExpiry,
-    });
-
-    return token;
+    return jwt.sign(payload, this.accessTokenSecret);
   }
 
   /**
@@ -117,18 +102,8 @@ class TokenService {
         },
       });
 
-      logger.info('Generated refresh token', {
-        userId: data.userId,
-        sessionId: session.id,
-        expiresAt: session.expiresAt,
-      });
-
       return token;
     } catch (error: any) {
-      logger.error('Failed to generate refresh token', {
-        userId: data.userId,
-        error: error.message,
-      });
       throw new Error('Failed to create session');
     }
   }
@@ -139,21 +114,11 @@ class TokenService {
   verifyAccessToken(token: string): TokenPayload {
     try {
       const payload = jwt.verify(token, this.accessTokenSecret) as TokenPayload;
-
-      logger.debug('Access token verified', {
-        userId: payload.sub,
-        tokenId: payload.jti,
-      });
-
       return payload;
     } catch (error: any) {
       if (error instanceof jwt.TokenExpiredError) {
-        logger.warn('Access token expired', {
-          token: token.substring(0, 20) + '...',
-        });
         throw new Error('Access token expired');
       } else if (error instanceof jwt.JsonWebTokenError) {
-        logger.warn('Invalid access token', { error: error.message });
         throw new Error('Invalid access token');
       }
       throw error;
@@ -187,14 +152,10 @@ class TokenService {
     });
 
     if (!session) {
-      logger.warn('Invalid or expired refresh token', {
-        tokenHash: tokenHash.substring(0, 20) + '...',
-      });
       throw new Error('Invalid or expired refresh token');
     }
 
     if (!session.user.isActive) {
-      logger.warn('User account deactivated', { userId: session.userId });
       throw new Error('User account deactivated');
     }
 
@@ -202,11 +163,6 @@ class TokenService {
     await prisma.userSession.update({
       where: { id: session.id },
       data: { lastActivityAt: new Date() },
-    });
-
-    logger.debug('Refresh token verified', {
-      userId: session.userId,
-      sessionId: session.id,
     });
 
     return {
@@ -245,11 +201,6 @@ class TokenService {
       ipAddress: data.ipAddress,
     });
 
-    logger.info('Refresh token rotated', {
-      userId: data.userId,
-      oldSessionId: oldSession.id,
-    });
-
     return newToken;
   }
 
@@ -258,16 +209,9 @@ class TokenService {
    */
   async revokeRefreshToken(token: string): Promise<void> {
     const tokenHash = this.hashToken(token);
-
-    const deleted = await prisma.userSession.deleteMany({
+    await prisma.userSession.deleteMany({
       where: { tokenHash },
     });
-
-    if (deleted.count > 0) {
-      logger.info('Refresh token revoked', { count: deleted.count });
-    } else {
-      logger.warn('Attempted to revoke non-existent refresh token');
-    }
   }
 
   /**
@@ -276,11 +220,6 @@ class TokenService {
   async revokeAllUserTokens(userId: string): Promise<number> {
     const deleted = await prisma.userSession.deleteMany({
       where: { userId },
-    });
-
-    logger.info('All user tokens revoked', {
-      userId,
-      count: deleted.count,
     });
 
     return deleted.count;
@@ -321,8 +260,6 @@ class TokenService {
     const expiry = this.parseExpiry(this.accessTokenExpiry);
 
     await redis.set(key, 'true', expiry);
-
-    logger.info('Token blacklisted', { tokenId });
   }
 
   /**
@@ -347,10 +284,6 @@ class TokenService {
       },
     });
 
-    if (deleted.count > 0) {
-      logger.info('Cleaned expired tokens', { count: deleted.count });
-    }
-
     return deleted.count;
   }
 
@@ -365,8 +298,14 @@ class TokenService {
    * Parse expiry string to seconds
    */
   private parseExpiry(expiry: string): number {
-    const unit = expiry.slice(-1);
-    const value = parseInt(expiry.slice(0, -1));
+    // Trim whitespace and newlines that might be in env vars
+    const cleaned = expiry.trim();
+    const unit = cleaned.slice(-1);
+    const value = parseInt(cleaned.slice(0, -1));
+
+    if (isNaN(value)) {
+      throw new Error(`Invalid expiry value in: ${expiry}`);
+    }
 
     switch (unit) {
       case 's':
@@ -378,7 +317,7 @@ class TokenService {
       case 'd':
         return value * 24 * 60 * 60;
       default:
-        throw new Error(`Invalid expiry format: ${expiry}`);
+        throw new Error(`Invalid expiry format: ${expiry} (unit must be s, m, h, or d)`);
     }
   }
 }
