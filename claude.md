@@ -9,6 +9,52 @@
 
 ---
 
+# ⚡ SUPERPOWERS - DEFAULT WORKFLOW FOR EVOFIT
+
+**CRITICAL:** Superpowers is the PRIMARY methodology for ALL EvoFit development work.
+
+### Superpowers for EvoFit Development:
+
+| Activity | Superpowers Skill | Auto-Activate When |
+|----------|-------------------|-------------------|
+| **Debugging** | `systematic-debugging` | Bug/error reported |
+| **Feature Implementation** | `subagent-driven-development` | Starting new feature |
+| **TDD** | `test-driven-development` | Writing tests + code |
+| **Code Review** | `requesting-code-review` | Ready for review |
+| **BMAD Stories** | Superpowers as CTO | Creating BMAD stories |
+| **Planning** | `writing-plans` | Designing features |
+| **Completion** | `verification-before-completion` | Finishing work |
+
+### How to Use Superpowers in EvoFit:
+
+```
+❌ DON'T SAY:                    ✅ SAY:
+"Use agents to implement"        "Implement workout creation feature"
+"Debug this test failure"        "Tests are failing in WorkoutForm.spec.ts"
+"Review my code"                 "Ready for code review"
+"Create a BMAD story"            "Add user profile management feature"
+```
+
+### Superpowers + BMAD for EvoFit:
+```
+BMAD Process → Superpowers Skills as CTO → Execute
+
+Example Workflow:
+1. "Add workout tracking feature"
+   → @subagent-driven-development (TDD approach)
+   → Write tests → Implement → Verify
+
+2. "Login is broken"
+   → @systematic-debugging
+   → Investigate → Fix → Verify
+
+3. "Ready to merge workout feature"
+   → @requesting-code-review
+   → Review → Address feedback → Merge
+```
+
+---
+
 # 🚀 AUTO-CLAUDE INTEGRATION
 
 ## Auto-Claude Location
@@ -18,18 +64,18 @@
 
 ## Quick Start Templates for EvoFit
 
-### Template 1: New Feature with TDD
+### Template 1: New Feature with TDD (Superpowers-Powered)
 ```
-Create a Ralph Loop task for implementing [FEATURE_NAME] in EvoFit:
+Implement [FEATURE_NAME] in EvoFit using Superpowers TDD:
 
-Phase 1 - Planning (PM + Architect):
+Phase 1 - Planning:
 - Define user stories for fitness feature
 - Design component architecture
 - Plan state management (React Context/Zustand)
 - Identify data models and API endpoints
 - Create wireframes/mockups
 
-Phase 2 - TDD Implementation (Test Engineer → Developer):
+Phase 2 - TDD Implementation (Superpowers test-driven-development):
 - Write Playwright GUI tests first
 - Write Jest unit tests for components
 - Write failing tests (RED)
@@ -38,11 +84,12 @@ Phase 2 - TDD Implementation (Test Engineer → Developer):
 - Ensure 100% test coverage
 
 Phase 3 - Quality Assurance:
-- @code-reviewer for React/TypeScript best practices
+- @requesting-code-review for React/TypeScript best practices
 - @security-auditor for OWASP compliance
 - GUI testing with @webapp-testing (Playwright)
 - Performance testing with Lighthouse
 - Mobile responsiveness testing
+- @verification-before-completion before merging
 
 Phase 4 - Documentation:
 - Component documentation with Storybook
@@ -111,9 +158,9 @@ Phase 4 - Documentation:
 
 ---
 
-# 🎯 RALPH LOOP TDD FOR EVOFIT
+# 🎯 SUPERPOWERS + RALPH LOOP TDD FOR EVOFIT
 
-## The Ralph Loop Process
+## Superpowers-Powered Development Process
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -127,7 +174,8 @@ Phase 4 - Documentation:
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│           PHASE 2: TEST-DRIVEN DEVELOPMENT                   │
+│      PHASE 2: TEST-DRIVEN DEVELOPMENT (Superpowers)         │
+│  • @test-driven-development (TDD approach)                 │
 │  • Write Playwright GUI tests (user flows)                 │
 │  • Write Jest unit tests (components, hooks, utils)        │
 │  • Write failing tests (RED)                               │
@@ -137,8 +185,8 @@ Phase 4 - Documentation:
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              PHASE 3: QUALITY GATE                           │
-│  • @code-reviewer (React/TypeScript best practices)        │
+│          PHASE 3: QUALITY GATE (Superpowers)                │
+│  • @requesting-code-review (React/TypeScript)             │
 │  • @security-auditor (OWASP Top 10, authentication)       │
 │  • @webapp-testing (Playwright E2E tests)                  │
 │  • @performance-tuner (bundle size, rendering)            │
@@ -147,7 +195,16 @@ Phase 4 - Documentation:
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│             PHASE 4: DOCUMENTATION                           │
+│   PHASE 4: VERIFICATION (Superpowers)                       │
+│  • @verification-before-completion                         │
+│  • All tests pass                                          │
+│  • No security vulnerabilities                             │
+│  • Performance benchmarks met                              │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│             PHASE 5: DOCUMENTATION                           │
 │  • Component documentation (Storybook)                     │
 │  • API documentation (OpenAPI)                             │
 │  • User guides and walkthroughs                           │
@@ -158,22 +215,69 @@ Phase 4 - Documentation:
            [TASK COMPLETE - MERGE TO MAIN]
 ```
 
-## Ralph Loop Rules for EvoFit
+## Superpowers Rules for EvoFit
 
-1. **Tests First**: Always write tests before implementation
-2. **Red-Green-Refactor**: Follow strict TDD cycle
-3. **GUI Tests Required**: All user-facing features need Playwright tests
-4. **Quality Gate**: No code merges without @code-reviewer approval
-5. **Security First**: All features must pass @security-auditor review
-6. **Performance**: Lighthouse score >90, bundle size monitoring
-7. **Accessibility**: WCAG 2.1 AA compliance required
-8. **Documentation**: Every feature documented before merge
+1. **Superpowers First**: Always use Superpowers methodology for development
+2. **Tests First**: Always write tests before implementation (TDD)
+3. **Red-Green-Refactor**: Follow strict TDD cycle
+4. **GUI Tests Required**: All user-facing features need Playwright tests
+5. **Quality Gate**: Use @requesting-code-review before merging
+6. **Security First**: All features must pass @security-auditor review
+7. **Performance**: Lighthouse score >90, bundle size monitoring
+8. **Accessibility**: WCAG 2.1 AA compliance required
+9. **Documentation**: Every feature documented before merge
+10. **Verification**: Always use @verification-before-completion before claiming done
 
 ---
 
-# 🛠️ DEVELOPMENT WORKFLOWS
+# 🛠️ SUPERPOWERS DEVELOPMENT WORKFLOWS
 
-## Creating a New Feature
+## Creating a New Feature (Superpowers-Powered)
+
+```bash
+# 1. Simply state what you want
+"Implement workout creation feature for EvoFit"
+
+# 2. Superpowers activates automatically
+→ @subagent-driven-development
+→ @test-driven-development (TDD)
+→ Planning, tests, implementation, review
+
+# 3. Verification
+→ @verification-before-completion
+→ @requesting-code-review (if needed)
+
+# 4. Merge
+→ @finishing-development-branch
+```
+
+## Debugging (Superpowers Systematic Debugging)
+
+```bash
+# Simply report the issue
+"Workout form is not submitting"
+
+# Superpowers activates:
+→ @systematic-debugging
+→ Investigates → Identifies root cause → Fixes → Verifies
+```
+
+## Code Review (Superpowers Requesting Review)
+
+```bash
+# When ready for review
+"Ready for code review on workout feature"
+
+# Superpowers activates:
+→ @requesting-code-review
+→ Reviews → Provides feedback → Waits for fixes
+```
+
+---
+
+# 🚀 AUTO-CLAUDE INTEGRATION (LEGACY)
+
+## Creating a New Feature via Auto-Claude
 
 ```bash
 # 1. Start Auto-Claude
@@ -186,7 +290,7 @@ Double-click "Auto-Claude" desktop shortcut
 - Customize for your feature
 - Click "Create Task"
 
-# 3. Auto-Claude runs Ralph Loop
+# 3. Auto-Claude runs Ralph Loop with Superpowers
 - Planning phase (PM + Architect)
 - TDD implementation (Test Engineer + Developer)
 - Quality gate (Code Reviewer + Security Auditor)
@@ -541,20 +645,40 @@ git push origin feature/workout-management
 - `test:` Adding tests
 - `chore:` Maintenance
 
-## Code Review Checklist
+## Code Review Checklist (Superpowers-Powered)
+- [ ] @verification-before-completion passed
 - [ ] Tests pass (unit + E2E)
 - [ ] No TypeScript errors
 - [ ] No ESLint warnings
 - [ ] Accessibility verified
 - [ ] Performance benchmarks met
-- [ ] Security review passed
+- [ ] @security-auditor passed
+- [ ] @requesting-code-review approved
 - [ ] Documentation complete
 
 ---
 
-# 🐛 DEBUGGING
+# 🐛 SUPERPOWERS DEBUGGING
 
-## Common Issues
+## Systematic Debugging (Superpowers)
+
+When you encounter any issue in EvoFit, simply describe it:
+
+```
+"Workout form validation is not working"
+"API returns 500 error on workout save"
+"Tests failing in WorkoutForm.spec.ts"
+```
+
+Superpowers automatically:
+1. **@systematic-debugging** activates
+2. Investigates the issue systematically
+3. Identifies root cause
+4. Implements fix
+5. Verifies solution
+6. Runs tests to confirm
+
+## Common Issues (Manual Debugging)
 
 ### Tests Failing
 ```bash
@@ -563,6 +687,9 @@ npm test -- --verbose
 
 # Debug Playwright test
 npx playwright test --debug
+
+# Or just say: "Tests are failing"
+# → Superpowers handles it
 ```
 
 ### Build Errors
@@ -573,6 +700,9 @@ rm -rf .next
 # Clear node_modules and reinstall
 rm -rf node_modules
 npm install
+
+# Or just say: "Build is failing"
+# → Superpowers handles it
 ```
 
 ### Type Errors
@@ -582,6 +712,9 @@ npm run type-check
 
 # Generate type coverage
 npm run type-coverage
+
+# Or just say: "TypeScript errors in WorkoutForm"
+# → Superpowers handles it
 ```
 
 ---
@@ -600,4 +733,33 @@ npm run type-coverage
 
 ---
 
-Last updated: 2026-01-17
+# ⚡ SUPERPOWERS QUICK REFERENCE
+
+## How to Talk to Your CTO (Superpowers-Powered)
+
+| You Want | Say This | Superpowers Activates |
+|---------|----------|---------------------|
+| Implement feature | "Add user authentication" | @subagent-driven-development |
+| Fix bug | "Login is broken" | @systematic-debugging |
+| Code review | "Ready for review" | @requesting-code-review |
+| Write tests | "Add tests for WorkoutForm" | @test-driven-development |
+| Plan feature | "Plan workout tracking" | @writing-plans |
+| Merge feature | "Feature is complete" | @finishing-development-branch |
+| Verify work | "Check if this is done" | @verification-before-completion |
+
+## Don't Say This ❌ | Do Say This ✅
+
+| ❌ Don't Say | ✅ Do Say |
+|-------------|----------|
+| "Use agents to implement" | "Implement this feature" |
+| "Debug this bug" | "There's a bug in X" |
+| "Create BMAD story" | "Add this feature" |
+| "Run code review" | "Ready for review" |
+| "Write tests first" | "Add this feature with tests" |
+
+---
+
+**EvoFit Trainer CLAUDE.md - Superpowers Edition**
+
+Last updated: 2025-01-25
+**Version:** 2.0 - Superpowers-First Development
