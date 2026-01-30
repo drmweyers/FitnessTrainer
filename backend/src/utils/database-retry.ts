@@ -248,7 +248,7 @@ export async function checkConnectionHealth(
  */
 export async function withTransaction<T>(
   prisma: PrismaClient,
-  callback: (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>) => Promise<T>,
+  callback: (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => Promise<T>,
   options: RetryOptions = {}
 ): Promise<T> {
   return withRetry<T>(

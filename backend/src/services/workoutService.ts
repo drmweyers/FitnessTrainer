@@ -1032,9 +1032,7 @@ export const workoutService = {
     const where: any = {
       personalBest: true,
       workoutSession: {
-        clientWorkout: {
-          clientId: userId,
-        },
+        clientId: userId,
       },
     };
 
@@ -1098,20 +1096,13 @@ export const workoutService = {
       include: {
         exercise: true,
         setLogs: {
-          where: {
-            setType: 'working',
-          },
           orderBy: {
             weight: 'desc',
           },
         },
         workoutSession: {
           include: {
-            clientWorkout: {
-              include: {
-                client: true,
-              },
-            },
+            client: true,
           },
         },
       },
@@ -1121,7 +1112,7 @@ export const workoutService = {
       throw createError(404, 'Exercise log not found');
     }
 
-    const clientId = exerciseLog.workoutSession.clientWorkout.clientId;
+    const clientId = exerciseLog.workoutSession.clientId;
     const exerciseId = exerciseLog.exerciseId;
 
     // Get all previous logs for this exercise
@@ -1130,20 +1121,14 @@ export const workoutService = {
         exerciseId,
         personalBest: true,
         workoutSession: {
-          clientWorkout: {
-            clientId,
-          },
+          clientId,
         },
         id: {
           not: exerciseLogId,
         },
       },
       include: {
-        setLogs: {
-          where: {
-            setType: 'working',
-          },
-        },
+        setLogs: true,
       },
     });
 
@@ -1204,9 +1189,7 @@ export const workoutService = {
             not: exerciseLogId,
           },
           workoutSession: {
-            clientWorkout: {
-              clientId,
-            },
+            clientId,
           },
         },
         data: { personalBest: false },
@@ -1218,14 +1201,23 @@ export const workoutService = {
       recordType,
       currentPerformance: {
         weight: currentBestSet?.weight,
-        reps: currentBestSet?.reps,
+        reps: currentBestSet?.actualReps,
         volume: currentVolume,
       },
-      previousBest: previousLogs.length > 0 ? {
-        weight: previousLogs[0].sets[0]?.weight,
-        reps: previousLogs[0].sets[0]?.reps,
-        volume: previousLogs[0].totalVolume?.toString(),
-      } : null,
+      previousBest: (() => {
+        if (previousLogs.length > 0) {
+          const log = previousLogs[0];
+          if (log?.setLogs && log.setLogs[0]) {
+            const set = log.setLogs[0];
+            return {
+              weight: set?.weight,
+              reps: set?.actualReps,
+              volume: log.totalVolume?.toString(),
+            };
+          }
+        }
+        return null;
+      })(),
     };
   },
 
@@ -1238,9 +1230,7 @@ export const workoutService = {
         exerciseId,
         personalBest: true,
         workoutSession: {
-          clientWorkout: {
-            clientId: userId,
-          },
+          clientId: userId,
         },
       },
       include: {
@@ -1255,22 +1245,15 @@ export const workoutService = {
         workoutSession: {
           select: {
             scheduledDate: true,
-            clientWorkout: {
+            client: {
               select: {
-                client: {
-                  select: {
-                    firstName: true,
-                    lastName: true,
-                  },
-                },
+                id: true,
+                email: true,
               },
             },
           },
         },
         setLogs: {
-          where: {
-            setType: 'working',
-          },
           orderBy: {
             weight: 'desc',
           },
