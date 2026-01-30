@@ -15,6 +15,9 @@ import { Prisma } from '@prisma/client';
 export interface ApiError {
   success: false;
   message: string;
+  statusCode: number;
+  code: string;
+  name: string;
   error: {
     code: string;
     details?: any;
@@ -151,6 +154,9 @@ export function handleApiError(error: any): NextResponse {
   const errorResponse: ApiError = {
     success: false,
     message,
+    statusCode,
+    code: errorCode,
+    name: error.name || 'Error',
     error: {
       code: errorCode,
       ...(details && { details }),

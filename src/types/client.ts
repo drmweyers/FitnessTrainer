@@ -46,6 +46,7 @@ export interface ClientTag {
   name: string;
   color: string;
   trainerId: string;
+  data?: any; // Additional tag data
 }
 
 export interface ClientNote {
@@ -55,6 +56,7 @@ export interface ClientNote {
   note: string;
   createdAt: string;
   updatedAt?: string;
+  data?: any; // Additional note data
 }
 
 export interface ClientProfile {
@@ -96,11 +98,11 @@ export interface Client {
   createdAt: string;
   updatedAt?: string;
   lastLoginAt?: string;
-  
+
   // Profile information
   userProfile?: UserProfile;
   clientProfile?: ClientProfile;
-  
+
   // Trainer-client relationship
   trainerClient?: {
     id: string;
@@ -110,15 +112,18 @@ export interface Client {
     connectedAt?: string;
     archivedAt?: string;
   };
-  
+
   // Tags and notes
   tags: ClientTag[];
   notesCount?: number;
   lastActivity?: string;
-  
+
   // Computed display fields
   displayName: string;
   avatar?: string;
+
+  // Additional data
+  data?: any;
 }
 
 export interface ClientListResponse {
@@ -129,6 +134,7 @@ export interface ClientListResponse {
     total: number;
     totalPages: number;
   };
+  data?: any; // Additional response data
 }
 
 export interface ClientInvitation {
@@ -141,6 +147,7 @@ export interface ClientInvitation {
   sentAt: string;
   expiresAt: string;
   acceptedAt?: string;
+  data?: any; // Additional invitation data
 }
 
 export interface ClientFilters {

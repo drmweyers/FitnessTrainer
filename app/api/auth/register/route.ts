@@ -8,12 +8,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/db/prisma';
 import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
-import { checkRateLimit } from '@/lib/middleware/rate-limit';
 import { registerSchema } from '@/lib/types/auth';
 
 /**
@@ -61,7 +59,6 @@ export async function POST(request: NextRequest) {
         email: email.toLowerCase(),
         passwordHash,
         role: role || 'client',
-        trainerId,
         isActive: true,
         isVerified: true, // Auto-verify for MVP (add email verification later)
       },

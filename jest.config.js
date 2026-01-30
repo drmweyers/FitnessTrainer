@@ -72,7 +72,16 @@ const customJestConfig = {
     '<rootDir>/dist/',
     '<rootDir>/out/',
     '<rootDir>/.auto-claude/',
+    '<rootDir>/tests/e2e/',
   ],
+  // Explicitly exclude Playwright tests
+  testMatch: [
+    '<rootDir>/tests/unit/**/*.spec.(ts|tsx|js)',
+    '<rootDir>/**/__tests__/**/*.(ts|tsx|js)',
+    '<rootDir>/**/?(*.)(spec|test).(ts|tsx|js)'
+  ],
+  // Exclude Playwright test files
+  forceExit: true,
   modulePathIgnorePatterns: [
     '<rootDir>/.auto-claude/',
   ],

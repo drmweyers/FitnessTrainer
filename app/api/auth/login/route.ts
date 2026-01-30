@@ -13,7 +13,6 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/db/prisma';
 import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
-import { checkRateLimit } from '@/lib/middleware/rate-limit';
 
 /**
  * Login request schema
@@ -82,6 +81,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid email or password',
+          error: { code: 'INVALID_CREDENTIALS' },
+        },
+        { status: 401 }
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {

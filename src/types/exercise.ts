@@ -6,9 +6,12 @@ export interface Exercise {
   gifUrl: string // GIF filename
   targetMuscles: string[] // Primary muscles worked
   bodyParts: string[] // Body parts targeted
-  equipments: string[] // Required equipment
+  equipments: string[] // Required equipment (also available as singular for backward compat)
+  equipment?: string // Single equipment (backward compatibility)
+  muscleGroup?: string // Primary muscle group (for filtering)
   secondaryMuscles: string[] // Secondary muscles worked
   instructions: string[] // Step-by-step instructions
+  difficulty?: 'beginner' | 'intermediate' | 'advanced' // Exercise difficulty level
   createdAt?: string
   updatedAt?: string
 }

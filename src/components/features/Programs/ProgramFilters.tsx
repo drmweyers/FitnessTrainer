@@ -22,13 +22,11 @@ const programTypeLabels: Record<ProgramType, string> = {
   [ProgramType.CARDIO]: 'Cardio',
   [ProgramType.FLEXIBILITY]: 'Flexibility',
   [ProgramType.REHABILITATION]: 'Rehabilitation',
-  [ProgramType.SPORTS_SPECIFIC]: 'Sports Specific',
+  [ProgramType.SPORT_SPECIFIC]: 'Sport Specific',
   [ProgramType.GENERAL_FITNESS]: 'General Fitness',
   [ProgramType.WEIGHT_LOSS]: 'Weight Loss',
   [ProgramType.MUSCLE_GAIN]: 'Muscle Gain',
-  [ProgramType.HYBRID]: 'Hybrid',
-  [ProgramType.BODYBUILDING]: 'Bodybuilding',
-  [ProgramType.SPORT_SPECIFIC]: 'Sport Specific'
+  [ProgramType.HYBRID]: 'Hybrid'
 }
 
 const difficultyLabels: Record<DifficultyLevel, string> = {

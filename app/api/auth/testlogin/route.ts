@@ -30,6 +30,12 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('TEST LOGIN: Comparing password...');
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { success: false, message: 'No password hash found' },
+        { status: 401 }
+      );
+    }
     const isPasswordValid = await bcrypt.compare(body.password, user.passwordHash);
     console.log('TEST LOGIN: Password valid:', isPasswordValid);
 

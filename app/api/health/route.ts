@@ -23,14 +23,14 @@ import { redis } from '@/lib/db/redis';
 export async function GET() {
   const startTime = Date.now();
   const health = {
-    status: 'healthy',
+    status: 'healthy' as 'healthy' | 'unhealthy' | 'degraded',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'unknown',
     platform: process.env.VERCEL ? 'vercel' : process.env.DIGITAL_OCEAN ? 'digital-ocean' : 'unknown',
     services: {
-      database: { status: 'unknown', latency: 0 },
-      cache: { status: 'unknown', latency: 0 },
+      database: { status: 'unknown' as string, latency: 0, error: undefined as string | undefined },
+      cache: { status: 'unknown' as string, latency: 0, error: undefined as string | undefined },
     },
     version: process.env.npm_package_version || '1.0.0',
     responseTime: 0,
@@ -45,11 +45,13 @@ export async function GET() {
     health.services.database = {
       status: 'healthy',
       latency: dbLatency,
+      error: undefined,
     };
   } catch (error: any) {
     health.status = 'unhealthy';
     health.services.database = {
       status: 'unhealthy',
+      latency: 0,
       error: error.message,
     };
   }
@@ -73,6 +75,7 @@ export async function GET() {
       health.services.cache = {
         status: 'healthy',
         latency: cacheLatency,
+        error: undefined,
       };
     } else {
       throw new Error('Cache read/write failed');
@@ -81,6 +84,7 @@ export async function GET() {
     health.status = 'degraded';
     health.services.cache = {
       status: 'unhealthy',
+      latency: 0,
       error: error.message,
     };
   }

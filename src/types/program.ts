@@ -179,11 +179,14 @@ export interface ProgramTemplate {
   tags: string[];
   isPublic: boolean;
   useCount: number;
+  usageCount?: number; // Alias for backward compatibility
   rating?: number;
   createdBy: string;
   createdAt: string;
   updatedAt?: string;
-  
+  goals?: string[]; // Program fitness goals
+  equipmentNeeded?: string[]; // Required equipment
+
   // Relations
   program?: Program;
   creator?: {

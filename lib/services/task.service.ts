@@ -282,7 +282,7 @@ export class TaskService {
       updateData.category = data.category;
     }
     if (data.assignedToId !== undefined) {
-      updateData.assignedToId = data.assignedToId;
+      updateData.assignedTo = data.assignedToId || undefined;
     }
     if (data.dueDate !== undefined) {
       updateData.dueDate = data.dueDate;
@@ -564,7 +564,7 @@ export class TaskService {
       updateData.category = updates.category;
     }
     if (updates.assignedToId !== undefined) {
-      updateData.assignedToId = updates.assignedToId;
+      updateData.assignedTo = updates.assignedToId || undefined;
     }
     if (updates.dueDate !== undefined) {
       updateData.dueDate = updates.dueDate;
@@ -584,14 +584,12 @@ export class TaskService {
               assignedTo: {
                 select: {
                   id: true,
-                  name: true,
                   email: true,
                 },
               },
               createdBy: {
                 select: {
                   id: true,
-                  name: true,
                   email: true,
                 },
               },

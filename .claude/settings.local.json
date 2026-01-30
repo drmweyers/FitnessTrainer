@@ -74,7 +74,9 @@
       "Bash(__NEW_LINE_52097443588897f1__ echo \"\")",
       "Bash(docker-compose:*)",
       "Bash(a0447d9)",
-      "Bash(a9fb05b \")"
+      "Bash(a9fb05b \")",
+      "Bash(npm audit:*)",
+      "Bash(grep:*)"
     ]
   }
 }
