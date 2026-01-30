@@ -52,7 +52,29 @@
       "Bash(npx:*)",
       "Bash(railway:*)",
       "WebSearch",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_run_code",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "Bash(openssl:*)",
+      "Bash(printf:*)",
+      "Bash({ echo \"y\")",
+      "Bash(})",
+      "Bash(python:*)",
+      "Bash(__NEW_LINE_4c7c2eeec390aedc__ echo \"\")",
+      "Bash(__NEW_LINE_65c34ca21d038248__ echo \"\")",
+      "Bash(__NEW_LINE_e67fc67b038f7589__ echo \"\")",
+      "Bash(__NEW_LINE_d1bd93ea230012f0__ echo \"\")",
+      "Bash(__NEW_LINE_52097443588897f1__ echo \"\")",
+      "Bash(docker-compose:*)",
+      "Bash(a0447d9)",
+      "Bash(a9fb05b \")"
     ]
   }
 }

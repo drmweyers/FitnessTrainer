@@ -9,38 +9,36 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   displayName: 'EvoFit Frontend Tests',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   
   // Module name mapping for absolute imports and static assets
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@/components/(.*)$': '<rootDir>/src/components/$1',
-    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
-    '^@/hooks/(.*)$': '<rootDir>/src/hooks/$1',
-    '^@/types/(.*)$': '<rootDir>/src/types/$1',
-    '^@/state/(.*)$': '<rootDir>/src/state/$1',
-    '^@/data/(.*)$': '<rootDir>/src/data/$1',
-    '^@/app/(.*)$': '<rootDir>/src/app/$1',
+    '^@/(.*)$': '<rootDir>/$1',
+    '^@/components/(.*)$': '<rootDir>/components/$1',
+    '^@/lib/(.*)$': '<rootDir>/lib/$1',
+    '^@/hooks/(.*)$': '<rootDir>/hooks/$1',
+    '^@/types/(.*)$': '<rootDir>/lib/types/$1',
+    '^@/app/(.*)$': '<rootDir>/app/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/__mocks__/fileMock.js',
   },
-  
+
   // Test patterns
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js)',
-    '<rootDir>/src/**/?(*.)(spec|test).(ts|tsx|js)'
+    '<rootDir>/tests/**/*.spec.(ts|tsx|js)',
+    '<rootDir>/**/__tests__/**/*.(ts|tsx|js)',
+    '<rootDir>/**/?(*.)(spec|test).(ts|tsx|js)'
   ],
-  
+
   // Coverage configuration
   collectCoverageFrom: [
-    'src/**/*.(ts|tsx)',
-    '!src/**/*.d.ts',
-    '!src/**/types.ts',
-    '!src/**/*.stories.(ts|tsx)',
-    '!src/app/**/layout.tsx',
-    '!src/app/**/loading.tsx',
-    '!src/app/**/error.tsx',
-    '!src/app/**/not-found.tsx',
+    'app/**/*.(ts|tsx)',
+    'components/**/*.(ts|tsx)',
+    'lib/**/*.(ts|tsx)',
+    '!**/*.d.ts',
+    '!**/types.ts',
+    '!**/*.stories.(ts|tsx)',
+    '!**/node_modules/**',
   ],
   
   coverageReporters: ['text', 'lcov', 'html'],
@@ -73,6 +71,10 @@ const customJestConfig = {
     '<rootDir>/backend/',
     '<rootDir>/dist/',
     '<rootDir>/out/',
+    '<rootDir>/.auto-claude/',
+  ],
+  modulePathIgnorePatterns: [
+    '<rootDir>/.auto-claude/',
   ],
   
   // Transform ignore patterns

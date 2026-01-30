@@ -85,6 +85,13 @@ model User {
   analyticsReports    AnalyticsReport[]   @relation("UserAnalyticsReports")
   trainerReports      AnalyticsReport[]   @relation("TrainerAnalyticsReports")
 
+  // Relations - Task Management (Epic 008)
+  createdTasks        Task[]              @relation("CreatedTasks")
+  assignedTasks       Task[]              @relation("AssignedTasks")
+  taskComments        TaskComment[]       @relation("UserTaskComments")
+  createdTaskTemplates TaskTemplate[]     @relation("CreatedTaskTemplates")
+  taskReminders       TaskReminder[]      @relation("TaskReminders")
+
   @@map("users")
 }
 
@@ -662,6 +669,7 @@ model Program {
   weeks           ProgramWeek[]
   assignments     ProgramAssignment[]
   templates       ProgramTemplate[]
+  tasks           Task[]       @relation("ProgramTasks")
 
   @@map("programs")
 }
@@ -700,6 +708,7 @@ model ProgramWorkout {
   week              ProgramWeek  @relation(fields: [programWeekId], references: [id], onDelete: Cascade)
   exercises         WorkoutExercise[]
   workoutSessions   WorkoutSession[]
+  tasks             Task[]       @relation("WorkoutTasks")
 
   @@unique([programWeekId, dayNumber])
   @@map("program_workouts")
@@ -1111,4 +1120,140 @@ model ComparisonBaseline {
   user            User     @relation("UserComparisonBaselines", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comparison_baselines")
+}
+
+// =====================================
+// EPIC 008: TASK MANAGEMENT
+// =====================================
+
+enum TaskStatus {
+  pending
+  in_progress
+  completed
+  cancelled
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum TaskCategory {
+  workout_preparation
+  client_communication
+  programming
+  administrative
+  review
+  other
+}
+
+// Tasks for trainers and clients
+model Task {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String       @db.VarChar(255)
+  description String?      @db.Text
+  status      TaskStatus   @default(pending)
+  priority    TaskPriority @default(medium)
+  category    TaskCategory @default(other)
+
+  // Relationships
+  assignedToId String?      @map("assigned_to_id") @db.Uuid
+  createdById String       @map("created_by_id") @db.Uuid
+
+  // Optional linking to programs/workouts
+  programId   String?      @map("program_id") @db.Uuid
+  workoutId   String?      @map("workout_id") @db.Uuid
+
+  // Due dates
+  dueDate     DateTime?    @map("due_date") @db.Date
+  dueTime     String?      @map("due_time") @db.VarChar(10)
+
+  // Completion tracking
+  completedAt DateTime?    @map("completed_at")
+  completedBy String?      @map("completed_by") @db.Uuid
+
+  // Timestamps
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime?    @updatedAt @map("updated_at")
+
+  // Relations
+  assignedTo  User?        @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy   User         @relation("CreatedTasks", fields: [createdById], references: [id], onDelete: Cascade)
+  program     Program?     @relation("ProgramTasks", fields: [programId], references: [id], onDelete: SetNull)
+  workout     ProgramWorkout? @relation("WorkoutTasks", fields: [workoutId], references: [id], onDelete: SetNull)
+  comments    TaskComment[]
+  attachments TaskAttachment[]
+  reminders   TaskReminder[]
+
+  @@map("tasks")
+}
+
+// Task comments for collaboration
+model TaskComment {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId      String    @map("task_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  comment     String    @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user        User      @relation("UserTaskComments", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("task_comments")
+}
+
+// Task attachments for files/links
+model TaskAttachment {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId      String    @map("task_id") @db.Uuid
+  fileName    String    @map("file_name") @db.VarChar(255)
+  fileUrl     String    @map("file_url") @db.VarChar(500)
+  fileType    String    @map("file_type") @db.VarChar(100)
+  fileSize    Int?      @map("file_size") // in bytes
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_attachments")
+}
+
+// Task templates for reusable tasks
+model TaskTemplate {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String       @db.VarChar(255)
+  description String?      @db.Text
+  category    TaskCategory
+  priority    TaskPriority @default(medium)
+  estimatedDuration Int?   @map("estimated_duration") // in minutes
+  isPublic    Boolean      @default(false) @map("is_public")
+  createdById String       @map("created_by_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime?    @updatedAt @map("updated_at")
+
+  // Relations
+  createdBy   User         @relation("CreatedTaskTemplates", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@map("task_templates")
+}
+
+// Task reminders/notifications
+model TaskReminder {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId      String    @map("task_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  reminderAt  DateTime  @map("reminder_at")
+  isSent      Boolean   @default(false) @map("is_sent")
+  sentAt      DateTime? @map("sent_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user        User      @relation("TaskReminders", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("task_reminders")
 }

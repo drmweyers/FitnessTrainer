@@ -43,3 +43,13 @@
 {"expiresAt":"2026-02-01T02:19:21.178Z","level":"info","message":"Generated refresh token","service":"evofit-backend","sessionId":"f429997d-43c8-43eb-b256-e423900eface","timestamp":"2026-01-24 21:19:21","userId":"65123065-ae35-4ced-90de-4d27068ec0fd","version":"1.0.0"}
 {"email":"customer.test@evofitmeals.com","level":"info","message":"User logged in successfully","role":"client","service":"evofit-backend","timestamp":"2026-01-24 21:19:21","userId":"65123065-ae35-4ced-90de-4d27068ec0fd","version":"1.0.0"}
 {"duration":"654ms","ip":"::1","level":"info","message":"POST /api/auth/login 200","method":"POST","responseTime":654,"service":"evofit-backend","statusCode":200,"timestamp":"2026-01-24 21:19:21","url":"/api/auth/login","userAgent":"curl/8.16.0","version":"1.0.0"}
+{"level":"info","message":"🌱 Starting database seed...","service":"evofit-backend","timestamp":"2026-01-30 10:18:14","version":"1.0.0"}
+{"level":"info","message":"✅ Created admin user: admin@fitmeal.pro","service":"evofit-backend","timestamp":"2026-01-30 10:18:15","version":"1.0.0"}
+{"level":"info","message":"User trainer.test@evofitmeals.com already exists, skipping...","service":"evofit-backend","timestamp":"2026-01-30 10:18:15","version":"1.0.0"}
+{"level":"info","message":"✅ Created client user: customer.test@evofitmeals.com","service":"evofit-backend","timestamp":"2026-01-30 10:18:16","version":"1.0.0"}
+{"level":"info","message":"🌱 Creating sample development data...","service":"evofit-backend","timestamp":"2026-01-30 10:18:16","version":"1.0.0"}
+{"level":"info","message":"Trainer and client users ready for future relationships (Epic 003)","service":"evofit-backend","timestamp":"2026-01-30 10:18:16","version":"1.0.0"}
+{"level":"info","message":"🎉 Database seed completed successfully!","service":"evofit-backend","timestamp":"2026-01-30 10:18:16","version":"1.0.0"}
+{"hasAuth":false,"host":"localhost","level":"info","message":"Email service initialized","port":1025,"secure":false,"service":"evofit-backend","timestamp":"2026-01-30 10:18:40","version":"1.0.0"}
+{"level":"info","message":"✅ Connected to PostgreSQL database","service":"evofit-backend","timestamp":"2026-01-30 10:18:44","version":"1.0.0"}
+{"attempt":1,"error":{"code":"ECONNREFUSED"},"level":"warn","message":"Database operation failed with non-retryable error","service":"evofit-backend","timestamp":"2026-01-30 10:18:44","version":"1.0.0"}

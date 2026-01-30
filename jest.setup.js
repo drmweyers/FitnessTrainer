@@ -1,43 +1,6 @@
-import '@testing-library/jest-dom';
+// import '@testing-library/jest-dom';
 
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  
-  disconnect() {}
-  
-  observe() {}
-  
-  unobserve() {}
-};
-
-// Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  constructor(cb) {
-    this.cb = cb;
-  }
-  
-  observe() {}
-  
-  unobserve() {}
-  
-  disconnect() {}
-};
-
-// Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+// Setup for Node environment (service layer tests)
 
 // Mock next/router
 jest.mock('next/router', () => ({
@@ -104,7 +67,7 @@ global.testHelper = {
     name: 'Test User',
     role: 'trainer',
   },
-  
+
   mockClient: {
     id: '1',
     name: 'Test Client',
@@ -112,7 +75,7 @@ global.testHelper = {
     phone: '+1234567890',
     status: 'active',
   },
-  
+
   mockExercise: {
     id: '1',
     name: 'Push-up',
@@ -123,7 +86,7 @@ global.testHelper = {
     instructions: ['Start in plank position', 'Lower body', 'Push back up'],
     gif_url: 'http://example.com/pushup.gif',
   },
-  
+
   mockWorkout: {
     id: '1',
     name: 'Upper Body Strength',
@@ -140,21 +103,3 @@ global.testHelper = {
     ],
   },
 };
-
-// Console error suppression for known warnings
-const originalError = console.error;
-beforeAll(() => {
-  console.error = (...args) => {
-    if (
-      typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render is no longer supported')
-    ) {
-      return;
-    }
-    originalError.call(console, ...args);
-  };
-});
-
-afterAll(() => {
-  console.error = originalError;
-});
