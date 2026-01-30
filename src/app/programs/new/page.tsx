@@ -12,7 +12,7 @@ export default function NewProgramPage() {
   const handleSave = (program: Program) => {
     // TODO: Save via API
     console.log('Saving program:', program);
-    router.push(\`/programs/\${program.id}\`);
+    router.push(`/programs/${program.id}`);
   };
 
   return (
