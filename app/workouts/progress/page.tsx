@@ -10,12 +10,6 @@
  */
 
 import { WorkoutProgress } from '@/components/workouts/WorkoutProgress';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Workout Progress | EvoFit Trainer',
-  description: 'Track your progress over time with detailed charts',
-};
 
 export default function WorkoutProgressPage() {
   return (

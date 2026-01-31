@@ -10,12 +10,6 @@
  */
 
 import { WorkoutHistory } from '@/components/workouts/WorkoutHistory';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Workout History | EvoFit Trainer',
-  description: 'View your past workout sessions and progress',
-};
 
 export default function WorkoutHistoryPage() {
   return (

@@ -10,12 +10,6 @@
  */
 
 import { WorkoutLogger } from '@/components/workouts/WorkoutLogger';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Workout Log | EvoFit Trainer',
-  description: 'Track your workout sessions in real-time',
-};
 
 export default function WorkoutLogPage() {
   return (
