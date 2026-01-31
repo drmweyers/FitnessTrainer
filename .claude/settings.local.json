@@ -76,7 +76,8 @@
       "Bash(a0447d9)",
       "Bash(a9fb05b \")",
       "Bash(npm audit:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(bash:*)"
     ]
   }
 }
