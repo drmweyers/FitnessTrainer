@@ -1,3 +1,8 @@
+/*
+ * Workout Page
+ */
+
+'use client';
 /**
  * Workout Log Page
  *
