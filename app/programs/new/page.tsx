@@ -2,6 +2,8 @@
  * Create New Program Page
  */
 
+'use client';
+
 import { ProgramBuilder } from '@/components/programs/ProgramBuilder';
 import { useRouter } from 'next/navigation';
 import type { Program } from '@/types/program';
