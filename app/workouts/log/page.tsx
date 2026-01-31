@@ -11,6 +11,9 @@
 
 import { WorkoutLogger } from '@/components/workouts/WorkoutLogger';
 
+// Force dynamic rendering for React Query
+export const dynamic = 'force-dynamic'
+
 export default function WorkoutLogPage() {
   return (
     <div className="container mx-auto px-4 py-8">
