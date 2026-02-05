@@ -77,7 +77,12 @@
       "Bash(a9fb05b \")",
       "Bash(npm audit:*)",
       "Bash(grep:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(netstat:*)",
+      "Bash(cmd /c \"mkdir \"\"C:\\\\Users\\\\drmwe\\\\claude_Code_Workspace\\\\EvoFitTrainer\\\\app\\\\workouts\\\\builder\"\"\")",
+      "Bash(npm uninstall @prisma/client prisma)",
+      "Bash(npm uninstall:*)",
+      "Bash(pkill:*)"
     ]
   }
 }

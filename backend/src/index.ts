@@ -153,21 +153,23 @@ async function connectDatabase(): Promise<void> {
  *
  * Uses exponential backoff retry wrapper to handle transient failures.
  * Redis is optional for basic operation but recommended for production.
- *
- * @throws Error if connection fails after max retries
  */
 async function connectRedis(): Promise<void> {
-  await withRetry(
-    async () => {
-      await redis.connect();
-      logger.info('✅ Connected to Redis cache');
-    },
-    {
-      maxRetries: 3,
-      baseDelay: 1000,
-      useJitter: 500,
-    }
-  );
+  try {
+    await withRetry(
+      async () => {
+        await redis.connect();
+        logger.info('✅ Connected to Redis cache');
+      },
+      {
+        maxRetries: 3,
+        baseDelay: 1000,
+        useJitter: 500,
+      }
+    );
+  } catch (error) {
+    logger.warn('⚠️ Redis not available - running without cache (acceptable for development)');
+  }
 }
 
 /**
@@ -179,7 +181,11 @@ async function connectRedis(): Promise<void> {
 async function disconnectAll(): Promise<void> {
   try {
     await prisma.$disconnect();
-    await redis.disconnect();
+    try {
+      await redis.disconnect();
+    } catch {
+      // Redis may not be connected, which is fine
+    }
     logger.info('✅ All connections closed');
   } catch (error) {
     logger.error('❌ Error during disconnection:', error);

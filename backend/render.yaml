@@ -1,0 +1,47 @@
+services:
+  # Express.js API Server
+  - type: web
+    name: evofit-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: evofit-db
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://evofittrainer.vercel.app
+      - key: FRONTEND_URL
+        value: https://evofittrainer.vercel.app
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: LOG_LEVEL
+        value: info
+      - key: MAX_LOGIN_ATTEMPTS
+        value: 5
+      - key: LOCKOUT_DURATION_MS
+        value: 900000
+
+databases:
+  # PostgreSQL Database (will use existing Neon or create new)
+  - name: evofit-db
+    databaseName: evofit_db
+    user: evofit
+    plan: free
+    region: oregon
