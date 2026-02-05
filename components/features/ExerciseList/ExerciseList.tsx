@@ -2,37 +2,39 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { 
-  Search, 
-  Filter, 
-  ChevronDown, 
-  ChevronUp, 
+import {
+  Search,
+  Filter,
+  ChevronDown,
+  ChevronUp,
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  Loader2
 } from 'lucide-react'
 
-// Types
+// Types - match backend API response
 interface Exercise {
   id: string
+  exerciseId: string
   name: string
-  thumbnail: string
-  type: string
-  muscleGroup: string
+  gifUrl: string
+  bodyPart: string
   equipment: string
-  difficulty: string
-  targetMuscles: string[]
-  instructions: string
-  videoUrl?: string
+  targetMuscle: string
+  secondaryMuscles: string[]
+  instructions: string[]
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  isFavorite?: boolean
   createdAt: string
   updatedAt: string
 }
 
 interface FilterState {
-  type: string[]
-  muscleGroup: string[]
+  bodyPart: string[]
   equipment: string[]
+  targetMuscle: string[]
   difficulty: string[]
 }
 
@@ -41,118 +43,160 @@ interface SortState {
   direction: 'asc' | 'desc'
 }
 
-// Mock data
-const exercisesData: Exercise[] = Array.from({ length: 50 }, (_, i) => ({
-  id: `ex-${i + 1}`,
-  name: `Exercise ${i + 1}`,
-  thumbnail: `https://picsum.photos/id/${200 + i}/200/200`,
-  type: ['Strength', 'Cardio', 'Flexibility', 'Balance'][i % 4],
-  muscleGroup: ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Full Body'][i % 7],
-  equipment: ['Barbell', 'Dumbbell', 'Machine', 'Bodyweight', 'Kettlebell', 'Resistance Band'][i % 6],
-  difficulty: ['Beginner', 'Intermediate', 'Advanced'][i % 3],
-  targetMuscles: [
-    ['Pectoralis', 'Triceps', 'Deltoids'],
-    ['Latissimus Dorsi', 'Rhomboids', 'Trapezius'],
-    ['Quadriceps', 'Hamstrings', 'Glutes'],
-    ['Deltoids', 'Trapezius'],
-    ['Biceps', 'Triceps', 'Forearms'],
-    ['Rectus Abdominis', 'Obliques', 'Transverse Abdominis']
-  ][i % 6],
-  instructions: `Perform exercise ${i + 1} with proper form and control.`,
-  createdAt: new Date(2023, i % 12, (i % 28) + 1).toISOString(),
-  updatedAt: new Date(2023, (i % 12) + 1, (i % 28) + 1).toISOString()
-}))
+// Map backend fields to frontend display names
+const fieldMap = {
+  bodyPart: 'Body Part',
+  equipment: 'Equipment',
+  targetMuscle: 'Target Muscle',
+  difficulty: 'Difficulty'
+}
 
-export default function ExerciseList() {
-  const [exercises, setExercises] = useState<Exercise[]>(exercisesData)
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>(exercisesData)
+interface ExerciseListProps {
+  preloadedExercises?: Exercise[]
+}
+
+export default function ExerciseList({ preloadedExercises }: ExerciseListProps = {}) {
+  const [exercises, setExercises] = useState<Exercise[]>(preloadedExercises || [])
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedExercises, setSelectedExercises] = useState<string[]>([])
   const [filters, setFilters] = useState<FilterState>({
-    type: [],
-    muscleGroup: [],
+    bodyPart: [],
     equipment: [],
+    targetMuscle: [],
     difficulty: []
   })
   const [showFilters, setShowFilters] = useState(false)
   const [sort, setSort] = useState<SortState>({ field: 'name', direction: 'asc' })
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  
-  // Filter options
+
+  // Dynamic filter options derived from exercises
   const filterOptions = {
-    type: ['Strength', 'Cardio', 'Flexibility', 'Balance'],
-    muscleGroup: ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Full Body'],
-    equipment: ['Barbell', 'Dumbbell', 'Machine', 'Bodyweight', 'Kettlebell', 'Resistance Band'],
-    difficulty: ['Beginner', 'Intermediate', 'Advanced']
+    bodyPart: Array.from(new Set(exercises.map(ex => ex.bodyPart))).sort(),
+    equipment: Array.from(new Set(exercises.map(ex => ex.equipment))).sort(),
+    targetMuscle: Array.from(new Set(exercises.map(ex => ex.targetMuscle))).sort(),
+    difficulty: ['beginner', 'intermediate', 'advanced'] as const
   }
-  
+
+  // Load exercises from API on mount (skip if preloaded)
+  useEffect(() => {
+    // Skip loading if preloaded exercises are provided
+    if (preloadedExercises && preloadedExercises.length > 0) {
+      setExercises(preloadedExercises)
+      setLoading(false)
+      return
+    }
+
+    const loadExercises = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const params = new URLSearchParams({
+          page: '1',
+          limit: '100',
+          sortBy: 'name',
+          sortOrder: 'asc'
+        })
+        const response = await fetch(`${API_BASE_URL}/exercises?${params.toString()}`)
+
+        if (!response.ok) {
+          throw new Error(`Failed to load exercises: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+
+        if (!data.success) {
+          throw new Error(data.message || 'API returned error')
+        }
+
+        setExercises(data.data.exercises)
+      } catch (err) {
+        console.error('Error loading exercises:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load exercises')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadExercises()
+  }, [preloadedExercises])
+
   // Apply filters and search
   useEffect(() => {
     let result = [...exercises]
-    
+
     // Apply search
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      result = result.filter(ex => 
-        ex.name.toLowerCase().includes(query) || 
-        ex.muscleGroup.toLowerCase().includes(query) ||
-        ex.type.toLowerCase().includes(query)
+      result = result.filter(ex =>
+        ex.name.toLowerCase().includes(query) ||
+        ex.bodyPart.toLowerCase().includes(query) ||
+        ex.targetMuscle.toLowerCase().includes(query) ||
+        ex.equipment.toLowerCase().includes(query)
       )
     }
-    
+
     // Apply filters
-    Object.entries(filters).forEach(([key, values]) => {
-      if (values.length > 0) {
-        result = result.filter(ex => 
-          values.includes(ex[key as keyof Exercise] as string)
-        )
-      }
-    })
-    
+    if (filters.bodyPart.length > 0) {
+      result = result.filter(ex => filters.bodyPart.includes(ex.bodyPart))
+    }
+    if (filters.equipment.length > 0) {
+      result = result.filter(ex => filters.equipment.includes(ex.equipment))
+    }
+    if (filters.targetMuscle.length > 0) {
+      result = result.filter(ex => filters.targetMuscle.includes(ex.targetMuscle))
+    }
+    if (filters.difficulty.length > 0) {
+      result = result.filter(ex => filters.difficulty.includes(ex.difficulty))
+    }
+
     // Apply sorting
     result.sort((a, b) => {
       const aValue = a[sort.field]
       const bValue = b[sort.field]
-      
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sort.direction === 'asc' 
+        return sort.direction === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue)
       }
-      
+
       return 0
     })
-    
+
     setFilteredExercises(result)
     setCurrentPage(1) // Reset to first page when filters change
   }, [exercises, searchQuery, filters, sort])
-  
+
   // Toggle filter selection
   const toggleFilter = (category: keyof FilterState, value: string) => {
     setFilters(prev => {
       const current = [...prev[category]]
       const index = current.indexOf(value)
-      
+
       if (index === -1) {
         current.push(value)
       } else {
         current.splice(index, 1)
       }
-      
+
       return {
         ...prev,
         [category]: current
       }
     })
   }
-  
+
   // Clear all filters
   const clearFilters = () => {
     setFilters({
-      type: [],
-      muscleGroup: [],
+      bodyPart: [],
       equipment: [],
+      targetMuscle: [],
       difficulty: []
     })
     setSearchQuery('')
@@ -315,149 +359,182 @@ export default function ExerciseList() {
         </div>
       </div>
       
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-blue-500" />
+          <span className="ml-3 text-gray-600">Loading exercises...</span>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="flex flex-col items-center justify-center py-20 px-4">
+          <div className="text-red-500 font-medium mb-2">Failed to load exercises</div>
+          <div className="text-gray-600 text-sm mb-4">{error}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && exercises.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 px-4">
+          <div className="text-gray-500 font-medium mb-2">No exercises found</div>
+          <div className="text-gray-400 text-sm">Try adjusting your filters or search query</div>
+        </div>
+      )}
+
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="w-10 px-4 py-3">
-                <span className="sr-only">Select</span>
-              </th>
-              <th scope="col" className="w-16 px-4 py-3">
-                <span className="sr-only">Thumbnail</span>
-              </th>
-              <th 
-                scope="col" 
-                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                onClick={() => toggleSort('name')}
-              >
-                <div className="flex items-center">
-                  <span>Name</span>
-                  {sort.field === 'name' && (
-                    <span className="ml-1">
-                      {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    </span>
-                  )}
-                </div>
-              </th>
-              <th 
-                scope="col" 
-                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden md:table-cell"
-                onClick={() => toggleSort('type')}
-              >
-                <div className="flex items-center">
-                  <span>Type</span>
-                  {sort.field === 'type' && (
-                    <span className="ml-1">
-                      {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    </span>
-                  )}
-                </div>
-              </th>
-              <th 
-                scope="col" 
-                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden md:table-cell"
-                onClick={() => toggleSort('muscleGroup')}
-              >
-                <div className="flex items-center">
-                  <span>Muscle Group</span>
-                  {sort.field === 'muscleGroup' && (
-                    <span className="ml-1">
-                      {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    </span>
-                  )}
-                </div>
-              </th>
-              <th 
-                scope="col" 
-                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden lg:table-cell"
-                onClick={() => toggleSort('equipment')}
-              >
-                <div className="flex items-center">
-                  <span>Equipment</span>
-                  {sort.field === 'equipment' && (
-                    <span className="ml-1">
-                      {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    </span>
-                  )}
-                </div>
-              </th>
-              <th 
-                scope="col" 
-                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden lg:table-cell"
-                onClick={() => toggleSort('difficulty')}
-              >
-                <div className="flex items-center">
-                  <span>Difficulty</span>
-                  {sort.field === 'difficulty' && (
-                    <span className="ml-1">
-                      {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    </span>
-                  )}
-                </div>
-              </th>
-              <th scope="col" className="w-10 px-4 py-3">
-                <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedExercises.map(exercise => (
-              <tr 
-                key={exercise.id}
-                className="hover:bg-gray-50 cursor-pointer"
-              >
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                    checked={selectedExercises.includes(exercise.id)}
-                    onChange={() => toggleSelectExercise(exercise.id)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <Image
-                    src={exercise.thumbnail}
-                    alt={exercise.name}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 rounded-md object-cover"
-                  />
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{exercise.name}</div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                  <div className="text-sm text-gray-700">{exercise.type}</div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                  <div className="text-sm text-gray-700">{exercise.muscleGroup}</div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
-                  <div className="text-sm text-gray-700">{exercise.equipment}</div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    exercise.difficulty === 'Beginner' 
-                      ? 'bg-green-100 text-green-800' 
-                      : exercise.difficulty === 'Intermediate'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                  }`}>
-                    {exercise.difficulty}
-                  </span>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-gray-500 hover:text-gray-700">
-                    <MoreHorizontal size={16} />
-                  </button>
-                </td>
+      {!loading && !error && filteredExercises.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="w-10 px-4 py-3">
+                  <span className="sr-only">Select</span>
+                </th>
+                <th scope="col" className="w-16 px-4 py-3">
+                  <span className="sr-only">GIF</span>
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => toggleSort('name')}
+                >
+                  <div className="flex items-center">
+                    <span>Name</span>
+                    {sort.field === 'name' && (
+                      <span className="ml-1">
+                        {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </span>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden md:table-cell"
+                  onClick={() => toggleSort('bodyPart')}
+                >
+                  <div className="flex items-center">
+                    <span>Body Part</span>
+                    {sort.field === 'bodyPart' && (
+                      <span className="ml-1">
+                        {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </span>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden md:table-cell"
+                  onClick={() => toggleSort('targetMuscle')}
+                >
+                  <div className="flex items-center">
+                    <span>Target Muscle</span>
+                    {sort.field === 'targetMuscle' && (
+                      <span className="ml-1">
+                        {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </span>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden lg:table-cell"
+                  onClick={() => toggleSort('equipment')}
+                >
+                  <div className="flex items-center">
+                    <span>Equipment</span>
+                    {sort.field === 'equipment' && (
+                      <span className="ml-1">
+                        {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </span>
+                    )}
+                  </div>
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden lg:table-cell"
+                  onClick={() => toggleSort('difficulty')}
+                >
+                  <div className="flex items-center">
+                    <span>Difficulty</span>
+                    {sort.field === 'difficulty' && (
+                      <span className="ml-1">
+                        {sort.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </span>
+                    )}
+                  </div>
+                </th>
+                <th scope="col" className="w-10 px-4 py-3">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {paginatedExercises.map(exercise => (
+                <tr
+                  key={exercise.id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                >
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      checked={selectedExercises.includes(exercise.id)}
+                      onChange={() => toggleSelectExercise(exercise.id)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <Image
+                      src={exercise.gifUrl}
+                      alt={exercise.name}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded-md object-cover"
+                      unoptimized
+                    />
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{exercise.name}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                    <div className="text-sm text-gray-700 capitalize">{exercise.bodyPart}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                    <div className="text-sm text-gray-700 capitalize">{exercise.targetMuscle}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
+                    <div className="text-sm text-gray-700 capitalize">{exercise.equipment}</div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${
+                      exercise.difficulty === 'beginner'
+                        ? 'bg-green-100 text-green-800'
+                        : exercise.difficulty === 'intermediate'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                    }`}>
+                      {exercise.difficulty}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                    <button className="text-gray-500 hover:text-gray-700">
+                      <MoreHorizontal size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       
       {/* Pagination */}
       <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
