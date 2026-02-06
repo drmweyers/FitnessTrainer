@@ -48,15 +48,18 @@ export class ExerciseService {
     }
 
     if (bodyPart) {
-      where.bodyPart = bodyPart;
+      const parts = bodyPart.split(',').map((s) => s.trim());
+      where.bodyPart = parts.length > 1 ? { in: parts } : parts[0];
     }
 
     if (equipment) {
-      where.equipment = equipment;
+      const parts = equipment.split(',').map((s) => s.trim());
+      where.equipment = parts.length > 1 ? { in: parts } : parts[0];
     }
 
     if (targetMuscle) {
-      where.targetMuscle = targetMuscle;
+      const parts = targetMuscle.split(',').map((s) => s.trim());
+      where.targetMuscle = parts.length > 1 ? { in: parts } : parts[0];
     }
 
     if (difficulty) {

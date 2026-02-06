@@ -1,12 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ExerciseWithUserData, ExerciseFavorite } from '@/types/exercise'
+import { ExerciseFavorite } from '@/types/exercise'
 
 interface UseFavoritesOptions {
-  userId?: string
   autoSync?: boolean
-  cacheKey?: string
 }
 
 interface UseFavoritesReturn {
@@ -22,97 +20,57 @@ interface UseFavoritesReturn {
   refreshFavorites: () => Promise<void>
 }
 
-// Mock API functions - replace with actual API calls
-const mockFavoritesApi = {
-  async getFavorites(userId?: string): Promise<ExerciseFavorite[]> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // Get from localStorage for now
-    const stored = localStorage.getItem('exercise-favorites')
-    if (!stored) return []
-    
-    try {
-      const favorites = JSON.parse(stored)
-      return favorites.map((fav: any) => ({
-        id: fav.id,
-        userId: userId || 'current-user',
-        exerciseId: fav.exerciseId,
-        favoritedAt: fav.favoritedAt
-      }))
-    } catch {
-      return []
-    }
-  },
-
-  async addFavorite(exerciseId: string, userId?: string): Promise<ExerciseFavorite> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const favorite: ExerciseFavorite = {
-      id: `fav-${Date.now()}`,
-      userId: userId || 'current-user',
-      exerciseId,
-      favoritedAt: new Date().toISOString()
-    }
-
-    // Store in localStorage
-    const stored = localStorage.getItem('exercise-favorites')
-    const favorites = stored ? JSON.parse(stored) : []
-    
-    // Check if already exists
-    const exists = favorites.some((fav: any) => fav.exerciseId === exerciseId)
-    if (exists) {
-      throw new Error('Exercise is already favorited')
-    }
-
-    favorites.push(favorite)
-    localStorage.setItem('exercise-favorites', JSON.stringify(favorites))
-    
-    return favorite
-  },
-
-  async removeFavorite(exerciseId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const stored = localStorage.getItem('exercise-favorites')
-    if (!stored) return
-    
-    const favorites = JSON.parse(stored)
-    const filtered = favorites.filter((fav: any) => fav.exerciseId !== exerciseId)
-    localStorage.setItem('exercise-favorites', JSON.stringify(filtered))
-  },
-
-  async clearFavorites(): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    localStorage.removeItem('exercise-favorites')
+function getAuthHeaders(): HeadersInit {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
   }
 }
 
 export function useFavorites(options: UseFavoritesOptions = {}): UseFavoritesReturn {
-  const { userId, autoSync = true, cacheKey = 'exercise-favorites' } = options
-  
+  const { autoSync = true } = options
+
   const [favorites, setFavorites] = useState<ExerciseFavorite[]>([])
   const [favoriteExerciseIds, setFavoriteExerciseIds] = useState<Set<string>>(new Set())
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Load favorites on mount
   const loadFavorites = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
-      
-      const userFavorites = await mockFavoritesApi.getFavorites(userId)
-      setFavorites(userFavorites)
-      
-      const exerciseIds = new Set(userFavorites.map(fav => fav.exerciseId))
-      setFavoriteExerciseIds(exerciseIds)
+
+      const response = await fetch('/api/exercises/favorites', {
+        headers: getAuthHeaders(),
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setFavorites([])
+          setFavoriteExerciseIds(new Set())
+          return
+        }
+        throw new Error('Failed to fetch favorites')
+      }
+
+      const result = await response.json()
+      const data = result.data || []
+      const mapped: ExerciseFavorite[] = data.map((fav: any) => ({
+        id: fav.id,
+        userId: fav.userId,
+        exerciseId: fav.exerciseId,
+        favoritedAt: fav.favoritedAt,
+      }))
+
+      setFavorites(mapped)
+      setFavoriteExerciseIds(new Set(mapped.map(f => f.exerciseId)))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load favorites')
     } finally {
       setIsLoading(false)
     }
-  }, [userId])
+  }, [])
 
   useEffect(() => {
     if (autoSync) {
@@ -120,40 +78,56 @@ export function useFavorites(options: UseFavoritesOptions = {}): UseFavoritesRet
     }
   }, [autoSync, loadFavorites])
 
-  // Add favorite
   const addFavorite = useCallback(async (exerciseId: string) => {
     try {
       setError(null)
-      
-      const newFavorite = await mockFavoritesApi.addFavorite(exerciseId, userId)
-      
-      setFavorites(prev => [...prev, newFavorite])
+      const response = await fetch('/api/exercises/favorites', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ exerciseId }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to add favorite')
+      }
+
+      const fav: ExerciseFavorite = {
+        id: result.data.id,
+        userId: result.data.userId,
+        exerciseId: result.data.exerciseId,
+        favoritedAt: result.data.favoritedAt,
+      }
+
+      setFavorites(prev => [...prev, fav])
       setFavoriteExerciseIds(prev => new Set([...prev, exerciseId]))
-      
-      // Show success feedback
-      // You could dispatch a toast notification here
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to add favorite'
       setError(errorMessage)
       throw new Error(errorMessage)
     }
-  }, [userId])
+  }, [])
 
-  // Remove favorite
   const removeFavorite = useCallback(async (exerciseId: string) => {
     try {
       setError(null)
-      
-      await mockFavoritesApi.removeFavorite(exerciseId)
-      
+      const response = await fetch('/api/exercises/favorites', {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ exerciseId }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to remove favorite')
+      }
+
       setFavorites(prev => prev.filter(fav => fav.exerciseId !== exerciseId))
       setFavoriteExerciseIds(prev => {
         const newSet = new Set(prev)
         newSet.delete(exerciseId)
         return newSet
       })
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to remove favorite'
       setError(errorMessage)
@@ -161,7 +135,6 @@ export function useFavorites(options: UseFavoritesOptions = {}): UseFavoritesRet
     }
   }, [])
 
-  // Toggle favorite
   const toggleFavorite = useCallback(async (exerciseId: string) => {
     if (favoriteExerciseIds.has(exerciseId)) {
       await removeFavorite(exerciseId)
@@ -170,29 +143,31 @@ export function useFavorites(options: UseFavoritesOptions = {}): UseFavoritesRet
     }
   }, [favoriteExerciseIds, addFavorite, removeFavorite])
 
-  // Check if exercise is favorited
   const isFavorited = useCallback((exerciseId: string) => {
     return favoriteExerciseIds.has(exerciseId)
   }, [favoriteExerciseIds])
 
-  // Clear all favorites
   const clearFavorites = useCallback(async () => {
     try {
       setError(null)
-      
-      await mockFavoritesApi.clearFavorites()
-      
+      await Promise.all(
+        favorites.map(fav =>
+          fetch('/api/exercises/favorites', {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ exerciseId: fav.exerciseId }),
+          })
+        )
+      )
       setFavorites([])
       setFavoriteExerciseIds(new Set())
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to clear favorites'
       setError(errorMessage)
       throw new Error(errorMessage)
     }
-  }, [])
+  }, [favorites])
 
-  // Refresh favorites
   const refreshFavorites = useCallback(async () => {
     await loadFavorites()
   }, [loadFavorites])
@@ -207,6 +182,6 @@ export function useFavorites(options: UseFavoritesOptions = {}): UseFavoritesRet
     removeFavorite,
     isFavorited,
     clearFavorites,
-    refreshFavorites
+    refreshFavorites,
   }
 }

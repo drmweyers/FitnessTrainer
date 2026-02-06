@@ -1,7 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Client, CreateClientData, createClient, updateClient } from '../api/clientsApi'
+import { useRouter } from 'next/navigation'
+import { Client } from '../api/clientsApi'
+import { clientsApi, ApiError } from '@/lib/api/clients'
+
+interface ClientModalFormData {
+  name: string
+  email: string
+  phone?: string
+  goals?: string[]
+}
 
 interface ClientModalProps {
   isOpen: boolean
@@ -11,12 +20,12 @@ interface ClientModalProps {
 }
 
 export default function ClientModal({ isOpen, onClose, onSuccess, client }: ClientModalProps) {
-  const [formData, setFormData] = useState<CreateClientData>({
+  const router = useRouter()
+  const [formData, setFormData] = useState<ClientModalFormData>({
     name: client?.name || '',
     email: client?.email || '',
     phone: client?.phone || '',
     goals: client?.goals || [],
-    programId: client?.programId || ''
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -28,14 +37,31 @@ export default function ClientModal({ isOpen, onClose, onSuccess, client }: Clie
     setError('')
 
     try {
+      // Split name into first/last for the API
+      const nameParts = formData.name.trim().split(/\s+/)
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || undefined
+
       if (client) {
-        await updateClient(client.id, formData)
+        await clientsApi.updateClient(client.id, {
+          goals: formData.goals?.length
+            ? { primaryGoal: formData.goals[0] }
+            : undefined,
+        })
       } else {
-        await createClient(formData)
+        await clientsApi.createClient({
+          email: formData.email,
+          firstName,
+          lastName,
+        })
       }
       onSuccess()
       onClose()
     } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        router.push('/auth/login')
+        return
+      }
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setIsLoading(false)
@@ -96,16 +122,6 @@ export default function ClientModal({ isOpen, onClose, onSuccess, client }: Clie
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Program ID</label>
-            <input
-              type="text"
-              value={formData.programId}
-              onChange={(e) => setFormData({ ...formData, programId: e.target.value })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
             />
           </div>

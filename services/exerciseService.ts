@@ -2,7 +2,7 @@
 
 import { ExerciseWithUserData, ExerciseFilters, FilterOptions } from '@/types/exercise'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
 // Transform backend exercise data to frontend format with user data
 const transformExercise = (backendExercise: any): ExerciseWithUserData => ({
@@ -51,21 +51,17 @@ export const loadExercises = async (): Promise<ExerciseWithUserData[]> => {
 // Get filter options from the API
 export const getFilterOptions = async (): Promise<FilterOptions> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/exercises/categories`)
+    const response = await fetch(`${API_BASE_URL}/exercises/filters`)
     if (!response.ok) {
-      throw new Error(`Failed to load categories: ${response.statusText}`)
+      throw new Error(`Failed to load filters: ${response.statusText}`)
     }
-    
+
     const data = await response.json()
-    
-    if (!data.success) {
-      throw new Error(data.message || 'API returned error')
-    }
-    
+
     return {
-      bodyParts: data.data.bodyParts || [],
-      equipments: data.data.equipment || [], // Note: API uses 'equipment' not 'equipments'
-      targetMuscles: data.data.targetMuscles || [],
+      bodyParts: data.bodyParts || [],
+      equipments: data.equipments || [],
+      targetMuscles: data.targetMuscles || [],
       secondaryMuscles: [] // Backend doesn't provide this aggregated data
     }
   } catch (error) {
@@ -125,17 +121,17 @@ export const searchExercises = async (
       params.set('search', filters.search.trim())
     }
     
-    // Add filters (convert arrays to single values for backend)
+    // Add filters (send comma-separated for multi-select)
     if (filters.bodyParts.length > 0) {
-      params.set('bodyPart', filters.bodyParts[0]) // Backend expects single value
+      params.set('bodyPart', filters.bodyParts.join(','))
     }
-    
+
     if (filters.equipments.length > 0) {
-      params.set('equipment', filters.equipments[0]) // Backend expects single value
+      params.set('equipment', filters.equipments.join(','))
     }
-    
+
     if (filters.targetMuscles.length > 0) {
-      params.set('targetMuscle', filters.targetMuscles[0]) // Backend expects single value
+      params.set('targetMuscle', filters.targetMuscles.join(','))
     }
     
     const response = await fetch(`${API_BASE_URL}/exercises?${params.toString()}`)

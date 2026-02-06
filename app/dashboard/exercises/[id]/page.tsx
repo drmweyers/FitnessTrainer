@@ -7,6 +7,7 @@ import { ExerciseDetailView } from '@/components/features/ExerciseLibrary/Exerci
 import { ExerciseWithUserData } from '@/types/exercise'
 import { getExerciseById } from '@/services/exerciseService'
 import { useFavorites } from '@/hooks/useFavorites'
+import { useCollections } from '@/hooks/useCollections'
 import { ArrowLeft } from 'lucide-react'
 
 export default function ExerciseDetailPage() {
@@ -19,6 +20,8 @@ export default function ExerciseDetailPage() {
   const [error, setError] = useState<string | null>(null)
 
   const { toggleFavorite, isFavorited } = useFavorites()
+  const { collections, addToCollection } = useCollections()
+  const [showCollectionPicker, setShowCollectionPicker] = useState(false)
 
   useEffect(() => {
     const fetchExercise = async () => {
@@ -37,9 +40,11 @@ export default function ExerciseDetailPage() {
         const exerciseWithUserData: ExerciseWithUserData = {
           ...exerciseData,
           isFavorited: isFavorited(exerciseData.exerciseId),
-          usageCount: 0, // TODO: Implement usage tracking
-          lastUsed: undefined, // TODO: Implement usage tracking
-          collections: [] // TODO: Implement collections
+          usageCount: 0,
+          lastUsed: undefined,
+          collections: collections
+            .filter(c => c.exerciseIds.includes(exerciseData.exerciseId))
+            .map(c => c.id),
         }
         
         setExercise(exerciseWithUserData)
@@ -54,7 +59,7 @@ export default function ExerciseDetailPage() {
     if (exerciseId) {
       fetchExercise()
     }
-  }, [exerciseId, isFavorited])
+  }, [exerciseId, isFavorited, collections])
 
   const handleBack = () => {
     router.back()
@@ -76,9 +81,23 @@ export default function ExerciseDetailPage() {
     }
   }
 
-  const handleAddToCollection = (exerciseId: string) => {
-    // TODO: Implement add to collection functionality
-    console.log('Add to collection:', exerciseId)
+  const handleAddToCollection = async (exerciseId: string) => {
+    if (collections.length === 0) {
+      alert('No collections yet. Create a collection first from the Exercise Library.')
+      return
+    }
+    setShowCollectionPicker(!showCollectionPicker)
+  }
+
+  const handleAddToSpecificCollection = async (collectionId: string) => {
+    if (exercise) {
+      try {
+        await addToCollection(collectionId, exercise.exerciseId)
+        setShowCollectionPicker(false)
+      } catch (err) {
+        console.error('Failed to add to collection:', err)
+      }
+    }
   }
 
   if (isLoading) {
@@ -236,24 +255,42 @@ export default function ExerciseDetailPage() {
                   </svg>
                 </button>
 
-                <button
-                  onClick={() => handleAddToCollection(exercise.id)}
-                  className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="relative">
+                  <button
+                    onClick={() => handleAddToCollection(exercise.id)}
+                    className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  </button>
+                  {showCollectionPicker && collections.length > 0 && (
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500 px-2 py-1">Add to collection:</p>
+                        {collections.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => handleAddToSpecificCollection(c.id)}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-md"
+                          >
+                            {c.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

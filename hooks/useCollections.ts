@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { ExerciseCollection } from '@/types/exercise'
 
 interface UseCollectionsOptions {
-  userId?: string
   autoLoad?: boolean
 }
 
@@ -23,124 +22,86 @@ interface UseCollectionsReturn {
   refreshCollections: () => Promise<void>
 }
 
-// Mock API functions - replace with actual API calls
-const mockCollectionsApi = {
-  async getCollections(userId?: string): Promise<ExerciseCollection[]> {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const stored = localStorage.getItem('exercise-collections')
-    if (!stored) return []
-    
-    try {
-      return JSON.parse(stored)
-    } catch {
-      return []
-    }
-  },
-
-  async createCollection(data: Omit<ExerciseCollection, 'id' | 'createdAt' | 'updatedAt'>): Promise<ExerciseCollection> {
-    await new Promise(resolve => setTimeout(resolve, 300))
-    
-    const collection: ExerciseCollection = {
-      id: `collection-${Date.now()}`,
-      ...data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-
-    const stored = localStorage.getItem('exercise-collections')
-    const collections = stored ? JSON.parse(stored) : []
-    collections.push(collection)
-    localStorage.setItem('exercise-collections', JSON.stringify(collections))
-
-    return collection
-  },
-
-  async updateCollection(collectionId: string, updates: Partial<ExerciseCollection>): Promise<ExerciseCollection> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const stored = localStorage.getItem('exercise-collections')
-    if (!stored) throw new Error('Collection not found')
-
-    const collections = JSON.parse(stored)
-    const index = collections.findIndex((c: ExerciseCollection) => c.id === collectionId)
-    if (index === -1) throw new Error('Collection not found')
-
-    collections[index] = {
-      ...collections[index],
-      ...updates,
-      updatedAt: new Date().toISOString()
-    }
-
-    localStorage.setItem('exercise-collections', JSON.stringify(collections))
-    return collections[index]
-  },
-
-  async deleteCollection(collectionId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const stored = localStorage.getItem('exercise-collections')
-    if (!stored) return
-
-    const collections = JSON.parse(stored)
-    const filtered = collections.filter((c: ExerciseCollection) => c.id !== collectionId)
-    localStorage.setItem('exercise-collections', JSON.stringify(filtered))
-  },
-
-  async addToCollection(collectionId: string, exerciseId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const stored = localStorage.getItem('exercise-collections')
-    if (!stored) throw new Error('Collection not found')
-
-    const collections = JSON.parse(stored)
-    const collection = collections.find((c: ExerciseCollection) => c.id === collectionId)
-    if (!collection) throw new Error('Collection not found')
-
-    if (!collection.exerciseIds.includes(exerciseId)) {
-      collection.exerciseIds.push(exerciseId)
-      collection.updatedAt = new Date().toISOString()
-      localStorage.setItem('exercise-collections', JSON.stringify(collections))
-    }
-  },
-
-  async removeFromCollection(collectionId: string, exerciseId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const stored = localStorage.getItem('exercise-collections')
-    if (!stored) return
-
-    const collections = JSON.parse(stored)
-    const collection = collections.find((c: ExerciseCollection) => c.id === collectionId)
-    if (!collection) return
-
-    collection.exerciseIds = collection.exerciseIds.filter((id: string) => id !== exerciseId)
-    collection.updatedAt = new Date().toISOString()
-    localStorage.setItem('exercise-collections', JSON.stringify(collections))
+function getAuthHeaders(): HeadersInit {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
   }
 }
 
 export function useCollections(options: UseCollectionsOptions = {}): UseCollectionsReturn {
-  const { userId, autoLoad = true } = options
-  
+  const { autoLoad = true } = options
+
   const [collections, setCollections] = useState<ExerciseCollection[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Load collections
   const loadCollections = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
-      
-      const userCollections = await mockCollectionsApi.getCollections(userId)
-      setCollections(userCollections)
+
+      // Fetch collection list
+      const listResponse = await fetch('/api/exercises/collections', {
+        headers: getAuthHeaders(),
+      })
+
+      if (!listResponse.ok) {
+        if (listResponse.status === 401) {
+          setCollections([])
+          return
+        }
+        throw new Error('Failed to fetch collections')
+      }
+
+      const listResult = await listResponse.json()
+      const collectionList = listResult.data || []
+
+      // Fetch full details for each collection to get exercise IDs
+      const fullCollections: ExerciseCollection[] = await Promise.all(
+        collectionList.map(async (c: any) => {
+          try {
+            const detailResponse = await fetch(`/api/exercises/collections/${c.id}`, {
+              headers: getAuthHeaders(),
+            })
+            if (detailResponse.ok) {
+              const detailResult = await detailResponse.json()
+              const detail = detailResult.data
+              return {
+                id: detail.id,
+                name: detail.name,
+                description: detail.description || '',
+                userId: detail.userId,
+                exerciseIds: (detail.exercises || []).map((e: any) => e.exerciseId),
+                isPublic: detail.isPublic,
+                createdAt: detail.createdAt,
+                updatedAt: detail.updatedAt,
+              }
+            }
+          } catch {
+            // Fall back to list data without exercise IDs
+          }
+          return {
+            id: c.id,
+            name: c.name,
+            description: c.description || '',
+            userId: '',
+            exerciseIds: [],
+            isPublic: c.isPublic,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAt,
+          }
+        })
+      )
+
+      setCollections(fullCollections)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load collections')
     } finally {
       setIsLoading(false)
     }
-  }, [userId])
+  }, [])
 
   useEffect(() => {
     if (autoLoad) {
@@ -148,19 +109,45 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
     }
   }, [autoLoad, loadCollections])
 
-  // Create collection
   const createCollection = useCallback(async (name: string, description: string, exerciseIds: string[] = []) => {
     try {
       setError(null)
-      
-      const newCollection = await mockCollectionsApi.createCollection({
-        name,
-        description,
-        userId: userId || 'current-user',
-        exerciseIds,
-        isPublic: false
+      const response = await fetch('/api/exercises/collections', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ name, description }),
       })
-      
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create collection')
+      }
+
+      const newCollection: ExerciseCollection = {
+        id: result.data.id,
+        name: result.data.name,
+        description: result.data.description || '',
+        userId: result.data.userId,
+        exerciseIds: [],
+        isPublic: result.data.isPublic,
+        createdAt: result.data.createdAt,
+        updatedAt: result.data.updatedAt,
+      }
+
+      // If initial exercises provided, add them
+      if (exerciseIds.length > 0) {
+        await Promise.all(
+          exerciseIds.map(exerciseId =>
+            fetch(`/api/exercises/collections/${newCollection.id}/exercises`, {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: JSON.stringify({ exerciseId }),
+            })
+          )
+        )
+        newCollection.exerciseIds = exerciseIds
+      }
+
       setCollections(prev => [...prev, newCollection])
       return newCollection
     } catch (err) {
@@ -168,15 +155,25 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
       setError(errorMessage)
       throw new Error(errorMessage)
     }
-  }, [userId])
+  }, [])
 
-  // Update collection
   const updateCollection = useCallback(async (collectionId: string, updates: Partial<ExerciseCollection>) => {
     try {
       setError(null)
-      
-      await mockCollectionsApi.updateCollection(collectionId, updates)
-      
+      const response = await fetch(`/api/exercises/collections/${collectionId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          name: updates.name,
+          description: updates.description,
+        }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update collection')
+      }
+
       setCollections(prev =>
         prev.map(collection =>
           collection.id === collectionId
@@ -191,13 +188,19 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
     }
   }, [])
 
-  // Delete collection
   const deleteCollection = useCallback(async (collectionId: string) => {
     try {
       setError(null)
-      
-      await mockCollectionsApi.deleteCollection(collectionId)
-      
+      const response = await fetch(`/api/exercises/collections/${collectionId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete collection')
+      }
+
       setCollections(prev => prev.filter(collection => collection.id !== collectionId))
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete collection'
@@ -206,13 +209,20 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
     }
   }, [])
 
-  // Add exercise to collection
   const addToCollection = useCallback(async (collectionId: string, exerciseId: string) => {
     try {
       setError(null)
-      
-      await mockCollectionsApi.addToCollection(collectionId, exerciseId)
-      
+      const response = await fetch(`/api/exercises/collections/${collectionId}/exercises`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ exerciseId }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to add to collection')
+      }
+
       setCollections(prev =>
         prev.map(collection =>
           collection.id === collectionId
@@ -221,7 +231,7 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
                 exerciseIds: collection.exerciseIds.includes(exerciseId)
                   ? collection.exerciseIds
                   : [...collection.exerciseIds, exerciseId],
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(),
               }
             : collection
         )
@@ -233,20 +243,27 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
     }
   }, [])
 
-  // Remove exercise from collection
   const removeFromCollection = useCallback(async (collectionId: string, exerciseId: string) => {
     try {
       setError(null)
-      
-      await mockCollectionsApi.removeFromCollection(collectionId, exerciseId)
-      
+      const response = await fetch(`/api/exercises/collections/${collectionId}/exercises`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ exerciseId }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to remove from collection')
+      }
+
       setCollections(prev =>
         prev.map(collection =>
           collection.id === collectionId
             ? {
                 ...collection,
                 exerciseIds: collection.exerciseIds.filter(id => id !== exerciseId),
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(),
               }
             : collection
         )
@@ -258,23 +275,19 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
     }
   }, [])
 
-  // Get specific collection
   const getCollection = useCallback((collectionId: string) => {
     return collections.find(collection => collection.id === collectionId)
   }, [collections])
 
-  // Check if exercise is in collection
   const isInCollection = useCallback((collectionId: string, exerciseId: string) => {
     const collection = collections.find(c => c.id === collectionId)
     return collection ? collection.exerciseIds.includes(exerciseId) : false
   }, [collections])
 
-  // Get collections containing an exercise
   const getExerciseCollections = useCallback((exerciseId: string) => {
     return collections.filter(collection => collection.exerciseIds.includes(exerciseId))
   }, [collections])
 
-  // Refresh collections
   const refreshCollections = useCallback(async () => {
     await loadCollections()
   }, [loadCollections])
@@ -291,6 +304,6 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
     getCollection,
     isInCollection,
     getExerciseCollections,
-    refreshCollections
+    refreshCollections,
   }
 }

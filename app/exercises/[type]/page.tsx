@@ -62,7 +62,7 @@ export default function ExerciseTypePage({
         setLoading(true)
         setError(null)
 
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
         // Build query parameters based on exercise type
         const queryParams = new URLSearchParams()

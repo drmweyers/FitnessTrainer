@@ -98,122 +98,27 @@ const BulkAssignmentModal: React.FC<BulkAssignmentModalProps> = ({
       const token = localStorage.getItem('accessToken');
       if (!token) return;
 
-      // Mock data - in real app, fetch from API
-      const mockClients: ClientWithSelection[] = [
-        {
-          id: '1',
-          displayName: 'John Smith',
-          email: 'john@example.com',
-          role: 'client',
-          isActive: true,
-          isVerified: true,
-          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-          isSelected: false,
-          trainerClient: {
-            id: 'tc1',
-            trainerId: 'trainer1',
-            clientId: '1',
-            status: ClientStatus.ACTIVE
-          },
-          userProfile: {
-            id: 'up1',
-            userId: '1',
-            preferredUnits: 'imperial',
-            isPublic: true,
-            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          clientProfile: {
-            id: 'cp1',
-            userId: '1',
-            goals: { primaryGoal: 'Lose weight' },
-            fitnessLevel: FitnessLevel.INTERMEDIATE,
-            medicalConditions: [],
-            medications: [],
-            allergies: [],
-            injuries: []
-          },
-          tags: [],
-          notesCount: 3,
-          lastActivity: '2 days ago',
-          lastLoginAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+      const response = await fetch('/api/clients', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        {
-          id: '2',
-          displayName: 'Sarah Johnson',
-          email: 'sarah@example.com',
-          role: 'client',
-          isActive: true,
-          isVerified: true,
-          createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
-          isSelected: false,
-          trainerClient: {
-            id: 'tc2',
-            trainerId: 'trainer1',
-            clientId: '2',
-            status: ClientStatus.ACTIVE
-          },
-          userProfile: {
-            id: 'up2',
-            userId: '2',
-            preferredUnits: 'metric',
-            isPublic: true,
-            createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          clientProfile: {
-            id: 'cp2',
-            userId: '2',
-            goals: { primaryGoal: 'Build muscle' },
-            fitnessLevel: FitnessLevel.BEGINNER,
-            medicalConditions: [],
-            medications: [],
-            allergies: [],
-            injuries: []
-          },
-          tags: [],
-          notesCount: 1,
-          lastActivity: '1 day ago',
-          lastLoginAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '3',
-          displayName: 'Mike Wilson',
-          email: 'mike@example.com',
-          role: 'client',
-          isActive: true,
-          isVerified: true,
-          createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-          isSelected: false,
-          trainerClient: {
-            id: 'tc3',
-            trainerId: 'trainer1',
-            clientId: '3',
-            status: ClientStatus.NEED_PROGRAMMING
-          },
-          userProfile: {
-            id: 'up3',
-            userId: '3',
-            preferredUnits: 'imperial',
-            isPublic: true,
-            createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          clientProfile: {
-            id: 'cp3',
-            userId: '3',
-            goals: { primaryGoal: 'Increase strength' },
-            fitnessLevel: FitnessLevel.ADVANCED,
-            medicalConditions: [],
-            medications: [],
-            allergies: [],
-            injuries: []
-          },
-          tags: [],
-          notesCount: 0,
-          lastActivity: '3 days ago',
-          lastLoginAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ];
+      });
 
-      setClients(mockClients);
+      if (!response.ok) {
+        throw new Error('Failed to fetch clients');
+      }
+
+      const result = await response.json();
+      const clientList = result.data || result.clients || result || [];
+      const clientsWithSelection: ClientWithSelection[] = (Array.isArray(clientList) ? clientList : []).map(
+        (client: Client) => ({
+          ...client,
+          isSelected: false,
+        })
+      );
+
+      setClients(clientsWithSelection);
     } catch (error) {
       console.error('Failed to load clients:', error);
     } finally {

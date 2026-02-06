@@ -31,7 +31,7 @@ export default function CollectionDetailPage() {
   const collectionId = params.id as string
 
   const { getCollection, deleteCollection, removeFromCollection } = useCollections()
-  const { toggleFavorite } = useFavorites()
+  const { toggleFavorite, isFavorited } = useFavorites()
 
   const [collection, setCollection] = useState<ExerciseCollection | null>(null)
   const [exercises, setExercises] = useState<ExerciseWithUserData[]>([])
@@ -66,10 +66,10 @@ export default function CollectionDetailPage() {
           // Enhance with user data
           const exercisesWithUserData: ExerciseWithUserData[] = exercisesData.map(exercise => ({
             ...exercise,
-            isFavorited: false, // TODO: Check against user favorites
-            usageCount: 0, // TODO: Implement usage tracking
-            lastUsed: undefined, // TODO: Implement usage tracking
-            collections: [collectionData.id] // This exercise is in this collection
+            isFavorited: isFavorited(exercise.exerciseId),
+            usageCount: 0,
+            lastUsed: undefined,
+            collections: [collectionData.id]
           }))
 
           setExercises(exercisesWithUserData)

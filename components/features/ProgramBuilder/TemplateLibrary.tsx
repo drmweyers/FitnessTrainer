@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
+import React, { useState, useEffect } from 'react';
+import {
   Search,
   Star,
   Filter,
@@ -18,11 +18,13 @@ import {
   ChevronDown,
   ChevronUp,
   Award,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { ProgramType, DifficultyLevel, ProgramData } from '@/types/program';
+import { getTemplates } from '@/lib/api/programs';
 
 interface TemplateLibraryProps {
   onSelectTemplate: (template: ProgramTemplate) => void;
@@ -56,126 +58,14 @@ interface ProgramTemplate {
   };
 }
 
-// Mock template data - would come from API
-const MOCK_TEMPLATES: ProgramTemplate[] = [
-  {
-    id: '1',
-    name: 'Starting Strength Foundation',
-    description: 'Perfect introduction to compound movements for beginners. Focuses on squat, deadlift, bench press, and overhead press with linear progression.',
-    programType: ProgramType.STRENGTH,
-    difficultyLevel: DifficultyLevel.BEGINNER,
-    durationWeeks: 12,
-    totalWorkouts: 36,
-    totalExercises: 5,
-    rating: 4.8,
-    reviewCount: 1247,
-    useCount: 15432,
-    tags: ['compound', 'barbell', '3x week', 'linear progression'],
-    creator: { name: 'Mark Rippetoe', verified: true },
-    createdAt: '2024-01-15',
-    category: 'Strength Training',
-    isBookmarked: false,
-    preview: {
-      weekSample: 'Week 1: Build base strength with light weights',
-      workoutSample: 'Squat 3x5, Bench Press 3x5, Deadlift 1x5'
-    }
-  },
-  {
-    id: '2', 
-    name: '5/3/1 Boring But Big',
-    description: 'Jim Wendler\'s proven strength and size program. Main lifts at prescribed percentages followed by high-volume accessory work.',
-    programType: ProgramType.POWERLIFTING,
-    difficultyLevel: DifficultyLevel.INTERMEDIATE,
-    durationWeeks: 16,
-    totalWorkouts: 64,
-    totalExercises: 12,
-    rating: 4.9,
-    reviewCount: 2156,
-    useCount: 23891,
-    tags: ['powerlifting', '5/3/1', 'volume', 'intermediate'],
-    creator: { name: 'Jim Wendler', verified: true },
-    createdAt: '2024-02-01',
-    category: 'Powerlifting',
-    isBookmarked: true,
-    preview: {
-      weekSample: 'Week 1: 65%x5, 75%x5, 85%x5+ plus BBB sets',
-      workoutSample: 'Squat 5/3/1, Squat 5x10 @ 50%, Accessories'
-    }
-  },
-  {
-    id: '3',
-    name: 'Push Pull Legs Hypertrophy',
-    description: 'Classic 6-day split focused on muscle growth. Balanced volume for all muscle groups with proper recovery.',
-    programType: ProgramType.HYPERTROPHY,
-    difficultyLevel: DifficultyLevel.INTERMEDIATE,
-    durationWeeks: 8,
-    totalWorkouts: 48,
-    totalExercises: 45,
-    rating: 4.7,
-    reviewCount: 892,
-    useCount: 8734,
-    tags: ['hypertrophy', 'PPL', '6 days', 'muscle building'],
-    creator: { name: 'John Meadows', verified: true },
-    createdAt: '2024-01-20',
-    category: 'Bodybuilding',
-    isBookmarked: false,
-    preview: {
-      weekSample: 'Week 1: Push (Chest/Shoulders/Triceps)',
-      workoutSample: 'Bench Press 4x6-8, OHP 3x8-10, Dips 3x12-15'
-    }
-  },
-  {
-    id: '4',
-    name: 'CrossFit Metcon Builder',
-    description: 'High-intensity functional fitness workouts. Builds cardiovascular endurance while maintaining strength.',
-    programType: ProgramType.CROSSFIT,
-    difficultyLevel: DifficultyLevel.ADVANCED,
-    durationWeeks: 6,
-    totalWorkouts: 30,
-    totalExercises: 25,
-    rating: 4.6,
-    reviewCount: 445,
-    useCount: 3421,
-    tags: ['crossfit', 'metcon', 'conditioning', 'functional'],
-    creator: { name: 'Ben Smith', verified: true },
-    createdAt: '2024-03-01',
-    category: 'CrossFit',
-    isBookmarked: false,
-    preview: {
-      weekSample: 'Week 1: Build aerobic base with moderate intensity',
-      workoutSample: '21-15-9: Thrusters, Pull-ups (15 min cap)'
-    }
-  },
-  {
-    id: '5',
-    name: 'Bodyweight Mastery',
-    description: 'Progressive calisthenics program requiring no equipment. Master fundamental movement patterns.',
-    programType: ProgramType.CALISTHENICS,
-    difficultyLevel: DifficultyLevel.BEGINNER,
-    durationWeeks: 10,
-    totalWorkouts: 40,
-    totalExercises: 15,
-    rating: 4.5,
-    reviewCount: 678,
-    useCount: 5634,
-    tags: ['bodyweight', 'calisthenics', 'no equipment', 'progression'],
-    creator: { name: 'Al Kavadlo', verified: true },
-    createdAt: '2024-02-15',
-    category: 'Calisthenics',
-    isBookmarked: true,
-    preview: {
-      weekSample: 'Week 1: Master basic positions and movements',
-      workoutSample: 'Push-ups 3x8-12, Pull-ups 3x5-8, Squats 3x15'
-    }
-  }
-];
-
 const CATEGORIES = ['All Categories', 'Strength Training', 'Bodybuilding', 'Powerlifting', 'CrossFit', 'Calisthenics', 'Cardio'];
 
 const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   onSelectTemplate,
   onClose
 }) => {
+  const [templates, setTemplates] = useState<ProgramTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | 'all'>('all');
@@ -184,8 +74,52 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
   const [expandedTemplate, setExpandedTemplate] = useState<string | null>(null);
 
+  useEffect(() => {
+    const loadTemplates = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('accessToken');
+        const category = selectedCategory !== 'All Categories' ? selectedCategory : undefined;
+        const data = await getTemplates(token || undefined, category);
+        // Map API response to the local ProgramTemplate shape
+        const mapped: ProgramTemplate[] = data.map((t: any) => ({
+          id: t.id,
+          name: t.name || t.program?.name || 'Untitled',
+          description: t.description || t.program?.description || '',
+          programType: t.program?.programType || ProgramType.STRENGTH,
+          difficultyLevel: t.program?.difficultyLevel || DifficultyLevel.BEGINNER,
+          durationWeeks: t.program?.durationWeeks || 4,
+          totalWorkouts: 0,
+          totalExercises: 0,
+          rating: t.rating || 0,
+          reviewCount: 0,
+          useCount: t.useCount || t.usageCount || 0,
+          tags: t.tags || [],
+          creator: {
+            name: t.creator?.email || 'Unknown',
+            verified: true,
+          },
+          createdAt: t.createdAt || '',
+          category: t.category || 'Uncategorized',
+          isBookmarked: false,
+          preview: {
+            weekSample: '',
+            workoutSample: '',
+          },
+        }));
+        setTemplates(mapped);
+      } catch (err) {
+        console.error('Failed to load templates:', err);
+        setTemplates([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadTemplates();
+  }, [selectedCategory]);
+
   // Filter and sort templates
-  const filteredTemplates = MOCK_TEMPLATES
+  const filteredTemplates = templates
     .filter(template => {
       const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           template.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -334,8 +268,14 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
       {/* Results Count */}
       <div className="text-sm text-gray-600">
-        {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} found
+        {loading ? 'Loading templates...' : `${filteredTemplates.length} template${filteredTemplates.length !== 1 ? 's' : ''} found`}
       </div>
+
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      )}
 
       {/* Template Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

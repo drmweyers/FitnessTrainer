@@ -20,7 +20,7 @@ const nextConfig = {
   // ESLint configuration
   eslint: {
     // Only run ESLint during builds in the specified directories
-    dirs: ['src'],
+    dirs: ['app', 'components', 'lib', 'hooks', 'types', 'services', 'contexts', 'config', 'state'],
     // Temporarily ignore ESLint errors during builds for deployment
     // TODO: Fix ESLint warnings and re-enable
     ignoreDuringBuilds: true,
@@ -43,14 +43,19 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days for exercise GIFs
   },
 
-  // API Rewrites for backend proxy
+  // API Rewrites for backend proxy (only when using standalone Express backend)
   async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/:path*`,
-      },
-    ];
+    // By default, use Next.js API routes (app/api/).
+    // Set NEXT_PUBLIC_USE_EXPRESS=true to proxy /api/* to Express backend instead.
+    if (process.env.NEXT_PUBLIC_USE_EXPRESS === 'true') {
+      return [
+        {
+          source: '/api/:path*',
+          destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/:path*`,
+        },
+      ];
+    }
+    return [];
   },
 
   // Headers for security and performance

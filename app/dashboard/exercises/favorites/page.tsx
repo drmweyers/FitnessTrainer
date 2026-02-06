@@ -16,6 +16,7 @@ import Layout from '@/components/layout/Layout'
 import { ExerciseCard } from '@/components/features/ExerciseLibrary/ExerciseCard'
 import { ExerciseGridSkeleton } from '@/components/features/ExerciseLibrary/ExerciseGridSkeleton'
 import { useFavorites } from '@/hooks/useFavorites'
+import { useCollections } from '@/hooks/useCollections'
 import { ExerciseWithUserData } from '@/types/exercise'
 import { getExercisesByIds } from '@/services/exerciseService'
 
@@ -32,6 +33,7 @@ export default function FavoritesPage() {
     refreshFavorites
   } = useFavorites()
 
+  const { collections } = useCollections()
   const [favoriteExercises, setFavoriteExercises] = useState<ExerciseWithUserData[]>([])
   const [filteredExercises, setFilteredExercises] = useState<ExerciseWithUserData[]>([])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -62,9 +64,11 @@ export default function FavoritesPage() {
           return {
             ...exercise,
             isFavorited: true,
-            usageCount: 0, // TODO: Implement usage tracking
-            lastUsed: undefined, // TODO: Implement usage tracking
-            collections: [], // TODO: Implement collections
+            usageCount: 0,
+            lastUsed: undefined,
+            collections: collections
+              .filter(c => c.exerciseIds.includes(exercise.exerciseId))
+              .map(c => c.id),
           }
         })
 

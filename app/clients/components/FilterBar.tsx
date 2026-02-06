@@ -40,8 +40,10 @@ export default function FilterBar({
         >
           <option value="all">All Clients</option>
           <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="completed">Training Completed</option>
+          <option value="offline">Offline</option>
+          <option value="pending">Pending</option>
+          <option value="need_programming">Need Programming</option>
+          <option value="archived">Archived</option>
         </select>
 
         <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">

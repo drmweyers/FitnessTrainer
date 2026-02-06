@@ -60,18 +60,19 @@
     // Path Mapping - Makes imports cleaner and more maintainable
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*", "./src/*"],
-      "@/components/*": ["./components/*", "./src/components/*"],
-      "@/lib/*": ["./lib/*", "./src/lib/*"],
-      "@/hooks/*": ["./hooks/*", "./src/hooks/*"],
-      "@/types/*": ["./types/*", "./src/types/*", "./lib/types/*"],
-      "@/state/*": ["./state/*", "./src/state/*"],
-      "@/data/*": ["./data/*", "./src/data/*"],
-      "@/app/*": ["./app/*", "./src/app/*"],
-      "@/styles/*": ["./styles/*", "./src/styles/*"],
-      "@/public/*": ["./public/*", "./src/public/*"],
-      "@/services/*": ["./services/*", "./src/services/*"],
-      "@/contexts/*": ["./contexts/*", "./src/contexts/*"]
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/types/*": ["./types/*", "./lib/types/*"],
+      "@/state/*": ["./state/*"],
+      "@/data/*": ["./data/*"],
+      "@/app/*": ["./app/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/public/*": ["./public/*"],
+      "@/services/*": ["./services/*"],
+      "@/contexts/*": ["./contexts/*"],
+      "@/config/*": ["./config/*"]
     }
   },
   "include": [

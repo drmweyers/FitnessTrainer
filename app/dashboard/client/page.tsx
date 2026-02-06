@@ -336,9 +336,7 @@ export default function ClientDashboard() {
             <DailyWorkoutView
               clientId={user?.id || ''}
               onStartWorkout={(session: WorkoutSession) => {
-                console.log('Starting workout:', session);
-                // TODO: Navigate to workout execution page
-                // router.push(`/workouts/execute/${session.workoutLog.id}`);
+                router.push(`/workouts/${session.workoutLog.id}`);
               }}
             />
           </div>

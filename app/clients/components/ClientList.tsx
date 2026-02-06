@@ -1,85 +1,116 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import ClientListItem from './ClientListItem'
 import FilterBar from './FilterBar'
 import ClientModal from './ClientModal'
 import { Client } from '../api/clientsApi'
+import { clientsApi, ApiError } from '@/lib/api/clients'
+import { ClientStatus } from '@/types/client'
 
-export default function ClientList() {
+// Map API Client to the local Client interface used by ClientListItem
+function mapApiClientToLocal(apiClient: any): Client {
+  const status = apiClient.trainerClient?.status || (apiClient.isActive ? 'active' : 'offline')
+  const lastLogin = apiClient.lastLoginAt
+    ? formatTimeAgo(new Date(apiClient.lastLoginAt))
+    : apiClient.lastActivity
+      ? formatTimeAgo(new Date(apiClient.lastActivity))
+      : 'Never'
+
+  return {
+    id: apiClient.id,
+    name: apiClient.displayName || apiClient.email || 'Unknown',
+    avatar: apiClient.avatar || apiClient.userProfile?.profilePhotoUrl || '/avatars/default.png',
+    status,
+    completionPercentage: apiClient.data?.completionPercentage ?? 0,
+    lastActive: lastLogin,
+    email: apiClient.email,
+    phone: apiClient.userProfile?.phone,
+    goals: apiClient.clientProfile?.goals
+      ? [apiClient.clientProfile.goals.primaryGoal].filter(Boolean)
+      : undefined,
+  }
+}
+
+function formatTimeAgo(date: Date): string {
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const diffWeeks = Math.floor(diffDays / 7)
+  const diffMonths = Math.floor(diffDays / 30)
+
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffWeeks < 5) return `${diffWeeks}w ago`
+  return `${diffMonths}mo ago`
+}
+
+// Map FilterBar values to API ClientStatus values
+function mapFilterToApiStatus(filter: string): ClientStatus | undefined {
+  const statusMap: Record<string, ClientStatus> = {
+    active: ClientStatus.ACTIVE,
+    offline: ClientStatus.OFFLINE,
+    pending: ClientStatus.PENDING,
+    need_programming: ClientStatus.NEED_PROGRAMMING,
+    archived: ClientStatus.ARCHIVED,
+  }
+  return statusMap[filter]
+}
+
+interface ClientListProps {
+  initialFilter?: string
+}
+
+export default function ClientList({ initialFilter = 'all' }: ClientListProps) {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState(initialFilter)
   const [clients, setClients] = useState<Client[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | undefined>()
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       setIsLoading(true)
-      // const data = await getClients()
-      setClients([
-        {
-          id: '1',
-          name: 'John Doe',
-          avatar: '/avatars/default.png',
-          status: 'active',
-          completionPercentage: 75,
-          lastActive: '2w ago'
-        },
-        {
-          id: '2',
-          name: 'Jane Smith',
-          avatar: '/avatars/default.png',
-          status: 'inactive',
-          completionPercentage: 50, 
-          lastActive: '1w ago'
-        },  
-        {
-          id: '3',
-          name: 'Alice Johnson',
-          avatar: '/avatars/default.png',
-          status: 'active', 
-          completionPercentage: 80,
-          lastActive: '3d ago'
-        },
-        {
-          id: '4',
-          name: 'Bob Brown',
-          avatar: '/avatars/default.png',
-          status: 'inactive',
-          completionPercentage: 30,
-          lastActive: '2d ago'
-        },
-        {
-          id: '5',
-          name: 'Charlie Davis',
-          avatar: '/avatars/default.png',
-          status: 'active',
-          completionPercentage: 95,
-          lastActive: '4d ago'
-        }])
+      const apiStatus = filter !== 'all' ? mapFilterToApiStatus(filter) : undefined
+      const response = await clientsApi.getClients({
+        status: apiStatus,
+      })
+
+      // The API wraps response in { success, data: { clients, pagination } }
+      const clientsData = (response as any).data?.clients || (response as any).clients || []
+      const mappedClients = clientsData.map(mapApiClientToLocal)
+      setClients(mappedClients)
       setError('')
     } catch (err) {
-      setError('Failed to fetch clients')
-      console.error(err)
+      if (err instanceof ApiError && err.status === 401) {
+        router.push('/auth/login')
+        return
+      }
+      setError(err instanceof ApiError ? err.message : 'Failed to fetch clients')
+      console.error('Error fetching clients:', err)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [filter, router])
 
   useEffect(() => {
     fetchClients()
-  }, [])
+  }, [fetchClients])
 
+  // Client-side search filtering for instant feedback
   const filteredClients = clients.filter(client => {
-    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesFilter = filter === 'all' || client.status === filter
-
-    return matchesSearch && matchesFilter
+    if (!searchTerm) return true
+    const term = searchTerm.toLowerCase()
+    return client.name.toLowerCase().includes(term) ||
+      client.email?.toLowerCase().includes(term)
   })
 
   const handleEditClient = (client: Client) => {

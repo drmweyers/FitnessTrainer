@@ -2,20 +2,16 @@
 
 import {useState, useEffect} from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
 	Dumbbell,
 	ClipboardList,
-	Utensils,
 	Calendar,
-	PlusCircle,
-	Database,
 	Users,
 	ChevronDown,
 	ChevronRight,
 	BarChart3,
-	Award,
-	Book,
+	Activity,
+	Home,
 	Menu,
 	X
 } from "lucide-react";
@@ -84,10 +80,10 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 		const checkMobile = () => {
 			setIsMobile(window.innerWidth < 1024);
 		};
-		
+
 		checkMobile();
 		window.addEventListener('resize', checkMobile);
-		
+
 		return () => window.removeEventListener('resize', checkMobile);
 	}, []);
 
@@ -111,7 +107,7 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 	return (
 		<>
 			<MobileMenuButton />
-			
+
 			<div className={`
 				${isOpen ? 'translate-x-0' : '-translate-x-full'}
 				lg:translate-x-0
@@ -122,20 +118,14 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 				transition-transform duration-300 ease-in-out
 				z-40
 			`}>
-				{/* <div className="p-4 border-b border-gray-200">
-					<div className="flex items-center">
-						<Image
-							src="/logo.png"
-							alt="Logo"
-							width={28}
-							height={28}
-							className="mr-2"
-						/>
-						<span className="font-semibold text-lg">FitTrack Pro</span>
-					</div>
-				</div> */}
-
 				<div className="flex-1 overflow-y-auto p-3">
+					<NavItem
+						icon={<Home size={18} />}
+						label="Dashboard"
+						href="/dashboard"
+						onMobileClick={isMobile ? () => onClose() : undefined}
+					/>
+
 					<NavItem
 						icon={<Dumbbell size={18} />}
 						label="Exercises"
@@ -153,7 +143,6 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
 								label="All Exercises"
 								href="/exercises"
-								active={true}
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
@@ -185,9 +174,9 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 					/>
 
 					<NavItem
-						icon={<Utensils size={18} />}
-						label="Recipe Books"
-						href="/recipe-books"
+						icon={<Activity size={18} />}
+						label="Workout Tracker"
+						href="/workout-tracker"
 						onMobileClick={isMobile ? () => onClose() : undefined}
 					/>
 
@@ -198,29 +187,15 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 						onMobileClick={isMobile ? () => onClose() : undefined}
 					/>
 
-					<NavItem 
-						icon={<Award size={18} />} 
-						label="Badges" 
-						href="/badges"
-						onMobileClick={isMobile ? () => onClose() : undefined}
-					/>
-
-					<NavItem 
-						icon={<BarChart3 size={18} />} 
-						label="Levels" 
-						href="/levels"
+					<NavItem
+						icon={<BarChart3 size={18} />}
+						label="Analytics"
+						href="/analytics"
 						onMobileClick={isMobile ? () => onClose() : undefined}
 					/>
 
 					<NavItem
-						icon={<PlusCircle size={18} />}
-						label="Create Meal Plan"
-						href="/meal-plans/create"
-						onMobileClick={isMobile ? () => onClose() : undefined}
-					/>
-
-					<NavItem
-						icon={<Dumbbell size={18} />}
+						icon={<Users size={18} />}
 						label="Client Management"
 						href="#"
 						active={activeItem === "client-management"}
@@ -236,54 +211,37 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
 								label="All Clients"
 								href="/clients"
-								active={true}
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
 								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
-								label="Connected Clients"
-								href="/clients/connected"
+								label="Active Clients"
+								href="/clients?status=active"
+								onMobileClick={isMobile ? () => onClose() : undefined}
+							/>
+							<NavItem
+								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								label="Inactive Clients"
+								href="/clients?status=inactive"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
 								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
 								label="Pending Clients"
-								href="/clients/pending"
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
-								label="Offline Clients"
-								href="/clients/offline"
-								active={true}
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
-								label="Waiting Activation"
-								href="/clients/waiting-activation"
-								active={true}
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
-								label="Need Programming"
-								href="/clients/need-programming"
-								active={true}
+								href="/clients?status=pending"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
 								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
 								label="Archived Clients"
-								href="/clients/archived"
-								active={true}
+								href="/clients?status=archived"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 						</div>
 					)}
 				</div>
 			</div>
-			
+
 			{/* Overlay for mobile */}
 			{isOpen && (
 				<div

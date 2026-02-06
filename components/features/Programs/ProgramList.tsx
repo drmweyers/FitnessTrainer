@@ -123,13 +123,28 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
         return
       }
 
-      // Mock API call - in real app, send to backend
-      console.log('Assigning program:', assignmentModal.program?.id)
-      console.log('To clients:', clientIds)
-      console.log('With customizations:', customizations)
+      const programId = assignmentModal.program?.id
+      if (!programId) return
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Assign program to each selected client via API
+      const assignPromises = clientIds.map(clientId =>
+        fetch(`/api/programs/${programId}/assign`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            clientId,
+            startDate: new Date(customizations.startDate).toISOString(),
+          }),
+        }).then(res => {
+          if (!res.ok) throw new Error(`Failed to assign to client ${clientId}`);
+          return res.json();
+        })
+      )
+
+      await Promise.all(assignPromises)
 
       // Show success notification
       success(
@@ -137,16 +152,16 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
         `"${assignmentModal.program?.name}" has been assigned to ${clientIds.length} client${clientIds.length !== 1 ? 's' : ''}.`,
         6000
       )
-      
+
       // Clear any existing errors
       setError(null)
-      
+
       // Close modal
       setAssignmentModal({ isOpen: false, program: null })
-      
-      // Optionally reload programs to update assignment counts
+
+      // Reload programs to update assignment counts
       await loadPrograms()
-      
+
     } catch (err) {
       console.error('Error assigning program:', err)
       const errorMessage = err instanceof Error ? err.message : 'Failed to assign program'
