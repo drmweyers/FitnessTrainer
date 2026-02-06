@@ -3,7 +3,7 @@
 import { authApi, tokenUtils } from './auth';
 import type { AuthTokens } from '@/types/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Types for API client configuration
 interface ApiClientConfig extends RequestInit {

@@ -94,7 +94,7 @@ export default function ExerciseList({ preloadedExercises }: ExerciseListProps =
       try {
         setLoading(true)
         setError(null)
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
         const params = new URLSearchParams({
           page: '1',
           limit: '100',
