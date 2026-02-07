@@ -13,7 +13,9 @@ import {
 	Activity,
 	Home,
 	Menu,
-	X
+	X,
+	UserCircle,
+	Settings
 } from "lucide-react";
 
 interface NavItemProps {
@@ -239,6 +241,21 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 							/>
 						</div>
 					)}
+
+					<div className="border-t border-gray-200 mt-3 pt-3">
+						<NavItem
+							icon={<UserCircle size={18} />}
+							label="My Profile"
+							href="/profile"
+							onMobileClick={isMobile ? () => onClose() : undefined}
+						/>
+						<NavItem
+							icon={<Settings size={18} />}
+							label="Settings"
+							href="/profile/edit"
+							onMobileClick={isMobile ? () => onClose() : undefined}
+						/>
+					</div>
 				</div>
 			</div>
 
