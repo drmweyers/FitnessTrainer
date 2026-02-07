@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Target, 
-  Dumbbell, 
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Target,
+  Dumbbell,
   User,
   Clock,
   CheckCircle,
@@ -15,11 +15,19 @@ import {
   Plus,
   Share2,
   Download,
-  Info
+  Info,
+  Zap
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { ExerciseWithUserData } from '@/types/exercise'
 import { GifPlayer } from './GifPlayer'
 import { RelatedExercises } from './RelatedExercises'
+
+const difficultyConfig = {
+  beginner: { label: 'Beginner', bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200' },
+  intermediate: { label: 'Intermediate', bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-200' },
+  advanced: { label: 'Advanced', bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-200' },
+} as const
 
 interface ExerciseDetailViewProps {
   exercise: ExerciseWithUserData
@@ -34,8 +42,13 @@ export function ExerciseDetailView({
   onAddToCollection,
   className = ''
 }: ExerciseDetailViewProps) {
+  const router = useRouter()
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
   const [activeTab, setActiveTab] = useState<'instructions' | 'tips' | 'variations'>('instructions')
+
+  const difficulty = exercise.difficulty
+    ? difficultyConfig[exercise.difficulty]
+    : null
 
   const toggleStep = (stepIndex: number) => {
     setCompletedSteps(prev =>
@@ -92,13 +105,21 @@ export function ExerciseDetailView({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* GIF Player Section */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden relative">
             <GifPlayer
               exerciseId={exercise.exerciseId}
               gifUrl={exercise.gifUrl}
               exerciseName={exercise.name}
               className="aspect-video"
             />
+            {difficulty && (
+              <div className="absolute top-3 left-3">
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${difficulty.bg} ${difficulty.text} border ${difficulty.border} backdrop-blur-sm`}>
+                  <Zap size={14} className="mr-1" />
+                  {difficulty.label}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -163,15 +184,27 @@ export function ExerciseDetailView({
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <Clock size={18} className="text-orange-600" />
+              {difficulty ? (
+                <div className="flex items-center space-x-3">
+                  <div className={`p-2 rounded-lg ${difficulty.bg}`}>
+                    <Zap size={18} className={difficulty.text} />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">Difficulty</div>
+                    <div className={`font-medium ${difficulty.text}`}>{difficulty.label}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-500">Usage</div>
-                  <div className="font-medium">{exercise.usageCount || 0} times</div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <Clock size={18} className="text-orange-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">Usage</div>
+                    <div className="font-medium">{exercise.usageCount || 0} times</div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {exercise.secondaryMuscles && exercise.secondaryMuscles.length > 0 && (
@@ -353,9 +386,8 @@ export function ExerciseDetailView({
       <div className="mt-12">
         <RelatedExercises
           currentExercise={exercise}
-          onExerciseClick={(exercise) => {
-            // This would navigate to the new exercise
-            console.log('Navigate to exercise:', exercise.id)
+          onExerciseClick={(ex) => {
+            router.push(`/dashboard/exercises/${ex.exerciseId}`)
           }}
         />
       </div>

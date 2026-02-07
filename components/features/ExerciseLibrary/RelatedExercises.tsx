@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { ExerciseWithUserData } from '@/types/exercise'
+import { searchExercises } from '@/services/exerciseService'
 import { ExerciseCard } from './ExerciseCard'
 
 interface RelatedExercisesProps {
@@ -23,143 +24,28 @@ export function RelatedExercises({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'bodyPart' | 'muscle' | 'equipment'>('all')
 
-  // Mock related exercises - in real app, this would come from API
-  const mockRelatedExercises: ExerciseWithUserData[] = [
-    {
-      id: '2',
-      exerciseId: 'Hy9D21L',
-      name: '45° side bend',
-      gifUrl: 'Hy9D21L.gif',
-      targetMuscles: ['obliques'],
-      bodyParts: ['waist'],
-      equipments: ['dumbbell'],
-      secondaryMuscles: ['abs'],
-      instructions: ['Stand with feet shoulder-width apart', 'Hold dumbbell in right hand', 'Bend to the side'],
-      isFavorited: false,
-      usageCount: 8,
-    },
-    {
-      id: '3',
-      exerciseId: 'arvaszz',
-      name: 'ab wheel',
-      gifUrl: 'arvaszz.gif',
-      targetMuscles: ['abs'],
-      bodyParts: ['waist'],
-      equipments: ['wheel roller'],
-      secondaryMuscles: ['shoulders', 'lower back'],
-      instructions: ['Kneel on floor', 'Hold ab wheel handles', 'Roll forward slowly'],
-      isFavorited: true,
-      usageCount: 15,
-    },
-    {
-      id: '4',
-      exerciseId: 'bdWcbaU',
-      name: 'bicycle crunches',
-      gifUrl: 'bdWcbaU.gif',
-      targetMuscles: ['abs'],
-      bodyParts: ['waist'],
-      equipments: ['body weight'],
-      secondaryMuscles: ['obliques'],
-      instructions: ['Lie on back', 'Bring knees to chest', 'Alternate elbow to knee'],
-      isFavorited: false,
-      usageCount: 22,
-    },
-    {
-      id: '5',
-      exerciseId: 'cbuFJrn',
-      name: 'crunch',
-      gifUrl: 'cbuFJrn.gif',
-      targetMuscles: ['abs'],
-      bodyParts: ['waist'],
-      equipments: ['body weight'],
-      secondaryMuscles: [],
-      instructions: ['Lie on back', 'Hands behind head', 'Lift shoulders off ground'],
-      isFavorited: false,
-      usageCount: 18,
-    },
-    {
-      id: '6',
-      exerciseId: 'cuKYxhu',
-      name: 'dead bug',
-      gifUrl: 'cuKYxhu.gif',
-      targetMuscles: ['abs'],
-      bodyParts: ['waist'],
-      equipments: ['body weight'],
-      secondaryMuscles: ['lower back'],
-      instructions: ['Lie on back', 'Arms up, knees bent', 'Lower opposite arm and leg'],
-      isFavorited: true,
-      usageCount: 7,
-    },
-    {
-      id: '7',
-      exerciseId: 'ecpY0rH',
-      name: 'plank',
-      gifUrl: 'ecpY0rH.gif',
-      targetMuscles: ['abs'],
-      bodyParts: ['waist'],
-      equipments: ['body weight'],
-      secondaryMuscles: ['shoulders', 'glutes'],
-      instructions: ['Start in pushup position', 'Hold body straight', 'Engage core muscles'],
-      isFavorited: false,
-      usageCount: 31,
-    }
-  ]
-
   useEffect(() => {
     const fetchRelatedExercises = async () => {
       setIsLoading(true)
-      
+
       try {
-        // TODO: Replace with actual API call
-        // const response = await fetch(`/api/exercises/related/${currentExercise.id}?filter=${selectedFilter}&limit=${maxExercises}`)
-        // const data = await response.json()
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Filter mock exercises based on selected criteria
-        let filtered = mockRelatedExercises.filter(ex => ex.id !== currentExercise.id)
-        
-        switch (selectedFilter) {
-          case 'bodyPart':
-            filtered = filtered.filter(ex => 
-              ex.bodyParts.some(part => currentExercise.bodyParts.includes(part))
-            )
-            break
-          case 'muscle':
-            filtered = filtered.filter(ex =>
-              ex.targetMuscles.some(muscle => currentExercise.targetMuscles.includes(muscle)) ||
-              ex.targetMuscles.some(muscle => currentExercise.secondaryMuscles?.includes(muscle))
-            )
-            break
-          case 'equipment':
-            filtered = filtered.filter(ex =>
-              ex.equipments.some(equipment => currentExercise.equipments.includes(equipment))
-            )
-            break
-          default:
-            // 'all' - use relevance scoring
-            filtered = filtered.sort((a, b) => {
-              let scoreA = 0
-              let scoreB = 0
-              
-              // Score by matching body parts (highest weight)
-              scoreA += a.bodyParts.filter(part => currentExercise.bodyParts.includes(part)).length * 3
-              scoreB += b.bodyParts.filter(part => currentExercise.bodyParts.includes(part)).length * 3
-              
-              // Score by matching target muscles
-              scoreA += a.targetMuscles.filter(muscle => currentExercise.targetMuscles.includes(muscle)).length * 2
-              scoreB += b.targetMuscles.filter(muscle => currentExercise.targetMuscles.includes(muscle)).length * 2
-              
-              // Score by matching equipment
-              scoreA += a.equipments.filter(equipment => currentExercise.equipments.includes(equipment)).length * 1
-              scoreB += b.equipments.filter(equipment => currentExercise.equipments.includes(equipment)).length * 1
-              
-              return scoreB - scoreA
-            })
+        const filters = {
+          search: '',
+          bodyParts: selectedFilter === 'bodyPart' || selectedFilter === 'all'
+            ? currentExercise.bodyParts : [],
+          equipments: selectedFilter === 'equipment'
+            ? currentExercise.equipments : [],
+          targetMuscles: selectedFilter === 'muscle'
+            ? currentExercise.targetMuscles : [],
         }
-        
-        setRelatedExercises(filtered.slice(0, maxExercises))
+
+        const result = await searchExercises(filters, 1, maxExercises + 1)
+
+        const filtered = result.exercises
+          .filter(ex => ex.exerciseId !== currentExercise.exerciseId)
+          .slice(0, maxExercises)
+
+        setRelatedExercises(filtered)
       } catch (error) {
         console.error('Failed to fetch related exercises:', error)
         setRelatedExercises([])
@@ -169,7 +55,7 @@ export function RelatedExercises({
     }
 
     fetchRelatedExercises()
-  }, [currentExercise, selectedFilter, maxExercises])
+  }, [currentExercise.exerciseId, currentExercise.bodyParts, currentExercise.equipments, currentExercise.targetMuscles, selectedFilter, maxExercises])
 
   const itemsToShow = 3 // Number of cards to show at once
   const canScrollLeft = currentIndex > 0

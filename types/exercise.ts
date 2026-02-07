@@ -30,6 +30,7 @@ export interface ExerciseFilters {
   equipments: string[]
   targetMuscles: string[]
   search: string
+  difficulty?: 'beginner' | 'intermediate' | 'advanced'
   collections?: string[]
   favorites?: boolean
 }

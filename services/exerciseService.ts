@@ -15,6 +15,7 @@ const transformExercise = (backendExercise: any): ExerciseWithUserData => ({
   equipments: [backendExercise.equipment], // Convert single to array
   secondaryMuscles: backendExercise.secondaryMuscles || [],
   instructions: backendExercise.instructions || [],
+  difficulty: backendExercise.difficulty || undefined,
   createdAt: backendExercise.createdAt,
   updatedAt: backendExercise.updatedAt,
   // Add default user data - these will be populated when we implement favorites/collections
@@ -133,7 +134,11 @@ export const searchExercises = async (
     if (filters.targetMuscles.length > 0) {
       params.set('targetMuscle', filters.targetMuscles.join(','))
     }
-    
+
+    if (filters.difficulty) {
+      params.set('difficulty', filters.difficulty)
+    }
+
     const response = await fetch(`${API_BASE_URL}/exercises?${params.toString()}`)
     if (!response.ok) {
       throw new Error(`Failed to search exercises: ${response.statusText}`)
