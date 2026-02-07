@@ -41,7 +41,7 @@ export default function ClientDashboard() {
     measurements: { chest: 0, waist: 0, arms: 0, legs: 0 }
   });
 
-  const [recentActivities] = useState<ActivityFeedItem[]>([]);
+  const [recentActivities, setRecentActivities] = useState<ActivityFeedItem[]>([]);
 
   const quickActions: QuickAction[] = [
     {
@@ -126,7 +126,22 @@ export default function ClientDashboard() {
             }));
           }
         })
-        .catch(err => console.error('Failed to load client stats:', err))
+        .catch(err => console.error('Failed to load client stats:', err));
+
+      // Fetch activity feed
+      fetch('/api/activities?limit=10', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data?.activities) {
+            setRecentActivities(result.data.activities);
+          }
+        })
+        .catch(err => console.error('Failed to load activities:', err))
         .finally(() => setIsDataLoading(false));
     }
   }, [isLoading, isAuthenticated, user, router]);

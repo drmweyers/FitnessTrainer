@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   });
 
   const [recentSignups, setRecentSignups] = useState<RecentSignup[]>([]);
-  const [recentActivities] = useState<ActivityFeedItem[]>([]);
+  const [recentActivities, setRecentActivities] = useState<ActivityFeedItem[]>([]);
 
   const quickActions: QuickAction[] = [
     {
@@ -125,7 +125,22 @@ export default function AdminDashboard() {
             }
           }
         })
-        .catch(err => console.error('Failed to load admin stats:', err))
+        .catch(err => console.error('Failed to load admin stats:', err));
+
+      // Fetch activity feed
+      fetch('/api/activities?limit=10', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data?.activities) {
+            setRecentActivities(result.data.activities);
+          }
+        })
+        .catch(err => console.error('Failed to load activities:', err))
         .finally(() => setIsDataLoading(false));
     }
   }, [isLoading, isAuthenticated, user, router]);
