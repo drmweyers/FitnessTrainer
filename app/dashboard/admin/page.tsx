@@ -25,65 +25,18 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isDataLoading, setIsDataLoading] = useState(true);
 
-  // Mock data - in production, these would come from API calls
-  const [systemMetrics] = useState<SystemMetrics>({
-    totalUsers: 1247,
-    totalTrainers: 89,
-    totalClients: 1158,
-    totalPrograms: 342,
-    activeWorkouts: 156,
-    revenue: {
-      monthly: 24750,
-      yearly: 285400,
-      change: 12.5
-    },
-    systemHealth: {
-      status: 'excellent',
-      uptime: '99.9%',
-      lastBackup: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-    }
+  const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>({
+    totalUsers: 0,
+    totalTrainers: 0,
+    totalClients: 0,
+    totalPrograms: 0,
+    activeWorkouts: 0,
+    revenue: { monthly: 0, yearly: 0, change: 0 },
+    systemHealth: { status: 'excellent', uptime: '99.9%', lastBackup: new Date().toISOString() }
   });
 
-
-  const [recentSignups] = useState<RecentSignup[]>([
-    { id: '1', name: 'Sarah Johnson', email: 'sarah@example.com', role: 'trainer', signupDate: new Date().toISOString(), status: 'active' },
-    { id: '2', name: 'Mike Chen', email: 'mike@example.com', role: 'client', signupDate: new Date(Date.now() - 30 * 60 * 1000).toISOString(), status: 'pending' },
-    { id: '3', name: 'Emily Rodriguez', email: 'emily@example.com', role: 'trainer', signupDate: new Date(Date.now() - 60 * 60 * 1000).toISOString(), status: 'active' },
-    { id: '4', name: 'David Wilson', email: 'david@example.com', role: 'client', signupDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), status: 'active' }
-  ]);
-
-  const [recentActivities] = useState<ActivityFeedItem[]>([
-    {
-      id: '1',
-      type: 'client_signup',
-      title: 'New Client Registration',
-      description: 'Mike Chen has registered as a new client',
-      timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-      user: { id: '2', name: 'Mike Chen' }
-    },
-    {
-      id: '2',
-      type: 'system_event',
-      title: 'Scheduled Backup Completed',
-      description: 'Daily database backup completed successfully',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: '3',
-      type: 'program_assigned',
-      title: 'Program Assignment',
-      description: 'Advanced Strength Program assigned to 5 new clients',
-      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      user: { id: '3', name: 'Sarah Johnson' }
-    },
-    {
-      id: '4',
-      type: 'workout_completed',
-      title: 'Workout Milestone',
-      description: 'Platform reached 10,000 total workouts completed',
-      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-    }
-  ]);
+  const [recentSignups, setRecentSignups] = useState<RecentSignup[]>([]);
+  const [recentActivities] = useState<ActivityFeedItem[]>([]);
 
   const quickActions: QuickAction[] = [
     {
@@ -138,7 +91,7 @@ export default function AdminDashboard() {
     }
   ];
 
-  // Auth protection
+  // Auth protection + data fetching
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
@@ -150,8 +103,30 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (!isLoading) {
-      setIsDataLoading(false);
+    if (!isLoading && user) {
+      const token = localStorage.getItem('accessToken');
+      fetch('/api/dashboard/stats', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data) {
+            setSystemMetrics(prev => ({
+              ...prev,
+              totalUsers: result.data.totalUsers ?? prev.totalUsers,
+              totalTrainers: result.data.totalTrainers ?? prev.totalTrainers,
+              totalClients: result.data.totalClients ?? prev.totalClients,
+            }));
+            if (result.data.recentSignups) {
+              setRecentSignups(result.data.recentSignups);
+            }
+          }
+        })
+        .catch(err => console.error('Failed to load admin stats:', err))
+        .finally(() => setIsDataLoading(false));
     }
   }, [isLoading, isAuthenticated, user, router]);
 

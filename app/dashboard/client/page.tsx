@@ -11,9 +11,6 @@ import DailyWorkoutView from '@/components/features/WorkoutExecution/DailyWorkou
 import { WorkoutSession } from '@/types/workoutLog';
 import {
   ProgressSummary,
-  ActiveProgram,
-  RecentWorkout,
-  UpcomingWorkout,
   ActivityFeedItem,
   QuickAction
 } from '@/types/dashboard';
@@ -35,132 +32,16 @@ export default function ClientDashboard() {
   const router = useRouter();
   const [isDataLoading, setIsDataLoading] = useState(true);
 
-  // Mock data - in production, these would come from API calls
-
-
-  const [progressSummary] = useState<ProgressSummary>({
-    currentWeight: 165,
-    weightGoal: 170,
-    workoutStreak: 12,
-    totalWorkouts: 47,
-    personalRecords: 8,
-    measurements: {
-      chest: 42,
-      waist: 32,
-      arms: 15,
-      legs: 24
-    }
+  const [progressSummary, setProgressSummary] = useState<ProgressSummary>({
+    currentWeight: 0,
+    weightGoal: 0,
+    workoutStreak: 0,
+    totalWorkouts: 0,
+    personalRecords: 0,
+    measurements: { chest: 0, waist: 0, arms: 0, legs: 0 }
   });
 
-  const [activeProgram] = useState<ActiveProgram>({
-    id: 'p1',
-    name: 'Advanced Strength Training',
-    trainerName: 'Sarah Johnson',
-    startDate: '2024-01-15',
-    duration: 12,
-    progress: 75,
-    nextWorkout: 'Upper Body Strength'
-  });
-
-  const [recentWorkouts] = useState<RecentWorkout[]>([
-    {
-      id: 'rw1',
-      name: 'Lower Body Power',
-      date: '2024-03-20',
-      duration: 42,
-      exercises: 6,
-      rating: 4,
-      notes: 'Great session! Felt strong on squats.'
-    },
-    {
-      id: 'rw2',
-      name: 'HIIT Cardio',
-      date: '2024-03-18',
-      duration: 30,
-      exercises: 8,
-      rating: 5,
-      notes: 'Challenging but energizing workout.'
-    },
-    {
-      id: 'rw3',
-      name: 'Upper Body Focus',
-      date: '2024-03-16',
-      duration: 38,
-      exercises: 7,
-      rating: 4
-    },
-    {
-      id: 'rw4',
-      name: 'Core & Flexibility',
-      date: '2024-03-14',
-      duration: 25,
-      exercises: 5,
-      rating: 3,
-      notes: 'Need to work on flexibility more.'
-    }
-  ]);
-
-  const [upcomingWorkouts] = useState<UpcomingWorkout[]>([
-    {
-      id: 'uw1',
-      name: 'Lower Body Strength',
-      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '08:00',
-      type: 'strength'
-    },
-    {
-      id: 'uw2',
-      name: 'Cardio Recovery',
-      date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '18:00',
-      type: 'cardio'
-    },
-    {
-      id: 'uw3',
-      name: 'Rest Day',
-      date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      type: 'rest'
-    },
-    {
-      id: 'uw4',
-      name: 'Full Body Circuit',
-      date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '07:30',
-      type: 'strength'
-    }
-  ]);
-
-  const [recentActivities] = useState<ActivityFeedItem[]>([
-    {
-      id: '1',
-      type: 'workout_completed',
-      title: 'Workout Completed',
-      description: 'You completed Lower Body Power workout in 42 minutes',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: '2',
-      type: 'milestone_reached',
-      title: 'Personal Record!',
-      description: 'New PR on deadlifts: 225 lbs (+10 lbs)',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: '3',
-      type: 'program_assigned',
-      title: 'Program Updated',
-      description: 'Your trainer updated your Advanced Strength Training program',
-      timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      user: { id: 't1', name: 'Sarah Johnson' }
-    },
-    {
-      id: '4',
-      type: 'milestone_reached',
-      title: 'Streak Achievement',
-      description: 'Congratulations on your 10-day workout streak!',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ]);
+  const [recentActivities] = useState<ActivityFeedItem[]>([]);
 
   const quickActions: QuickAction[] = [
     {
@@ -213,7 +94,7 @@ export default function ClientDashboard() {
     }
   ];
 
-  // Auth protection
+  // Auth protection + data fetching
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
@@ -225,8 +106,28 @@ export default function ClientDashboard() {
       return;
     }
 
-    if (!isLoading) {
-      setIsDataLoading(false);
+    if (!isLoading && user) {
+      const token = localStorage.getItem('accessToken');
+      fetch('/api/dashboard/stats', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data?.progressSummary) {
+            const ps = result.data.progressSummary;
+            setProgressSummary(prev => ({
+              ...prev,
+              currentWeight: ps.currentWeight ?? prev.currentWeight,
+              totalWorkouts: ps.totalWorkouts ?? prev.totalWorkouts,
+              measurements: ps.measurements ?? prev.measurements,
+            }));
+          }
+        })
+        .catch(err => console.error('Failed to load client stats:', err))
+        .finally(() => setIsDataLoading(false));
     }
   }, [isLoading, isAuthenticated, user, router]);
 
@@ -329,165 +230,43 @@ export default function ClientDashboard() {
           />
         </div>
 
-        {/* Today's Workout and Active Program */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Today's Workout - Using real API component */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <DailyWorkoutView
-              clientId={user?.id || ''}
-              onStartWorkout={(session: WorkoutSession) => {
-                router.push(`/workouts/${session.workoutLog.id}`);
-              }}
-            />
-          </div>
-
-          {/* Active Program */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Active Program</h3>
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-xl font-semibold text-gray-900">
-                  {activeProgram.name}
-                </h4>
-                <p className="text-sm text-gray-600">
-                  by {activeProgram.trainerName}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Progress</span>
-                  <span className="font-medium">{activeProgram.progress}% complete</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${activeProgram.progress}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                <div>
-                  <span className="block text-gray-900 font-medium">Duration</span>
-                  {activeProgram.duration} weeks
-                </div>
-                <div>
-                  <span className="block text-gray-900 font-medium">Started</span>
-                  {new Date(activeProgram.startDate).toLocaleDateString()}
-                </div>
-              </div>
-
-              {activeProgram.nextWorkout && (
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-sm text-gray-600 mb-2">Next workout:</p>
-                  <p className="font-medium text-gray-900">{activeProgram.nextWorkout}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Upcoming Workouts */}
+        {/* Today's Workout */}
         <div className="bg-white rounded-lg border border-gray-200">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">This Week&apos;s Schedule</h3>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-            {upcomingWorkouts.map((workout) => (
-              <div key={workout.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize ${
-                    workout.type === 'strength' 
-                      ? 'bg-blue-100 text-blue-800'
-                      : workout.type === 'cardio'
-                      ? 'bg-red-100 text-red-800'
-                      : workout.type === 'flexibility'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {workout.type}
-                  </span>
-                  {workout.time && (
-                    <span className="text-xs text-gray-500">{workout.time}</span>
-                  )}
-                </div>
-                <h4 className="font-medium text-gray-900 text-sm">{workout.name}</h4>
-                <p className="text-xs text-gray-600 mt-1">
-                  {new Date(workout.date).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Workouts and Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Workouts */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Recent Workouts</h3>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {recentWorkouts.map((workout) => (
-                <div key={workout.id} className="p-4 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h4 className="text-sm font-medium text-gray-900">
-                        {workout.name}
-                      </h4>
-                      <div className="flex items-center mt-1 text-xs text-gray-600 space-x-4">
-                        <span>{new Date(workout.date).toLocaleDateString()}</span>
-                        <span>{workout.duration} min</span>
-                        <span>{workout.exercises} exercises</span>
-                      </div>
-                      {workout.notes && (
-                        <p className="text-xs text-gray-500 mt-1 italic">
-                          &ldquo;{workout.notes}&rdquo;
-                        </p>
-                      )}
-                    </div>
-                    {workout.rating && (
-                      <div className="flex items-center ml-4">
-                        {[...Array(5)].map((_, i) => (
-                          <svg
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < (workout.rating || 0) ? 'text-yellow-400' : 'text-gray-300'
-                            }`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="p-4 border-t border-gray-200">
-              <button className="w-full text-sm text-blue-600 hover:text-blue-500 font-medium">
-                View workout history
-              </button>
-            </div>
-          </div>
-
-          <ActivityFeed
-            activities={recentActivities}
-            maxItems={6}
-            showLoadMore={true}
-            emptyMessage="No recent activity"
+          <DailyWorkoutView
+            clientId={user?.id || ''}
+            onStartWorkout={(session: WorkoutSession) => {
+              router.push(`/workouts/${session.workoutLog.id}`);
+            }}
           />
         </div>
 
-        {/* Quick Actions */}
-        <QuickActions
-          actions={quickActions}
-          title="Quick Actions"
-          gridCols={4}
-        />
+        {/* Activity + Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
+            </div>
+            {recentActivities.length > 0 ? (
+              <ActivityFeed
+                activities={recentActivities}
+                maxItems={6}
+                showLoadMore={false}
+                emptyMessage="No recent activity"
+              />
+            ) : (
+              <div className="p-6 text-center text-gray-500 text-sm">
+                Your workout completions and achievements will appear here as you train.
+              </div>
+            )}
+          </div>
+
+          <QuickActions
+            actions={quickActions}
+            title="Quick Actions"
+            gridCols={2}
+          />
+        </div>
+
       </div>
     </DashboardLayout>
   );

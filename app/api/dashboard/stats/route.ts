@@ -1,0 +1,158 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
+import { prisma } from '@/lib/db/prisma'
+
+export const dynamic = 'force-dynamic'
+
+interface CountResult {
+  count: bigint
+}
+
+interface ClientRow {
+  id: string
+  first_name: string | null
+  last_name: string | null
+  email: string
+  status: string
+  connected_at: string
+}
+
+interface RecentUserRow {
+  id: string
+  email: string
+  role: string
+  created_at: string
+  is_active: boolean
+  first_name: string | null
+  last_name: string | null
+}
+
+export async function GET(request: NextRequest) {
+  const authResult = await authenticate(request)
+  if (authResult instanceof NextResponse) return authResult
+  const req = authResult as AuthenticatedRequest
+  const userId = req.user!.id
+  const role = req.user!.role
+
+  try {
+    if (role === 'admin') {
+      // Admin dashboard stats
+      const [totalUsers] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM users WHERE deleted_at IS NULL`
+      const [totalTrainers] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM users WHERE role = 'trainer' AND deleted_at IS NULL`
+      const [totalClients] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM users WHERE role = 'client' AND deleted_at IS NULL`
+
+      // Recent signups
+      const recentSignups = await prisma.$queryRaw<RecentUserRow[]>`
+        SELECT u.id, u.email, u.role, u.created_at, u.is_active,
+               p.first_name, p.last_name
+        FROM users u
+        LEFT JOIN user_profiles p ON p.user_id = u.id
+        WHERE u.deleted_at IS NULL
+        ORDER BY u.created_at DESC
+        LIMIT 5`
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          role: 'admin',
+          totalUsers: Number(totalUsers.count),
+          totalTrainers: Number(totalTrainers.count),
+          totalClients: Number(totalClients.count),
+          recentSignups: recentSignups.map(u => ({
+            id: u.id,
+            name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email.split('@')[0],
+            email: u.email,
+            role: u.role,
+            signupDate: u.created_at,
+            status: u.is_active ? 'active' : 'inactive',
+          })),
+        },
+      })
+    }
+
+    if (role === 'trainer') {
+      // Trainer dashboard stats
+      const [totalClients] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM trainer_clients
+        WHERE trainer_id = ${userId}::uuid AND status != 'disconnected'`
+      const [activeClients] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM trainer_clients
+        WHERE trainer_id = ${userId}::uuid AND status = 'active'`
+      const [newThisMonth] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM trainer_clients
+        WHERE trainer_id = ${userId}::uuid
+        AND connected_at >= date_trunc('month', CURRENT_DATE)`
+
+      // Client list with names
+      const clients = await prisma.$queryRaw<ClientRow[]>`
+        SELECT tc.id, p.first_name, p.last_name, u.email, tc.status, tc.connected_at
+        FROM trainer_clients tc
+        JOIN users u ON u.id = tc.client_id
+        LEFT JOIN user_profiles p ON p.user_id = tc.client_id
+        WHERE tc.trainer_id = ${userId}::uuid AND tc.status != 'disconnected'
+        ORDER BY tc.connected_at DESC
+        LIMIT 10`
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          role: 'trainer',
+          clientOverview: {
+            totalClients: Number(totalClients.count),
+            activeClients: Number(activeClients.count),
+            inactiveClients: Number(totalClients.count) - Number(activeClients.count),
+            newThisMonth: Number(newThisMonth.count),
+          },
+          clients: clients.map(c => ({
+            id: c.id,
+            name: [c.first_name, c.last_name].filter(Boolean).join(' ') || c.email.split('@')[0],
+            email: c.email,
+            status: c.status,
+            connectedAt: c.connected_at,
+          })),
+        },
+      })
+    }
+
+    if (role === 'client') {
+      // Client dashboard stats - measurements
+      const latestMeasurement = await prisma.$queryRaw<any[]>`
+        SELECT weight, body_fat_percentage, measurements, measured_at
+        FROM user_measurements
+        WHERE user_id = ${userId}::uuid
+        ORDER BY measured_at DESC
+        LIMIT 1`
+
+      const [totalWorkouts] = await prisma.$queryRaw<CountResult[]>`
+        SELECT COUNT(*)::bigint as count FROM workout_sessions
+        WHERE client_id = ${userId}::uuid AND status = 'completed'`
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          role: 'client',
+          progressSummary: {
+            currentWeight: latestMeasurement[0]?.weight || null,
+            measurements: latestMeasurement[0]?.measurements || null,
+            totalWorkouts: Number(totalWorkouts.count),
+          },
+        },
+      })
+    }
+
+    return NextResponse.json({ success: true, data: { role } })
+  } catch (error) {
+    console.error('Dashboard stats error:', error)
+    // Return empty stats on error (tables may not exist yet)
+    return NextResponse.json({
+      success: true,
+      data: {
+        role,
+        error: 'Stats temporarily unavailable',
+      },
+    })
+  }
+}

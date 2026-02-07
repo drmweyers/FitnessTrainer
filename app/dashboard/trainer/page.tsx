@@ -7,153 +7,29 @@ import DashboardLayout from '@/components/shared/DashboardLayout';
 import StatCard from '@/components/shared/StatCard';
 import ActivityFeed from '@/components/shared/ActivityFeed';
 import QuickActions from '@/components/shared/QuickActions';
-import { 
-  ClientOverview, 
-  ProgramStats, 
-  UpcomingSession, 
-  ClientProgress, 
-  ActivityFeedItem, 
-  QuickAction 
+import {
+  ClientOverview,
+  ActivityFeedItem,
+  QuickAction
 } from '@/types/dashboard';
 
-/**
- * Trainer Dashboard
- * 
- * Comprehensive dashboard for fitness trainers.
- * Features:
- * - Client overview and statistics
- * - Program management metrics
- * - Upcoming sessions and appointments
- * - Client progress tracking
- * - Quick actions for common trainer tasks
- */
 export default function TrainerDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isDataLoading, setIsDataLoading] = useState(true);
 
-  // Mock data - in production, these would come from API calls
-  const [clientOverview] = useState<ClientOverview>({
-    totalClients: 24,
-    activeClients: 20,
-    inactiveClients: 4,
-    newThisMonth: 3
+  const [clientOverview, setClientOverview] = useState<ClientOverview>({
+    totalClients: 0,
+    activeClients: 0,
+    inactiveClients: 0,
+    newThisMonth: 0
   });
 
-  const [programStats] = useState<ProgramStats>({
-    totalPrograms: 12,
-    assignedPrograms: 18,
-    completionRate: 87.5,
-    averageRating: 4.7
-  });
+  const [clients, setClients] = useState<Array<{
+    id: string; name: string; email: string; status: string; connectedAt: string
+  }>>([]);
 
-  const [upcomingSessions] = useState<UpcomingSession[]>([
-    {
-      id: '1',
-      clientId: 'c1',
-      clientName: 'Sarah Johnson',
-      date: new Date().toISOString().split('T')[0],
-      time: '14:00',
-      type: 'workout',
-      status: 'confirmed'
-    },
-    {
-      id: '2',
-      clientId: 'c2',
-      clientName: 'Mike Chen',
-      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '10:30',
-      type: 'consultation',
-      status: 'pending'
-    },
-    {
-      id: '3',
-      clientId: 'c3',
-      clientName: 'Emily Rodriguez',
-      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '16:00',
-      type: 'check-in',
-      status: 'scheduled'
-    },
-    {
-      id: '4',
-      clientId: 'c4',
-      clientName: 'David Wilson',
-      date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '09:00',
-      type: 'workout',
-      status: 'confirmed'
-    }
-  ]);
-
-  const [clientProgress] = useState<ClientProgress[]>([
-    {
-      clientId: 'c1',
-      clientName: 'Sarah Johnson',
-      currentProgram: 'Advanced Strength Training',
-      progressPercentage: 75,
-      lastWorkout: '2 days ago',
-      streak: 12
-    },
-    {
-      clientId: 'c2',
-      clientName: 'Mike Chen',
-      currentProgram: 'Beginner Fitness',
-      progressPercentage: 45,
-      lastWorkout: '1 day ago',
-      streak: 5
-    },
-    {
-      clientId: 'c3',
-      clientName: 'Emily Rodriguez',
-      currentProgram: 'HIIT Cardio',
-      progressPercentage: 90,
-      lastWorkout: 'Today',
-      streak: 18
-    },
-    {
-      clientId: 'c4',
-      clientName: 'David Wilson',
-      currentProgram: 'Weight Loss Program',
-      progressPercentage: 60,
-      lastWorkout: '3 days ago',
-      streak: 8
-    }
-  ]);
-
-  const [recentActivities] = useState<ActivityFeedItem[]>([
-    {
-      id: '1',
-      type: 'workout_completed',
-      title: 'Workout Completed',
-      description: 'Emily Rodriguez completed HIIT Cardio Session #12',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      user: { id: 'c3', name: 'Emily Rodriguez' }
-    },
-    {
-      id: '2',
-      type: 'client_signup',
-      title: 'New Client Onboarded',
-      description: 'Alex Thompson has been assigned to your training program',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      user: { id: 'c5', name: 'Alex Thompson' }
-    },
-    {
-      id: '3',
-      type: 'milestone_reached',
-      title: 'Milestone Achievement',
-      description: 'Mike Chen reached his weight loss goal of 10 lbs',
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-      user: { id: 'c2', name: 'Mike Chen' }
-    },
-    {
-      id: '4',
-      type: 'program_assigned',
-      title: 'Program Updated',
-      description: 'Advanced Strength Training program updated with new exercises',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    }
-  ]);
+  const [recentActivities] = useState<ActivityFeedItem[]>([]);
 
   const quickActions: QuickAction[] = [
     {
@@ -206,7 +82,7 @@ export default function TrainerDashboard() {
     }
   ];
 
-  // Auth protection
+  // Auth protection + data fetching
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
@@ -218,8 +94,27 @@ export default function TrainerDashboard() {
       return;
     }
 
-    if (!isLoading) {
-      setIsDataLoading(false);
+    if (!isLoading && user) {
+      const token = localStorage.getItem('accessToken');
+      fetch('/api/dashboard/stats', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data) {
+            if (result.data.clientOverview) {
+              setClientOverview(result.data.clientOverview);
+            }
+            if (result.data.clients) {
+              setClients(result.data.clients);
+            }
+          }
+        })
+        .catch(err => console.error('Failed to load dashboard stats:', err))
+        .finally(() => setIsDataLoading(false));
     }
   }, [isLoading, isAuthenticated, user, router]);
 
@@ -317,131 +212,78 @@ export default function TrainerDashboard() {
           />
         </div>
 
-        {/* Upcoming Sessions and Client Progress */}
+        {/* Client List */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upcoming Sessions */}
           <div className="bg-white rounded-lg border border-gray-200">
             <div className="p-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Upcoming Sessions</h3>
+              <h3 className="text-lg font-medium text-gray-900">Your Clients</h3>
             </div>
             <div className="divide-y divide-gray-200">
-              {upcomingSessions.map((session) => (
-                <div key={session.id} className="p-4 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {session.clientName}
+              {clients.length > 0 ? clients.map((client) => (
+                <div key={client.id} className="p-4 hover:bg-gray-50">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-700">
+                      {client.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {client.name}
                       </p>
-                      <p className="text-sm text-gray-600 capitalize">
-                        {session.type} • {session.date} at {session.time}
+                      <p className="text-xs text-gray-600">
+                        {client.email}
                       </p>
                     </div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      session.status === 'confirmed' 
+                      client.status === 'active'
                         ? 'bg-green-100 text-green-800'
-                        : session.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-blue-100 text-blue-800'
+                        : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {session.status}
+                      {client.status}
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="p-4 border-t border-gray-200">
-              <button className="w-full text-sm text-blue-600 hover:text-blue-500 font-medium">
-                View full calendar
-              </button>
-            </div>
-          </div>
-
-          {/* Client Progress */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Client Progress</h3>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {clientProgress.map((client) => (
-                <div key={client.clientId} className="p-4 hover:bg-gray-50">
-                  <div className="flex items-center space-x-3">
-                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-700">
-                      {client.clientName.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {client.clientName}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs text-gray-500">
-                            {client.streak} day streak
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600 truncate">
-                        {client.currentProgram} • Last workout {client.lastWorkout}
-                      </p>
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs text-gray-500">Progress</span>
-                          <span className="text-xs text-gray-900 font-medium">
-                            {client.progressPercentage}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${client.progressPercentage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              )) : (
+                <div className="p-6 text-center text-gray-500 text-sm">
+                  No clients yet. Invite clients to get started.
                 </div>
-              ))}
+              )}
             </div>
             <div className="p-4 border-t border-gray-200">
-              <button className="w-full text-sm text-blue-600 hover:text-blue-500 font-medium">
+              <button
+                onClick={() => router.push('/clients')}
+                className="w-full text-sm text-blue-600 hover:text-blue-500 font-medium"
+              >
                 View all clients
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Quick Actions and Activity Feed */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <QuickActions
-            actions={quickActions}
-            title="Quick Actions"
-            gridCols={2}
-          />
-          <ActivityFeed
-            activities={recentActivities}
-            maxItems={6}
-            showLoadMore={true}
-            emptyMessage="No recent client activity"
-          />
-        </div>
-
-        {/* Performance Metrics */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">This Month&apos;s Performance</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">{programStats.totalPrograms}</p>
-              <p className="text-sm text-blue-800">Programs Created</p>
+          {/* Activity Feed */}
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-2xl font-bold text-green-600">{programStats.assignedPrograms}</p>
-              <p className="text-sm text-green-800">Programs Assigned</p>
-            </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <p className="text-2xl font-bold text-purple-600">{clientOverview.newThisMonth}</p>
-              <p className="text-sm text-purple-800">New Clients</p>
-            </div>
+            {recentActivities.length > 0 ? (
+              <ActivityFeed
+                activities={recentActivities}
+                maxItems={6}
+                showLoadMore={false}
+                emptyMessage="No recent activity"
+              />
+            ) : (
+              <div className="p-6 text-center text-gray-500 text-sm">
+                Activity feed coming soon. Client workout completions and milestones will appear here.
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Quick Actions */}
+        <QuickActions
+          actions={quickActions}
+          title="Quick Actions"
+          gridCols={4}
+        />
       </div>
     </DashboardLayout>
   );
