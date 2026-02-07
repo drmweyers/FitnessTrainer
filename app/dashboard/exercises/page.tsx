@@ -7,7 +7,7 @@ import { ExerciseFiltersAdvanced } from '@/components/features/ExerciseLibrary/E
 import { CollectionManager } from '@/components/features/ExerciseLibrary/CollectionManager'
 import { Exercise, ExerciseWithUserData, ExerciseFilters, FilterOptions } from '@/types/exercise'
 import { searchExercises, getFilterOptions, getPopularExercises } from '@/services/exerciseService'
-import { Filter, BookOpen, TrendingUp, Loader2 } from 'lucide-react'
+import { Filter, BookOpen, TrendingUp, Loader2, Zap } from 'lucide-react'
 
 export default function ExercisesPage() {
   const [exercises, setExercises] = useState<ExerciseWithUserData[]>([])
@@ -104,6 +104,7 @@ export default function ExercisesPage() {
       bodyParts: [],
       equipments: [],
       targetMuscles: [],
+      difficulty: undefined,
       favorites: false
     })
     setCurrentPage(1)
@@ -118,7 +119,8 @@ export default function ExercisesPage() {
            currentFilters.bodyParts.length > 0 ||
            currentFilters.equipments.length > 0 ||
            currentFilters.targetMuscles.length > 0 ||
-           currentFilters.favorites === true
+           currentFilters.favorites === true ||
+           currentFilters.difficulty !== undefined
   }, [currentFilters])
 
   const showingResults = exercises.length > 0 || hasActiveFilters
@@ -193,6 +195,29 @@ export default function ExercisesPage() {
 
         {/* View Controls */}
         <div className="flex items-center space-x-4">
+          {/* Difficulty Filter */}
+          <select
+            value={currentFilters.difficulty || ''}
+            onChange={(e) => {
+              const value = e.target.value as 'beginner' | 'intermediate' | 'advanced' | ''
+              setCurrentFilters(prev => ({
+                ...prev,
+                difficulty: value || undefined
+              }))
+              setCurrentPage(1)
+            }}
+            className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              currentFilters.difficulty
+                ? 'border-blue-300 bg-blue-50 text-blue-700'
+                : 'border-gray-200'
+            }`}
+          >
+            <option value="">All Levels</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+
           {/* Sort Dropdown */}
           <select
             value={sortBy}

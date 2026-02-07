@@ -214,9 +214,20 @@ export default function ExerciseDetailPage() {
                   <ArrowLeft size={20} />
                 </button>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 capitalize">
-                    {exercise.name}
-                  </h1>
+                  <div className="flex items-center space-x-3">
+                    <h1 className="text-2xl font-bold text-gray-900 capitalize">
+                      {exercise.name}
+                    </h1>
+                    {exercise.difficulty && (
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        exercise.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
+                        exercise.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
                     <span className="capitalize">{exercise.bodyParts.join(', ')}</span>
                     <span>•</span>

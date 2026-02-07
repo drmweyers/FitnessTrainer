@@ -284,27 +284,38 @@ export function ExerciseCard({
             <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-lg leading-tight">
               {exercise.name}
             </h3>
-            {exercise.usageCount && exercise.usageCount > 0 && (
-              <div className="flex items-center text-gray-400 text-sm ml-2">
-                <Clock size={14} className="mr-1" />
-                {exercise.usageCount}
-              </div>
+            {exercise.difficulty && (
+              <span className={`flex-shrink-0 ml-2 px-2 py-0.5 text-xs font-semibold rounded-full ${
+                exercise.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
+                exercise.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}
+              </span>
             )}
           </div>
 
-          {/* Target Muscles */}
-          <div className="flex items-center text-sm text-gray-600 mb-3">
-            <Target size={14} className="mr-2 text-gray-400" />
-            <span className="truncate">
-              {exercise.targetMuscles.slice(0, 2).join(', ')}
-              {exercise.targetMuscles.length > 2 && ` +${exercise.targetMuscles.length - 2}`}
-            </span>
+          {/* Target Muscle Badge */}
+          <div className="flex flex-wrap gap-1 mb-2">
+            {exercise.targetMuscles.slice(0, 2).map((muscle) => (
+              <span
+                key={muscle}
+                className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium capitalize"
+              >
+                {muscle}
+              </span>
+            ))}
+            {exercise.targetMuscles.length > 2 && (
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+                +{exercise.targetMuscles.length - 2}
+              </span>
+            )}
           </div>
 
           {/* Equipment */}
           <div className="flex items-center text-sm text-gray-600 mb-3">
             <Dumbbell size={14} className="mr-2 text-gray-400" />
-            <span className="truncate">{exercise.equipments.join(', ')}</span>
+            <span className="truncate capitalize">{exercise.equipments.join(', ')}</span>
           </div>
 
           {/* Body Parts Tags */}
