@@ -242,6 +242,13 @@ export const Prisma = {
   PrismaClientInitializationError: MockPrismaClientInitializationError,
 };
 
+// Mock DifficultyLevel enum (matches Prisma schema)
+export const DifficultyLevel = {
+  beginner: 'beginner',
+  intermediate: 'intermediate',
+  advanced: 'advanced',
+} as const;
+
 // Export PrismaClient as a constructor that returns the mock
 export const PrismaClient = jest.fn(() => mockPrismaClient);
 export const prisma = mockPrismaClient;

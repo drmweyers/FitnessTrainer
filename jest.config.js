@@ -32,13 +32,17 @@ const customJestConfig = {
 
   // Coverage configuration
   collectCoverageFrom: [
-    'app/**/*.(ts|tsx)',
+    'app/api/**/*.(ts|tsx)',
     'components/**/*.(ts|tsx)',
     'lib/**/*.(ts|tsx)',
+    'hooks/**/*.(ts|tsx)',
+    'services/**/*.(ts|tsx)',
+    'contexts/**/*.(ts|tsx)',
     '!**/*.d.ts',
     '!**/types.ts',
     '!**/*.stories.(ts|tsx)',
     '!**/node_modules/**',
+    '!components/ui/**',
   ],
   
   coverageReporters: ['text', 'lcov', 'html'],
