@@ -175,11 +175,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('auth:logout', handleLogoutEvent);
-      
+
       return () => {
         window.removeEventListener('auth:logout', handleLogoutEvent);
       };
     }
+    return undefined;
   }, [initializeAuth]);
 
   // Auto-refresh token before expiration
@@ -205,6 +206,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [state.tokens]);
 
   // Login function

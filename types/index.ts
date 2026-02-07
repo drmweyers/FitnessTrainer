@@ -5,8 +5,6 @@ export * from './auth';
 export * from './client';
 export * from './exercise';
 export * from './program';
-export * from './recipe';
-export * from './badge';
 
 // Workout types (with aliased Exercise to avoid conflicts)
 export type {

@@ -6,36 +6,16 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 const completeWorkoutSchema = z.object({
   notes: z.string().optional(),
   endTime: z.string().datetime().optional(),
+  effortRating: z.number().min(1).max(10).optional(),
+  enjoymentRating: z.number().min(1).max(10).optional(),
+  energyAfter: z.number().min(1).max(10).optional(),
 });
-
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
 
 // POST /api/workouts/[id]/complete - Complete workout session
 export async function POST(
@@ -43,31 +23,119 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
     const body = await request.json();
-    const validatedData = completeWorkoutSchema.parse(body);
+    const data = completeWorkoutSchema.parse(body);
 
-    const backendResponse = await backendRequest(
-      `/workouts/${id}/complete`,
-      { method: 'POST', body: JSON.stringify(validatedData) },
-      token
-    );
+    // Verify session exists and user has access
+    const existingSession = await prisma.workoutSession.findFirst({
+      where: {
+        id,
+        clientId: user.id,
+      },
+    });
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    if (!existingSession) {
+      return NextResponse.json(
+        { success: false, error: 'Workout session not found' },
+        { status: 404 }
+      );
+    }
+
+    const actualEndTime = data.endTime ? new Date(data.endTime) : new Date();
+
+    // Calculate completed sets
+    const completedSets = await prisma.workoutSetLog.count({
+      where: {
+        exerciseLog: { workoutSessionId: id },
+        completed: true,
+      },
+    });
+
+    // Calculate total volume
+    const totalVolumeResult = await prisma.workoutSetLog.aggregate({
+      where: {
+        exerciseLog: { workoutSessionId: id },
+        completed: true,
+        weight: { not: null },
+        actualReps: { not: null },
+      },
+      _sum: { weight: true },
+    });
+
+    // Calculate average RPE
+    const averageRpeResult = await prisma.workoutSetLog.aggregate({
+      where: {
+        exerciseLog: { workoutSessionId: id },
+        completed: true,
+        rpe: { not: null },
+      },
+      _avg: { rpe: true },
+    });
+
+    // Calculate total duration in minutes
+    const totalDuration =
+      existingSession.actualStartTime && actualEndTime
+        ? Math.round(
+            (actualEndTime.getTime() -
+              existingSession.actualStartTime.getTime()) /
+              (1000 * 60)
+          )
+        : undefined;
+
+    // Calculate adherence score
+    const adherenceScore = existingSession.totalSets
+      ? (completedSets / existingSession.totalSets) * 100
+      : 0;
+
+    const session = await prisma.workoutSession.update({
+      where: { id },
+      data: {
+        status: 'completed',
+        actualEndTime,
+        completedSets,
+        totalDuration,
+        totalVolume: totalVolumeResult._sum.weight || undefined,
+        averageRpe: averageRpeResult._avg.rpe || undefined,
+        adherenceScore,
+        ...(data.effortRating && { effortRating: data.effortRating }),
+        ...(data.enjoymentRating && { enjoymentRating: data.enjoymentRating }),
+        ...(data.energyAfter && { energyAfter: data.energyAfter }),
+        ...(data.notes && { clientNotes: data.notes }),
+      },
+      include: {
+        exerciseLogs: {
+          include: {
+            setLogs: {
+              orderBy: { setNumber: 'asc' },
+            },
+            exercise: true,
+          },
+          orderBy: { orderIndex: 'asc' },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Workout completed successfully',
+      data: session,
+    });
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.errors },
         { status: 400 }
       );
     }
     console.error('Error completing workout:', error);
-    return NextResponse.json({ error: 'Failed to complete workout' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }

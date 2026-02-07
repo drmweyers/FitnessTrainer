@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ClientList from './components/ClientList'
 import ClientModal from './components/ClientModal'
 import Layout from '@/components/layout/Layout'
 
-export default function ClientsPage() {
+function ClientsContent() {
   const searchParams = useSearchParams()
   const statusFilter = searchParams.get('status') || 'all'
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -40,5 +40,13 @@ export default function ClientsPage() {
         }}
       />
     </Layout>
+  )
+}
+
+export default function ClientsPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading clients...</div>}>
+      <ClientsContent />
+    </Suspense>
   )
 }

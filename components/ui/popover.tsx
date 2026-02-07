@@ -29,7 +29,7 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
 
 PopoverContent.displayName = 'PopoverContent'
 
-export const PopoverTrigger = ({ children }: { children: React.ReactNode }) => {
+export const PopoverTrigger = ({ children, asChild }: { children: React.ReactNode; asChild?: boolean }) => {
   return <>{children}</>
 }
 

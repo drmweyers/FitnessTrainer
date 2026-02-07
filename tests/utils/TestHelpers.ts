@@ -164,7 +164,7 @@ export class TestHelpers {
       inputs.forEach(input => {
         const label = document.querySelector(`label[for="${input.id}"]`);
         if (!label) {
-          issues.push(`Input missing label: ${input.name || input.type}`);
+          issues.push(`Input missing label: ${(input as HTMLInputElement).name || (input as HTMLInputElement).type}`);
         }
       });
       

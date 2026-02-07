@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Play, Pause, RotateCw, X, Bell } from 'lucide-react';
 
@@ -31,7 +32,7 @@ export function RestTimer({
   const [isRunning, setIsRunning] = useState(autoStart);
   const [isPaused, setIsPaused] = useState(false);
   const [customTime, setCustomTime] = useState(initialSeconds);
-  const [audioEnabled] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const remainingRef = useRef(initialSeconds);

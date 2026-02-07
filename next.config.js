@@ -11,10 +11,7 @@ const nextConfig = {
 
   // TypeScript configuration
   typescript: {
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors. Only enable this if you know what you're doing.
-    // TODO: Fix unused variables and re-enable strict checking
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // ESLint configuration

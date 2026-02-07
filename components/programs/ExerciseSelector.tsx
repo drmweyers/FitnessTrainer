@@ -63,7 +63,7 @@ export function ExerciseSelector({
 
       const matchesEquipment =
         equipmentFilter === 'all' ||
-        (exercise.equipment || []).some((e) => e === equipmentFilter);
+        exercise.equipments?.some((e: string) => e === equipmentFilter) || exercise.equipment === equipmentFilter;
 
       return matchesSearch && matchesMuscle && matchesEquipment;
     });
@@ -229,9 +229,9 @@ function ExerciseCard({ exercise, isSelected, onToggle }: ExerciseCardProps) {
             <h4 className="font-medium text-sm truncate">{exercise.name}</h4>
             <p className="text-xs text-gray-500 mt-1">{exercise.muscleGroup}</p>
 
-            {exercise.equipment && exercise.equipment.length > 0 && (
+            {exercise.equipments && exercise.equipments.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {exercise.equipment.slice(0, 3).map((eq) => (
+                {exercise.equipments.slice(0, 3).map((eq: string) => (
                   <span
                     key={eq}
                     className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs"
@@ -239,9 +239,9 @@ function ExerciseCard({ exercise, isSelected, onToggle }: ExerciseCardProps) {
                     {eq}
                   </span>
                 ))}
-                {exercise.equipment.length > 3 && (
+                {exercise.equipments && exercise.equipments.length > 3 && (
                   <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
-                    +{exercise.equipment.length - 3}
+                    +{exercise.equipments.length - 3}
                   </span>
                 )}
               </div>

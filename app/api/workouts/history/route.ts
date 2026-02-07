@@ -1,57 +1,124 @@
 /**
  * Workout History API Route
  *
- * GET /api/workouts/history - Get client workout history
+ * GET /api/workouts/history - Get workout history (completed sessions)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 // GET /api/workouts/history - Get workout history
 export async function GET(request: NextRequest) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const searchParams = request.nextUrl.searchParams;
-    const queryString = searchParams.toString();
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    const clientId = searchParams.get('clientId');
 
-    const backendResponse = await backendRequest(
-      `/workouts/history${queryString ? `?${queryString}` : ''}`,
-      { method: 'GET' },
-      token
-    );
+    // Trainers can view client history
+    let targetUserId = user.id;
+    if (user.role === 'trainer' && clientId) {
+      targetUserId = clientId;
+    }
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    const where: any = {
+      ...(user.role === 'trainer' && !clientId
+        ? { trainerId: user.id }
+        : { clientId: targetUserId }),
+      status: 'completed',
+      ...(startDate || endDate
+        ? {
+            scheduledDate: {
+              ...(startDate && { gte: new Date(startDate) }),
+              ...(endDate && { lte: new Date(endDate) }),
+            },
+          }
+        : {}),
+    };
+
+    const [sessions, total] = await Promise.all([
+      prisma.workoutSession.findMany({
+        where,
+        include: {
+          workout: {
+            select: {
+              name: true,
+              workoutType: true,
+              estimatedDuration: true,
+            },
+          },
+          programAssignment: {
+            select: {
+              program: {
+                select: {
+                  name: true,
+                  programType: true,
+                },
+              },
+            },
+          },
+          exerciseLogs: {
+            select: {
+              id: true,
+              exerciseId: true,
+              skipped: true,
+              personalBest: true,
+              totalVolume: true,
+              exercise: {
+                select: {
+                  name: true,
+                  bodyPart: true,
+                },
+              },
+            },
+            orderBy: { orderIndex: 'asc' },
+          },
+          ...(user.role === 'trainer'
+            ? {
+                client: {
+                  select: {
+                    id: true,
+                    email: true,
+                    userProfile: {
+                      select: {
+                        bio: true,
+                        profilePhotoUrl: true,
+                      },
+                    },
+                  },
+                },
+              }
+            : {}),
+        },
+        orderBy: { scheduledDate: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.workoutSession.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: sessions,
+      meta: {
+        total,
+        hasMore: offset + limit < total,
+        limit,
+        offset,
+      },
+    });
+  } catch (error: any) {
     console.error('Error fetching workout history:', error);
-    return NextResponse.json({ error: 'Failed to fetch history' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }

@@ -244,7 +244,7 @@ export const useInvitations = (): UseInvitationsReturn => {
       setError(null);
       
       const response = await invitationsApi.getInvitations();
-      setInvitations(response.data || []);
+      setInvitations(response || []);
     } catch (err) {
       const errorMessage = err instanceof ApiError 
         ? err.message 

@@ -349,13 +349,25 @@ export class ExerciseDetailPage extends BasePage {
     
     // Test swipe gestures for navigation
     if (await this.nextExerciseButton.isEnabled()) {
-      await this.mobileGestureArea.swipeLeft();
+      const box = await this.mobileGestureArea.boundingBox();
+      if (box) {
+        await this.page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+        await this.page.mouse.down();
+        await this.page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2, { steps: 10 });
+        await this.page.mouse.up();
+      }
       await this.waitForLoadingToComplete();
       await this.waitForGifToLoad();
     }
-    
+
     if (await this.previousExerciseButton.isEnabled()) {
-      await this.mobileGestureArea.swipeRight();
+      const box = await this.mobileGestureArea.boundingBox();
+      if (box) {
+        await this.page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2);
+        await this.page.mouse.down();
+        await this.page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2, { steps: 10 });
+        await this.page.mouse.up();
+      }
       await this.waitForLoadingToComplete();
       await this.waitForGifToLoad();
     }

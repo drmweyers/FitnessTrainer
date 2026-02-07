@@ -88,7 +88,7 @@ export default function AIWorkoutBuilder() {
     if (prefs.equipmentAvailable.length > 0 && !prefs.equipmentAvailable.includes('any')) {
       filtered = filtered.filter(ex =>
         ex.equipment === 'body weight' ||
-        prefs.equipmentAvailable.includes(ex.equipment)
+        prefs.equipmentAvailable.includes(ex.equipment || '')
       )
     }
 
@@ -102,19 +102,19 @@ export default function AIWorkoutBuilder() {
     // Filter by focus area
     if (prefs.focusArea === 'upper body') {
       filtered = filteredByDifficulty.filter(ex =>
-        ['upper arms', 'shoulders', 'chest', 'back'].includes(ex.bodyPart)
+        ex.bodyParts?.some(bp => ['upper arms', 'shoulders', 'chest', 'back'].includes(bp))
       )
     } else if (prefs.focusArea === 'lower body') {
       filtered = filteredByDifficulty.filter(ex =>
-        ['upper legs', 'lower legs', 'waist'].includes(ex.bodyPart)
+        ex.bodyParts?.some(bp => ['upper legs', 'lower legs', 'waist'].includes(bp))
       )
     } else if (prefs.focusArea === 'core') {
       filtered = filteredByDifficulty.filter(ex =>
-        ['waist'].includes(ex.bodyPart) ||
-        ex.targetMuscle === 'abs'
+        ex.bodyParts?.some(bp => ['waist'].includes(bp)) ||
+        ex.targetMuscles?.includes('abs')
       )
     } else if (prefs.focusArea === 'cardio') {
-      filtered = filteredByDifficulty.filter(ex => ex.bodyPart === 'cardio')
+      filtered = filteredByDifficulty.filter(ex => ex.bodyParts?.includes('cardio'))
     } else {
       // Full body - use all difficulty-filtered exercises
       filtered = filteredByDifficulty
@@ -348,7 +348,7 @@ export default function AIWorkoutBuilder() {
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-800">{item.exercise.name}</h4>
                     <p className="text-sm text-gray-600 capitalize">
-                      {item.exercise.targetMuscle} • {item.exercise.equipment}
+                      {item.exercise.targetMuscles?.[0]} • {item.exercise.equipment}
                     </p>
                   </div>
                 </div>

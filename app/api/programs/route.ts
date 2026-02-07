@@ -7,8 +7,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
-// Validation schemas (matching backend)
 const createProgramSchema = z.object({
   name: z.string().min(1).max(255),
   description: z.string().optional(),
@@ -55,83 +56,155 @@ const createProgramSchema = z.object({
   })).optional(),
 });
 
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
-
 // GET /api/programs - List all programs
 export async function GET(request: NextRequest) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const searchParams = request.nextUrl.searchParams;
-    const queryString = searchParams.toString();
+    const includeTemplates = searchParams.get('includeTemplates') === 'true';
 
-    const backendResponse = await backendRequest(
-      `/programs${queryString ? `?${queryString}` : ''}`,
-      { method: 'GET' },
-      token
-    );
+    const programs = await prisma.program.findMany({
+      where: {
+        trainerId: user.id,
+        isTemplate: includeTemplates ? undefined : false,
+      },
+      include: {
+        weeks: {
+          include: {
+            workouts: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        assignments: {
+          include: {
+            client: {
+              select: {
+                id: true,
+                email: true,
+                userProfile: {
+                  select: {
+                    bio: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    return NextResponse.json({
+      success: true,
+      data: programs,
+      count: programs.length,
+    });
+  } catch (error: any) {
     console.error('Error fetching programs:', error);
-    return NextResponse.json({ error: 'Failed to fetch programs' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to fetch programs' },
+      { status: 500 }
+    );
   }
 }
 
 // POST /api/programs - Create new program
 export async function POST(request: NextRequest) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const body = await request.json();
-    const validatedData = createProgramSchema.parse(body);
+    const data = createProgramSchema.parse(body);
 
-    const backendResponse = await backendRequest(
-      '/programs',
-      { method: 'POST', body: JSON.stringify(validatedData) },
-      token
+    const program = await prisma.program.create({
+      data: {
+        trainerId: user.id,
+        name: data.name,
+        description: data.description,
+        programType: data.programType as any,
+        difficultyLevel: data.difficultyLevel as any,
+        durationWeeks: data.durationWeeks,
+        goals: data.goals || [],
+        equipmentNeeded: data.equipmentNeeded || [],
+        isTemplate: data.isTemplate || false,
+        weeks: data.weeks ? {
+          create: data.weeks.map(week => ({
+            weekNumber: week.weekNumber,
+            name: week.name,
+            description: week.description,
+            isDeload: week.isDeload || false,
+            workouts: week.workouts ? {
+              create: week.workouts.map(workout => ({
+                dayNumber: workout.dayNumber,
+                name: workout.name,
+                description: workout.description,
+                workoutType: workout.workoutType as any,
+                estimatedDuration: workout.estimatedDuration,
+                isRestDay: workout.isRestDay || false,
+                exercises: workout.exercises ? {
+                  create: workout.exercises.map(exercise => ({
+                    exerciseId: exercise.exerciseId,
+                    orderIndex: exercise.orderIndex,
+                    supersetGroup: exercise.supersetGroup,
+                    setsConfig: exercise.setsConfig || {},
+                    notes: exercise.notes,
+                    configurations: exercise.configurations ? {
+                      create: exercise.configurations,
+                    } : undefined,
+                  })),
+                } : undefined,
+              })),
+            } : undefined,
+          })),
+        } : undefined,
+      },
+      include: {
+        weeks: {
+          include: {
+            workouts: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true,
+                    configurations: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { success: true, message: 'Program created successfully', data: program },
+      { status: 201 }
     );
-
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.errors },
         { status: 400 }
       );
     }
     console.error('Error creating program:', error);
-    return NextResponse.json({ error: 'Failed to create program' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to create program' },
+      { status: 500 }
+    );
   }
 }

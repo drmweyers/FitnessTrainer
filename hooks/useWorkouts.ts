@@ -111,7 +111,7 @@ export function useCompleteWorkout() {
       workoutService.completeSession(sessionId, notes),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: workoutKeys.detail(variables.sessionId) });
-      queryClient.invalidateQueries({ queryKeys: workoutKeys.active() });
+      queryClient.invalidateQueries({ queryKey: workoutKeys.active() });
       queryClient.invalidateQueries({ queryKey: workoutKeys.lists() });
     },
   });

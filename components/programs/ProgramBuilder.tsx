@@ -25,7 +25,8 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Check, Save, Eye } from 'lucide-react';
 import { WeekBuilder } from './WeekBuilder';
 import { ProgramPreview } from './ProgramPreview';
-import type { Program, ProgramWeek, ProgramType, DifficultyLevel } from '@/types/program';
+import { ProgramType, DifficultyLevel } from '@/types/program';
+import type { Program, ProgramWeek } from '@/types/program';
 
 interface ProgramBuilderProps {
   initialProgram?: Partial<Program>;
@@ -54,8 +55,8 @@ export function ProgramBuilder({
   const [program, setProgram] = useState<Partial<Program>>({
     name: initialProgram?.name || '',
     description: initialProgram?.description || '',
-    programType: initialProgram?.programType || 'strength',
-    difficultyLevel: initialProgram?.difficultyLevel || 'beginner',
+    programType: initialProgram?.programType || ProgramType.STRENGTH,
+    difficultyLevel: initialProgram?.difficultyLevel || DifficultyLevel.BEGINNER,
     durationWeeks: initialProgram?.durationWeeks || 4,
     goals: initialProgram?.goals || [],
     equipmentNeeded: initialProgram?.equipmentNeeded || [],
@@ -148,8 +149,8 @@ export function ProgramBuilder({
       ...program,
       goals: selectedGoals,
       equipmentNeeded: selectedEquipment,
-      createdAt: initialProgram?.createdAt || new Date(),
-      updatedAt: new Date(),
+      createdAt: initialProgram?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     } as Program;
 
     onSave?.(completeProgram);

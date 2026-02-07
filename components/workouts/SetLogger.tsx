@@ -98,7 +98,7 @@ export function SetLogger({
     previousBest &&
     actualReps > 0 &&
     ((previousBest.reps || 0) < actualReps ||
-      (previousBest.weight && actualWeight && actualWeight > previousBest.weight));
+      (previousBest.weight && weight && parseFloat(weight) > previousBest.weight));
 
   return (
     <Card className={isComplete ? 'border-green-500 bg-green-50' : ''}>

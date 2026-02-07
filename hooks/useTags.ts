@@ -27,7 +27,7 @@ export const useTags = (): UseTagsReturn => {
       setError(null);
       
       const response = await tagsApi.getTags();
-      setTags(response.data || []);
+      setTags(response || []);
     } catch (err) {
       const errorMessage = err instanceof ApiError 
         ? err.message 

@@ -7,32 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 // GET /api/workouts/[id] - Get workout session details
 export async function GET(
@@ -40,19 +16,67 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
 
-    const backendResponse = await backendRequest(`/workouts/${id}`, { method: 'GET' }, token);
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    const session = await prisma.workoutSession.findFirst({
+      where: {
+        id,
+        OR: [
+          { clientId: user.id },
+          ...(user.role === 'trainer' ? [{ trainerId: user.id }] : []),
+        ],
+      },
+      include: {
+        exerciseLogs: {
+          include: {
+            setLogs: {
+              orderBy: { setNumber: 'asc' },
+            },
+            exercise: true,
+            workoutExercise: {
+              include: {
+                configurations: {
+                  orderBy: { setNumber: 'asc' },
+                },
+              },
+            },
+          },
+          orderBy: { orderIndex: 'asc' },
+        },
+        workout: {
+          include: {
+            exercises: {
+              include: {
+                exercise: true,
+                configurations: true,
+              },
+            },
+          },
+        },
+        programAssignment: {
+          include: { program: true },
+        },
+      },
+    });
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Workout session not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: session });
+  } catch (error: any) {
     console.error('Error fetching workout:', error);
-    return NextResponse.json({ error: 'Failed to fetch workout' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -62,25 +86,76 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
     const body = await request.json();
 
-    const backendResponse = await backendRequest(
-      `/workouts/${id}`,
-      { method: 'PUT', body: JSON.stringify(body) },
-      token
-    );
+    // Verify session exists and user has access
+    const existingSession = await prisma.workoutSession.findFirst({
+      where: {
+        id,
+        OR: [
+          { clientId: user.id },
+          ...(user.role === 'trainer' ? [{ trainerId: user.id }] : []),
+        ],
+      },
+    });
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    if (!existingSession) {
+      return NextResponse.json(
+        { success: false, error: 'Workout session not found' },
+        { status: 404 }
+      );
+    }
+
+    // Build update data, parsing dates if present
+    const updateData: any = {
+      ...body,
+      ...(body.actualStartTime && {
+        actualStartTime: new Date(body.actualStartTime),
+      }),
+      ...(body.actualEndTime && {
+        actualEndTime: new Date(body.actualEndTime),
+      }),
+    };
+
+    // Remove fields that shouldn't be directly updated
+    delete updateData.id;
+    delete updateData.clientId;
+    delete updateData.trainerId;
+    delete updateData.programAssignmentId;
+    delete updateData.workoutId;
+
+    const session = await prisma.workoutSession.update({
+      where: { id },
+      data: updateData,
+      include: {
+        exerciseLogs: {
+          include: {
+            setLogs: {
+              orderBy: { setNumber: 'asc' },
+            },
+            exercise: true,
+          },
+          orderBy: { orderIndex: 'asc' },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Workout session updated successfully',
+      data: session,
+    });
+  } catch (error: any) {
     console.error('Error updating workout:', error);
-    return NextResponse.json({ error: 'Failed to update workout' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -90,23 +165,42 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
 
-    const backendResponse = await backendRequest(`/workouts/${id}`, { method: 'DELETE' }, token);
+    // Verify session exists and user has access
+    const existingSession = await prisma.workoutSession.findFirst({
+      where: {
+        id,
+        OR: [
+          { clientId: user.id },
+          ...(user.role === 'trainer' ? [{ trainerId: user.id }] : []),
+        ],
+      },
+    });
 
-    if (backendResponse.status === 204) {
-      return new NextResponse(null, { status: 204 });
+    if (!existingSession) {
+      return NextResponse.json(
+        { success: false, error: 'Workout session not found' },
+        { status: 404 }
+      );
     }
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    // Cascade delete will handle exercise logs and set logs
+    await prisma.workoutSession.delete({ where: { id } });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Workout session deleted successfully',
+    });
+  } catch (error: any) {
     console.error('Error deleting workout:', error);
-    return NextResponse.json({ error: 'Failed to delete workout' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }

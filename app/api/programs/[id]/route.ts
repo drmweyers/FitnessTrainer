@@ -8,6 +8,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 const updateProgramSchema = z.object({
   name: z.string().min(1).max(255).optional(),
@@ -23,56 +25,82 @@ const updateProgramSchema = z.object({
   isTemplate: z.boolean().optional(),
 });
 
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
-
 // GET /api/programs/[id] - Get program by ID
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
 
-    // Validate UUID format
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return NextResponse.json({ error: 'Invalid program ID format' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'Invalid program ID format' },
+        { status: 400 }
+      );
     }
 
-    const backendResponse = await backendRequest(`/programs/${id}`, { method: 'GET' }, token);
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    const program = await prisma.program.findFirst({
+      where: {
+        id,
+        trainerId: user.id,
+      },
+      include: {
+        weeks: {
+          include: {
+            workouts: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true,
+                    configurations: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            weekNumber: 'asc',
+          },
+        },
+        assignments: {
+          include: {
+            client: {
+              select: {
+                id: true,
+                email: true,
+                userProfile: {
+                  select: {
+                    bio: true,
+                    profilePhotoUrl: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!program) {
+      return NextResponse.json(
+        { success: false, error: 'Program not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: program });
+  } catch (error: any) {
     console.error('Error fetching program:', error);
-    return NextResponse.json({ error: 'Failed to fetch program' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to fetch program' },
+      { status: 500 }
+    );
   }
 }
 
@@ -82,32 +110,73 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
     const body = await request.json();
-    const validatedData = updateProgramSchema.parse(body);
+    const data = updateProgramSchema.parse(body);
 
-    const backendResponse = await backendRequest(
-      `/programs/${id}`,
-      { method: 'PUT', body: JSON.stringify(validatedData) },
-      token
-    );
+    // Verify ownership
+    const existing = await prisma.program.findFirst({
+      where: { id, trainerId: user.id },
+    });
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Program not found' },
+        { status: 404 }
+      );
+    }
+
+    const updated = await prisma.program.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        programType: data.programType as any,
+        difficultyLevel: data.difficultyLevel as any,
+        durationWeeks: data.durationWeeks,
+        goals: data.goals,
+        equipmentNeeded: data.equipmentNeeded,
+        isTemplate: data.isTemplate,
+      },
+      include: {
+        weeks: {
+          include: {
+            workouts: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true,
+                    configurations: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Program updated successfully',
+      data: updated,
+    });
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.errors },
         { status: 400 }
       );
     }
     console.error('Error updating program:', error);
-    return NextResponse.json({ error: 'Failed to update program' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to update program' },
+      { status: 500 }
+    );
   }
 }
 
@@ -117,23 +186,35 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
 
-    const backendResponse = await backendRequest(`/programs/${id}`, { method: 'DELETE' }, token);
+    // Verify ownership
+    const existing = await prisma.program.findFirst({
+      where: { id, trainerId: user.id },
+    });
 
-    if (backendResponse.status === 204) {
-      return new NextResponse(null, { status: 204 });
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Program not found' },
+        { status: 404 }
+      );
     }
 
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    await prisma.program.delete({ where: { id } });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Program deleted successfully',
+    });
+  } catch (error: any) {
     console.error('Error deleting program:', error);
-    return NextResponse.json({ error: 'Failed to delete program' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to delete program' },
+      { status: 500 }
+    );
   }
 }

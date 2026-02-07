@@ -6,35 +6,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 const duplicateProgramSchema = z.object({
   name: z.string().min(1).max(255).optional(),
 });
-
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
 
 // POST /api/programs/[id]/duplicate - Duplicate program
 export async function POST(
@@ -42,31 +19,151 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const { id } = params;
     const body = await request.json();
-    const validatedData = duplicateProgramSchema.parse(body);
+    const data = duplicateProgramSchema.parse(body);
 
-    const backendResponse = await backendRequest(
-      `/programs/${id}/duplicate`,
-      { method: 'POST', body: JSON.stringify(validatedData) },
-      token
+    // Fetch original program with all nested data
+    const original = await prisma.program.findFirst({
+      where: { id, trainerId: user.id },
+      include: {
+        weeks: {
+          include: {
+            workouts: {
+              include: {
+                exercises: {
+                  include: {
+                    configurations: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!original) {
+      return NextResponse.json(
+        { success: false, error: 'Program not found' },
+        { status: 404 }
+      );
+    }
+
+    // Create the base program
+    const duplicated = await prisma.program.create({
+      data: {
+        trainerId: user.id,
+        name: data.name || `${original.name} (Copy)`,
+        description: original.description,
+        programType: original.programType,
+        difficultyLevel: original.difficultyLevel,
+        durationWeeks: original.durationWeeks,
+        goals: original.goals,
+        equipmentNeeded: original.equipmentNeeded,
+        isTemplate: false,
+      },
+    });
+
+    // Duplicate weeks with workouts and exercises
+    for (const week of original.weeks) {
+      const newWeek = await prisma.programWeek.create({
+        data: {
+          programId: duplicated.id,
+          weekNumber: week.weekNumber,
+          name: week.name,
+          description: week.description,
+          isDeload: week.isDeload,
+        },
+      });
+
+      for (const workout of week.workouts) {
+        const newWorkout = await prisma.programWorkout.create({
+          data: {
+            programWeekId: newWeek.id,
+            dayNumber: workout.dayNumber,
+            name: workout.name,
+            description: workout.description,
+            workoutType: workout.workoutType,
+            estimatedDuration: workout.estimatedDuration,
+            isRestDay: workout.isRestDay,
+          },
+        });
+
+        for (const exercise of workout.exercises) {
+          const newExercise = await prisma.workoutExercise.create({
+            data: {
+              workoutId: newWorkout.id,
+              exerciseId: exercise.exerciseId,
+              orderIndex: exercise.orderIndex,
+              supersetGroup: exercise.supersetGroup,
+              setsConfig: exercise.setsConfig || {},
+              notes: exercise.notes,
+            },
+          });
+
+          if (exercise.configurations && exercise.configurations.length > 0) {
+            for (const config of exercise.configurations) {
+              await prisma.exerciseConfiguration.create({
+                data: {
+                  workoutExerciseId: newExercise.id,
+                  setNumber: config.setNumber,
+                  setType: config.setType,
+                  reps: config.reps,
+                  weightGuidance: config.weightGuidance,
+                  restSeconds: config.restSeconds,
+                  tempo: config.tempo,
+                  rpe: config.rpe,
+                  rir: config.rir,
+                  notes: config.notes,
+                },
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Fetch the complete duplicated program
+    const completeProgram = await prisma.program.findUnique({
+      where: { id: duplicated.id },
+      include: {
+        weeks: {
+          include: {
+            workouts: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true,
+                    configurations: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { success: true, message: 'Program duplicated successfully', data: completeProgram },
+      { status: 201 }
     );
-
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.errors },
         { status: 400 }
       );
     }
     console.error('Error duplicating program:', error);
-    return NextResponse.json({ error: 'Failed to duplicate program' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to duplicate program' },
+      { status: 500 }
+    );
   }
 }

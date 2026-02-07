@@ -37,6 +37,10 @@ const programTypeColors: Record<ProgramType, string> = {
   [ProgramType.FLEXIBILITY]: 'bg-teal-100 text-teal-700',
   [ProgramType.REHABILITATION]: 'bg-gray-100 text-gray-700',
   [ProgramType.SPORT_SPECIFIC]: 'bg-indigo-100 text-indigo-700',
+  [ProgramType.GENERAL_FITNESS]: 'bg-cyan-100 text-cyan-700',
+  [ProgramType.WEIGHT_LOSS]: 'bg-pink-100 text-pink-700',
+  [ProgramType.MUSCLE_GAIN]: 'bg-violet-100 text-violet-700',
+  [ProgramType.HYBRID]: 'bg-amber-100 text-amber-700',
 }
 
 const difficultyColors: Record<DifficultyLevel, string> = {

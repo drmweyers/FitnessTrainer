@@ -157,8 +157,8 @@ function TemplateCard({ template, onSelect }: TemplateCardProps) {
         )}
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline">{template.difficultyLevel}</Badge>
-          <Badge variant="outline">{template.durationWeeks} weeks</Badge>
+          <Badge variant="outline">{template.program?.difficultyLevel}</Badge>
+          <Badge variant="outline">{template.program?.durationWeeks} weeks</Badge>
         </div>
 
         {template.goals && template.goals.length > 0 && (

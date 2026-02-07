@@ -70,7 +70,7 @@ export default function WorkoutDetailPage() {
           <Badge
             variant={isActive ? 'default' : workout.status === 'completed' ? 'default' : 'secondary'}
           >
-            {workout.status.replace('_', ' ')}
+            {(workout.status || 'planned').replace('_', ' ')}
           </Badge>
         </div>
       </div>

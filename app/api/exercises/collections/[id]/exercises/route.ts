@@ -101,7 +101,7 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: 'Exercise not in collection' }, { status: 404 })
     }
 
-    await prisma.collectionExercise.delete({ where: { id: existing.id } })
+    await prisma.collectionExercise.delete({ where: { collectionId_exerciseId: { collectionId: params.id, exerciseId } } })
 
     return NextResponse.json({ success: true, message: 'Exercise removed' })
   } catch (error) {

@@ -31,13 +31,17 @@ export interface WorkoutSession {
   startTime: Date
   endTime?: Date
   exercises: WorkoutExercise[]
-  exerciseLogs?: LoggedSet[] // Alternative to exercises for logging
+  exerciseLogs?: ExerciseLog[]
   notes?: string
   status?: 'planned' | 'in_progress' | 'completed' | 'skipped'
-  program?: Program // Program this session belongs to
-  programWorkout?: ProgramWorkout // Program workout data
-  totalVolume?: number // Total weight lifted
-  programId?: string // Associated program ID
+  program?: Program
+  programWorkout?: ProgramWorkout
+  totalVolume?: number
+  totalSets?: number
+  completedSets?: number
+  weekNumber?: number
+  dayNumber?: number
+  programId?: string
 }
 
 export interface Program {
@@ -58,15 +62,26 @@ export interface WorkoutExercise {
   sets: LoggedSet[]
 }
 
+export interface ExerciseLog {
+  id: string
+  exercise?: { id: string; name: string }
+  targetReps?: string
+  restSeconds?: number
+  targetWeight?: number
+  setLogs?: LoggedSet[]
+}
+
 export interface LoggedSet {
   id?: string
   setNumber: number
   weight?: number
   reps?: number
+  actualReps?: number
   duration?: number
   distance?: number
   completed: boolean
   restTime?: number
+  previousBest?: { weight?: number; reps?: number; volume?: string }
 }
 
 export interface LogSetDTO {
@@ -88,6 +103,7 @@ export interface ProgressData {
   totalVolume: number
   streak: number
   completionRate: number
+  personalRecords?: { exercise: string; value: number; date: string }[]
 }
 
 export interface WorkoutFilters {

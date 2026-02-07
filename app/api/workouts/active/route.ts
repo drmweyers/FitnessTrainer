@@ -5,50 +5,69 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_API = process.env.BACKEND_URL || 'http://localhost:4000/api';
-
-function getAuthToken(request: NextRequest): string | null {
-  const tokenFromCookie = request.cookies.get('auth-token')?.value;
-  if (tokenFromCookie) return tokenFromCookie;
-
-  const authHeader = request.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
-  }
-  return null;
-}
-
-async function backendRequest(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-  const url = `${BACKEND_API}${endpoint}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-}
+import { prisma } from '@/lib/db/prisma';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 // GET /api/workouts/active - Get active workout session
 export async function GET(request: NextRequest) {
   try {
-    const token = getAuthToken(request);
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
+
+    const activeSession = await prisma.workoutSession.findFirst({
+      where: {
+        clientId: user.id,
+        status: 'in_progress',
+      },
+      include: {
+        exerciseLogs: {
+          include: {
+            setLogs: {
+              orderBy: { setNumber: 'asc' },
+            },
+            exercise: true,
+            workoutExercise: {
+              include: {
+                configurations: {
+                  orderBy: { setNumber: 'asc' },
+                },
+              },
+            },
+          },
+          orderBy: { orderIndex: 'asc' },
+        },
+        workout: {
+          include: {
+            exercises: {
+              include: {
+                exercise: true,
+                configurations: true,
+              },
+            },
+          },
+        },
+        programAssignment: {
+          include: { program: true },
+        },
+      },
+      orderBy: { actualStartTime: 'desc' },
+    });
+
+    if (!activeSession) {
+      return NextResponse.json({
+        success: true,
+        data: null,
+        message: 'No active workout session',
+      });
     }
 
-    const backendResponse = await backendRequest('/workouts/active', { method: 'GET' }, token);
-
-    if (backendResponse.status === 204) {
-      return NextResponse.json(null, { status: 204 });
-    }
-
-    const data = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
-  } catch (error) {
+    return NextResponse.json({ success: true, data: activeSession });
+  } catch (error: any) {
     console.error('Error fetching active workout:', error);
-    return NextResponse.json({ error: 'Failed to fetch active workout' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }

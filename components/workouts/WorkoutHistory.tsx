@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar, Clock, Target, TrendingUp } from 'lucide-react';
-import { useWorkouts } from '@/hooks/useWorkouts';
+import { useWorkouts, useWorkout } from '@/hooks/useWorkouts';
 
 interface WorkoutHistoryProps {
   clientId?: string;

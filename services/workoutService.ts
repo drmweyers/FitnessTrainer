@@ -25,8 +25,8 @@ export const workoutService = {
     if (filters?.clientId) params.append('clientId', filters.clientId);
     if (filters?.programId) params.append('programId', filters.programId);
     if (filters?.status) params.append('status', filters.status);
-    if (filters?.startDate) params.append('startDate', filters.startDate);
-    if (filters?.endDate) params.append('endDate', filters.endDate);
+    if (filters?.startDate) params.append('startDate', filters.startDate.toISOString());
+    if (filters?.endDate) params.append('endDate', filters.endDate.toISOString());
     if (filters?.limit) params.append('limit', String(filters.limit));
 
     const queryString = params.toString();

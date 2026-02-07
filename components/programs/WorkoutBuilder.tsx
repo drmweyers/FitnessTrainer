@@ -31,7 +31,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, Trash2, Edit, Dumbbell } from 'lucide-react';
-import type { ProgramWorkout, WorkoutType } from '@/types/program';
+import { WorkoutType } from '@/types/program';
+import type { ProgramWorkout } from '@/types/program';
 
 interface WorkoutBuilderProps {
   workouts: ProgramWorkout[];
@@ -45,7 +46,7 @@ export function WorkoutBuilder({ workouts, onUpdate, readOnly = false }: Workout
     dayNumber: workouts.length + 1,
     name: '',
     description: '',
-    workoutType: 'strength' as WorkoutType,
+    workoutType: WorkoutType.STRENGTH,
     estimatedDuration: 60,
     isRestDay: false,
   });
@@ -64,7 +65,7 @@ export function WorkoutBuilder({ workouts, onUpdate, readOnly = false }: Workout
       dayNumber: workouts.length + 2,
       name: '',
       description: '',
-      workoutType: 'strength',
+      workoutType: WorkoutType.STRENGTH,
       estimatedDuration: 60,
       isRestDay: false,
     });
@@ -201,9 +202,9 @@ export function WorkoutBuilder({ workouts, onUpdate, readOnly = false }: Workout
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {workouts.map((workout) => (
           <WorkoutCard
-            key={workout.id}
+            key={workout.id || workout.dayNumber}
             workout={workout}
-            onDelete={() => handleDeleteWorkout(workout.id)}
+            onDelete={() => handleDeleteWorkout(workout.id || '')}
             readOnly={readOnly}
           />
         ))}

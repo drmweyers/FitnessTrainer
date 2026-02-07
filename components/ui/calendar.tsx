@@ -7,6 +7,7 @@ export interface CalendarProps {
   selected?: Date
   onSelect?: (date: Date | undefined) => void
   className?: string
+  initialFocus?: boolean
 }
 
 export const Calendar = ({ mode = 'single', selected, onSelect, className = '' }: CalendarProps) => {

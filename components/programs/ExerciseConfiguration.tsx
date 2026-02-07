@@ -20,7 +20,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
-import type { ExerciseConfiguration, SetType } from '@/types/program';
+import { SetType } from '@/types/program';
+import type { ExerciseConfiguration } from '@/types/program';
 
 interface ExerciseConfigurationProps {
   configurations: ExerciseConfiguration[];
@@ -36,7 +37,7 @@ export function ExerciseConfiguration({
   const handleAddSet = () => {
     const newSet: ExerciseConfiguration = {
       setNumber: configurations.length + 1,
-      setType: 'working',
+      setType: SetType.WORKING,
       reps: '8-12',
       restSeconds: 90,
     };

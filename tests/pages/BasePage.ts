@@ -79,7 +79,7 @@ export class BasePage {
   // Error handling helpers
   async checkForErrors() {
     const errors = await this.page.evaluate(() => {
-      const errors = [];
+      const errors: string[] = [];
       
       // Check for JavaScript errors
       const jsErrors = window.console.error;
