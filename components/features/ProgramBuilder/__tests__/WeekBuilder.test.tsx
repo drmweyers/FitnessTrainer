@@ -1,4 +1,7 @@
 /**
+ * @jest-environment jsdom
+ */
+/**
  * WeekBuilder Component Tests
  * Story 005-02: Build Weekly Structure
  *
@@ -10,6 +13,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import WeekBuilder from '../WeekBuilder';
 import { ProgramBuilderProvider } from '../ProgramBuilderContext';
 

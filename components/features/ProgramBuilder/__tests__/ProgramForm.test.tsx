@@ -1,4 +1,7 @@
 /**
+ * @jest-environment jsdom
+ */
+/**
  * ProgramForm Component Tests
  * Story 005-01: Create New Program - Step 1: Basic Info
  *
@@ -10,6 +13,7 @@
 import React, { ReactNode } from 'react';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import ProgramForm from '../ProgramForm';
 import { ProgramBuilderProvider, useProgramBuilder } from '../ProgramBuilderContext';
 

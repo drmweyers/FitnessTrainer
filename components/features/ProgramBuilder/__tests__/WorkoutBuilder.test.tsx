@@ -1,4 +1,7 @@
 /**
+ * @jest-environment jsdom
+ */
+/**
  * WorkoutBuilder Component Tests
  * Story 005-03: Workout Planning
  */
@@ -6,6 +9,7 @@
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import WorkoutBuilder from '../WorkoutBuilder';
 import { ProgramBuilderProvider } from '../ProgramBuilderContext';
 
