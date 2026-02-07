@@ -120,6 +120,77 @@ export async function POST(
       },
     });
 
+    // Auto-record performance metrics from completed exercise sets
+    try {
+      for (const exerciseLog of session.exerciseLogs) {
+        if (exerciseLog.skipped || !exerciseLog.exerciseId) continue;
+
+        const completedSetsForExercise = exerciseLog.setLogs.filter((s) => s.completed);
+        if (completedSetsForExercise.length === 0) continue;
+
+        // Find max weight used
+        const maxWeight = Math.max(
+          ...completedSetsForExercise
+            .filter((s) => s.weight !== null)
+            .map((s) => Number(s.weight))
+        );
+
+        // Calculate total volume (weight * reps) and total reps
+        let exerciseVolume = 0;
+        let exerciseTotalReps = 0;
+        for (const setLog of completedSetsForExercise) {
+          if (setLog.actualReps) {
+            exerciseTotalReps += setLog.actualReps;
+            if (setLog.weight) {
+              exerciseVolume += Number(setLog.weight) * setLog.actualReps;
+            }
+          }
+        }
+
+        const metricsToCreate = [];
+
+        if (maxWeight > 0 && isFinite(maxWeight)) {
+          metricsToCreate.push({
+            userId: user.id,
+            exerciseId: exerciseLog.exerciseId,
+            metricType: 'one_rm' as const,
+            value: maxWeight,
+            unit: 'kg',
+            workoutSessionId: id,
+          });
+        }
+
+        if (exerciseVolume > 0) {
+          metricsToCreate.push({
+            userId: user.id,
+            exerciseId: exerciseLog.exerciseId,
+            metricType: 'volume' as const,
+            value: exerciseVolume,
+            unit: 'kg',
+            workoutSessionId: id,
+          });
+        }
+
+        if (exerciseTotalReps > 0) {
+          metricsToCreate.push({
+            userId: user.id,
+            exerciseId: exerciseLog.exerciseId,
+            metricType: 'endurance' as const,
+            value: exerciseTotalReps,
+            unit: 'reps',
+            workoutSessionId: id,
+          });
+        }
+
+        if (metricsToCreate.length > 0) {
+          await prisma.performanceMetric.createMany({ data: metricsToCreate });
+        }
+      }
+    } catch (metricsError) {
+      // Don't break workout completion if metrics recording fails
+      console.error('Error auto-recording performance metrics:', metricsError);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Workout completed successfully',
