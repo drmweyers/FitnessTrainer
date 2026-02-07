@@ -29,7 +29,7 @@ export default function TrainerDashboard() {
     id: string; name: string; email: string; status: string; connectedAt: string
   }>>([]);
 
-  const [recentActivities] = useState<ActivityFeedItem[]>([]);
+  const [recentActivities, setRecentActivities] = useState<ActivityFeedItem[]>([]);
 
   const quickActions: QuickAction[] = [
     {
@@ -113,7 +113,22 @@ export default function TrainerDashboard() {
             }
           }
         })
-        .catch(err => console.error('Failed to load dashboard stats:', err))
+        .catch(err => console.error('Failed to load dashboard stats:', err));
+
+      // Fetch activity feed
+      fetch('/api/activities?limit=10', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success && result.data?.activities) {
+            setRecentActivities(result.data.activities);
+          }
+        })
+        .catch(err => console.error('Failed to load activities:', err))
         .finally(() => setIsDataLoading(false));
     }
   }, [isLoading, isAuthenticated, user, router]);

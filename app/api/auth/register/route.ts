@@ -13,6 +13,7 @@ import { prisma } from '@/lib/db/prisma';
 import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
 import { registerSchema } from '@/lib/types/auth';
+import { logClientSignup } from '@/lib/services/activity.service';
 
 /**
  * POST /api/auth/register
@@ -96,6 +97,11 @@ export async function POST(request: NextRequest) {
       deviceInfo,
       ipAddress,
     });
+
+    // Log signup activity (fire-and-forget)
+    try {
+      logClientSignup(user.id, user.email);
+    } catch {}
 
     // Return success response with tokens and user data
     return NextResponse.json(

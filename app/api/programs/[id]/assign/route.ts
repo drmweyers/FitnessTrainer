@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
+import { logProgramAssigned } from '@/lib/services/activity.service';
 
 const assignProgramSchema = z.object({
   clientId: z.string().uuid(),
@@ -84,6 +85,11 @@ export async function POST(
         },
       },
     });
+
+    // Log activity (fire-and-forget)
+    try {
+      logProgramAssigned(user.id, data.clientId, id, program.name);
+    } catch {}
 
     return NextResponse.json(
       { success: true, message: 'Program assigned successfully', data: assignment },

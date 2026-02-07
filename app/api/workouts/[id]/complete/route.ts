@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
+import { logWorkoutCompleted } from '@/lib/services/activity.service';
 
 const completeWorkoutSchema = z.object({
   notes: z.string().optional(),
@@ -119,6 +120,15 @@ export async function POST(
         },
       },
     });
+
+    // Log activity (fire-and-forget, won't break the response)
+    try {
+      const workout = await prisma.programWorkout.findUnique({
+        where: { id: existingSession.workoutId },
+        select: { name: true },
+      });
+      logWorkoutCompleted(user.id, id, workout?.name || 'Workout');
+    } catch {}
 
     return NextResponse.json({
       success: true,
