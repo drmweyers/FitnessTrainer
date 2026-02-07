@@ -122,6 +122,7 @@ export default function ClientDashboard() {
               ...prev,
               currentWeight: ps.currentWeight ?? prev.currentWeight,
               totalWorkouts: ps.totalWorkouts ?? prev.totalWorkouts,
+              workoutStreak: ps.workoutStreak ?? prev.workoutStreak,
               measurements: ps.measurements ?? prev.measurements,
             }));
           }

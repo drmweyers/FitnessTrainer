@@ -8,8 +8,13 @@ interface CountResult {
   count: bigint
 }
 
+interface StreakResult {
+  streak: number
+}
+
 interface ClientRow {
   id: string
+  client_id: string
   first_name: string | null
   last_name: string | null
   email: string
@@ -86,15 +91,52 @@ export async function GET(request: NextRequest) {
         WHERE trainer_id = ${userId}::uuid
         AND connected_at >= date_trunc('month', CURRENT_DATE)`
 
-      // Client list with names
+      // Client list with names and workout streaks
       const clients = await prisma.$queryRaw<ClientRow[]>`
-        SELECT tc.id, p.first_name, p.last_name, u.email, tc.status, tc.connected_at
+        SELECT tc.id, tc.client_id, p.first_name, p.last_name, u.email, tc.status, tc.connected_at
         FROM trainer_clients tc
         JOIN users u ON u.id = tc.client_id
         LEFT JOIN user_profiles p ON p.user_id = tc.client_id
         WHERE tc.trainer_id = ${userId}::uuid AND tc.status != 'disconnected'
         ORDER BY tc.connected_at DESC
         LIMIT 10`
+
+      // Calculate streak for each client
+      const clientsWithStreaks = await Promise.all(
+        clients.map(async (c) => {
+          const streakResult = await prisma.$queryRaw<StreakResult[]>`
+            WITH workout_days AS (
+              SELECT DISTINCT DATE(actual_end_time) as workout_date
+              FROM workout_sessions
+              WHERE client_id = ${c.client_id}::uuid
+                AND status = 'completed'
+                AND actual_end_time IS NOT NULL
+              ORDER BY workout_date DESC
+            ),
+            numbered AS (
+              SELECT workout_date,
+                ROW_NUMBER() OVER (ORDER BY workout_date DESC) as rn
+              FROM workout_days
+            ),
+            streak AS (
+              SELECT workout_date, rn,
+                workout_date + (rn * INTERVAL '1 day') as grp
+              FROM numbered
+            )
+            SELECT COALESCE(COUNT(*)::int, 0) as streak
+            FROM streak
+            WHERE grp = (SELECT grp FROM streak LIMIT 1)`
+
+          return {
+            id: c.id,
+            name: [c.first_name, c.last_name].filter(Boolean).join(' ') || c.email.split('@')[0],
+            email: c.email,
+            status: c.status,
+            connectedAt: c.connected_at,
+            workoutStreak: streakResult[0]?.streak ?? 0,
+          }
+        })
+      )
 
       return NextResponse.json({
         success: true,
@@ -106,13 +148,7 @@ export async function GET(request: NextRequest) {
             inactiveClients: Number(totalClients.count) - Number(activeClients.count),
             newThisMonth: Number(newThisMonth.count),
           },
-          clients: clients.map(c => ({
-            id: c.id,
-            name: [c.first_name, c.last_name].filter(Boolean).join(' ') || c.email.split('@')[0],
-            email: c.email,
-            status: c.status,
-            connectedAt: c.connected_at,
-          })),
+          clients: clientsWithStreaks,
         },
       })
     }
@@ -130,6 +166,32 @@ export async function GET(request: NextRequest) {
         SELECT COUNT(*)::bigint as count FROM workout_sessions
         WHERE client_id = ${userId}::uuid AND status = 'completed'`
 
+      // Calculate workout streak: consecutive days with completed workouts ending at today or most recent workout day
+      const streakResult = await prisma.$queryRaw<StreakResult[]>`
+        WITH workout_days AS (
+          SELECT DISTINCT DATE(actual_end_time) as workout_date
+          FROM workout_sessions
+          WHERE client_id = ${userId}::uuid
+            AND status = 'completed'
+            AND actual_end_time IS NOT NULL
+          ORDER BY workout_date DESC
+        ),
+        numbered AS (
+          SELECT workout_date,
+            ROW_NUMBER() OVER (ORDER BY workout_date DESC) as rn
+          FROM workout_days
+        ),
+        streak AS (
+          SELECT workout_date, rn,
+            workout_date + (rn * INTERVAL '1 day') as grp
+          FROM numbered
+        )
+        SELECT COALESCE(COUNT(*)::int, 0) as streak
+        FROM streak
+        WHERE grp = (SELECT grp FROM streak LIMIT 1)`
+
+      const workoutStreak = streakResult[0]?.streak ?? 0
+
       return NextResponse.json({
         success: true,
         data: {
@@ -138,6 +200,7 @@ export async function GET(request: NextRequest) {
             currentWeight: latestMeasurement[0]?.weight || null,
             measurements: latestMeasurement[0]?.measurements || null,
             totalWorkouts: Number(totalWorkouts.count),
+            workoutStreak,
           },
         },
       })
