@@ -32,11 +32,11 @@ const mockActiveGoal = {
   targetValue: 70,
   currentValue: 75,
   unit: 'kg',
-  startDate: '2024-01-01',
-  targetDate: '2024-06-01',
+  startDate: '2026-01-01',
+  targetDate: '2027-06-01',
   status: 'active',
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
+  createdAt: '2026-01-01T00:00:00Z',
+  updatedAt: '2026-01-01T00:00:00Z',
 };
 
 const mockCompletedGoal = {

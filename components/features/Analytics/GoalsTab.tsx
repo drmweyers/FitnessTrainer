@@ -61,7 +61,7 @@ export default function GoalsTab() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <div className="flex justify-center items-center py-12" role="status">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -94,10 +94,11 @@ export default function GoalsTab() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Goal</h3>
           <form onSubmit={handleCreateGoal} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="goal-type" className="block text-sm font-medium text-gray-700 mb-1">
                 Goal Type
               </label>
               <select
+                id="goal-type"
                 value={newGoal.goalType}
                 onChange={e => setNewGoal({ ...newGoal, goalType: e.target.value })}
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
@@ -114,10 +115,11 @@ export default function GoalsTab() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="target-value" className="block text-sm font-medium text-gray-700 mb-1">
                   Target Value
                 </label>
                 <input
+                  id="target-value"
                   type="number"
                   step="0.1"
                   value={newGoal.targetValue}
@@ -147,10 +149,11 @@ export default function GoalsTab() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="target-date" className="block text-sm font-medium text-gray-700 mb-1">
                 Target Date
               </label>
               <input
+                id="target-date"
                 type="date"
                 value={newGoal.targetDate}
                 onChange={e => setNewGoal({ ...newGoal, targetDate: e.target.value })}

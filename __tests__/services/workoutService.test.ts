@@ -44,7 +44,9 @@ describe('workoutService', () => {
 
       const result = await workoutService.getAll();
       expect(result).toEqual(workouts);
-      expect(mockFetch).toHaveBeenCalledWith('/api/workouts');
+      expect(mockFetch).toHaveBeenCalledWith('/api/workouts', expect.objectContaining({
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }));
     });
 
     it('appends filter params to URL', async () => {
@@ -102,7 +104,9 @@ describe('workoutService', () => {
 
       const result = await workoutService.getById('sess-1');
       expect(result).toEqual(workout);
-      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/sess-1');
+      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/sess-1', expect.objectContaining({
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }));
     });
 
     it('throws on error', async () => {
@@ -268,7 +272,9 @@ describe('workoutService', () => {
 
       const result = await workoutService.getActiveSession();
       expect(result).toEqual(session);
-      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/active');
+      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/active', expect.objectContaining({
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }));
     });
 
     it('returns null for 204 status', async () => {
@@ -304,7 +310,10 @@ describe('workoutService', () => {
 
       // getHistory calls getAll which calls fetch
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/workouts')
+        expect.stringContaining('/api/workouts'),
+        expect.objectContaining({
+          headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+        })
       );
     });
   });
@@ -316,7 +325,9 @@ describe('workoutService', () => {
 
       const result = await workoutService.getProgress();
       expect(result).toEqual(progress);
-      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/progress');
+      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/progress', expect.objectContaining({
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }));
     });
 
     it('fetches progress with exerciseId', async () => {
@@ -324,7 +335,10 @@ describe('workoutService', () => {
 
       await workoutService.getProgress('ex-1');
       expect(mockFetch).toHaveBeenCalledWith(
-        '/api/workouts/progress?exerciseId=ex-1'
+        '/api/workouts/progress?exerciseId=ex-1',
+        expect.objectContaining({
+          headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+        })
       );
     });
 
@@ -349,9 +363,10 @@ describe('workoutService', () => {
       mockFetchSuccess({});
 
       await workoutService.delete('sess-1');
-      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/sess-1', {
+      expect(mockFetch).toHaveBeenCalledWith('/api/workouts/sess-1', expect.objectContaining({
         method: 'DELETE',
-      });
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }));
     });
 
     it('throws on error', async () => {

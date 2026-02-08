@@ -1,7 +1,8 @@
 # EvoFit Trainer - Project Configuration
 **Type:** Full-Stack Fitness SaaS (Everfit.io clone)
-**Status:** MVP ~40% (Backend 60%, Frontend 30%)
+**Status:** MVP ~75% (Backend 95%, Frontend 70%)
 **Branch:** `master` on `drmweyers/FitnessTrainer`
+**Test Coverage:** 85.57% lines | 3,179 tests | 195 suites | ALL PASSING
 
 ---
 
@@ -92,14 +93,41 @@ tests/e2e/              # Playwright E2E tests
 |-------|---------|
 | `/api/auth/login` | POST |
 | `/api/auth/register` | POST |
+| `/api/auth/forgot-password` | POST |
 | `/api/exercises` | GET, POST |
+| `/api/exercises/[id]` | GET, PUT, DELETE |
 | `/api/exercises/search` | GET |
+| `/api/exercises/filters` | GET |
+| `/api/exercises/favorites` | GET, POST, DELETE |
+| `/api/exercises/collections` | GET, POST |
+| `/api/exercises/collections/[id]` | GET, PUT, DELETE |
 | `/api/programs` | GET, POST |
-| `/api/programs/assign` | POST |
+| `/api/programs/[id]` | GET, PUT, DELETE |
+| `/api/programs/[id]/assign` | POST |
+| `/api/programs/[id]/duplicate` | POST |
+| `/api/programs/templates` | GET |
 | `/api/workouts` | GET, POST |
+| `/api/workouts/[id]` | GET, PUT, DELETE |
+| `/api/workouts/[id]/complete` | POST |
+| `/api/workouts/[id]/sets` | POST |
 | `/api/workouts/active` | GET |
 | `/api/workouts/history` | GET |
-| `/api/workouts/complete` | POST |
+| `/api/workouts/progress` | GET |
+| `/api/activities` | GET |
+| `/api/dashboard/stats` | GET |
+| `/api/profiles/me` | GET, PUT |
+| `/api/profiles/health` | GET, PUT |
+| `/api/analytics/performance` | GET, POST |
+| `/api/analytics/performance/me` | GET |
+| `/api/analytics/performance/me/personal-bests` | GET |
+| `/api/analytics/training-load/me` | GET |
+| `/api/analytics/training-load/calculate` | POST |
+| `/api/analytics/goals` | GET, POST |
+| `/api/analytics/goals/[id]` | GET, PUT, DELETE |
+| `/api/analytics/goals/[id]/progress` | GET, POST |
+| `/api/analytics/measurements` | GET, POST |
+| `/api/analytics/measurements/me` | GET |
+| `/api/analytics/milestones/me` | GET |
 | `/api/health` | GET |
 
 ---
@@ -108,13 +136,13 @@ tests/e2e/              # Playwright E2E tests
 
 | Epic | Feature | Status |
 |------|---------|--------|
-| 001 | User Profiles | 70-80% |
+| 001 | User Profiles | ~90% (profile pages + API done, avatar upload pending) |
 | 002 | Authentication | 100% |
-| 003 | Client Management | 100% |
-| 004 | Exercise Library | 40-60% |
-| 005 | Program Builder | Backend 100%, Frontend 25% |
-| 006 | Workout Tracking | 40-60% |
-| 007 | Progress Analytics | 30-50% |
+| 003 | Client Management | ~95% |
+| 004 | Exercise Library | ~90% (GIF hosting remaining) |
+| 005 | Program Builder | ~95% (frontend fully wired) |
+| 006 | Workout Tracking | ~90% (overview page + builder working) |
+| 007 | Progress Analytics | ~80% (API done, frontend empty) |
 | 008-012 | Messaging, Scheduling, Payments, Mobile, Admin | 0% |
 
 ---
@@ -127,6 +155,12 @@ tests/e2e/              # Playwright E2E tests
 | TypeScript build errors | `ignoreBuildErrors: true` (temporary) |
 | ESLint warnings | Ignored during builds (needs cleanup) |
 | Exercise GIF database (1.3GB) | Excluded from git via `.gitignore` |
+| logo.png missing | Add logo to `public/` directory |
+| Duplicate footer on sidebar pages | Footer renders in both layout and page |
+| `/workouts/history` no auth guard | Does not redirect unauthenticated users |
+| `/analytics` page empty | API exists but frontend not wired |
+| Homepage default template | Root `/` still shows Next.js boilerplate |
+| Nested `<select>` warning | On `/programs/new` builder page |
 
 ---
 
@@ -140,18 +174,6 @@ tests/e2e/              # Playwright E2E tests
 | Frontend | 3001 | `http://localhost:3001` |
 | Mailhog | 8025 | `http://localhost:8025` |
 | pgAdmin | 5050 | `http://localhost:5050` |
-
----
-
-## Documentation Map
-
-| Document | Path |
-|----------|------|
-| **PRD** | `docs/prd.md` |
-| **Architecture** | `docs/architecture.md` |
-| **Business Logic** | `docs/businesslogic.md` |
-| **Epics** | `docs/epics/*.md` (12 files) |
-| **Stories** | `docs/stories/*.md` (108 files) |
 
 ---
 
@@ -175,17 +197,34 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 ---
 
-## Testing Targets
+## Testing
 
+### Current Status
+| Metric | Value |
+|--------|-------|
+| **Line Coverage** | 85.57% |
+| **Tests** | 3,179 |
+| **Suites** | 195 (all passing) |
+| **Failures** | 0 |
+
+### Targets
 | Metric | Target |
 |--------|--------|
-| **Unit Test Coverage** | 80%+ |
+| **Unit Test Coverage** | 85%+ (achieved) |
 | **E2E Scenarios** | 50+ critical paths |
 | **Lighthouse Score** | 90+ |
 | **Bundle Size (initial)** | <200KB gzipped |
 | **FCP** | <1.5s |
 | **LCP** | <2.5s |
 | **CLS** | <0.1 |
+
+### Test Architecture
+- **Jest config**: `jest.config.js` (ignores `.worktrees/`, `.auto-claude/`, `backend/`, `tests/e2e/`)
+- **Prisma mock**: `__mocks__/@prisma/client.ts` + `lib/db/__mocks__/prisma.ts`
+- **Auth mock**: `jest.mock('@/lib/middleware/auth')` returns test user
+- **Component tests**: Use `/** @jest-environment jsdom */` pragma
+- **API route tests**: Import handlers directly, mock prisma + auth
+- **Test helpers**: `tests/helpers/test-utils.ts`
 
 ---
 
@@ -204,6 +243,72 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 **Container:**
 - `max-w-7xl mx-auto px-4`
+
+---
+
+## Browser Verification Results (Feb 7, 2026)
+
+| Flow | Status | Notes |
+|------|--------|-------|
+| Login (`/auth/login`) | WORKS | Form, social login, test accounts |
+| Register (`/auth/register`) | WORKS | Role selection, validation |
+| Dashboard (`/dashboard`) | WORKS | Auth guard redirects to login |
+| Exercise Library | WORKS | Search, filters, grid/list toggle |
+| Programs (`/programs`) | WORKS | List, filters, create button |
+| Program Builder (`/programs/new`) | WORKS | 4-step wizard |
+| Workout Builder (`/workouts`) | WORKS | Sections, exercise search, save |
+| Clients (`/clients`) | WORKS | List, add client button |
+| Profile (`/profile`) | WORKS | View profile info |
+| Workout History | PARTIAL | No auth redirect when unauthenticated |
+| Analytics (`/analytics`) | PARTIAL | Page empty, API exists but UI not wired |
+
+Full report: `docs/plans/2026-02-07-browser-verification-report.md`
+
+---
+
+## Parallel Agent Development (Proven Pattern)
+
+### Quick Reference
+```
+# Coverage push (Ralph Loop)
+Target: npx jest --coverage | grep "All files" → lines >= 85%
+Fix failures first → target 0% dirs → target <50% → target <70% → iterate
+
+# Parallel bug fix + test + verify
+Phase 0: Commit dirty files, create worktrees, fix jest config
+Phase 1: TeamCreate → TaskCreate → spawn agents (sonnet, bypassPermissions)
+Phase 2: Monitor every 5min, nudge at 10min, take over at 20min
+Phase 3: Merge streams, clean worktrees, TeamDelete
+```
+
+### Worktree Setup
+```bash
+git worktree add .worktrees/<name> -b <branch> HEAD
+# CRITICAL: Add .worktrees/ to jest.config.js testPathIgnorePatterns + modulePathIgnorePatterns
+```
+
+### Agent Spawn Config
+```
+subagent_type: general-purpose
+mode: bypassPermissions
+model: sonnet (cost-effective for most tasks)
+run_in_background: true
+```
+
+---
+
+## Documentation Map
+
+| Document | Path |
+|----------|------|
+| **PRD** | `docs/prd.md` |
+| **Architecture** | `docs/architecture.md` |
+| **Business Logic** | `docs/businesslogic.md` |
+| **Epics** | `docs/epics/*.md` (12 files) |
+| **Stories** | `docs/stories/*.md` (108 files) |
+| **Browser Report** | `docs/plans/2026-02-07-browser-verification-report.md` |
+| **Execution Plans** | `docs/plans/2026-02-07-parallel-abc-execution.md` |
+| **Testing Protocol** | `docs/plans/2026-02-06-comprehensive-testing-protocol.md` |
 
 ---
 

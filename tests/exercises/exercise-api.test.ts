@@ -7,6 +7,16 @@ import { createMocks } from 'node-mocks-http';
 import { GET, POST } from '@/app/api/exercises/route';
 import { exerciseService } from '@/lib/services/exercise.service';
 
+// Mock auth middleware to return authenticated user
+jest.mock('@/lib/middleware/auth', () => ({
+  authenticate: jest.fn().mockImplementation((req: any) => {
+    return Promise.resolve(Object.assign(req, {
+      user: { id: 'test-user-id', role: 'admin', email: 'admin@test.com' }
+    }));
+  }),
+  AuthenticatedRequest: {},
+}));
+
 // Mock the exercise service
 jest.mock('@/lib/services/exercise.service');
 

@@ -1,9 +1,8 @@
 /** @jest-environment jsdom */
-
+import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import NotFound from '@/app/not-found';
-import Error from '@/app/error';
-import GlobalError from '@/app/global-error';
 
 // Mock next/link
 jest.mock('next/link', () => {
@@ -55,12 +54,16 @@ describe('Error Pages', () => {
   });
 
   describe('Error (Runtime Error Boundary)', () => {
-    const mockError = new Error('Test error message');
+    const mockError = new window.Error('Test error message');
     const mockReset = jest.fn();
+    let ErrorPage: any;
+
+    beforeAll(async () => {
+      ErrorPage = (await import('@/app/error')).default;
+    });
 
     beforeEach(() => {
       jest.clearAllMocks();
-      // Suppress console.error for tests
       jest.spyOn(console, 'error').mockImplementation(() => {});
     });
 
@@ -69,19 +72,19 @@ describe('Error Pages', () => {
     });
 
     it('should render error message', () => {
-      render(<Error error={mockError} reset={mockReset} />);
+      render(<ErrorPage error={mockError} reset={mockReset} />);
 
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();
     });
 
     it('should render EvoFit branding', () => {
-      render(<Error error={mockError} reset={mockReset} />);
+      render(<ErrorPage error={mockError} reset={mockReset} />);
 
       expect(screen.getByText('EvoFit')).toBeInTheDocument();
     });
 
     it('should have try again button that calls reset', () => {
-      render(<Error error={mockError} reset={mockReset} />);
+      render(<ErrorPage error={mockError} reset={mockReset} />);
 
       const tryAgainButton = screen.getByText('Try Again');
       fireEvent.click(tryAgainButton);
@@ -90,7 +93,7 @@ describe('Error Pages', () => {
     });
 
     it('should have dashboard link', () => {
-      render(<Error error={mockError} reset={mockReset} />);
+      render(<ErrorPage error={mockError} reset={mockReset} />);
 
       const dashboardLink = screen.getByText('Go to Dashboard');
       expect(dashboardLink.closest('a')).toHaveAttribute('href', '/dashboard');
@@ -99,7 +102,7 @@ describe('Error Pages', () => {
     it('should log error on mount', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error');
 
-      render(<Error error={mockError} reset={mockReset} />);
+      render(<ErrorPage error={mockError} reset={mockReset} />);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Application error:', mockError);
     });
@@ -108,7 +111,7 @@ describe('Error Pages', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
-      render(<Error error={mockError} reset={mockReset} />);
+      render(<ErrorPage error={mockError} reset={mockReset} />);
 
       expect(screen.getByText('Test error message')).toBeInTheDocument();
 
@@ -117,12 +120,16 @@ describe('Error Pages', () => {
   });
 
   describe('GlobalError (Root Error Boundary)', () => {
-    const mockError = new Error('Critical error');
+    const mockError = new window.Error('Critical error');
     const mockReset = jest.fn();
+    let GlobalErrorPage: any;
+
+    beforeAll(async () => {
+      GlobalErrorPage = (await import('@/app/global-error')).default;
+    });
 
     beforeEach(() => {
       jest.clearAllMocks();
-      // Suppress console.error for tests
       jest.spyOn(console, 'error').mockImplementation(() => {});
     });
 
@@ -131,13 +138,13 @@ describe('Error Pages', () => {
     });
 
     it('should render critical error message', () => {
-      render(<GlobalError error={mockError} reset={mockReset} />);
+      render(<GlobalErrorPage error={mockError} reset={mockReset} />);
 
       expect(screen.getByText('Critical Error')).toBeInTheDocument();
     });
 
     it('should have try again button', () => {
-      render(<GlobalError error={mockError} reset={mockReset} />);
+      render(<GlobalErrorPage error={mockError} reset={mockReset} />);
 
       const tryAgainButton = screen.getByText('Try Again');
       fireEvent.click(tryAgainButton);
@@ -146,7 +153,7 @@ describe('Error Pages', () => {
     });
 
     it('should have dashboard link', () => {
-      render(<GlobalError error={mockError} reset={mockReset} />);
+      render(<GlobalErrorPage error={mockError} reset={mockReset} />);
 
       const dashboardLink = screen.getByText('Go to Dashboard');
       expect(dashboardLink.closest('a')).toHaveAttribute('href', '/dashboard');
@@ -155,15 +162,14 @@ describe('Error Pages', () => {
     it('should log error on mount', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error');
 
-      render(<GlobalError error={mockError} reset={mockReset} />);
+      render(<GlobalErrorPage error={mockError} reset={mockReset} />);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Global error:', mockError);
     });
 
     it('should render own html and body tags', () => {
-      const { container } = render(<GlobalError error={mockError} reset={mockReset} />);
+      const { container } = render(<GlobalErrorPage error={mockError} reset={mockReset} />);
 
-      // GlobalError should render <html> and <body> tags
       const html = container.querySelector('html');
       const body = container.querySelector('body');
 

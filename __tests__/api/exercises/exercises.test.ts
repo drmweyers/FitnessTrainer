@@ -5,6 +5,16 @@
 import { NextRequest } from 'next/server';
 import { GET, POST } from '@/app/api/exercises/route';
 
+// Mock auth middleware to return authenticated user
+jest.mock('@/lib/middleware/auth', () => ({
+  authenticate: jest.fn().mockImplementation((req: any) => {
+    return Promise.resolve(Object.assign(req, {
+      user: { id: 'test-user-id', role: 'admin', email: 'admin@test.com' }
+    }));
+  }),
+  AuthenticatedRequest: {},
+}));
+
 // Mock exerciseService
 jest.mock('@/lib/services/exercise.service', () => ({
   exerciseService: {
