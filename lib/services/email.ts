@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY || '');
+  }
+  return _resend;
+}
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'EvoFit <noreply@evofit.io>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -20,7 +27,7 @@ export async function sendPasswordResetEmail(
     const resetUrl = `${APP_URL}/auth/reset-password?token=${token}`;
     const greeting = name ? `Hi ${name}` : 'Hi';
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Reset your EvoFit password',
@@ -69,7 +76,7 @@ export async function sendWelcomeEmail(
   try {
     const greeting = name ? `Welcome, ${name}!` : 'Welcome!';
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Welcome to EvoFit!',
@@ -116,7 +123,7 @@ export async function sendVerificationEmail(
     const verifyUrl = `${APP_URL}/auth/verify-email?token=${token}`;
     const greeting = name ? `Hi ${name}` : 'Hi';
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Verify your EvoFit email',
