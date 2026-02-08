@@ -12,6 +12,7 @@ import PhotoGallery from '@/components/features/Analytics/PhotoGallery';
 import PerformanceTab from '@/components/features/Analytics/PerformanceTab';
 import TrainingLoadTab from '@/components/features/Analytics/TrainingLoadTab';
 import GoalsTab from '@/components/features/Analytics/GoalsTab';
+import ReportModal from '@/components/features/Analytics/ReportModal';
 import { useToast, ToastContainer } from '@/components/shared/Toast';
 
 export default function AnalyticsPage() {
@@ -23,7 +24,7 @@ export default function AnalyticsPage() {
   const { success, error: showError, toasts, removeToast } = useToast();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '3m' | '6m' | '1y'>('3m');
   const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos' | 'performance' | 'training-load' | 'goals'>('overview');
-  // const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   // Load measurements when user changes
   const loadMeasurements = async () => {
@@ -200,12 +201,20 @@ export default function AnalyticsPage() {
                 Track your body measurements and monitor your progress over time
               </p>
             </div>
-            <button
-              onClick={openNewMeasurementTracker}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-            >
-              Record New Measurement
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setIsReportOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Generate Report
+              </button>
+              <button
+                onClick={openNewMeasurementTracker}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Record New Measurement
+              </button>
+            </div>
           </div>
           
           {/* Navigation Tabs */}
@@ -541,6 +550,9 @@ export default function AnalyticsPage() {
         initialData={selectedMeasurement || undefined}
         isOpen={isTrackerOpen}
       />
+
+      {/* Report Modal */}
+      <ReportModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onClose={removeToast} />
