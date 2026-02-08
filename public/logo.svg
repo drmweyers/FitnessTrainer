@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <!-- Dumbbell icon -->
+  <rect x="8" y="18" width="6" height="14" rx="2" fill="#2563eb"/>
+  <rect x="16" y="14" width="6" height="22" rx="2" fill="#2563eb"/>
+  <rect x="24" y="22" width="12" height="6" rx="1" fill="#2563eb"/>
+  <rect x="38" y="14" width="6" height="22" rx="2" fill="#2563eb"/>
+  <rect x="46" y="18" width="6" height="14" rx="2" fill="#2563eb"/>
+  <!-- Text: EvoFit -->
+  <text x="62" y="36" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="700" fill="#111827">
+    <tspan fill="#2563eb">Evo</tspan><tspan fill="#111827">Fit</tspan>
+  </text>
+</svg>
