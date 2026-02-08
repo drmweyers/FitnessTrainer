@@ -1,8 +1,8 @@
 # EvoFit Trainer - Project Configuration
 **Type:** Full-Stack Fitness SaaS (Everfit.io clone)
-**Status:** MVP ~75% (Backend 95%, Frontend 70%)
+**Status:** MVP ~90% (Backend 98%, Frontend 85%)
 **Branch:** `master` on `drmweyers/FitnessTrainer`
-**Test Coverage:** 85.57% lines | 3,179 tests | 195 suites | ALL PASSING
+**Test Coverage:** 85%+ lines | 3,276 tests | 203 suites | ALL PASSING
 
 ---
 
@@ -129,6 +129,20 @@ tests/e2e/              # Playwright E2E tests
 | `/api/analytics/measurements/me` | GET |
 | `/api/analytics/milestones/me` | GET |
 | `/api/health` | GET |
+| `/api/profiles/me/photo` | POST, DELETE |
+| `/api/profiles/progress-photos` | GET, POST, DELETE |
+| `/api/profiles/certifications` | GET, POST |
+| `/api/profiles/certifications/[id]` | GET, PUT, DELETE |
+| `/api/analytics/reports` | POST |
+| `/api/auth/reset-password` | POST |
+| `/api/schedule/availability` | GET, POST, PUT, DELETE |
+| `/api/schedule/appointments` | GET, POST |
+| `/api/schedule/appointments/[id]` | GET, PUT, DELETE |
+| `/api/schedule/slots` | GET |
+| `/api/admin/dashboard` | GET |
+| `/api/admin/users` | GET |
+| `/api/admin/users/[id]` | GET, PUT |
+| `/api/admin/system/health` | GET |
 
 ---
 
@@ -136,14 +150,18 @@ tests/e2e/              # Playwright E2E tests
 
 | Epic | Feature | Status |
 |------|---------|--------|
-| 001 | User Profiles | ~90% (profile pages + API done, avatar upload pending) |
-| 002 | Authentication | 100% |
+| 001 | User Profiles | ~95% (avatar upload via Cloudinary, certs, progress photos) |
+| 002 | Authentication | 100% (password reset with email) |
 | 003 | Client Management | ~95% |
 | 004 | Exercise Library | ~90% (GIF hosting remaining) |
 | 005 | Program Builder | ~95% (frontend fully wired) |
-| 006 | Workout Tracking | ~90% (overview page + builder working) |
-| 007 | Progress Analytics | ~80% (API done, frontend empty) |
-| 008-012 | Messaging, Scheduling, Payments, Mobile, Admin | 0% |
+| 006 | Workout Tracking | ~95% (overview page + builder working) |
+| 007 | Progress Analytics | ~95% (7 tabs + report generation) |
+| 008 | Messaging | 0% |
+| 009 | Scheduling & Calendar | ~80% (APIs + UI done, needs polish) |
+| 010 | Payments | 0% |
+| 011 | Mobile | 0% |
+| 012 | Admin Dashboard | ~75% (metrics, user mgmt, system health) |
 
 ---
 
@@ -155,11 +173,10 @@ tests/e2e/              # Playwright E2E tests
 | TypeScript build errors | `ignoreBuildErrors: true` (temporary) |
 | ESLint warnings | Ignored during builds (needs cleanup) |
 | Exercise GIF database (1.3GB) | Excluded from git via `.gitignore` |
-| logo.png missing | Add logo to `public/` directory |
 | Duplicate footer on sidebar pages | Footer renders in both layout and page |
-| `/workouts/history` no auth guard | Does not redirect unauthenticated users |
-| `/analytics` page empty | API exists but frontend not wired |
-| Homepage default template | Root `/` still shows Next.js boilerplate |
+| Cloudinary env vars needed | Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` |
+| Resend env var needed | Set `RESEND_API_KEY` for email sending |
+| Scheduling needs DB migration | Run `npx prisma migrate dev` for new Appointment/TrainerAvailability tables |
 | Nested `<select>` warning | On `/programs/new` builder page |
 
 ---
@@ -202,9 +219,9 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ### Current Status
 | Metric | Value |
 |--------|-------|
-| **Line Coverage** | 85.57% |
-| **Tests** | 3,179 |
-| **Suites** | 195 (all passing) |
+| **Line Coverage** | 85%+ |
+| **Tests** | 3,276 |
+| **Suites** | 203 (all passing) |
 | **Failures** | 0 |
 
 ### Targets
