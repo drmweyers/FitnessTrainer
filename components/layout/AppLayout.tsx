@@ -25,6 +25,7 @@ export default function AppLayout({
 
   // Check if we're on a public page that shouldn't show navigation
   const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/auth/login' || pathname === '/auth/register' || pathname === '/auth/forgot-password';
+  const isAdminPage = pathname.startsWith('/admin');
 
   // Auto-collapse sidebar on smaller screens
   useEffect(() => {
@@ -49,6 +50,11 @@ export default function AppLayout({
         </main>
       </div>
     );
+  }
+
+  // Admin pages have their own layout
+  if (isAdminPage) {
+    return <>{children}</>;
   }
 
   // If not authenticated, don't show sidebar

@@ -9,7 +9,8 @@ import {
   BarChart3,
   Settings,
   User,
-  TrendingUp
+  TrendingUp,
+  Shield,
 } from 'lucide-react';
 import type { UserRole } from '@/types/auth';
 
@@ -67,6 +68,13 @@ export const navigationConfig: NavigationItem[] = [
     label: 'Schedule',
     href: '/schedule',
     icon: CalendarDays,
+    roles: ['admin']
+  },
+  {
+    id: 'admin-panel',
+    label: 'Admin Panel',
+    href: '/admin',
+    icon: Shield,
     roles: ['admin']
   },
 
