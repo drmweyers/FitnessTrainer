@@ -19,6 +19,7 @@ jest.mock('@/hooks/useTouchGestures', () => ({
     touchTarget: '',
     buttonSize: 'p-2',
     buttonPadding: 'px-3 py-2',
+    buttonText: 'text-sm',
   }),
 }));
 
@@ -36,13 +37,13 @@ describe('GifPlayerMobile', () => {
   it('renders the component', () => {
     render(<GifPlayerMobile {...defaultProps} />);
     const images = screen.getAllByRole('img');
-    const exerciseImage = images.find(img => img.getAttribute('alt') === 'Bench Press');
+    const exerciseImage = images.find(img => img.getAttribute('alt') === 'Bench Press demonstration');
     expect(exerciseImage).toBeInTheDocument();
   });
 
   it('shows loading state initially', () => {
     render(<GifPlayerMobile {...defaultProps} />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('Loading exercise...')).toBeInTheDocument();
   });
 
   it('renders with custom className', () => {

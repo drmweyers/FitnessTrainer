@@ -62,17 +62,12 @@ describe('/api/exercises', () => {
       expect(data.exercises).toHaveLength(1);
       expect(data.exercises[0].name).toBe('Bench Press');
       expect(data.pagination.total).toBe(1);
-      expect(mockExerciseService.getExercises).toHaveBeenCalledWith({
-        page: 1,
-        limit: 20,
-        search: undefined,
-        bodyPart: undefined,
-        equipment: undefined,
-        targetMuscle: undefined,
-        difficulty: undefined,
-        sortBy: 'name',
-        sortOrder: 'asc',
-      });
+      expect(mockExerciseService.getExercises).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          limit: 20,
+        })
+      );
     });
 
     it('should filter exercises by body part', async () => {

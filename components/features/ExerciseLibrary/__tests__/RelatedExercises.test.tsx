@@ -43,21 +43,17 @@ describe('RelatedExercises', () => {
     jest.clearAllMocks();
     mockSearchExercises.mockResolvedValue({
       exercises: [
-        { exerciseId: 'ex-2', name: 'Incline Press', bodyParts: ['chest'], targetMuscles: ['pectorals'], equipments: ['barbell'], gifUrl: 'incline.gif' },
-        { exerciseId: 'ex-3', name: 'Fly', bodyParts: ['chest'], targetMuscles: ['pectorals'], equipments: ['dumbbell'], gifUrl: 'fly.gif' },
+        { id: 'ex-2', exerciseId: 'ex-2', name: 'Incline Press', bodyParts: ['chest'], targetMuscles: ['pectorals'], equipments: ['barbell'], gifUrl: 'incline.gif' },
+        { id: 'ex-3', exerciseId: 'ex-3', name: 'Fly', bodyParts: ['chest'], targetMuscles: ['pectorals'], equipments: ['dumbbell'], gifUrl: 'fly.gif' },
       ],
     });
   });
 
-  it('renders the component', async () => {
+  it('renders the component heading after load', async () => {
     render(<RelatedExercises currentExercise={mockCurrentExercise} />);
-    expect(screen.getByText('Related Exercises')).toBeInTheDocument();
-  });
-
-  it('shows loading state initially', () => {
-    render(<RelatedExercises currentExercise={mockCurrentExercise} />);
-    // Should show loading skeleton or spinner
-    expect(screen.getByText('Related Exercises')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Related Exercises')).toBeInTheDocument();
+    });
   });
 
   it('loads related exercises on mount', async () => {
@@ -77,12 +73,15 @@ describe('RelatedExercises', () => {
     });
   });
 
-  it('renders filter tabs', () => {
+  it('renders filter buttons', async () => {
     render(<RelatedExercises currentExercise={mockCurrentExercise} />);
-    expect(screen.getByText('All')).toBeInTheDocument();
-    expect(screen.getByText('Body Part')).toBeInTheDocument();
-    expect(screen.getByText('Muscle')).toBeInTheDocument();
-    expect(screen.getByText('Equipment')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('Most Relevant')).toBeInTheDocument();
+      expect(screen.getByText('Same Body Part')).toBeInTheDocument();
+      expect(screen.getByText('Same Muscles')).toBeInTheDocument();
+      expect(screen.getByText('Same Equipment')).toBeInTheDocument();
+    });
   });
 
   it('switches filter and refetches', async () => {
@@ -92,10 +91,18 @@ describe('RelatedExercises', () => {
       expect(mockSearchExercises).toHaveBeenCalledTimes(1);
     });
 
-    fireEvent.click(screen.getByText('Muscle'));
+    fireEvent.click(screen.getByText('Same Muscles'));
 
     await waitFor(() => {
       expect(mockSearchExercises).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('shows View All Related Exercises button', async () => {
+    render(<RelatedExercises currentExercise={mockCurrentExercise} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('View All Related Exercises')).toBeInTheDocument();
     });
   });
 });

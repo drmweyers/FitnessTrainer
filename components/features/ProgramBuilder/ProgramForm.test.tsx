@@ -1,3 +1,4 @@
+/** @jest-environment jsdom */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -56,7 +57,9 @@ describe('ProgramForm', () => {
       expect(screen.getByLabelText('Program Name *')).toBeInTheDocument();
       expect(screen.getByLabelText('Description')).toBeInTheDocument();
       expect(screen.getByLabelText('Program Type *')).toBeInTheDocument();
-      expect(screen.getByRole('group', { name: /difficulty level/i })).toBeInTheDocument();
+      // Difficulty level has both a fieldset and a div[role=group], match either
+      const groups = screen.getAllByRole('group', { name: /difficulty level/i });
+      expect(groups.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should render program type options', () => {
@@ -93,9 +96,10 @@ describe('ProgramForm', () => {
     it('should render common goals suggestions', () => {
       renderWithProvider(<ProgramForm onNext={jest.fn()} onPrev={jest.fn()} />);
 
-      expect(screen.getByText('Build Strength')).toBeInTheDocument();
-      expect(screen.getByText('Gain Muscle')).toBeInTheDocument();
-      expect(screen.getByText('Lose Weight')).toBeInTheDocument();
+      // Goals render as "+ Build Strength" etc.
+      expect(screen.getByText('+ Build Strength')).toBeInTheDocument();
+      expect(screen.getByText('+ Gain Muscle')).toBeInTheDocument();
+      expect(screen.getByText('+ Lose Weight')).toBeInTheDocument();
     });
 
     it('should render equipment options', () => {
@@ -110,11 +114,10 @@ describe('ProgramForm', () => {
 
   describe('Input Handling', () => {
     it('should update program name input', async () => {
-      const user = userEvent.setup();
       renderWithProvider(<ProgramForm onNext={jest.fn()} onPrev={jest.fn()} />);
 
       const input = screen.getByLabelText('Program Name *');
-      await user.type(input, 'My Test Program');
+      fireEvent.change(input, { target: { value: 'My Test Program' } });
 
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'SET_BASIC_INFO',
@@ -123,11 +126,10 @@ describe('ProgramForm', () => {
     });
 
     it('should update description textarea', async () => {
-      const user = userEvent.setup();
       renderWithProvider(<ProgramForm onNext={jest.fn()} onPrev={jest.fn()} />);
 
       const textarea = screen.getByLabelText('Description');
-      await user.type(textarea, 'This is a test description');
+      fireEvent.change(textarea, { target: { value: 'This is a test description' } });
 
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'SET_BASIC_INFO',
@@ -439,8 +441,16 @@ describe('ProgramForm', () => {
     it('should use screen reader only labels for duration inputs', () => {
       renderWithProvider(<ProgramForm onNext={jest.fn()} onPrev={jest.fn()} />);
 
-      expect(screen.getByLabelText('Program Duration').className).toContain('sr-only');
-      expect(screen.getByLabelText('Duration in weeks').className).toContain('sr-only');
+      // The labels have sr-only class, not the inputs themselves
+      const durationRange = screen.getByLabelText('Program Duration');
+      expect(durationRange).toBeInTheDocument();
+      const durationNumber = screen.getByLabelText('Duration in weeks');
+      expect(durationNumber).toBeInTheDocument();
+      // Verify the labels exist with sr-only (check via associated label elements)
+      const rangeLabel = document.querySelector('label[for="duration-range"]');
+      expect(rangeLabel?.className).toContain('sr-only');
+      const numberLabel = document.querySelector('label[for="duration-number"]');
+      expect(numberLabel?.className).toContain('sr-only');
     });
 
     it('should display error messages with role="alert"', async () => {

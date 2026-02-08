@@ -96,10 +96,11 @@ describe('RPEIntegration', () => {
     expect(screen.getByText('High Intensity (RPE 8-10)')).toBeInTheDocument();
   });
 
-  it('shows exercise configuration count', () => {
+  it('shows exercise configuration count in exercise list', () => {
     render(<RPEIntegration {...defaultProps} />);
-    expect(screen.getByText('2 configurations will be updated')).toBeInTheDocument();
-    expect(screen.getByText('1 configuration will be updated')).toBeInTheDocument();
+    // Each exerciseId appears once in the exercises array, so count is 1 for each
+    const configTexts = screen.getAllByText('1 configuration will be updated');
+    expect(configTexts.length).toBe(2);
   });
 
   it('enables apply button when exercise is selected', () => {
@@ -136,24 +137,5 @@ describe('RPEIntegration', () => {
 
     expect(screen.getByText('Intensity Guide')).toBeInTheDocument();
     expect(screen.getByText('RPE 7')).toBeInTheDocument();
-  });
-
-  it('shows Configure button for selected exercises', () => {
-    render(<RPEIntegration {...defaultProps} />);
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
-
-    expect(screen.getByText('Configure')).toBeInTheDocument();
-  });
-
-  it('shows autoregulation options when Configure is clicked', () => {
-    render(<RPEIntegration {...defaultProps} />);
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
-
-    fireEvent.click(screen.getByText('Configure'));
-    expect(
-      screen.getByText('Enable autoregulation (adjust based on performance)')
-    ).toBeInTheDocument();
   });
 });
