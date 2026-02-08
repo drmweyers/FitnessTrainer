@@ -1,14 +1,8 @@
-/**
- * Forgot Password API Route
- *
- * POST /api/auth/forgot-password
- *
- * Sends a password reset email to the user
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { z } from 'zod';
+import { randomBytes } from 'crypto';
+import { sendPasswordResetEmail } from '@/lib/services/email';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -19,17 +13,35 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email } = forgotPasswordSchema.parse(body);
 
-    // Check if user exists (but don't reveal this to the client)
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
-      select: { id: true, email: true },
+      select: { id: true, email: true, userProfile: { select: { bio: true } } },
     });
 
     // Always return success to prevent email enumeration
-    // In production, send actual reset email here
     if (user) {
-      // TODO: Generate reset token, store in DB, send email
-      console.log(`Password reset requested for user ${user.id}`);
+      // Invalidate any existing reset tokens
+      await prisma.passwordReset.updateMany({
+        where: { userId: user.id, usedAt: null },
+        data: { usedAt: new Date() },
+      });
+
+      // Generate a secure random token
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      await prisma.passwordReset.create({
+        data: {
+          userId: user.id,
+          token,
+          expiresAt,
+        },
+      });
+
+      // Send email (non-blocking -- don't fail the request if email fails)
+      sendPasswordResetEmail(user.email, token).catch((err) => {
+        console.error('Failed to send password reset email:', err);
+      });
     }
 
     return NextResponse.json({

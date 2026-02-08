@@ -28,14 +28,33 @@ export default function ForgotPasswordPage() {
       return
     }
 
-    // Password reset functionality is not yet implemented
-    setError('Password reset is not yet available. Please contact support at support@evofit.io for assistance.')
+    setIsLoading(true)
+
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong')
+        return
+      }
+
+      setIsSubmitted(true)
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        {/* Logo and Header */}
         <div className="flex justify-center">
           <div className="flex items-center space-x-2">
             <div className="bg-primary-600 p-2 rounded-lg">
@@ -48,14 +67,13 @@ export default function ForgotPasswordPage() {
           Reset your password
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Password reset functionality is currently unavailable
+          Enter your email and we&apos;ll send you reset instructions
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {isSubmitted ? (
-            /* Success State */
             <div className="text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                 <CheckCircle className="h-6 w-6 text-green-600" />
@@ -87,25 +105,7 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
           ) : (
-            /* Form State */
             <>
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                <div className="flex items-start space-x-2">
-                  <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-blue-900 mb-1">Password Reset Not Available</p>
-                    <p className="text-sm text-blue-800">
-                      We&apos;re currently setting up our password reset system.
-                      In the meantime, please contact support at{' '}
-                      <a href="mailto:support@evofit.io" className="font-medium underline">
-                        support@evofit.io
-                      </a>
-                      {' '}for assistance with your account.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               {error && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start space-x-2">
                   <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -144,11 +144,10 @@ export default function ForgotPasswordPage() {
                 <div>
                   <button
                     type="submit"
-                    disabled={true}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 cursor-not-allowed transition-colors"
-                    title="Password reset is not yet available"
+                    disabled={isLoading}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    Reset Unavailable
+                    {isLoading ? 'Sending...' : 'Send reset instructions'}
                   </button>
                 </div>
               </form>
