@@ -66,6 +66,19 @@ describe('DayCell', () => {
     expect(screen.getByTestId('icon-plus')).toBeInTheDocument();
   });
 
+  it('should hide plus button on mouse leave for active day', () => {
+    const day = createDay({
+      workouts: [
+        { id: 'w1', title: 'Push', type: 'strength', exercises: [], syncStatus: 'synced' },
+      ],
+    });
+    const { container } = render(<DayCell day={day} />);
+    fireEvent.mouseEnter(container.firstChild!);
+    fireEvent.mouseLeave(container.firstChild!);
+    // After mouse leave, plus button should be hidden when workouts exist
+    expect(screen.queryByTestId('icon-plus')).not.toBeInTheDocument();
+  });
+
   it('should render multiple workouts', () => {
     const day = createDay({
       workouts: [

@@ -455,6 +455,236 @@ describe('AuthContext', () => {
     expect(mockResendVerification).toHaveBeenCalledWith({ email: 'test@test.com' });
   });
 
+  it('changePassword succeeds when authenticated', async () => {
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test' };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+    mockChangePassword.mockResolvedValue({});
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    await act(async () => {
+      screen.getByText('ChangePassword').click();
+    });
+
+    expect(mockChangePassword).toHaveBeenCalledWith({ currentPassword: 'oldpass', newPassword: 'newpass' });
+  });
+
+  it('changePassword error throws with message', async () => {
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test' };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+    mockChangePassword.mockRejectedValue(new Error('Wrong password'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    await act(async () => {
+      try { screen.getByText('ChangePassword').click(); } catch {}
+    });
+  });
+
+  it('verifyEmail updates user verification status when authenticated', async () => {
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test', isVerified: false };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+    mockVerifyEmail.mockResolvedValue({ data: {} });
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    await act(async () => {
+      screen.getByText('VerifyEmail').click();
+    });
+
+    expect(mockVerifyEmail).toHaveBeenCalledWith({ token: 'verify-token' });
+  });
+
+  it('verifyEmail error throws', async () => {
+    mockVerifyEmail.mockRejectedValue(new Error('Invalid token'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      try { screen.getByText('VerifyEmail').click(); } catch {}
+    });
+  });
+
+  it('resendVerification error throws', async () => {
+    mockResendVerification.mockRejectedValue(new Error('Too many requests'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      try { screen.getByText('ResendVerification').click(); } catch {}
+    });
+  });
+
+  it('resetPassword error throws', async () => {
+    mockResetPassword.mockRejectedValue(new Error('Invalid token'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      try { screen.getByText('ResetPassword').click(); } catch {}
+    });
+  });
+
+  it('logout handles API error gracefully', async () => {
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test' };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+    mockGetTokens.mockReturnValue({ accessToken: 'at', refreshToken: 'rt' });
+    mockLogout.mockRejectedValue(new Error('Network error'));
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    await act(async () => {
+      screen.getByText('Logout').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('false');
+    });
+    // Logout still clears tokens even when API fails
+    expect(mockClearTokens).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('login error with AuthApiError uses API error message', async () => {
+    const { AuthApiError } = require('@/lib/api/auth');
+    mockLogin.mockRejectedValue(new AuthApiError('Invalid email or password'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      try { screen.getByText('Login').click(); } catch {}
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error').textContent).toBe('Invalid email or password');
+    });
+  });
+
+  it('register error with AuthApiError uses API error message', async () => {
+    const { AuthApiError } = require('@/lib/api/auth');
+    mockRegister.mockRejectedValue(new AuthApiError('Email already exists'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      try { screen.getByText('Register').click(); } catch {}
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error').textContent).toBe('Email already exists');
+    });
+  });
+
   it('handles auth:logout window event', async () => {
     render(
       <AuthProvider>

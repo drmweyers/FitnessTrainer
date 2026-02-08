@@ -169,4 +169,168 @@ describe('ProgramList', () => {
       });
     });
   });
+
+  describe('Filtering', () => {
+    it('should refetch programs when filters change', async () => {
+      mockFetchPrograms.mockResolvedValue(createMockPrograms(2));
+      const { rerender } = render(<ProgramList filters={{}} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(mockFetchPrograms).toHaveBeenCalledTimes(1);
+      });
+
+      const newFilters = { programType: 'STRENGTH' };
+      rerender(<ProgramList filters={newFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(mockFetchPrograms).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    it('should pass filters to fetchPrograms', async () => {
+      const filters = {
+        programType: 'STRENGTH',
+        difficultyLevel: 'INTERMEDIATE'
+      };
+      mockFetchPrograms.mockResolvedValue([]);
+
+      render(<ProgramList filters={filters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(mockFetchPrograms).toHaveBeenCalledWith(
+          expect.objectContaining(filters)
+        );
+      });
+    });
+  });
+
+  describe('View modes', () => {
+    it('should render in grid mode', async () => {
+      mockFetchPrograms.mockResolvedValue(createMockPrograms(2));
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Program 1')).toBeInTheDocument();
+      });
+    });
+
+    it('should render in list mode', async () => {
+      mockFetchPrograms.mockResolvedValue(createMockPrograms(2));
+      render(<ProgramList filters={defaultFilters} viewMode="list" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Program 1')).toBeInTheDocument();
+      });
+    });
+
+    it('should maintain view mode across rerenders', async () => {
+      mockFetchPrograms.mockResolvedValue(createMockPrograms(1));
+      const { rerender } = render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('grid')).toBeInTheDocument();
+      });
+
+      rerender(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('grid')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Program actions', () => {
+    it('should handle retry on error', async () => {
+      mockFetchPrograms
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce(createMockPrograms(1));
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Try Again')).toBeInTheDocument();
+      });
+
+      const retryButton = screen.getByText('Try Again');
+      retryButton.click();
+
+      await waitFor(() => {
+        expect(screen.getByText('Program 1')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Multiple programs', () => {
+    it('should render many programs', async () => {
+      mockFetchPrograms.mockResolvedValue(createMockPrograms(10));
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Program 1')).toBeInTheDocument();
+        expect(screen.getByText('Program 10')).toBeInTheDocument();
+      });
+    });
+
+    it('should handle programs with different types', async () => {
+      const mixedPrograms = [
+        { ...createMockPrograms(1)[0], programType: ProgramType.STRENGTH },
+        { ...createMockPrograms(1)[0], id: 'prog-2', name: 'Program 2', programType: ProgramType.CARDIO },
+      ];
+      mockFetchPrograms.mockResolvedValue(mixedPrograms);
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Program 1')).toBeInTheDocument();
+        expect(screen.getByText('Program 2')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle null filters', async () => {
+      mockFetchPrograms.mockResolvedValue([]);
+      render(<ProgramList filters={null as any} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('No programs yet')).toBeInTheDocument();
+      });
+    });
+
+    it('should handle undefined filters', async () => {
+      mockFetchPrograms.mockResolvedValue([]);
+      render(<ProgramList filters={undefined as any} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('No programs yet')).toBeInTheDocument();
+      });
+    });
+
+    it('should handle fetch returning null', async () => {
+      mockFetchPrograms.mockResolvedValue(null);
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Program 1')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should handle initial loading state', () => {
+      mockFetchPrograms.mockReturnValue(new Promise(() => {}));
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      expect(screen.getByText('Loading programs...')).toBeInTheDocument();
+      expect(screen.queryByText('Error')).not.toBeInTheDocument();
+    });
+
+    it('should show create button in empty state', async () => {
+      mockFetchPrograms.mockResolvedValue([]);
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        const createBtn = screen.getByText('Create Your First Program');
+        expect(createBtn).toBeInTheDocument();
+      });
+    });
+  });
 });

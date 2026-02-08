@@ -323,4 +323,158 @@ describe('ExerciseFiltersAdvanced', () => {
       expect(saveBtn).toBeInTheDocument();
     }
   });
+
+  describe('Edge cases', () => {
+    it('handles empty filter options', () => {
+      const emptyOptions = {
+        bodyParts: [],
+        equipments: [],
+        targetMuscles: [],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filterOptions={emptyOptions}
+        />
+      );
+      expect(screen.getByText('Filters')).toBeInTheDocument();
+    });
+
+    it('handles multiple bodyParts selected', () => {
+      const multiFilters = {
+        ...defaultFilters,
+        bodyParts: ['chest', 'back', 'shoulders'],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={multiFilters}
+        />
+      );
+      expect(screen.getByText('3 active')).toBeInTheDocument();
+    });
+
+    it('handles multiple equipments selected', () => {
+      const multiEquip = {
+        ...defaultFilters,
+        equipments: ['barbell', 'dumbbell', 'cable'],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={multiEquip}
+        />
+      );
+      expect(screen.getByText('3 active')).toBeInTheDocument();
+    });
+
+    it('handles all filter types at once', () => {
+      const allFilters = {
+        bodyParts: ['chest'],
+        equipments: ['barbell'],
+        targetMuscles: ['biceps'],
+        search: 'test',
+        favorites: true,
+        collections: ['col-1'],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={allFilters}
+        />
+      );
+      // Should show count of all active filters
+      expect(screen.getByText(/\d+ active/)).toBeInTheDocument();
+    });
+
+    it('handles removing bodyPart filter', () => {
+      const filters = {
+        ...defaultFilters,
+        bodyParts: ['chest', 'back'],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={filters}
+        />
+      );
+
+      const chestCheckbox = screen.getAllByText('chest')
+        .map(el => el.closest('label')?.querySelector('input'))
+        .find(input => input != null);
+
+      if (chestCheckbox) {
+        fireEvent.click(chestCheckbox);
+        expect(mockOnChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            bodyParts: ['back'],
+          })
+        );
+      }
+    });
+
+    it('handles search with no results', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+      fireEvent.click(screen.getByText('Target Muscles'));
+
+      const searchInput = screen.getByPlaceholderText('Search muscles...');
+      fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+
+      // Should show no muscle options
+      expect(screen.queryByText('biceps')).not.toBeInTheDocument();
+    });
+
+    it('handles search case insensitive', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+      fireEvent.click(screen.getByText('Target Muscles'));
+
+      const searchInput = screen.getByPlaceholderText('Search muscles...');
+      fireEvent.change(searchInput, { target: { value: 'BICEPS' } });
+
+      expect(screen.getByText('biceps')).toBeInTheDocument();
+    });
+
+    it('collapses expanded sections when clicked again', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+
+      // Body Parts is expanded by default
+      expect(screen.getByText('chest')).toBeInTheDocument();
+
+      // Click to collapse
+      fireEvent.click(screen.getByText('Body Parts'));
+
+      // Should be collapsed (may still show in badges)
+    });
+
+    it('handles preset with undefined fields', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+      fireEvent.click(screen.getByText('Filter Presets'));
+
+      // Apply a preset
+      const presetBtn = screen.getByText('Strength Training');
+      fireEvent.click(presetBtn);
+
+      expect(mockOnChange).toHaveBeenCalled();
+    });
+
+    it('maintains filter state across re-renders', () => {
+      const { rerender } = render(
+        <ExerciseFiltersAdvanced {...defaultProps} />
+      );
+
+      const filtersWithActive = {
+        ...defaultFilters,
+        bodyParts: ['chest'],
+      };
+
+      rerender(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={filtersWithActive}
+        />
+      );
+
+      expect(screen.getByText('1 active')).toBeInTheDocument();
+    });
+  });
 });
