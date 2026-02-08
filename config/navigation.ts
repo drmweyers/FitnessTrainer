@@ -5,6 +5,7 @@ import {
   Dumbbell,
   ClipboardList,
   Calendar,
+  CalendarDays,
   BarChart3,
   Settings,
   User,
@@ -61,6 +62,13 @@ export const navigationConfig: NavigationItem[] = [
     icon: BarChart3,
     roles: ['admin']
   },
+  {
+    id: 'admin-schedule',
+    label: 'Schedule',
+    href: '/schedule',
+    icon: CalendarDays,
+    roles: ['admin']
+  },
 
   // Trainer-specific navigation
   {
@@ -114,6 +122,13 @@ export const navigationConfig: NavigationItem[] = [
     icon: BarChart3,
     roles: ['trainer']
   },
+  {
+    id: 'trainer-schedule',
+    label: 'Schedule',
+    href: '/schedule',
+    icon: CalendarDays,
+    roles: ['trainer']
+  },
 
   // Client-specific navigation
   {
@@ -142,6 +157,13 @@ export const navigationConfig: NavigationItem[] = [
     label: 'Analytics',
     href: '/analytics',
     icon: BarChart3,
+    roles: ['client']
+  },
+  {
+    id: 'client-schedule',
+    label: 'Schedule',
+    href: '/schedule',
+    icon: CalendarDays,
     roles: ['client']
   },
   {
