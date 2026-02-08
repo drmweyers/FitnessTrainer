@@ -138,4 +138,84 @@ describe('RPEIntegration', () => {
     expect(screen.getByText('Intensity Guide')).toBeInTheDocument();
     expect(screen.getByText('RPE 7')).toBeInTheDocument();
   });
+
+  it('changes RPE value via select dropdown', () => {
+    render(<RPEIntegration {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    const rpeSelect = screen.getByDisplayValue(/RPE 7/);
+    fireEvent.change(rpeSelect, { target: { value: '9' } });
+
+    // After changing RPE to 9, RIR should auto-calculate to 1
+    expect(screen.getByText('RPE 9')).toBeInTheDocument();
+  });
+
+  it('changes RIR value via number input', () => {
+    render(<RPEIntegration {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    const rirInput = screen.getByDisplayValue('3'); // Default RIR for RPE 7
+    fireEvent.change(rirInput, { target: { value: '1' } });
+    expect(rirInput).toHaveValue(1);
+  });
+
+  it('toggles advanced configuration with Configure/Hide button', () => {
+    render(<RPEIntegration {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    // Click Configure to show advanced options
+    const configureBtn = screen.getByText('Configure');
+    fireEvent.click(configureBtn);
+
+    // Should now show advanced config with autoAdjust checkbox
+    expect(screen.getByText('Hide')).toBeInTheDocument();
+
+    // Click Hide to collapse
+    fireEvent.click(screen.getByText('Hide'));
+    expect(screen.getByText('Configure')).toBeInTheDocument();
+  });
+
+  it('handles duplicate exercise IDs by counting occurrences', () => {
+    const exercisesWithDuplicates = [
+      { exerciseId: 'ex-1', orderIndex: 0, configurations: [] },
+      { exerciseId: 'ex-1', orderIndex: 1, configurations: [] },
+    ];
+    render(<RPEIntegration exercises={exercisesWithDuplicates as any} onUpdateExercises={mockOnUpdateExercises} />);
+    // Should show "2 configurations will be updated" for ex-1
+    expect(screen.getByText('2 configurations will be updated')).toBeInTheDocument();
+  });
+
+  it('applies RPE to exercises with configurations', () => {
+    render(<RPEIntegration {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]); // Select ex-1
+
+    const applyButton = screen.getAllByText('Apply RPE Settings')[0];
+    fireEvent.click(applyButton);
+
+    // Should call onUpdateExercises with updated configurations
+    const call = mockOnUpdateExercises.mock.calls[0][0];
+    // ex-1 should have updated configs with RPE values
+    expect(call[0].configurations[0].rpe).toBe(7);
+    expect(call[0].configurations[0].rir).toBe(3);
+  });
+
+  it('calculates RIR correctly for different RPE values', () => {
+    render(<RPEIntegration {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    const rpeSelect = screen.getByDisplayValue(/RPE 7/);
+
+    // Change to RPE 10
+    fireEvent.change(rpeSelect, { target: { value: '10' } });
+    expect(screen.getByText('RPE 10')).toBeInTheDocument();
+
+    // Change to RPE 6 (low RPE, should get RIR 4)
+    fireEvent.change(rpeSelect, { target: { value: '6' } });
+    expect(screen.getByText('RPE 6')).toBeInTheDocument();
+  });
 });
