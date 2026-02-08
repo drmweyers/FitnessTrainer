@@ -171,7 +171,7 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
   }
 
   const handleCreateProgram = () => {
-    router.push('/programs/create')
+    router.push('/programs/new')
   }
 
   // Filter programs based on client-side filters (for immediate response)

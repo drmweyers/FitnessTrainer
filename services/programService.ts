@@ -17,6 +17,17 @@ import type {
 
 const API_BASE = '/api/programs';
 
+function getAuthHeaders(): HeadersInit {
+  const headers: HeadersInit = { 'Content-Type': 'application/json' };
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  return headers;
+}
+
 /**
  * Program Service
  */
@@ -38,9 +49,7 @@ export const programService = {
 
     const queryString = params.toString();
     const response = await fetch(`${API_BASE}${queryString ? `?${queryString}` : ''}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -56,9 +65,7 @@ export const programService = {
    */
   async getById(id: string): Promise<Program> {
     const response = await fetch(`${API_BASE}/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -75,9 +82,7 @@ export const programService = {
   async create(data: ProgramData): Promise<Program> {
     const response = await fetch(API_BASE, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
@@ -95,9 +100,7 @@ export const programService = {
   async update(id: string, data: Partial<ProgramData>): Promise<Program> {
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
@@ -115,9 +118,7 @@ export const programService = {
   async delete(id: string): Promise<void> {
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -132,9 +133,7 @@ export const programService = {
   async duplicate(id: string, name?: string): Promise<Program> {
     const response = await fetch(`${API_BASE}/${id}/duplicate`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ name }),
     });
 
@@ -152,9 +151,7 @@ export const programService = {
   async assignToClient(id: string, data: AssignProgramData): Promise<ProgramAssignment> {
     const response = await fetch(`${API_BASE}/${id}/assign`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
@@ -172,9 +169,7 @@ export const programService = {
   async getTemplates(category?: string): Promise<ProgramTemplate[]> {
     const queryString = category ? `?category=${category}` : '';
     const response = await fetch(`${API_BASE}/templates${queryString}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {

@@ -15,6 +15,17 @@ import type {
 
 const API_BASE = '/api/workouts';
 
+function getAuthHeaders(): HeadersInit {
+  const headers: HeadersInit = { 'Content-Type': 'application/json' };
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  return headers;
+}
+
 export const workoutService = {
   /**
    * Get workout sessions with optional filters
@@ -30,7 +41,9 @@ export const workoutService = {
     if (filters?.limit) params.append('limit', String(filters.limit));
 
     const queryString = params.toString();
-    const response = await fetch(`${API_BASE}${queryString ? `?${queryString}` : ''}`);
+    const response = await fetch(`${API_BASE}${queryString ? `?${queryString}` : ''}`, {
+      headers: getAuthHeaders(),
+    });
 
     if (!response.ok) {
       const error = await response.json();
@@ -44,7 +57,9 @@ export const workoutService = {
    * Get workout session by ID
    */
   async getById(id: string): Promise<WorkoutSession> {
-    const response = await fetch(`${API_BASE}/${id}`);
+    const response = await fetch(`${API_BASE}/${id}`, {
+      headers: getAuthHeaders(),
+    });
 
     if (!response.ok) {
       const error = await response.json();
@@ -64,7 +79,7 @@ export const workoutService = {
   }): Promise<WorkoutSession> {
     const response = await fetch(API_BASE, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
@@ -82,7 +97,7 @@ export const workoutService = {
   async updateSession(id: string, data: Partial<WorkoutSession>): Promise<WorkoutSession> {
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
@@ -100,7 +115,7 @@ export const workoutService = {
   async logSet(sessionId: string, setData: LogSetDTO): Promise<any> {
     const response = await fetch(`${API_BASE}/${sessionId}/sets`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(setData),
     });
 
@@ -121,7 +136,7 @@ export const workoutService = {
   ): Promise<void> {
     const response = await fetch(`${API_BASE}/${sessionId}/complete`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ notes, endTime: new Date().toISOString() }),
     });
 
@@ -135,7 +150,9 @@ export const workoutService = {
    * Get active workout session
    */
   async getActiveSession(): Promise<WorkoutSession | null> {
-    const response = await fetch(`${API_BASE}/active`);
+    const response = await fetch(`${API_BASE}/active`, {
+      headers: getAuthHeaders(),
+    });
 
     if (response.status === 204) {
       return null;
@@ -161,7 +178,9 @@ export const workoutService = {
    */
   async getProgress(exerciseId?: string): Promise<ProgressData> {
     const params = exerciseId ? `?exerciseId=${exerciseId}` : '';
-    const response = await fetch(`${API_BASE}/progress${params}`);
+    const response = await fetch(`${API_BASE}/progress${params}`, {
+      headers: getAuthHeaders(),
+    });
 
     if (!response.ok) {
       const error = await response.json();
@@ -177,6 +196,7 @@ export const workoutService = {
   async delete(id: string): Promise<void> {
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {

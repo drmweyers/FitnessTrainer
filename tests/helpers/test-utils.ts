@@ -74,7 +74,7 @@ export function createMockRequest(
     requestInit.body = JSON.stringify(body);
   }
 
-  return new NextRequest(urlObj.toString(), requestInit);
+  return new NextRequest(urlObj.toString(), requestInit as any);
 }
 
 // ─── Auth Mock Helpers ───
