@@ -6,11 +6,30 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
   onValueChange?: (value: string) => void
 }
 
-const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+// Context to share select element between wrapper and trigger
+const SelectContext = React.createContext<{
+  value?: string
+  onValueChange?: (value: string) => void
+}>({})
+
+const SelectRoot = React.forwardRef<HTMLDivElement, { children: React.ReactNode; value?: string; onValueChange?: (value: string) => void }>(
+  ({ children, value, onValueChange }, ref) => {
+    return (
+      <SelectContext.Provider value={{ value, onValueChange }}>
+        <div ref={ref}>{children}</div>
+      </SelectContext.Provider>
+    )
+  }
+)
+SelectRoot.displayName = "SelectRoot"
+
+const SelectTrigger = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, children, onValueChange, onChange, ...props }, ref) => {
+    const context = React.useContext(SelectContext)
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       onChange?.(e)
       onValueChange?.(e.target.value)
+      context.onValueChange?.(e.target.value)
     }
     return (
       <select
@@ -20,6 +39,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           className
         )}
         onChange={handleChange}
+        value={context.value}
         {...props}
       >
         {children}
@@ -27,11 +47,12 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     )
   }
 )
-Select.displayName = "Select"
+SelectTrigger.displayName = "SelectTrigger"
 
-export { Select }
+// For backwards compatibility, Select points to SelectTrigger
+const Select = SelectTrigger
 
-export const SelectTrigger = Select
+export { Select, SelectTrigger }
 
 interface SelectValueProps extends React.HTMLAttributes<HTMLSpanElement> {
   placeholder?: string
@@ -46,9 +67,10 @@ export const SelectValue = React.forwardRef<HTMLSpanElement, SelectValueProps>(
 )
 SelectValue.displayName = "SelectValue"
 
+// SelectContent is just a passthrough wrapper for native select - renders children directly
 export const SelectContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('', className)} {...props} />
+  ({ children }, ref) => (
+    <>{children}</>
   )
 )
 SelectContent.displayName = "SelectContent"
