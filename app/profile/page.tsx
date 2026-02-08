@@ -7,6 +7,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import ProgressPhotosGallery from '@/components/features/Profile/ProgressPhotosGallery';
 
 interface ProfileData {
   id: string;
@@ -280,6 +281,8 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
+        {/* Progress Photos */}
+        <ProgressPhotosGallery />
       </div>
     </DashboardLayout>
   );

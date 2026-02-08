@@ -14,6 +14,7 @@ import {
   ActivityFeedItem,
   QuickAction
 } from '@/types/dashboard';
+import ProfileCompletionWidget from '@/components/features/Dashboard/ProfileCompletionWidget';
 
 /**
  * Client Dashboard
@@ -245,6 +246,9 @@ export default function ClientDashboard() {
             color="purple"
           />
         </div>
+
+        {/* Profile Completion */}
+        <ProfileCompletionWidget />
 
         {/* Today's Workout */}
         <div className="bg-white rounded-lg border border-gray-200">
