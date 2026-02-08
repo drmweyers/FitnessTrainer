@@ -134,6 +134,37 @@ describe('UserMenu', () => {
     expect(screen.queryByText('Confirm Sign Out')).not.toBeInTheDocument();
   });
 
+  it('should call logout and redirect on confirm', async () => {
+    render(<UserMenu />);
+    const trigger = screen.getByRole('button', { expanded: false });
+    fireEvent.click(trigger);
+    // First click shows confirmation
+    fireEvent.click(screen.getByText('Sign Out'));
+    // Second click confirms logout
+    fireEvent.click(screen.getByText('Sign Out'));
+    expect(mockLogout).toHaveBeenCalled();
+    await new Promise(r => setTimeout(r, 0));
+    expect(mockPush).toHaveBeenCalledWith('/login');
+  });
+
+  it('should close menu when clicking outside', () => {
+    render(<UserMenu />);
+    const trigger = screen.getByRole('button', { expanded: false });
+    fireEvent.click(trigger);
+    expect(screen.getByText('Sign Out')).toBeInTheDocument();
+    // Click outside
+    fireEvent.mouseDown(document.body);
+    expect(screen.queryByText('Sign Out')).not.toBeInTheDocument();
+  });
+
+  it('should close menu when a menu item link is clicked', () => {
+    render(<UserMenu />);
+    const trigger = screen.getByRole('button', { expanded: false });
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByText('My Profile'));
+    expect(screen.queryByText('Sign Out')).not.toBeInTheDocument();
+  });
+
   it('should render nothing when not authenticated', () => {
     jest.spyOn(require('@/contexts/AuthContext'), 'useAuth').mockReturnValue({
       user: null,

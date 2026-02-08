@@ -57,32 +57,42 @@ describe('MetricsDisplay', () => {
     expect(screen.getByTestId('mock-chart')).toBeInTheDocument();
   });
 
-  it('renders metric selector buttons', () => {
+  it('renders the title', () => {
     render(<MetricsDisplay {...defaultProps} />);
-    expect(screen.getByText('Weight')).toBeInTheDocument();
-    expect(screen.getByText('Body Fat')).toBeInTheDocument();
-    expect(screen.getByText('Muscle Mass')).toBeInTheDocument();
+    expect(screen.getByText('Body Metrics')).toBeInTheDocument();
   });
 
-  it('renders time range selector', () => {
+  it('renders metric selector as dropdown with options', () => {
     render(<MetricsDisplay {...defaultProps} />);
-    expect(screen.getByText('1M')).toBeInTheDocument();
-    expect(screen.getByText('3M')).toBeInTheDocument();
-    expect(screen.getByText('6M')).toBeInTheDocument();
-    expect(screen.getByText('1Y')).toBeInTheDocument();
+    // Metric selector is a <select> with options
+    expect(screen.getByDisplayValue('Weight')).toBeInTheDocument();
   });
 
-  it('switches metric when button is clicked', () => {
+  it('renders time range selector as dropdown', () => {
     render(<MetricsDisplay {...defaultProps} />);
-    fireEvent.click(screen.getByText('Body Fat'));
-    // Chart should still render
+    // Time range selector defaults to "3 Months"
+    expect(screen.getByDisplayValue('3 Months')).toBeInTheDocument();
+  });
+
+  it('switches metric when dropdown changes', () => {
+    render(<MetricsDisplay {...defaultProps} />);
+    const metricSelect = screen.getByDisplayValue('Weight');
+    fireEvent.change(metricSelect, { target: { value: 'bodyFat' } });
+    expect(screen.getByDisplayValue('Body Fat')).toBeInTheDocument();
     expect(screen.getByTestId('mock-chart')).toBeInTheDocument();
   });
 
-  it('switches time range when button is clicked', () => {
+  it('switches time range when dropdown changes', () => {
     render(<MetricsDisplay {...defaultProps} />);
-    fireEvent.click(screen.getByText('1M'));
-    // Chart should still render
+    const timeSelect = screen.getByDisplayValue('3 Months');
+    fireEvent.change(timeSelect, { target: { value: '1m' } });
+    expect(screen.getByDisplayValue('1 Month')).toBeInTheDocument();
     expect(screen.getByTestId('mock-chart')).toBeInTheDocument();
+  });
+
+  it('displays current metric value', () => {
+    render(<MetricsDisplay {...defaultProps} />);
+    // Current weight is 76 (last entry)
+    expect(screen.getByText('76')).toBeInTheDocument();
   });
 });

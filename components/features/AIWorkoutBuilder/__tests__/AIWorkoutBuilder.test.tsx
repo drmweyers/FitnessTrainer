@@ -101,7 +101,8 @@ describe('AIWorkoutBuilder', () => {
   it('renders workout type options', () => {
     render(<AIWorkoutBuilder />);
     expect(screen.getByText('Strength')).toBeInTheDocument();
-    expect(screen.getByText('Cardio')).toBeInTheDocument();
+    // 'Cardio' appears in both focusArea select and workoutType select
+    expect(screen.getAllByText('Cardio').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Flexibility')).toBeInTheDocument();
     expect(screen.getByText('Mixed')).toBeInTheDocument();
   });
@@ -149,62 +150,67 @@ describe('AIWorkoutBuilder', () => {
   });
 
   it('generates a workout after clicking generate', async () => {
+    jest.useRealTimers();
     render(<AIWorkoutBuilder />);
 
-    // Wait for exercises to load
+    // Wait for exercises to load from fetch
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled();
     });
 
-    const generateButton = screen.getByText('Generate AI Workout');
-    fireEvent.click(generateButton);
-
-    // The button should show loading
-    expect(screen.getByText('Generating Workout...')).toBeInTheDocument();
-
-    // Advance timer to complete generation
-    act(() => {
-      jest.advanceTimersByTime(1500);
-    });
-
-    // After generation, the workout should be shown
+    // Wait for exercises state to update so button is enabled
     await waitFor(() => {
-      expect(screen.getByText('Save Workout')).toBeInTheDocument();
-      expect(screen.getByText('Discard')).toBeInTheDocument();
-    });
-  });
-
-  it('discards generated workout', async () => {
-    render(<AIWorkoutBuilder />);
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
+      const btn = screen.getByText('Generate AI Workout');
+      expect(btn.closest('button')).not.toBeDisabled();
     });
 
     fireEvent.click(screen.getByText('Generate AI Workout'));
-    act(() => { jest.advanceTimersByTime(1500); });
+
+    // The button text changes to include "Generating Workout..." via a Loader2 icon + text
+    await waitFor(() => {
+      expect(screen.getByText(/Generating Workout/)).toBeInTheDocument();
+    });
+
+    // Wait for generation timeout to complete
+    await waitFor(() => {
+      expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      expect(screen.getByText('Discard')).toBeInTheDocument();
+    }, { timeout: 3000 });
+  });
+
+  it('discards generated workout', async () => {
+    jest.useRealTimers();
+    render(<AIWorkoutBuilder />);
+
+    await waitFor(() => {
+      const btn = screen.getByText('Generate AI Workout');
+      expect(btn.closest('button')).not.toBeDisabled();
+    });
+
+    fireEvent.click(screen.getByText('Generate AI Workout'));
 
     await waitFor(() => {
       expect(screen.getByText('Discard')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     fireEvent.click(screen.getByText('Discard'));
     expect(screen.queryByText('Save Workout')).not.toBeInTheDocument();
   });
 
   it('saves a generated workout', async () => {
+    jest.useRealTimers();
     render(<AIWorkoutBuilder />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
+      const btn = screen.getByText('Generate AI Workout');
+      expect(btn.closest('button')).not.toBeDisabled();
     });
 
     fireEvent.click(screen.getByText('Generate AI Workout'));
-    act(() => { jest.advanceTimersByTime(1500); });
 
     await waitFor(() => {
       expect(screen.getByText('Save Workout')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     fireEvent.click(screen.getByText('Save Workout'));
     expect(screen.getByText(/Saved Workouts/)).toBeInTheDocument();

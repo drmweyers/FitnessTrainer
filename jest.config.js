@@ -1,17 +1,14 @@
 const nextJest = require('next/jest');
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files
   dir: './',
 });
 
-// Add any custom config to be passed to Jest
 const customJestConfig = {
   displayName: 'EvoFit Frontend Tests',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
-  
-  // Module name mapping for absolute imports and static assets
+
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^@/components/(.*)$': '<rootDir>/components/$1',
@@ -23,14 +20,12 @@ const customJestConfig = {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/__mocks__/fileMock.js',
   },
 
-  // Test patterns
-  testMatch: [
-    '<rootDir>/tests/**/*.spec.(ts|tsx|js)',
-    '<rootDir>/**/__tests__/**/*.(ts|tsx|js)',
-    '<rootDir>/**/?(*.)(spec|test).(ts|tsx|js)'
+  // Use testRegex instead of testMatch to avoid glob issues in worktree paths
+  testRegex: [
+    '/__tests__/.*\\.(ts|tsx|js)$',
+    '\\.(spec|test)\\.(ts|tsx|js)$'
   ],
 
-  // Coverage configuration
   collectCoverageFrom: [
     'app/api/**/*.(ts|tsx)',
     'components/**/*.(ts|tsx)',
@@ -44,7 +39,7 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!components/ui/**',
   ],
-  
+
   coverageReporters: ['text', 'lcov', 'html'],
   coverageDirectory: 'coverage',
   coverageThreshold: {
@@ -55,55 +50,36 @@ const customJestConfig = {
       statements: 70,
     },
   },
-  
-  // Module file extensions
+
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  
-  // Test environment options
+
   testEnvironmentOptions: {
     url: 'http://localhost:3000',
   },
-  
-  // Global setup and teardown
-  globalSetup: undefined,
-  globalTeardown: undefined,
-  
-  // Ignore patterns
+
   testPathIgnorePatterns: [
-    '<rootDir>/.next/',
-    '<rootDir>/node_modules/',
-    '<rootDir>/backend/',
-    '<rootDir>/dist/',
-    '<rootDir>/out/',
-    '<rootDir>/.auto-claude/',
-    '<rootDir>/tests/e2e/',
+    '/node_modules/',
+    '\\.next/',
+    '/backend/',
+    '/dist/',
+    '/out/',
+    '/\\.auto-claude/',
+    '/tests/e2e/',
   ],
-  // Explicitly exclude Playwright tests
-  testMatch: [
-    '<rootDir>/tests/unit/**/*.spec.(ts|tsx|js)',
-    '<rootDir>/**/__tests__/**/*.(ts|tsx|js)',
-    '<rootDir>/**/?(*.)(spec|test).(ts|tsx|js)'
-  ],
-  // Exclude Playwright test files
+
   forceExit: true,
+
   modulePathIgnorePatterns: [
-    '<rootDir>/.auto-claude/',
+    '/\\.auto-claude/',
   ],
-  
-  // Transform ignore patterns
+
   transformIgnorePatterns: [
     '/node_modules/(?!(.*\\.mjs$|uuid|nanoid|@radix-ui|framer-motion))',
   ],
-  
-  // Verbose output for debugging
+
   verbose: false,
-  
-  // Automatically clear mock calls and instances between every test
   clearMocks: true,
-  
-  // Automatically restore mock state between every test
   restoreMocks: true,
 };
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = createJestConfig(customJestConfig);

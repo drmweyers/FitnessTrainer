@@ -72,8 +72,11 @@ describe('SupersetBuilder', () => {
 
   it('disables create superset button when less than 2 exercises are selected', () => {
     render(<SupersetBuilder {...defaultProps} />);
-    const createButton = screen.getByText(/Create Superset/);
-    expect(createButton).toBeDisabled();
+    // There may be multiple "Create Superset" references in the text
+    const createButtons = screen.getAllByText(/Create Superset/);
+    // The actual button should be disabled
+    const button = createButtons.find(el => el.closest('button'));
+    expect(button?.closest('button')).toBeDisabled();
   });
 
   it('enables create superset button when 2 exercises are selected', () => {
@@ -82,8 +85,9 @@ describe('SupersetBuilder', () => {
     fireEvent.click(checkboxes[0]);
     fireEvent.click(checkboxes[1]);
 
-    const createButton = screen.getByText('Create Superset (2)');
-    expect(createButton).not.toBeDisabled();
+    const createButtons = screen.getAllByText(/Create Superset.*2/);
+    const button = createButtons.find(el => el.closest('button'));
+    expect(button?.closest('button')).not.toBeDisabled();
   });
 
   it('creates a superset when button is clicked', () => {
@@ -92,7 +96,9 @@ describe('SupersetBuilder', () => {
     fireEvent.click(checkboxes[0]);
     fireEvent.click(checkboxes[1]);
 
-    fireEvent.click(screen.getByText('Create Superset (2)'));
+    const createButtons = screen.getAllByText(/Create Superset.*2/);
+    const button = createButtons.find(el => el.closest('button'));
+    if (button) fireEvent.click(button.closest('button')!);
     expect(screen.getByText('Superset A')).toBeInTheDocument();
   });
 

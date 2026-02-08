@@ -3,37 +3,51 @@
  * Tests for exercise business logic
  */
 
-import { ExerciseService } from '@/lib/services/exercise.service';
-import { PrismaClient } from '@prisma/client';
+// Mock PrismaClient - the factory creates a singleton mock instance
+// We access the mock instance via PrismaClient.mock.results after import
+jest.mock('@prisma/client', () => {
+  const exerciseMock = {
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+    groupBy: jest.fn(),
+  };
+  return {
+    PrismaClient: jest.fn().mockImplementation(() => ({
+      exercise: exerciseMock,
+      $disconnect: jest.fn(),
+    })),
+    DifficultyLevel: {
+      beginner: 'beginner',
+      intermediate: 'intermediate',
+      advanced: 'advanced',
+    },
+    Prisma: {
+      SortOrder: { asc: 'asc', desc: 'desc' },
+    },
+    // Export the mock for test access
+    __exerciseMock: exerciseMock,
+  };
+});
 
-// Mock Prisma Client
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn(),
-}));
+import { ExerciseService } from '@/lib/services/exercise.service';
+
+// Access the mock after import
+const { __exerciseMock } = jest.requireMock('@prisma/client');
 
 describe('ExerciseService', () => {
   let exerciseService: ExerciseService;
-  let mockPrisma: any;
+  let mockPrisma: { exercise: any };
 
   beforeEach(() => {
-    // Create mock prisma client
-    mockPrisma = {
-      exercise: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        findFirst: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-        count: jest.fn(),
-        groupBy: jest.fn(),
-      },
-      $disconnect: jest.fn(),
-    };
+    // Reset all mocks
+    Object.values(__exerciseMock).forEach((fn: any) => fn.mockReset());
 
-    // Mock PrismaClient constructor
-    (PrismaClient as jest.Mock).mockImplementation(() => mockPrisma);
-
+    mockPrisma = { exercise: __exerciseMock };
     exerciseService = new ExerciseService();
   });
 
@@ -62,8 +76,9 @@ describe('ExerciseService', () => {
       ];
 
       mockPrisma.exercise.count.mockResolvedValue(1);
-      mockPrisma.exercise.findMany.mockResolvedValue(mockExercises);
+      // First findMany call returns exercises, then filter option queries follow
       mockPrisma.exercise.findMany
+        .mockResolvedValueOnce(mockExercises)
         .mockResolvedValueOnce([
           { bodyPart: 'chest' },
           { bodyPart: 'back' },

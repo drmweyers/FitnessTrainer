@@ -246,6 +246,65 @@ describe('ClientTags', () => {
         expect(screen.getByText('Try Again')).toBeInTheDocument();
       });
     });
+
+    it('shows error when createTag fails with ApiError', async () => {
+      const { ApiError } = require('@/lib/api/clients');
+      mockCreateTag.mockRejectedValue(new ApiError('Tag name taken'));
+      render(<ClientTags clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('Create Tag')).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText('Create Tag'));
+      const input = screen.getByPlaceholderText('Enter tag name...');
+      fireEvent.change(input, { target: { value: 'Duplicate' } });
+      const createButtons = screen.getAllByText('Create Tag');
+      fireEvent.click(createButtons[createButtons.length - 1]);
+      await waitFor(() => {
+        expect(screen.getByText('Tag name taken')).toBeInTheDocument();
+      });
+    });
+
+    it('shows generic error when createTag fails with unknown error', async () => {
+      mockCreateTag.mockRejectedValue(new Error('unexpected'));
+      render(<ClientTags clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('Create Tag')).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText('Create Tag'));
+      const input = screen.getByPlaceholderText('Enter tag name...');
+      fireEvent.change(input, { target: { value: 'Bad' } });
+      const createButtons = screen.getAllByText('Create Tag');
+      fireEvent.click(createButtons[createButtons.length - 1]);
+      await waitFor(() => {
+        expect(screen.getByText('Failed to create tag')).toBeInTheDocument();
+      });
+    });
+
+    it('shows error when assignTag fails', async () => {
+      mockAssignTags.mockRejectedValue(new Error('assign fail'));
+      render(<ClientTags clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('Morning')).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText('Morning'));
+      await waitFor(() => {
+        expect(screen.getByText('Failed to assign tag')).toBeInTheDocument();
+      });
+    });
+
+    it('shows error when removeTag fails', async () => {
+      mockRemoveTags.mockRejectedValue(new Error('remove fail'));
+      render(<ClientTags clientId="client-1" />);
+      await waitFor(() => {
+        const vipElements = screen.getAllByText('VIP');
+        expect(vipElements.length).toBeGreaterThan(0);
+      });
+      const xIcons = screen.getAllByTestId('icon-x');
+      fireEvent.click(xIcons[0].closest('button')!);
+      await waitFor(() => {
+        expect(screen.getByText('Failed to remove tag')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('API Calls', () => {

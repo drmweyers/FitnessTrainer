@@ -296,6 +296,55 @@ describe('EnhancedClientDashboard', () => {
     });
   });
 
+  describe('Disconnect Flow', () => {
+    const mockConnection = {
+      id: 'conn-1',
+      status: 'active',
+      connectedAt: '2024-01-01T00:00:00Z',
+      trainer: {
+        id: 'trainer-1',
+        email: 'trainer@example.com',
+        role: 'trainer' as const,
+        userProfile: {
+          id: 'up-1',
+          userId: 'trainer-1',
+          bio: 'Coach Mike',
+          preferredUnits: 'metric' as const,
+          isPublic: true,
+          createdAt: '2024-01-01',
+        },
+        trainerCertifications: [],
+        trainerSpecializations: [],
+      },
+    };
+
+    beforeEach(() => {
+      mockGetClientTrainer.mockResolvedValue(mockConnection);
+      mockDisconnectTrainer.mockResolvedValue(undefined);
+    });
+
+    it('calls disconnectTrainer when disconnect is confirmed', async () => {
+      render(<EnhancedClientDashboard />);
+      await waitFor(() => {
+        expect(screen.getByText('Disconnect')).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText('Disconnect'));
+      await waitFor(() => {
+        expect(mockDisconnectTrainer).toHaveBeenCalled();
+      });
+    });
+
+    it('does not disconnect when confirm is cancelled', async () => {
+      (window.confirm as jest.Mock).mockReturnValue(false);
+      render(<EnhancedClientDashboard />);
+      await waitFor(() => {
+        expect(screen.getByText('Disconnect')).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText('Disconnect'));
+      expect(mockDisconnectTrainer).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Stat Cards', () => {
     beforeEach(() => {
       mockGetClientTrainer.mockRejectedValue(new Error('No trainer'));

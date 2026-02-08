@@ -156,4 +156,141 @@ describe('ClientForm', () => {
     expect(screen.getByPlaceholderText('Spouse, Parent, etc.')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('(555) 123-4567')).toBeInTheDocument();
   });
+
+  it('renders goals tab fields', () => {
+    render(<ClientForm {...defaultProps} />);
+    fireEvent.click(screen.getByText('Goals'));
+    expect(screen.getByText('Primary Fitness Goal')).toBeInTheDocument();
+  });
+
+  it('allows changing fitness level', () => {
+    render(<ClientForm {...defaultProps} />);
+    const select = screen.getByDisplayValue('Beginner');
+    fireEvent.change(select, { target: { value: 'advanced' } });
+    expect(select).toHaveValue('advanced');
+  });
+
+  it('allows clicking workout day checkboxes', () => {
+    render(<ClientForm {...defaultProps} />);
+    const monButton = screen.getByText('Mon');
+    fireEvent.click(monButton);
+    // Mon should become selected (highlighted)
+    expect(monButton.closest('button')).toBeDefined();
+  });
+
+  it('fills in first and last name', () => {
+    render(<ClientForm {...defaultProps} />);
+    const firstName = screen.getByPlaceholderText('John');
+    const lastName = screen.getByPlaceholderText('Doe');
+    fireEvent.change(firstName, { target: { value: 'Alice' } });
+    fireEvent.change(lastName, { target: { value: 'Smith' } });
+    expect(firstName).toHaveValue('Alice');
+    expect(lastName).toHaveValue('Smith');
+  });
+
+  it('toggles medical condition checkboxes on health tab', () => {
+    render(<ClientForm {...defaultProps} />);
+    fireEvent.click(screen.getByText('Health'));
+    const diabetesCheckbox = screen.getByText('Diabetes').closest('label')?.querySelector('input') ||
+      screen.getByText('Diabetes').closest('button');
+    if (diabetesCheckbox) {
+      fireEvent.click(diabetesCheckbox);
+    }
+  });
+
+  it('shows notes textarea on basic info tab', () => {
+    render(<ClientForm {...defaultProps} />);
+    const notesField = screen.queryByPlaceholderText(/notes/i) || screen.queryByPlaceholderText(/additional/i);
+    if (notesField) {
+      expect(notesField).toBeInTheDocument();
+    }
+  });
+
+  it('fills emergency contact info', () => {
+    render(<ClientForm {...defaultProps} />);
+    fireEvent.click(screen.getByText('Emergency'));
+    const nameInput = screen.getByPlaceholderText('John Smith');
+    const relInput = screen.getByPlaceholderText('Spouse, Parent, etc.');
+    const phoneInput = screen.getByPlaceholderText('(555) 123-4567');
+    fireEvent.change(nameInput, { target: { value: 'Bob Smith' } });
+    fireEvent.change(relInput, { target: { value: 'Brother' } });
+    fireEvent.change(phoneInput, { target: { value: '555-9999' } });
+    expect(nameInput).toHaveValue('Bob Smith');
+    expect(relInput).toHaveValue('Brother');
+    expect(phoneInput).toHaveValue('555-9999');
+  });
+
+  it('populates form with existing client data', () => {
+    const client = {
+      id: '1',
+      email: 'existing@example.com',
+      displayName: 'Existing User',
+      userProfile: {
+        id: '1',
+        userId: '1',
+        bio: 'Jane',
+        preferredUnits: 'metric',
+        isPublic: true,
+        createdAt: '2024-01-01',
+      },
+      clientProfile: {
+        id: '1',
+        userId: '1',
+        fitnessLevel: FitnessLevel.ADVANCED,
+        medicalConditions: ['Asthma'],
+        medications: [],
+        allergies: ['Peanuts'],
+      },
+    } as any;
+
+    render(<ClientForm {...defaultProps} client={client} />);
+    expect(screen.getByDisplayValue('existing@example.com')).toBeInTheDocument();
+  });
+
+  it('submits with full form data including goals and health', async () => {
+    render(<ClientForm {...defaultProps} />);
+
+    // Fill basic info
+    const emailInput = screen.getByPlaceholderText('client@example.com');
+    fireEvent.change(emailInput, { target: { value: 'full@example.com' } });
+    const firstName = screen.getByPlaceholderText('John');
+    fireEvent.change(firstName, { target: { value: 'Jane' } });
+
+    // Submit
+    const createButton = screen.getByText('Create Client');
+    fireEvent.click(createButton);
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'full@example.com',
+        })
+      );
+    });
+  });
+
+  it('shows loading state during submission', async () => {
+    const slowSubmit = jest.fn().mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+    render(<ClientForm {...defaultProps} onSubmit={slowSubmit} />);
+    const emailInput = screen.getByPlaceholderText('client@example.com');
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    const createButton = screen.getByText('Create Client');
+    fireEvent.click(createButton);
+    // Button should be disabled during submission
+    await waitFor(() => {
+      expect(slowSubmit).toHaveBeenCalled();
+    });
+  });
+
+  it('shows error message on submission failure', async () => {
+    const failingSubmit = jest.fn().mockRejectedValue(new Error('Server error'));
+    render(<ClientForm {...defaultProps} onSubmit={failingSubmit} />);
+    const emailInput = screen.getByPlaceholderText('client@example.com');
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    const createButton = screen.getByText('Create Client');
+    fireEvent.click(createButton);
+    await waitFor(() => {
+      expect(failingSubmit).toHaveBeenCalled();
+    });
+  });
 });

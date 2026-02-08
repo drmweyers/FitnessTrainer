@@ -27,13 +27,12 @@ describe('GifPlayer', () => {
   it('renders with exercise name as alt text', () => {
     render(<GifPlayer {...defaultProps} />);
     const images = screen.getAllByRole('img');
-    const exerciseImage = images.find(img => img.getAttribute('alt') === 'Bench Press');
+    const exerciseImage = images.find(img => img.getAttribute('alt') === 'Bench Press demonstration');
     expect(exerciseImage).toBeInTheDocument();
   });
 
   it('shows loading state initially', () => {
     render(<GifPlayer {...defaultProps} />);
-    // Loading spinner should be visible initially
     expect(screen.getByText('Loading exercise...')).toBeInTheDocument();
   });
 
@@ -44,13 +43,11 @@ describe('GifPlayer', () => {
 
   it('renders play button when not auto-playing', () => {
     render(<GifPlayer {...defaultProps} showControls={true} />);
-    // Play/Pause controls should be available
     expect(screen.getByText('Loading exercise...')).toBeInTheDocument();
   });
 
   it('renders with autoPlay enabled', () => {
     render(<GifPlayer {...defaultProps} autoPlay={true} />);
-    // Image should render
     const images = screen.getAllByRole('img');
     expect(images.length).toBeGreaterThan(0);
   });

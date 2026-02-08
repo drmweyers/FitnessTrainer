@@ -80,7 +80,9 @@ describe('BulkAssignmentModal', () => {
 
   it('displays the program name', () => {
     render(<BulkAssignmentModal {...defaultProps} />);
-    expect(screen.getByText('Strength Program')).toBeInTheDocument();
+    // Program name appears in both header and info section
+    const programNames = screen.getAllByText('Strength Program');
+    expect(programNames.length).toBeGreaterThanOrEqual(1);
   });
 
   it('displays program duration', () => {
