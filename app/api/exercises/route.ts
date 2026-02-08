@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 import { exerciseService } from '@/lib/services/exercise.service';
 import {
   ExerciseListQuery,
@@ -93,9 +94,14 @@ export async function GET(request: NextRequest) {
  * Create new exercise (admin only)
  */
 export async function POST(request: NextRequest) {
-  try {
-    // TODO: Add authentication check for admin role
+  const authResult = await authenticate(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const req = authResult as AuthenticatedRequest;
+  if (req.user?.role !== 'admin' && req.user?.role !== 'trainer') {
+    return NextResponse.json({ error: 'Forbidden', message: 'Admin or trainer role required' }, { status: 403 });
+  }
 
+  try {
     const body = await request.json();
 
     // Validate request body

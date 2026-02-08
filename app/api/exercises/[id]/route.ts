@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 import { exerciseService } from '@/lib/services/exercise.service';
 import { UpdateExerciseDTO, ExerciseAPIError } from '@/lib/types/exercise';
 import { z } from 'zod';
@@ -73,7 +74,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // TODO: Add authentication check for admin role
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const req = authResult as AuthenticatedRequest;
+    if (req.user?.role !== 'admin' && req.user?.role !== 'trainer') {
+      return NextResponse.json({ error: 'Forbidden', message: 'Admin or trainer role required' }, { status: 403 });
+    }
 
     const { id } = params;
     const body = await request.json();
@@ -118,7 +124,12 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // TODO: Add authentication check for admin role
+    const authResult = await authenticate(request);
+    if (authResult instanceof NextResponse) return authResult;
+    const req = authResult as AuthenticatedRequest;
+    if (req.user?.role !== 'admin' && req.user?.role !== 'trainer') {
+      return NextResponse.json({ error: 'Forbidden', message: 'Admin or trainer role required' }, { status: 403 });
+    }
 
     const { id } = params;
 
