@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/shared/DashboardLayout';
@@ -10,6 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
+
+interface Certification {
+  id: string;
+  certificationName: string;
+  issuingOrganization: string;
+  credentialId: string | null;
+  issueDate: string | null;
+  expiryDate: string | null;
+}
 
 const TIMEZONES = [
   'America/New_York',
@@ -37,6 +46,18 @@ export default function ProfileEditPage() {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Certifications state (trainers only)
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [certForm, setCertForm] = useState({
+    certificationName: '',
+    issuingOrganization: '',
+    credentialId: '',
+    issueDate: '',
+    expiryDate: '',
+  });
+  const [editingCertId, setEditingCertId] = useState<string | null>(null);
+  const [isCertSaving, setIsCertSaving] = useState(false);
 
   const [form, setForm] = useState({
     bio: '',
@@ -79,6 +100,11 @@ export default function ProfileEditPage() {
         })
         .catch(err => console.error('Failed to load profile:', err))
         .finally(() => setIsDataLoading(false));
+
+      // Load certifications for trainers
+      if (user.role === 'trainer') {
+        loadCertifications();
+      }
     }
   }, [isLoading, isAuthenticated, user, router]);
 
@@ -109,6 +135,99 @@ export default function ProfileEditPage() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const loadCertifications = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch('/api/profiles/certifications', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      const result = await res.json();
+      if (result.success) {
+        setCertifications(result.data);
+      }
+    } catch (err) {
+      console.error('Failed to load certifications:', err);
+    }
+  };
+
+  const handleCertSubmit = async () => {
+    if (!certForm.certificationName || !certForm.issuingOrganization) return;
+    setIsCertSaving(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const url = editingCertId
+        ? `/api/profiles/certifications/${editingCertId}`
+        : '/api/profiles/certifications';
+      const res = await fetch(url, {
+        method: editingCertId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          certificationName: certForm.certificationName,
+          issuingOrganization: certForm.issuingOrganization,
+          credentialId: certForm.credentialId || null,
+          issueDate: certForm.issueDate || null,
+          expiryDate: certForm.expiryDate || null,
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        await loadCertifications();
+        setCertForm({ certificationName: '', issuingOrganization: '', credentialId: '', issueDate: '', expiryDate: '' });
+        setEditingCertId(null);
+        setMessage({ type: 'success', text: editingCertId ? 'Certification updated.' : 'Certification added.' });
+      } else {
+        setMessage({ type: 'error', text: result.error || 'Failed to save certification.' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Failed to save certification.' });
+    } finally {
+      setIsCertSaving(false);
+    }
+  };
+
+  const handleCertEdit = (cert: Certification) => {
+    setEditingCertId(cert.id);
+    setCertForm({
+      certificationName: cert.certificationName,
+      issuingOrganization: cert.issuingOrganization,
+      credentialId: cert.credentialId || '',
+      issueDate: cert.issueDate ? cert.issueDate.split('T')[0] : '',
+      expiryDate: cert.expiryDate ? cert.expiryDate.split('T')[0] : '',
+    });
+  };
+
+  const handleCertDelete = async (id: string) => {
+    if (!confirm('Delete this certification?')) return;
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch(`/api/profiles/certifications/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      const result = await res.json();
+      if (result.success) {
+        await loadCertifications();
+        setMessage({ type: 'success', text: 'Certification deleted.' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Failed to delete certification.' });
+    }
+  };
+
+  const handleCertCancel = () => {
+    setEditingCertId(null);
+    setCertForm({ certificationName: '', issuingOrganization: '', credentialId: '', issueDate: '', expiryDate: '' });
   };
 
   if (isLoading || isDataLoading) {
@@ -271,6 +390,114 @@ export default function ProfileEditPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Certifications (trainers only) */}
+        {user?.role === 'trainer' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Certifications</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Existing certifications */}
+              {certifications.length > 0 && (
+                <div className="space-y-3">
+                  {certifications.map(cert => (
+                    <div key={cert.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900">{cert.certificationName}</p>
+                        <p className="text-xs text-gray-500">{cert.issuingOrganization}</p>
+                        {cert.credentialId && (
+                          <p className="text-xs text-gray-400">ID: {cert.credentialId}</p>
+                        )}
+                        <div className="flex space-x-3 text-xs text-gray-400 mt-1">
+                          {cert.issueDate && <span>Issued: {new Date(cert.issueDate).toLocaleDateString()}</span>}
+                          {cert.expiryDate && <span>Expires: {new Date(cert.expiryDate).toLocaleDateString()}</span>}
+                        </div>
+                      </div>
+                      <div className="flex space-x-2 ml-3">
+                        <Button type="button" variant="outline" size="sm" onClick={() => handleCertEdit(cert)}>
+                          Edit
+                        </Button>
+                        <Button type="button" variant="outline" size="sm" onClick={() => handleCertDelete(cert.id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add/Edit cert form */}
+              <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-gray-700">
+                  {editingCertId ? 'Edit Certification' : 'Add Certification'}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="certName">Certification Name *</Label>
+                    <Input
+                      id="certName"
+                      value={certForm.certificationName}
+                      onChange={e => setCertForm(f => ({ ...f, certificationName: e.target.value }))}
+                      placeholder="e.g., NASM-CPT"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="certOrg">Issuing Organization *</Label>
+                    <Input
+                      id="certOrg"
+                      value={certForm.issuingOrganization}
+                      onChange={e => setCertForm(f => ({ ...f, issuingOrganization: e.target.value }))}
+                      placeholder="e.g., NASM"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="credentialId">Credential ID</Label>
+                    <Input
+                      id="credentialId"
+                      value={certForm.credentialId}
+                      onChange={e => setCertForm(f => ({ ...f, credentialId: e.target.value }))}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="certIssueDate">Issue Date</Label>
+                    <Input
+                      id="certIssueDate"
+                      type="date"
+                      value={certForm.issueDate}
+                      onChange={e => setCertForm(f => ({ ...f, issueDate: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="certExpiryDate">Expiry Date</Label>
+                    <Input
+                      id="certExpiryDate"
+                      type="date"
+                      value={certForm.expiryDate}
+                      onChange={e => setCertForm(f => ({ ...f, expiryDate: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={isCertSaving || !certForm.certificationName || !certForm.issuingOrganization}
+                    onClick={handleCertSubmit}
+                  >
+                    {isCertSaving ? 'Saving...' : editingCertId ? 'Update' : 'Add Certification'}
+                  </Button>
+                  {editingCertId && (
+                    <Button type="button" variant="outline" size="sm" onClick={handleCertCancel}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Actions */}
         <div className="flex items-center space-x-3">
