@@ -6,31 +6,37 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
   onValueChange?: (value: string) => void
 }
 
-// Context to share select element between wrapper and trigger
-const SelectContext = React.createContext<{
-  value?: string
-  onValueChange?: (value: string) => void
-}>({})
-
-const SelectRoot = React.forwardRef<HTMLDivElement, { children: React.ReactNode; value?: string; onValueChange?: (value: string) => void }>(
-  ({ children, value, onValueChange }, ref) => {
-    return (
-      <SelectContext.Provider value={{ value, onValueChange }}>
-        <div ref={ref}>{children}</div>
-      </SelectContext.Provider>
-    )
-  }
-)
-SelectRoot.displayName = "SelectRoot"
-
-const SelectTrigger = React.forwardRef<HTMLSelectElement, SelectProps>(
+/**
+ * Native HTML select wrapper with Radix UI-like API
+ * Supports both direct usage and Radix UI pattern
+ */
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, children, onValueChange, onChange, ...props }, ref) => {
-    const context = React.useContext(SelectContext)
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       onChange?.(e)
       onValueChange?.(e.target.value)
-      context.onValueChange?.(e.target.value)
     }
+
+    // Extract options from children (filter out SelectTrigger, SelectValue, SelectContent)
+    const options = React.Children.toArray(children).flatMap((child) => {
+      if (!React.isValidElement(child)) return child
+
+      // If it's SelectContent, extract its children (the actual options)
+      if (child.type && typeof child.type !== 'string' &&
+          (child.type as any).displayName === 'SelectContent') {
+        return React.Children.toArray(child.props.children)
+      }
+
+      // Skip SelectTrigger and SelectValue
+      if (child.type && typeof child.type !== 'string' &&
+          ((child.type as any).displayName === 'SelectTrigger' ||
+           (child.type as any).displayName === 'SelectValue')) {
+        return []
+      }
+
+      return child
+    })
+
     return (
       <select
         ref={ref}
@@ -39,42 +45,40 @@ const SelectTrigger = React.forwardRef<HTMLSelectElement, SelectProps>(
           className
         )}
         onChange={handleChange}
-        value={context.value}
         {...props}
       >
-        {children}
+        {options}
       </select>
     )
   }
 )
+Select.displayName = "Select"
+
+export { Select }
+
+// SelectTrigger is a no-op wrapper for Radix UI pattern compatibility
+export const SelectTrigger = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ children }, ref) => <>{children}</>
+)
 SelectTrigger.displayName = "SelectTrigger"
-
-// For backwards compatibility, Select points to SelectTrigger
-const Select = SelectTrigger
-
-export { Select, SelectTrigger }
 
 interface SelectValueProps extends React.HTMLAttributes<HTMLSpanElement> {
   placeholder?: string
 }
 
+// SelectValue is a no-op for native select (not rendered)
 export const SelectValue = React.forwardRef<HTMLSpanElement, SelectValueProps>(
-  ({ className, placeholder, ...props }, ref) => (
-    <span ref={ref} className={cn('', className)} {...props}>
-      {placeholder}
-    </span>
-  )
+  ({ placeholder }, ref) => null
 )
 SelectValue.displayName = "SelectValue"
 
-// SelectContent is just a passthrough wrapper for native select - renders children directly
+// SelectContent is a passthrough wrapper for options
 export const SelectContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ children }, ref) => (
-    <>{children}</>
-  )
+  ({ children }, ref) => <>{children}</>
 )
 SelectContent.displayName = "SelectContent"
 
+// SelectItem renders as native option element
 export const SelectItem = React.forwardRef<HTMLOptionElement, React.OptionHTMLAttributes<HTMLOptionElement>>(
   ({ className, children, ...props }, ref) => (
     <option ref={ref} className={cn('', className)} {...props}>
