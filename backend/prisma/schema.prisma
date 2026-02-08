@@ -1,5 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Full Prisma schema - synced from backend/prisma/schema.prisma
+// DO NOT run prisma migrate - the DB already has all tables
 
 generator client {
   provider = "prisma-client-js"
@@ -84,6 +84,14 @@ model User {
   comparisonBaselines ComparisonBaseline[] @relation("UserComparisonBaselines")
   analyticsReports    AnalyticsReport[]   @relation("UserAnalyticsReports")
   trainerReports      AnalyticsReport[]   @relation("TrainerAnalyticsReports")
+
+  // Relations - Activity Feed
+  activities          Activity[]
+
+  // Relations - Scheduling & Calendar (Epic 009)
+  trainerAvailability TrainerAvailability[] @relation("TrainerAvailability")
+  trainerAppointments Appointment[]        @relation("TrainerAppointments")
+  clientAppointments  Appointment[]        @relation("ClientAppointments")
 
   @@map("users")
 }
@@ -843,26 +851,26 @@ model WorkoutSession {
   workoutId             String        @map("workout_id") @db.Uuid
   clientId              String        @map("client_id") @db.Uuid
   trainerId             String        @map("trainer_id") @db.Uuid
-  
+
   // Scheduling & timing
   scheduledDate         DateTime      @map("scheduled_date") @db.Date
   actualStartTime       DateTime?     @map("actual_start_time")
   actualEndTime         DateTime?     @map("actual_end_time")
   totalDuration         Int?          @map("total_duration") // in minutes
   totalPausedTime       Int?          @map("total_paused_time") // in seconds
-  
+
   // Status and progress
   status                WorkoutStatus @default(scheduled)
   currentExerciseIndex  Int?          @map("current_exercise_index")
   currentSetIndex       Int?          @map("current_set_index")
-  
+
   // Session metrics
   totalVolume           Decimal?      @map("total_volume") @db.Decimal(10, 2)
   totalSets             Int?          @map("total_sets")
   completedSets         Int?          @map("completed_sets")
   averageRpe            Decimal?      @map("average_rpe") @db.Decimal(3, 1)
   adherenceScore        Decimal?      @map("adherence_score") @db.Decimal(5, 2) // percentage
-  
+
   // User feedback
   effortRating          Int?          @map("effort_rating") // 1-10
   enjoymentRating       Int?          @map("enjoyment_rating") // 1-10
@@ -870,11 +878,11 @@ model WorkoutSession {
   energyAfter           Int?          @map("energy_after") // 1-10
   clientNotes           String?       @map("client_notes") @db.Text
   trainerFeedback       String?       @map("trainer_feedback") @db.Text
-  
+
   // Timestamps
   createdAt             DateTime      @default(now()) @map("created_at")
   updatedAt             DateTime?     @updatedAt @map("updated_at")
-  
+
   // Relations
   programAssignment     ProgramAssignment @relation(fields: [programAssignmentId], references: [id], onDelete: Cascade)
   workout               ProgramWorkout @relation(fields: [workoutId], references: [id])
@@ -894,7 +902,7 @@ model WorkoutExerciseLog {
   exerciseId          String              @map("exercise_id") @db.Uuid
   orderIndex          Int                 @map("order_index")
   supersetGroup       String?             @map("superset_group") @db.VarChar(10)
-  
+
   // Exercise execution
   skipped             Boolean             @default(false)
   totalVolume         Decimal?            @map("total_volume") @db.Decimal(10, 2)
@@ -902,11 +910,11 @@ model WorkoutExerciseLog {
   notes               String?             @db.Text
   startTime           DateTime?           @map("start_time")
   endTime             DateTime?           @map("end_time")
-  
+
   // Timestamps
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime?           @updatedAt @map("updated_at")
-  
+
   // Relations
   workoutSession      WorkoutSession      @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
   workoutExercise     WorkoutExercise     @relation("WorkoutExerciseLogs", fields: [workoutExerciseId], references: [id])
@@ -922,7 +930,7 @@ model WorkoutSetLog {
   id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   exerciseLogId         String               @map("exercise_log_id") @db.Uuid
   setNumber             Int                  @map("set_number")
-  
+
   // Set data
   plannedReps           String?              @map("planned_reps") @db.VarChar(20) // "8-10", "AMRAP", "30s"
   actualReps            Int?                 @map("actual_reps")
@@ -932,13 +940,13 @@ model WorkoutSetLog {
   duration              Int?                 // in seconds for timed exercises
   restTime              Int?                 @map("rest_time") // actual rest taken in seconds
   tempo                 String?              @db.VarChar(20) // "3-1-2-0"
-  
+
   // Set status
   completed             Boolean              @default(false)
   skipped               Boolean              @default(false)
   notes                 String?              @db.Text
   timestamp             DateTime?            // when the set was completed
-  
+
   // Relations
   exerciseLog           WorkoutExerciseLog   @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
 
@@ -1037,7 +1045,7 @@ model AnalyticsReport {
   reportData   Json     @map("report_data") @db.JsonB
   fileUrl      String?  @map("file_url") @db.VarChar(500)
   generatedAt  DateTime @default(now()) @map("generated_at")
-  
+
   // Relations
   user         User     @relation("UserAnalyticsReports", fields: [userId], references: [id], onDelete: Cascade)
   trainer      User?    @relation("TrainerAnalyticsReports", fields: [trainerId], references: [id])
@@ -1111,4 +1119,95 @@ model ComparisonBaseline {
   user            User     @relation("UserComparisonBaselines", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comparison_baselines")
+}
+
+// =====================================
+// ACTIVITY FEED
+// =====================================
+
+model Activity {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  type        String
+  title       String
+  description String?
+  relatedId   String?  @map("related_id") @db.Uuid
+  relatedType String?  @map("related_type")
+  metadata    Json?    @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([type])
+  @@map("activities")
+}
+
+// =====================================
+// EPIC 009: SCHEDULING & CALENDAR
+// =====================================
+
+enum AppointmentStatus {
+  scheduled
+  confirmed
+  completed
+  cancelled
+  no_show
+}
+
+enum AppointmentType {
+  one_on_one
+  group_class
+  assessment
+  consultation
+  online_session
+}
+
+// Trainer weekly availability slots
+model TrainerAvailability {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId    String    @map("trainer_id") @db.Uuid
+  dayOfWeek    Int       @map("day_of_week") // 0=Sun, 1=Mon..6=Sat
+  startTime    String    @map("start_time") @db.VarChar(5) // "09:00"
+  endTime      String    @map("end_time") @db.VarChar(5)   // "17:00"
+  isAvailable  Boolean   @default(true) @map("is_available")
+  location     String?   @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+
+  // Relations
+  trainer User @relation("TrainerAvailability", fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@unique([trainerId, dayOfWeek, startTime])
+  @@map("trainer_availability")
+}
+
+// Appointments / bookings
+model Appointment {
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId        String            @map("trainer_id") @db.Uuid
+  clientId         String            @map("client_id") @db.Uuid
+  title            String            @db.VarChar(255)
+  description      String?           @db.Text
+  appointmentType  AppointmentType   @map("appointment_type")
+  startDatetime    DateTime          @map("start_datetime")
+  endDatetime      DateTime          @map("end_datetime")
+  durationMinutes  Int               @map("duration_minutes")
+  location         String?           @db.VarChar(255)
+  isOnline         Boolean           @default(false) @map("is_online")
+  meetingLink      String?           @map("meeting_link") @db.VarChar(500)
+  status           AppointmentStatus @default(scheduled)
+  notes            String?           @db.Text
+  cancelledAt      DateTime?         @map("cancelled_at")
+  cancelReason     String?           @map("cancel_reason") @db.Text
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime?         @updatedAt @map("updated_at")
+
+  // Relations
+  trainer User @relation("TrainerAppointments", fields: [trainerId], references: [id], onDelete: Cascade)
+  client  User @relation("ClientAppointments", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([trainerId, startDatetime])
+  @@index([clientId, startDatetime])
+  @@map("appointments")
 }
