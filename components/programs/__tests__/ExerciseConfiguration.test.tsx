@@ -153,4 +153,152 @@ describe('ExerciseConfiguration', () => {
     const grips = screen.getAllByTestId('icon-grip');
     expect(grips).toHaveLength(2);
   });
+
+  describe('Expanded set card', () => {
+    it('expands a set card when expand button is clicked', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      // Find expand buttons (they show triangle text)
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+      // Should now show form fields
+      expect(screen.getByLabelText('Reps *')).toBeInTheDocument();
+      expect(screen.getByLabelText('Weight Guidance')).toBeInTheDocument();
+      expect(screen.getByLabelText(/Rest/)).toBeInTheDocument();
+      expect(screen.getByLabelText('RPE (1-10)')).toBeInTheDocument();
+      expect(screen.getByLabelText('RIR (0-10)')).toBeInTheDocument();
+      expect(screen.getByLabelText('Tempo')).toBeInTheDocument();
+      expect(screen.getByLabelText('Notes')).toBeInTheDocument();
+    });
+
+    it('collapses an expanded set card', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn); // expand
+      expect(screen.getByLabelText('Reps *')).toBeInTheDocument();
+
+      const collapseBtn = screen.getByText('\u25B2').closest('button')!;
+      fireEvent.click(collapseBtn); // collapse
+      expect(screen.queryByLabelText('Reps *')).not.toBeInTheDocument();
+    });
+
+    it('shows pre-filled values in expanded set', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      expect(screen.getByDisplayValue('8-12')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('70% 1RM')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('90')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('7')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('3')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('3-0-1-0')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Control the eccentric')).toBeInTheDocument();
+    });
+
+    it('calls onUpdate when changing reps', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const repsInput = screen.getByDisplayValue('8-12');
+      fireEvent.change(repsInput, { target: { value: '10-15' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('calls onUpdate when changing weight guidance', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const weightInput = screen.getByDisplayValue('70% 1RM');
+      fireEvent.change(weightInput, { target: { value: '80% 1RM' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('calls onUpdate when changing rest seconds', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const restInput = screen.getByDisplayValue('90');
+      fireEvent.change(restInput, { target: { value: '120' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('calls onUpdate when changing RPE', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const rpeInput = screen.getByDisplayValue('7');
+      fireEvent.change(rpeInput, { target: { value: '8' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('calls onUpdate when changing RIR', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const rirInput = screen.getByDisplayValue('3');
+      fireEvent.change(rirInput, { target: { value: '2' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('calls onUpdate when changing tempo', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const tempoInput = screen.getByDisplayValue('3-0-1-0');
+      fireEvent.change(tempoInput, { target: { value: '4-0-2-0' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('calls onUpdate when changing notes', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const notesInput = screen.getByDisplayValue('Control the eccentric');
+      fireEvent.change(notesInput, { target: { value: 'Slow and controlled' } });
+      expect(mockOnUpdate).toHaveBeenCalled();
+    });
+
+    it('shows empty values for optional fields when not set', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      // Expand the second config (no weightGuidance, rpe, rir, tempo, notes)
+      const expandBtns = screen.getAllByText('\u25BC');
+      fireEvent.click(expandBtns[1].closest('button')!);
+
+      // Reps and rest are set
+      expect(screen.getByDisplayValue('12-15')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('60')).toBeInTheDocument();
+    });
+
+    it('disables fields when readOnly', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} readOnly />);
+      // Expand button should still be available
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      const repsInput = screen.getByDisplayValue('8-12');
+      expect(repsInput).toBeDisabled();
+    });
+
+    it('does not show delete button in readOnly mode', () => {
+      render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} readOnly />);
+      expect(screen.queryByTestId('icon-trash')).not.toBeInTheDocument();
+    });
+
+    it('adds border highlight when expanded', () => {
+      const { container } = render(<ExerciseConfigComponent configurations={mockConfigs} onUpdate={mockOnUpdate} />);
+      const expandBtn = screen.getAllByText('\u25BC')[0].closest('button')!;
+      fireEvent.click(expandBtn);
+
+      // The expanded card should have border-blue-300 class
+      const cards = container.querySelectorAll('.border-blue-300');
+      expect(cards.length).toBe(1);
+    });
+  });
 });

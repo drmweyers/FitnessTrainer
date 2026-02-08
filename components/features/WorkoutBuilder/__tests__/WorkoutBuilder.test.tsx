@@ -213,12 +213,12 @@ describe('WorkoutBuilder', () => {
 
       expect(screen.getByText('Bench Press')).toBeInTheDocument();
 
-      // Find the exercise item container (has the exercise name)
-      const exerciseName = screen.getByText('Bench Press');
-      const exerciseContainer = exerciseName.closest('.flex.items-center.bg-gray-50')!;
-      // Find the trash icon within the exercise container
-      const exerciseTrash = exerciseContainer.querySelector('[data-testid="icon-trash"]')!.closest('button')!;
-      fireEvent.click(exerciseTrash);
+      // The exercise item has a Video icon (unique to exercise rows, not section headers)
+      // The trash button is the next sibling of the video button
+      const videoIcon = screen.getByTestId('icon-video');
+      const videoButton = videoIcon.closest('button')!;
+      const trashButton = videoButton.nextElementSibling as HTMLElement;
+      fireEvent.click(trashButton);
       expect(handleRemove).toHaveBeenCalledWith('ex-1');
     });
 
