@@ -197,6 +197,13 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 					/>
 
 					<NavItem
+						icon={<Calendar size={18} />}
+						label="Schedule"
+						href="/schedule"
+						onMobileClick={isMobile ? () => onClose() : undefined}
+					/>
+
+					<NavItem
 						icon={<Users size={18} />}
 						label="Client Management"
 						href="#"
