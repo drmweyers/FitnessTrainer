@@ -64,7 +64,6 @@ const customJestConfig = {
     '/dist/',
     '/out/',
     '/\\.auto-claude/',
-    '/\\.worktrees/',
     '/tests/e2e/',
   ],
 
@@ -72,7 +71,6 @@ const customJestConfig = {
 
   modulePathIgnorePatterns: [
     '/\\.auto-claude/',
-    '/\\.worktrees/',
   ],
 
   transformIgnorePatterns: [
