@@ -1,10 +1,11 @@
 // Epic 007: Progress Analytics API Service
 
-import { 
-  BodyMeasurement, 
-  PerformanceMetric, 
+import {
+  BodyMeasurement,
+  PerformanceMetric,
   TrainingLoad,
   GoalProgress,
+  UserGoal,
   UserInsight,
   AnalyticsReport,
   AnalyticsDashboardData,
@@ -16,7 +17,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
 class AnalyticsApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    
+
     const response = await fetch(`${API_BASE}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +32,12 @@ class AnalyticsApiService {
       throw new Error(error.message || `HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    const json = await response.json();
+    // If the response has a data property (envelope format), unwrap it
+    if (json && typeof json === 'object' && 'data' in json) {
+      return json.data as T;
+    }
+    return json as T;
   }
 
   // Body Measurements
@@ -99,6 +105,18 @@ class AnalyticsApiService {
     });
   }
 
+  // Goals
+  async getGoals(): Promise<UserGoal[]> {
+    return this.request<UserGoal[]>('/analytics/goals');
+  }
+
+  async createGoal(goal: Omit<UserGoal, 'id' | 'createdAt' | 'updatedAt' | 'currentValue'>): Promise<UserGoal> {
+    return this.request<UserGoal>('/analytics/goals', {
+      method: 'POST',
+      body: JSON.stringify(goal),
+    });
+  }
+
   // Goal Progress
   async getGoalProgress(goalId: string): Promise<GoalProgress[]> {
     return this.request<GoalProgress[]>(`/analytics/goals/${goalId}/progress`);
@@ -107,7 +125,7 @@ class AnalyticsApiService {
   async updateGoalProgress(goalId: string, currentValue: number, notes?: string): Promise<GoalProgress> {
     return this.request<GoalProgress>(`/analytics/goals/${goalId}/progress`, {
       method: 'POST',
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         currentValue,
         notes,
         recordedDate: new Date().toISOString().split('T')[0],

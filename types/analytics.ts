@@ -53,6 +53,21 @@ export interface TrainingLoad {
   calculatedAt: string;
 }
 
+export interface UserGoal {
+  id: string;
+  userId: string;
+  goalType: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  startDate: string;
+  targetDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  goalProgress?: GoalProgress[];
+}
+
 export interface GoalProgress {
   id?: string;
   goalId: string;
