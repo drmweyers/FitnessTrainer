@@ -17,7 +17,7 @@ import {
   Search,
   Plus
 } from 'lucide-react'
-import Layout from '@/components/layout/Layout'
+
 import { ExerciseCard } from '@/components/features/ExerciseLibrary/ExerciseCard'
 import { ExerciseGridSkeleton } from '@/components/features/ExerciseLibrary/ExerciseGridSkeleton'
 import { useCollections } from '@/hooks/useCollections'
@@ -179,7 +179,7 @@ export default function CollectionDetailPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <>
         <div className="min-h-screen bg-gray-50">
           {/* Loading Header */}
           <div className="bg-white border-b border-gray-200 px-6 py-6">
@@ -209,13 +209,13 @@ export default function CollectionDetailPage() {
             </div>
           </div>
         </div>
-      </Layout>
+      </>
     )
   }
 
   if (error || !collection) {
     return (
-      <Layout>
+      <>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto px-4">
             <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -248,19 +248,12 @@ export default function CollectionDetailPage() {
             </Link>
           </div>
         </div>
-      </Layout>
+      </>
     )
   }
 
   return (
-    <Layout 
-      breadcrumbItems={[
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Exercise Library', href: '/dashboard/exercises' },
-        { label: 'Collections', href: '/dashboard/exercises/collections' },
-        { label: collection.name, href: `/dashboard/exercises/collections/${collection.id}` }
-      ]}
-    >
+    <>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-6">
@@ -463,6 +456,6 @@ export default function CollectionDetailPage() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   )
 }

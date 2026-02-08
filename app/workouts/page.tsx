@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Layout from '@/components/layout/Layout'
+
 import { WorkoutHistory } from '@/components/workouts/WorkoutHistory'
 import { Dumbbell, Plus, Clock, TrendingUp, History } from 'lucide-react'
 import Link from 'next/link'
@@ -45,8 +45,7 @@ export default function WorkoutsPage() {
   }, [router])
 
   return (
-    <Layout breadcrumbItems={[{ label: "Workouts", href: "/workouts" }]}>
-      <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
@@ -151,6 +150,5 @@ export default function WorkoutsPage() {
           <WorkoutHistory limit={5} />
         </div>
       </div>
-    </Layout>
   )
 }

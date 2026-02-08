@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Layout from '@/components/layout/Layout';
+
 import DailyWorkoutView from '@/components/features/WorkoutExecution/DailyWorkoutView';
 import WorkoutExecutionScreen from '@/components/features/WorkoutExecution/WorkoutExecutionScreen';
 import { WorkoutSession, WorkoutLog } from '@/types/workoutLog';
@@ -150,14 +150,12 @@ export default function WorkoutTrackerPage() {
   return (
     <>
       {currentView === 'daily' ? (
-        <Layout>
-          <div className="p-6">
-            <DailyWorkoutView
-              clientId={clientId}
-              onStartWorkout={handleStartWorkout}
-            />
-          </div>
-        </Layout>
+        <div className="p-6">
+          <DailyWorkoutView
+            clientId={clientId}
+            onStartWorkout={handleStartWorkout}
+          />
+        </div>
       ) : (
         // Full-screen workout execution
         activeSession && (

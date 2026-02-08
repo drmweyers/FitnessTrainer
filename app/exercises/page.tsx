@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Layout from '@/components/layout/Layout'
+
 import ExerciseFilters from '@/components/features/ExerciseFilters/ExerciseFilters'
 import ExerciseList from '@/components/features/ExerciseList/ExerciseList'
 import { LayoutGrid, List } from 'lucide-react'
@@ -10,8 +10,7 @@ export default function ExerciseLibraryPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   
   return (
-    <Layout>
-      <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Exercise Library</h1>
@@ -56,6 +55,5 @@ export default function ExerciseLibraryPage() {
           <ExerciseList />
         )}
       </div>
-    </Layout>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Layout from '@/components/layout/Layout'
+
 import ExerciseList from '@/components/features/ExerciseList/ExerciseList'
 import { Loader2, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -120,7 +120,7 @@ export default function ExerciseTypePage({
   // Invalid exercise type
   if (!exerciseType) {
     return (
-      <Layout>
+      <>
         <div className="p-6 max-w-7xl mx-auto">
           <div className="mb-6">
             <Link href="/exercises" className="flex items-center text-blue-600 hover:text-blue-800">
@@ -139,12 +139,12 @@ export default function ExerciseTypePage({
             </Link>
           </div>
         </div>
-      </Layout>
+      </>
     )
   }
 
   return (
-    <Layout>
+    <>
       <div className="p-6 max-w-7xl mx-auto">
         <div className="mb-6">
           <Link href="/exercises" className="flex items-center text-blue-600 hover:text-blue-800 mb-4">
@@ -187,7 +187,7 @@ export default function ExerciseTypePage({
           <ExerciseList preloadedExercises={exercises} />
         )}
       </div>
-    </Layout>
+    </>
   )
 }
 
