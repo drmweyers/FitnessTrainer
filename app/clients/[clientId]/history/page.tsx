@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useClient } from '@/hooks/useClients';
-import Layout from '@/components/layout/Layout';
+
 import { ClientWorkouts } from '@/components/clients/ClientWorkouts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,19 +26,19 @@ export default function ClientHistoryPage() {
 
   if (loading) {
     return (
-      <Layout>
+      <>
         <div className="p-6">
           <div className="text-center py-12">
             <p className="text-gray-500">Loading client information...</p>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
   if (error || !client) {
     return (
-      <Layout>
+      <>
         <div className="p-6">
           <div className="text-center py-12">
             <p className="text-red-500 mb-4">Failed to load client information</p>
@@ -50,14 +50,14 @@ export default function ClientHistoryPage() {
             </Link>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
   const displayName = client?.displayName || client?.email;
 
   return (
-    <Layout>
+    <>
       <div className="p-6">
         {/* Header */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -154,7 +154,7 @@ export default function ClientHistoryPage() {
         {/* Workout History */}
         <ClientWorkouts clientId={clientId} limit={50} />
       </div>
-    </Layout>
+    </>
   );
 }
 

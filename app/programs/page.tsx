@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Layout from '@/components/layout/Layout'
+
 import ProgramList from '@/components/features/Programs/ProgramList'
 import ProgramFilters from '@/components/features/Programs/ProgramFilters'
 import { Plus } from 'lucide-react'
@@ -18,8 +18,7 @@ export default function ProgramsPage() {
   }
 
   return (
-    <Layout>
-      <div className="p-6">
+    <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Training Programs</h1>
@@ -47,6 +46,5 @@ export default function ProgramsPage() {
           viewMode={viewMode}
         />
       </div>
-    </Layout>
   )
 }

@@ -12,7 +12,7 @@ import {
   SortAsc,
   SortDesc
 } from 'lucide-react'
-import Layout from '@/components/layout/Layout'
+
 import { ExerciseCard } from '@/components/features/ExerciseLibrary/ExerciseCard'
 import { ExerciseGridSkeleton } from '@/components/features/ExerciseLibrary/ExerciseGridSkeleton'
 import { useFavorites } from '@/hooks/useFavorites'
@@ -190,13 +190,7 @@ export default function FavoritesPage() {
 
   if (isLoading) {
     return (
-      <Layout 
-        breadcrumbItems={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Exercise Library', href: '/dashboard/exercises' },
-          { label: 'Favorites', href: '/dashboard/exercises/favorites' }
-        ]}
-      >
+      <>
         <div className="min-h-screen bg-gray-50 p-6">
           <div className="max-w-7xl mx-auto">
             {/* Loading Header */}
@@ -219,18 +213,12 @@ export default function FavoritesPage() {
             </div>
           </div>
         </div>
-      </Layout>
+      </>
     )
   }
 
   return (
-    <Layout 
-      breadcrumbItems={[
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Exercise Library', href: '/dashboard/exercises' },
-        { label: 'Favorites', href: '/dashboard/exercises/favorites' }
-      ]}
-    >
+    <>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-6">
@@ -414,6 +402,6 @@ export default function FavoritesPage() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   )
 }

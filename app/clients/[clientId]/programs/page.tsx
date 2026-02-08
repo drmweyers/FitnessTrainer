@@ -10,7 +10,7 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useClient } from '@/hooks/useClients';
-import Layout from '@/components/layout/Layout';
+
 import { ClientPrograms } from '@/components/clients/ClientPrograms';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,19 +24,19 @@ export default function ClientProgramsPage() {
 
   if (loading) {
     return (
-      <Layout>
+      <>
         <div className="p-6">
           <div className="text-center py-12">
             <p className="text-gray-500">Loading client information...</p>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
   if (error || !client) {
     return (
-      <Layout>
+      <>
         <div className="p-6">
           <div className="text-center py-12">
             <p className="text-red-500 mb-4">Failed to load client information</p>
@@ -48,7 +48,7 @@ export default function ClientProgramsPage() {
             </Link>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
@@ -62,7 +62,7 @@ export default function ClientProgramsPage() {
   ];
 
   return (
-    <Layout>
+    <>
       <div className="p-6">
         {/* Header */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -172,6 +172,6 @@ export default function ClientProgramsPage() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

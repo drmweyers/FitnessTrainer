@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useClient } from '@/hooks/useClients';
-import Layout from '@/components/layout/Layout';
+
 import { ClientProfile } from '@/components/clients/ClientProfile';
 import { ClientWorkouts } from '@/components/clients/ClientWorkouts';
 import { ClientPrograms } from '@/components/clients/ClientPrograms';
@@ -30,19 +30,19 @@ export default function ClientProfilePage() {
 
   if (loading) {
     return (
-      <Layout>
+      <>
         <div className="p-6">
           <div className="text-center py-12">
             <p className="text-gray-500">Loading client information...</p>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
   if (error || !client) {
     return (
-      <Layout>
+      <>
         <div className="p-6">
           <div className="text-center py-12">
             <p className="text-red-500 mb-4">Failed to load client information</p>
@@ -54,7 +54,7 @@ export default function ClientProfilePage() {
             </Link>
           </div>
         </div>
-      </Layout>
+      </>
     );
   }
 
@@ -70,7 +70,7 @@ export default function ClientProfilePage() {
   const displayName = client?.displayName || client?.email;
 
   return (
-    <Layout>
+    <>
       <div className="p-6">
         {/* Header */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -233,7 +233,7 @@ export default function ClientProfilePage() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
 

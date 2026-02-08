@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ClientList from './components/ClientList'
 import ClientModal from './components/ClientModal'
-import Layout from '@/components/layout/Layout'
+
 
 function ClientsContent() {
   const searchParams = useSearchParams()
@@ -13,7 +13,7 @@ function ClientsContent() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   return (
-    <Layout>
+    <>
       <div className="p-6">
         <div className="flex flex-col space-y-8 p-8">
           <div className="flex justify-between items-center">
@@ -39,7 +39,7 @@ function ClientsContent() {
           setRefreshKey(prev => prev + 1)
         }}
       />
-    </Layout>
+    </>
   )
 }
 

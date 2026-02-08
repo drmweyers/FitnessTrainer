@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import Layout from '@/components/layout/Layout'
+
 import { ExerciseDetailView } from '@/components/features/ExerciseLibrary/ExerciseDetailView'
 import { ExerciseWithUserData } from '@/types/exercise'
 import { getExerciseById } from '@/services/exerciseService'
@@ -102,7 +102,7 @@ export default function ExerciseDetailPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <>
         <div className="min-h-screen bg-gray-50">
           {/* Loading Header */}
           <div className="bg-white border-b border-gray-200 px-4 py-6">
@@ -150,13 +150,13 @@ export default function ExerciseDetailPage() {
             </div>
           </div>
         </div>
-      </Layout>
+      </>
     )
   }
 
   if (error || !exercise) {
     return (
-      <Layout>
+      <>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center max-w-md mx-auto px-4">
             <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -189,18 +189,12 @@ export default function ExerciseDetailPage() {
             </button>
           </div>
         </div>
-      </Layout>
+      </>
     )
   }
 
   return (
-    <Layout 
-      breadcrumbItems={[
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Exercise Library', href: '/dashboard/exercises' },
-        { label: exercise.name, href: `/dashboard/exercises/${exercise.id}` }
-      ]}
-    >
+    <>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 py-6">
@@ -316,6 +310,6 @@ export default function ExerciseDetailPage() {
           />
         </div>
       </div>
-    </Layout>
+    </>
   )
 }
