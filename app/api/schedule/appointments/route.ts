@@ -10,6 +10,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
+export const dynamic = 'force-dynamic';
+
 const createAppointmentSchema = z.object({
   clientId: z.string().uuid(),
   title: z.string().min(1).max(255),

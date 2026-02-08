@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/analytics/measurements/me
  * List the authenticated user's body measurements with optional time range filter

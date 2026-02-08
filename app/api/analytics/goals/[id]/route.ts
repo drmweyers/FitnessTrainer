@@ -10,6 +10,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const updateGoalSchema = z.object({
   specificGoal: z.string().optional(),
   targetValue: z.number().positive().optional(),

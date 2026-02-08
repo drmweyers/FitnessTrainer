@@ -15,6 +15,8 @@ import { handleApiError } from '@/lib/middleware/error-handler';
 import { registerSchema } from '@/lib/types/auth';
 import { logClientSignup } from '@/lib/services/activity.service';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/auth/register
  *

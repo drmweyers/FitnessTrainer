@@ -8,6 +8,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const performanceMetricSchema = z.object({
   exerciseId: z.string().uuid(),
   metricType: z.enum(['one_rm', 'volume', 'endurance', 'power', 'speed', 'body_weight', 'body_fat', 'muscle_mass']),

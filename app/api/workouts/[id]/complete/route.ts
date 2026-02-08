@@ -10,6 +10,8 @@ import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 import { logWorkoutCompleted } from '@/lib/services/activity.service';
 
+export const dynamic = 'force-dynamic';
+
 const completeWorkoutSchema = z.object({
   notes: z.string().optional(),
   endTime: z.string().datetime().optional(),

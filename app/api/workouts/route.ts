@@ -10,6 +10,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
+export const dynamic = 'force-dynamic';
+
 const createWorkoutSessionSchema = z.object({
   programAssignmentId: z.string().uuid(),
   workoutId: z.string().uuid(),

@@ -14,6 +14,8 @@ import {
 } from '@/lib/types/exercise';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 // Validation schema for query parameters
 const exerciseListQuerySchema = z.object({
   page: z.string().optional().transform((val) => (val ? parseInt(val) : 1)),

@@ -9,6 +9,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const progressEntrySchema = z.object({
   currentValue: z.number(),
   notes: z.string().optional(),

@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { exerciseService } from '@/lib/services/exercise.service';
 import { ExerciseAPIError } from '@/lib/types/exercise';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/exercises/filters
  * Get available filter options (body parts, equipment, muscles, difficulties)

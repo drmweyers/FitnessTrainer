@@ -9,6 +9,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const updateMeasurementSchema = z.object({
   measurementDate: z
     .string()

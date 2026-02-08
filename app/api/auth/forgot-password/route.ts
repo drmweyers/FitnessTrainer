@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { randomBytes } from 'crypto';
 import { sendPasswordResetEmail } from '@/lib/services/email';
 
+export const dynamic = 'force-dynamic';
+
 const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
 });

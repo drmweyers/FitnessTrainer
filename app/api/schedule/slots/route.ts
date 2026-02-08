@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate } from '@/lib/middleware/auth';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/schedule/slots?trainerId=xxx&date=2026-02-10&duration=60
 export async function GET(request: NextRequest) {
   try {

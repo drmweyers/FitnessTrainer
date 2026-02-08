@@ -10,6 +10,8 @@ import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 import { logProgramAssigned } from '@/lib/services/activity.service';
 
+export const dynamic = 'force-dynamic';
+
 const assignProgramSchema = z.object({
   clientId: z.string().uuid(),
   startDate: z.string(),

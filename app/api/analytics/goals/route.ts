@@ -9,6 +9,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const createGoalSchema = z.object({
   goalType: z.enum([
     'weight_loss',

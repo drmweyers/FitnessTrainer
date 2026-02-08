@@ -11,6 +11,8 @@ import { exerciseService } from '@/lib/services/exercise.service';
 import { UpdateExerciseDTO, ExerciseAPIError } from '@/lib/types/exercise';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 // Validation schema for updating exercise
 const updateExerciseSchema = z.object({
   name: z.string().min(1).optional(),

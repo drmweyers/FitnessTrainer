@@ -11,6 +11,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
+export const dynamic = 'force-dynamic';
+
 const createAvailabilitySchema = z.object({
   slots: z.array(z.object({
     dayOfWeek: z.number().min(0).max(6),

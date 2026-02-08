@@ -14,6 +14,8 @@ import { prisma } from '@/lib/db/prisma';
 import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Login request schema
  */

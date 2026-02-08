@@ -15,6 +15,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { redis } from '@/lib/db/redis';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/health
  *

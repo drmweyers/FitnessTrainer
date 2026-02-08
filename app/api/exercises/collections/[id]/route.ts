@@ -10,6 +10,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const updateCollectionSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   description: z.string().max(1000).optional(),

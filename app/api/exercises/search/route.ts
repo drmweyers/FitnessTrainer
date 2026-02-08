@@ -8,6 +8,8 @@ import { exerciseService } from '@/lib/services/exercise.service';
 import { ExerciseAPIError } from '@/lib/types/exercise';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 // Validation schema for search query
 const searchQuerySchema = z.object({
   q: z.string().min(1, 'Search query is required'),

@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/analytics/performance/me/personal-bests
  * Returns the personal best for each exercise the user has tracked, grouped by metric type
