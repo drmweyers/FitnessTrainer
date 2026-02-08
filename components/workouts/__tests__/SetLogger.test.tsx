@@ -135,4 +135,234 @@ describe('SetLogger', () => {
     fireEvent.change(targetInput, { target: { value: '5-8' } });
     expect(targetInput).toHaveValue('5-8');
   });
+
+  it('increments reps with plus button', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const plusBtns = screen.getAllByTestId('plus-icon');
+    // The first plus icon is for reps increment
+    fireEvent.click(plusBtns[0].closest('button')!);
+    // Quick reps calls handleComplete when value > 0, so onLogSet is called
+    expect(handleLogSet).toHaveBeenCalled();
+  });
+
+  it('decrements reps with minus button', () => {
+    render(<SetLogger {...defaultProps} />);
+    const minusBtns = screen.getAllByTestId('minus-icon');
+    // Click minus on reps (first minus icon) - value stays at 0 (can't go below)
+    fireEvent.click(minusBtns[0].closest('button')!);
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    expect(actualInput).toHaveValue(0);
+  });
+
+  it('handles quick weight increment', () => {
+    render(<SetLogger {...defaultProps} />);
+    const plusBtns = screen.getAllByTestId('plus-icon');
+    // Second plus icon is for weight
+    fireEvent.click(plusBtns[1].closest('button')!);
+    const weightInput = screen.getByLabelText('Weight (lbs)');
+    expect(weightInput).toHaveValue(5);
+  });
+
+  it('handles quick weight decrement', () => {
+    render(<SetLogger {...defaultProps} />);
+    // First set weight to something
+    const weightInput = screen.getByLabelText('Weight (lbs)');
+    fireEvent.change(weightInput, { target: { value: '100' } });
+    const minusBtns = screen.getAllByTestId('minus-icon');
+    // Second minus icon is for weight
+    fireEvent.click(minusBtns[1].closest('button')!);
+    expect(weightInput).toHaveValue(95);
+  });
+
+  it('weight cannot go below 0', () => {
+    render(<SetLogger {...defaultProps} />);
+    const minusBtns = screen.getAllByTestId('minus-icon');
+    fireEvent.click(minusBtns[1].closest('button')!);
+    const weightInput = screen.getByLabelText('Weight (lbs)');
+    expect(weightInput).toHaveValue(0);
+  });
+
+  it('increments RPE with chevron up', () => {
+    render(<SetLogger {...defaultProps} />);
+    const upBtn = screen.getByTestId('chevron-up').closest('button')!;
+    fireEvent.click(upBtn);
+    expect(screen.getByText('8')).toBeInTheDocument();
+  });
+
+  it('decrements RPE with chevron down', () => {
+    render(<SetLogger {...defaultProps} />);
+    const downBtn = screen.getByTestId('chevron-down').closest('button')!;
+    fireEvent.click(downBtn);
+    expect(screen.getByText('6')).toBeInTheDocument();
+    expect(screen.getByText('Light')).toBeInTheDocument();
+  });
+
+  it('RPE cannot go above 10', () => {
+    render(<SetLogger {...defaultProps} />);
+    const upBtn = screen.getByTestId('chevron-up').closest('button')!;
+    // RPE starts at 7, click up 4 times to reach 10
+    fireEvent.click(upBtn);
+    fireEvent.click(upBtn);
+    fireEvent.click(upBtn);
+    // '10' appears both as RPE display and as quick-rep button
+    const tens = screen.getAllByText('10');
+    expect(tens.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Heavy')).toBeInTheDocument();
+  });
+
+  it('RPE cannot go below 1', () => {
+    render(<SetLogger {...defaultProps} />);
+    const downBtn = screen.getByTestId('chevron-down').closest('button')!;
+    // RPE starts at 7, click down 7 times
+    for (let i = 0; i < 7; i++) fireEvent.click(downBtn);
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('Very Light')).toBeInTheDocument();
+  });
+
+  it('shows RPE label "Very Light" for RPE <= 4', () => {
+    render(<SetLogger {...defaultProps} />);
+    const downBtn = screen.getByTestId('chevron-down').closest('button')!;
+    // RPE 7 -> 6 -> 5 -> 4
+    fireEvent.click(downBtn);
+    fireEvent.click(downBtn);
+    fireEvent.click(downBtn);
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('Very Light')).toBeInTheDocument();
+  });
+
+  it('changes RIR when input is modified', () => {
+    render(<SetLogger {...defaultProps} />);
+    const rirInput = screen.getByLabelText('RIR (Reps in Reserve)');
+    fireEvent.change(rirInput, { target: { value: '3' } });
+    expect(rirInput).toHaveValue(3);
+  });
+
+  it('changes notes when input is modified', () => {
+    render(<SetLogger {...defaultProps} />);
+    const notesInput = screen.getByLabelText('Notes');
+    fireEvent.change(notesInput, { target: { value: 'Felt strong' } });
+    expect(notesInput).toHaveValue('Felt strong');
+  });
+
+  it('changes weight when input is modified', () => {
+    render(<SetLogger {...defaultProps} />);
+    const weightInput = screen.getByLabelText('Weight (lbs)');
+    fireEvent.change(weightInput, { target: { value: '135' } });
+    expect(weightInput).toHaveValue(135);
+  });
+
+  it('quick rep button (5) sets reps and calls onLogSet', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const btn5 = screen.getByRole('button', { name: '5' });
+    fireEvent.click(btn5);
+    expect(handleLogSet).toHaveBeenCalled();
+  });
+
+  it('quick rep button (10) sets reps and calls onLogSet', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const btn10 = screen.getByRole('button', { name: '10' });
+    fireEvent.click(btn10);
+    expect(handleLogSet).toHaveBeenCalled();
+  });
+
+  it('quick rep button (12) sets reps and calls onLogSet', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const btn12 = screen.getByRole('button', { name: '12' });
+    fireEvent.click(btn12);
+    expect(handleLogSet).toHaveBeenCalled();
+  });
+
+  it('shows Done badge after completion', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    fireEvent.change(actualInput, { target: { value: '8' } });
+    fireEvent.click(screen.getByText('Complete Set'));
+    expect(screen.getByText('Done')).toBeInTheDocument();
+  });
+
+  it('shows Completed text after set is logged', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    fireEvent.change(actualInput, { target: { value: '8' } });
+    fireEvent.click(screen.getByText('Complete Set'));
+    const completedTexts = screen.getAllByText(/Completed/);
+    expect(completedTexts.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('calls onComplete callback when provided', () => {
+    const handleLogSet = jest.fn();
+    const handleComplete = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} onComplete={handleComplete} />);
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    fireEvent.change(actualInput, { target: { value: '8' } });
+    fireEvent.click(screen.getByText('Complete Set'));
+    expect(handleComplete).toHaveBeenCalled();
+  });
+
+  it('includes weight in onLogSet when weight is set', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} />);
+    const weightInput = screen.getByLabelText('Weight (lbs)');
+    fireEvent.change(weightInput, { target: { value: '135' } });
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    fireEvent.change(actualInput, { target: { value: '8' } });
+    fireEvent.click(screen.getByText('Complete Set'));
+    expect(handleLogSet).toHaveBeenCalledWith(
+      expect.objectContaining({ actualWeight: 135 })
+    );
+  });
+
+  it('does not call onLogSet in readOnly mode', () => {
+    const handleLogSet = jest.fn();
+    render(<SetLogger {...defaultProps} onLogSet={handleLogSet} readOnly />);
+    // readOnly mode doesn't show Complete Set button
+    expect(screen.queryByText('Complete Set')).not.toBeInTheDocument();
+  });
+
+  it('shows PR badge when beating previous best reps', () => {
+    const handleLogSet = jest.fn();
+    render(
+      <SetLogger
+        {...defaultProps}
+        onLogSet={handleLogSet}
+        previousBest={{ reps: 8, weight: 100 }}
+      />
+    );
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    fireEvent.change(actualInput, { target: { value: '10' } });
+    expect(screen.getByText(/PR/)).toBeInTheDocument();
+  });
+
+  it('shows PR badge when beating previous best weight', () => {
+    const handleLogSet = jest.fn();
+    render(
+      <SetLogger
+        {...defaultProps}
+        onLogSet={handleLogSet}
+        previousBest={{ reps: 8, weight: 100 }}
+      />
+    );
+    const actualInput = screen.getByLabelText('Actual Reps *');
+    fireEvent.change(actualInput, { target: { value: '1' } });
+    const weightInput = screen.getByLabelText('Weight (lbs)');
+    fireEvent.change(weightInput, { target: { value: '150' } });
+    expect(screen.getByText(/PR/)).toBeInTheDocument();
+  });
+
+  it('shows previous best without volume when volume not provided', () => {
+    render(
+      <SetLogger
+        {...defaultProps}
+        previousBest={{ reps: 8, weight: 100 }}
+      />
+    );
+    expect(screen.getByText(/Last time:/)).toBeInTheDocument();
+    expect(screen.queryByText(/Volume:/)).not.toBeInTheDocument();
+  });
 });

@@ -191,4 +191,59 @@ describe('BodyCompositionChart', () => {
     expect(labels.textContent).toContain('Jan');
     expect(labels.textContent).toContain('Feb');
   });
+
+  it('shows muscle building recommendation (weight up, muscle up, no body fat drop)', () => {
+    const data = [
+      { date: '2025-01-01', weight: 75, bodyFat: 15, muscleMass: 33 },
+      { date: '2025-01-15', weight: 78, bodyFat: 15, muscleMass: 35 },
+    ];
+    render(<BodyCompositionChart data={data} />);
+    expect(screen.getByText(/building muscle mass/)).toBeInTheDocument();
+  });
+
+  it('shows body fat increase warning', () => {
+    const data = [
+      { date: '2025-01-01', weight: 80, bodyFat: 15 },
+      { date: '2025-01-15', weight: 80, bodyFat: 18 },
+    ];
+    render(<BodyCompositionChart data={data} />);
+    expect(screen.getByText(/Body fat has increased/)).toBeInTheDocument();
+  });
+
+  it('shows stable composition recommendation', () => {
+    // Weight change < 1 and bodyFat change < 1 (and not > 0 for fat check)
+    const data = [
+      { date: '2025-01-01', weight: 80, bodyFat: 15 },
+      { date: '2025-01-15', weight: 80.5, bodyFat: 14.5 },
+    ];
+    render(<BodyCompositionChart data={data} />);
+    expect(screen.getByText(/composition is stable/)).toBeInTheDocument();
+  });
+
+  it('does not show weight change insight when weight is unchanged', () => {
+    const data = [
+      { date: '2025-01-01', weight: 80 },
+      { date: '2025-01-15', weight: 80 },
+    ];
+    render(<BodyCompositionChart data={data} />);
+    expect(screen.queryByText('Weight Change')).not.toBeInTheDocument();
+  });
+
+  it('does not show body fat change insight when body fat is unchanged', () => {
+    const data = [
+      { date: '2025-01-01', weight: 80, bodyFat: 15 },
+      { date: '2025-01-15', weight: 82, bodyFat: 15 },
+    ];
+    render(<BodyCompositionChart data={data} />);
+    expect(screen.queryByText('Body Fat Change')).not.toBeInTheDocument();
+  });
+
+  it('does not show muscle mass change when unchanged', () => {
+    const data = [
+      { date: '2025-01-01', weight: 80, muscleMass: 35 },
+      { date: '2025-01-15', weight: 82, muscleMass: 35 },
+    ];
+    render(<BodyCompositionChart data={data} />);
+    expect(screen.queryByText('Muscle Mass Change')).not.toBeInTheDocument();
+  });
 });

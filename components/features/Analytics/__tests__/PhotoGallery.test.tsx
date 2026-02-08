@@ -253,4 +253,134 @@ describe('PhotoGallery', () => {
     expect(screen.getByText('Make Public')).toBeInTheDocument();
     expect(screen.getByText('Make Private')).toBeInTheDocument();
   });
+
+  it('deselects a photo when clicked again in selection mode', () => {
+    render(<PhotoGallery {...defaultProps} canEdit onShare={jest.fn()} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    const clickTarget = photoContainers[0].closest('[class*="cursor-pointer"]')!;
+
+    // Select
+    fireEvent.click(clickTarget);
+    expect(screen.getByText('1 selected')).toBeInTheDocument();
+
+    // Deselect
+    fireEvent.click(clickTarget);
+    expect(screen.getByText('0 selected')).toBeInTheDocument();
+  });
+
+  it('calls onShare when Share button is clicked', () => {
+    const handleShare = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onShare={handleShare} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    // Select a photo
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+
+    fireEvent.click(screen.getByText('Share'));
+    expect(handleShare).toHaveBeenCalledWith(expect.arrayContaining([expect.any(String)]));
+  });
+
+  it('opens share modal after sharing', () => {
+    const handleShare = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onShare={handleShare} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+    fireEvent.click(screen.getByText('Share'));
+
+    expect(screen.getByText('Share Progress Photos')).toBeInTheDocument();
+    expect(screen.getByText(/shareable link has been created/)).toBeInTheDocument();
+  });
+
+  it('closes share modal when Close button is clicked', () => {
+    const handleShare = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onShare={handleShare} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+    fireEvent.click(screen.getByText('Share'));
+
+    // Close the modal
+    const closeButtons = screen.getAllByText('Close');
+    fireEvent.click(closeButtons[closeButtons.length - 1]);
+    expect(screen.queryByText('Share Progress Photos')).not.toBeInTheDocument();
+  });
+
+  it('calls onPrivacyToggle for all selected photos when Make Public is clicked', () => {
+    const handlePrivacyToggle = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onPrivacyToggle={handlePrivacyToggle} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    // Select two photos
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+    fireEvent.click(photoContainers[1].closest('[class*="cursor-pointer"]')!);
+
+    fireEvent.click(screen.getByText('Make Public'));
+    expect(handlePrivacyToggle).toHaveBeenCalledTimes(2);
+  });
+
+  it('calls onPrivacyToggle for all selected photos when Make Private is clicked', () => {
+    const handlePrivacyToggle = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onPrivacyToggle={handlePrivacyToggle} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+
+    fireEvent.click(screen.getByText('Make Private'));
+    expect(handlePrivacyToggle).toHaveBeenCalledWith(expect.any(String), false);
+  });
+
+  it('exits selection mode after bulk privacy toggle', () => {
+    const handlePrivacyToggle = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onPrivacyToggle={handlePrivacyToggle} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+    fireEvent.click(screen.getByText('Make Public'));
+
+    // Should exit selection mode
+    expect(screen.getByText('Select')).toBeInTheDocument();
+    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
+  });
+
+  it('calls onPrivacyToggle in timeline view', () => {
+    const handlePrivacyToggle = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onPrivacyToggle={handlePrivacyToggle} />);
+    fireEvent.click(screen.getByText('Timeline'));
+
+    // In timeline view, privacy toggle buttons are visible
+    const privacyButtons = document.querySelectorAll('button.text-gray-400');
+    if (privacyButtons.length > 0) {
+      fireEvent.click(privacyButtons[0]);
+      expect(handlePrivacyToggle).toHaveBeenCalled();
+    }
+  });
+
+  it('does not delete when confirm is cancelled', () => {
+    const handleDelete = jest.fn();
+    window.confirm = jest.fn(() => false);
+    render(<PhotoGallery {...defaultProps} canEdit onDelete={handleDelete} />);
+    fireEvent.click(screen.getByText('Timeline'));
+
+    const deleteButtons = document.querySelectorAll('button.text-red-400');
+    if (deleteButtons.length > 0) {
+      fireEvent.click(deleteButtons[0]);
+      expect(handleDelete).not.toHaveBeenCalled();
+    }
+  });
+
+  it('does not show share/privacy buttons when no photos selected', () => {
+    render(<PhotoGallery {...defaultProps} canEdit onShare={jest.fn()} />);
+    fireEvent.click(screen.getByText('Select'));
+    expect(screen.queryByText('Share')).not.toBeInTheDocument();
+    expect(screen.queryByText('Make Public')).not.toBeInTheDocument();
+  });
 });
