@@ -9,6 +9,9 @@ import ProgressChart from '@/components/features/Analytics/ProgressChart';
 import MultiLineChart from '@/components/features/Analytics/MultiLineChart';
 import BodyCompositionChart from '@/components/features/Analytics/BodyCompositionChart';
 import PhotoGallery from '@/components/features/Analytics/PhotoGallery';
+import PerformanceTab from '@/components/features/Analytics/PerformanceTab';
+import TrainingLoadTab from '@/components/features/Analytics/TrainingLoadTab';
+import GoalsTab from '@/components/features/Analytics/GoalsTab';
 import { useToast, ToastContainer } from '@/components/shared/Toast';
 
 export default function AnalyticsPage() {
@@ -19,7 +22,7 @@ export default function AnalyticsPage() {
   const [selectedMeasurement, setSelectedMeasurement] = useState<BodyMeasurement | null>(null);
   const { success, error: showError, toasts, removeToast } = useToast();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '3m' | '6m' | '1y'>('3m');
-  const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos' | 'performance' | 'training-load' | 'goals'>('overview');
   // const [progressPhotos, setProgressPhotos] = useState<any[]>([]);
 
   // Load measurements when user changes
@@ -207,9 +210,12 @@ export default function AnalyticsPage() {
           
           {/* Navigation Tabs */}
           <div className="border-t border-gray-200">
-            <nav className="-mb-px flex space-x-8">
+            <nav className="-mb-px flex space-x-8 overflow-x-auto">
               {[
                 { key: 'overview', label: 'Overview', icon: '📊' },
+                { key: 'performance', label: 'Performance', icon: '💪' },
+                { key: 'training-load', label: 'Training Load', icon: '⚡' },
+                { key: 'goals', label: 'Goals', icon: '🎯' },
                 { key: 'charts', label: 'Charts & Trends', icon: '📈' },
                 { key: 'history', label: 'History', icon: '📋' },
                 { key: 'photos', label: 'Photos', icon: '📷' },
@@ -217,7 +223,7 @@ export default function AnalyticsPage() {
                 <button
                   key={tab.key}
                   onClick={() => setActiveView(tab.key as any)}
-                  className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                     activeView === tab.key
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -397,6 +403,18 @@ export default function AnalyticsPage() {
                   />
                 </div>
               </div>
+            )}
+
+            {activeView === 'performance' && (
+              <PerformanceTab />
+            )}
+
+            {activeView === 'training-load' && (
+              <TrainingLoadTab />
+            )}
+
+            {activeView === 'goals' && (
+              <GoalsTab />
             )}
 
             {activeView === 'photos' && (
