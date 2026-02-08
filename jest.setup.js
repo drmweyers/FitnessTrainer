@@ -1,4 +1,4 @@
-// import '@testing-library/jest-dom';
+import '@testing-library/jest-dom';
 
 // Setup for Node environment (service layer tests)
 
