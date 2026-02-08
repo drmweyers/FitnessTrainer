@@ -10,34 +10,20 @@ jest.mock('next/link', () => {
   };
 });
 
-describe('ForgotPasswordPage - Disabled State', () => {
+// Mock fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
+
+describe('ForgotPasswordPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render the page with EvoFit branding', () => {
     render(<ForgotPasswordPage />);
 
     expect(screen.getByText('EvoFit')).toBeInTheDocument();
     expect(screen.getByText('Reset your password')).toBeInTheDocument();
-  });
-
-  it('should show informative message that feature is unavailable', () => {
-    render(<ForgotPasswordPage />);
-
-    expect(screen.getByText('Password reset functionality is currently unavailable')).toBeInTheDocument();
-    expect(screen.getByText('Password Reset Not Available')).toBeInTheDocument();
-  });
-
-  it('should display support email contact', () => {
-    render(<ForgotPasswordPage />);
-
-    const supportLink = screen.getByText('support@evofit.io');
-    expect(supportLink.closest('a')).toHaveAttribute('href', 'mailto:support@evofit.io');
-  });
-
-  it('should have disabled submit button', () => {
-    render(<ForgotPasswordPage />);
-
-    const submitButton = screen.getByText('Reset Unavailable');
-    expect(submitButton).toBeDisabled();
-    expect(submitButton).toHaveAttribute('title', 'Password reset is not yet available');
   });
 
   it('should have email input field', () => {
@@ -49,44 +35,93 @@ describe('ForgotPasswordPage - Disabled State', () => {
     expect(emailInput).toHaveAttribute('required');
   });
 
+  it('should have a submit button', () => {
+    render(<ForgotPasswordPage />);
+
+    const submitButton = screen.getByText('Send reset instructions');
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).not.toBeDisabled();
+  });
+
   it('should have back to sign in link', () => {
     render(<ForgotPasswordPage />);
 
-    const backLinks = screen.getAllByText('Back to sign in');
-    expect(backLinks.length).toBeGreaterThan(0);
-    backLinks.forEach(link => {
-      expect(link.closest('a')).toHaveAttribute('href', '/auth/login');
-    });
+    const backLink = screen.getByText('Back to sign in');
+    expect(backLink.closest('a')).toHaveAttribute('href', '/auth/login');
   });
 
-  it('should show informative blue info box', () => {
-    render(<ForgotPasswordPage />);
-
-    const infoText = screen.getByText(/We're currently setting up our password reset system/i);
-    expect(infoText).toBeInTheDocument();
-  });
-
-  it('should show disabled state and not process form', () => {
-    render(<ForgotPasswordPage />);
-
-    const submitButton = screen.getByText('Reset Unavailable');
-
-    // Button should be disabled
-    expect(submitButton).toBeDisabled();
-  });
-
-  it('should allow email input but not submit', () => {
+  it('should allow email input', () => {
     render(<ForgotPasswordPage />);
 
     const emailInput = screen.getByLabelText('Email address');
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    expect(emailInput).toHaveValue('test@example.com');
+  });
 
-    // User can type email
+  it('should show success state after submission', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, message: 'If an account exists...' }),
+    });
+
+    render(<ForgotPasswordPage />);
+
+    const emailInput = screen.getByLabelText('Email address');
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
 
-    expect(emailInput).toHaveValue('test@example.com');
+    const submitButton = screen.getByText('Send reset instructions');
+    fireEvent.click(submitButton);
 
-    // But button is disabled
-    const submitButton = screen.getByText('Reset Unavailable');
-    expect(submitButton).toBeDisabled();
+    await waitFor(() => {
+      expect(screen.getByText('Check your email')).toBeInTheDocument();
+    });
+  });
+
+  it('should show error on network failure', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+    render(<ForgotPasswordPage />);
+
+    const emailInput = screen.getByLabelText('Email address');
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+
+    const submitButton = screen.getByText('Send reset instructions');
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Network error. Please try again.')).toBeInTheDocument();
+    });
+  });
+
+  it('should show error when submitting empty email', async () => {
+    render(<ForgotPasswordPage />);
+
+    const form = screen.getByText('Send reset instructions').closest('form')!;
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(screen.getByText('Email is required')).toBeInTheDocument();
+    });
+
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('should show error on API error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ success: false, error: 'Something went wrong' }),
+    });
+
+    render(<ForgotPasswordPage />);
+
+    const emailInput = screen.getByLabelText('Email address');
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+
+    const submitButton = screen.getByText('Send reset instructions');
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    });
   });
 });

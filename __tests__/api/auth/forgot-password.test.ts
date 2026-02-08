@@ -6,6 +6,9 @@
 import { NextRequest } from 'next/server';
 
 jest.mock('@/lib/db/prisma');
+jest.mock('@/lib/services/email', () => ({
+  sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
+}));
 
 import { POST } from '@/app/api/auth/forgot-password/route';
 import { prisma } from '@/lib/db/prisma';
@@ -26,11 +29,13 @@ describe('POST /api/auth/forgot-password', () => {
   });
 
   it('returns success even when user exists (prevents email enumeration)', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
     mockedPrisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       email: 'user@test.com',
+      userProfile: { bio: null },
     });
+    mockedPrisma.passwordReset.updateMany.mockResolvedValue({ count: 0 });
+    mockedPrisma.passwordReset.create.mockResolvedValue({ id: 'reset-1' });
 
     const request = makeRequest({ email: 'user@test.com' });
     const response = await POST(request);
@@ -39,7 +44,6 @@ describe('POST /api/auth/forgot-password', () => {
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
     expect(body.message).toContain('If an account');
-    consoleSpy.mockRestore();
   });
 
   it('returns success even when user does not exist', async () => {
