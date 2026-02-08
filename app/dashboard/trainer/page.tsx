@@ -12,6 +12,7 @@ import {
   ActivityFeedItem,
   QuickAction
 } from '@/types/dashboard';
+import ProfileCompletionWidget from '@/components/features/Dashboard/ProfileCompletionWidget';
 
 export default function TrainerDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -288,6 +289,9 @@ export default function TrainerDashboard() {
             )}
           </div>
         </div>
+
+        {/* Profile Completion */}
+        <ProfileCompletionWidget />
 
         {/* Quick Actions */}
         <QuickActions
