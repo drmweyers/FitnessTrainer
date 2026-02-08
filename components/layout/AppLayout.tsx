@@ -24,7 +24,7 @@ export default function AppLayout({
   const pathname = usePathname();
 
   // Check if we're on a public page that shouldn't show navigation
-  const isPublicPage = pathname === '/login' || pathname === '/register' || pathname === '/';
+  const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/auth/login' || pathname === '/auth/register' || pathname === '/auth/forgot-password';
 
   // Auto-collapse sidebar on smaller screens
   useEffect(() => {
