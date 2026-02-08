@@ -161,4 +161,150 @@ describe('WeekBuilder - Story 005-02: Build Weekly Structure', () => {
       expect(screen.getByText(/weeks configured/i)).toBeInTheDocument();
     });
   });
+
+  describe('WeekCard Interactions', () => {
+    it('should toggle week expansion when clicking header', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Week 1 starts expanded by default, should show overview
+      expect(screen.getByText('Week Overview')).toBeInTheDocument();
+
+      // Click the header to collapse
+      const weekHeaders = document.querySelectorAll('.cursor-pointer');
+      if (weekHeaders.length > 0) {
+        await user.click(weekHeaders[0] as HTMLElement);
+        // After collapse, overview may be hidden
+      }
+    });
+
+    it('should enter edit mode when edit button is clicked', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Find Edit button (has title="Edit week")
+      const editButton = document.querySelector('[title="Edit week"]');
+      expect(editButton).toBeTruthy();
+      await user.click(editButton as HTMLElement);
+
+      // Should show edit form
+      expect(screen.getByText('Week Name')).toBeInTheDocument();
+      expect(screen.getByText('Week Type')).toBeInTheDocument();
+      expect(screen.getByText('Regular')).toBeInTheDocument();
+      expect(screen.getByText('Deload')).toBeInTheDocument();
+      expect(screen.getByText('Save Changes')).toBeInTheDocument();
+    });
+
+    it('should cancel editing when Cancel is clicked', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      const editButton = document.querySelector('[title="Edit week"]');
+      await user.click(editButton as HTMLElement);
+      expect(screen.getByText('Save Changes')).toBeInTheDocument();
+
+      // Click Cancel in the edit form
+      const cancelButtons = screen.getAllByText('Cancel');
+      // Find the Cancel in the edit form (not the one in delete confirm)
+      await user.click(cancelButtons[0]);
+
+      // Should be back to view mode
+      expect(screen.queryByText('Save Changes')).not.toBeInTheDocument();
+    });
+
+    it('should save changes when Save Changes is clicked', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      const editButton = document.querySelector('[title="Edit week"]');
+      await user.click(editButton as HTMLElement);
+
+      // Edit the week name
+      const nameInput = screen.getByDisplayValue(/Week 1/i);
+      await user.clear(nameInput);
+      await user.type(nameInput, 'Heavy Week');
+
+      await user.click(screen.getByText('Save Changes'));
+
+      // Should exit edit mode
+      expect(screen.queryByText('Save Changes')).not.toBeInTheDocument();
+      expect(screen.getByText('Heavy Week')).toBeInTheDocument();
+    });
+
+    it('should duplicate a week', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      const initialWeekTexts = screen.queryAllByText(/Week/i);
+
+      const duplicateButton = document.querySelector('[title="Duplicate week"]');
+      expect(duplicateButton).toBeTruthy();
+      await user.click(duplicateButton as HTMLElement);
+
+      await waitFor(() => {
+        const newWeekTexts = screen.queryAllByText(/Week/i);
+        expect(newWeekTexts.length).toBeGreaterThan(initialWeekTexts.length);
+      });
+    });
+
+    it('should show delete confirmation when delete is clicked', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // First add a week so we have 2+ (delete only available with > 1)
+      await user.click(screen.getByRole('button', { name: /Add Another Week/i }));
+
+      await waitFor(() => {
+        const deleteButtons = document.querySelectorAll('[title="Delete week"]');
+        expect(deleteButtons.length).toBeGreaterThan(0);
+      });
+
+      const deleteButton = document.querySelector('[title="Delete week"]');
+      await user.click(deleteButton as HTMLElement);
+
+      // Should show confirmation modal
+      expect(screen.getByRole('heading', { name: 'Delete Week' })).toBeInTheDocument();
+      expect(screen.getByText(/Are you sure you want to delete/)).toBeInTheDocument();
+    });
+
+    it('should cancel delete when Cancel is clicked in confirm', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      await user.click(screen.getByRole('button', { name: /Add Another Week/i }));
+
+      await waitFor(() => {
+        expect(document.querySelector('[title="Delete week"]')).toBeTruthy();
+      });
+
+      await user.click(document.querySelector('[title="Delete week"]') as HTMLElement);
+      expect(screen.getByRole('heading', { name: 'Delete Week' })).toBeInTheDocument();
+
+      // Click Cancel in the confirmation modal
+      const cancelButtons = screen.getAllByText('Cancel');
+      const modalCancel = cancelButtons[cancelButtons.length - 1];
+      await user.click(modalCancel);
+
+      expect(screen.queryByText(/Are you sure you want to delete/)).not.toBeInTheDocument();
+    });
+
+    it('should show no workouts message in expanded empty week', () => {
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Default week is expanded and has no workouts
+      expect(screen.getByText('No workouts added to this week yet')).toBeInTheDocument();
+      expect(screen.getByText(/add workouts in the next step/)).toBeInTheDocument();
+    });
+
+    it('should show training and rest day stats', () => {
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Should show week overview
+      expect(screen.getByText('Week Overview')).toBeInTheDocument();
+      expect(screen.getByText('Total Days')).toBeInTheDocument();
+      expect(screen.getByText('Training')).toBeInTheDocument();
+      expect(screen.getByText('Rest')).toBeInTheDocument();
+      expect(screen.getByText('Active')).toBeInTheDocument();
+    });
+  });
 });

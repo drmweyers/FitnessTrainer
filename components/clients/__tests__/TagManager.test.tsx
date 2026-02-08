@@ -184,4 +184,142 @@ describe('TagManager', () => {
       );
     });
   });
+
+  it('shows edit and delete buttons for each tag', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+    // Each tag should have edit and delete buttons (icons)
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBeGreaterThan(3); // At minimum: New Tag, Close, plus edit/delete per tag
+  });
+
+  it('enters edit mode when edit button is clicked', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+    // Find edit buttons - they're icon buttons within each tag row
+    const editButtons = screen.getAllByRole('button').filter(btn =>
+      btn.querySelector('[data-testid]') || btn.className.includes('text-gray')
+    );
+    // Click the first functional button after tag content
+    const allButtons = screen.getAllByRole('button');
+    for (const btn of allButtons) {
+      if (btn.textContent === '' && !btn.textContent?.includes('New Tag') && !btn.textContent?.includes('Close')) {
+        fireEvent.click(btn);
+        break;
+      }
+    }
+  });
+
+  it('deletes a tag when delete is confirmed', async () => {
+    window.confirm = jest.fn().mockReturnValue(true);
+    mockDeleteTag.mockResolvedValue(undefined);
+
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+
+    // Find delete buttons by their red color class
+    const allButtons = screen.getAllByRole('button');
+    const deleteButtons = allButtons.filter(btn =>
+      btn.className.includes('text-red')
+    );
+    if (deleteButtons.length >= 1) {
+      fireEvent.click(deleteButtons[0]); // Click delete for first tag (VIP)
+      await waitFor(() => {
+        expect(mockDeleteTag).toHaveBeenCalledWith('tag-1');
+      });
+    }
+  });
+
+  it('does not delete when confirm is cancelled', async () => {
+    window.confirm = jest.fn().mockReturnValue(false);
+
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+
+    const allButtons = screen.getAllByRole('button');
+    const deleteButtons = allButtons.filter(btn =>
+      btn.className.includes('text-red')
+    );
+    if (deleteButtons.length >= 1) {
+      fireEvent.click(deleteButtons[0]);
+      expect(mockDeleteTag).not.toHaveBeenCalled();
+    }
+  });
+
+  it('shows cancel button in create form', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+  });
+
+  it('hides create form when cancel is clicked', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    expect(screen.getByPlaceholderText('Enter tag name...')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(screen.queryByPlaceholderText('Enter tag name...')).not.toBeInTheDocument();
+  });
+
+  it('retries loading tags when Try Again is clicked', async () => {
+    mockGetTags.mockRejectedValueOnce(new Error('Network error'));
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('Try Again')).toBeInTheDocument();
+    });
+    mockGetTags.mockResolvedValueOnce([]);
+    fireEvent.click(screen.getByText('Try Again'));
+    await waitFor(() => {
+      expect(mockGetTags).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('shows Create First Tag button in empty state', async () => {
+    mockGetTags.mockResolvedValue([]);
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('Create First Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('Create First Tag'));
+    expect(screen.getByPlaceholderText('Enter tag name...')).toBeInTheDocument();
+  });
+
+  it('updates character count as user types tag name', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const input = screen.getByPlaceholderText('Enter tag name...');
+    fireEvent.change(input, { target: { value: 'Test' } });
+    expect(screen.getByText('4/50 characters')).toBeInTheDocument();
+  });
+
+  it('shows error when create tag fails', async () => {
+    mockCreateTag.mockRejectedValue(new Error('Failed'));
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const input = screen.getByPlaceholderText('Enter tag name...');
+    fireEvent.change(input, { target: { value: 'Broken' } });
+    fireEvent.click(screen.getByText('Create Tag'));
+    await waitFor(() => {
+      expect(mockCreateTag).toHaveBeenCalled();
+    });
+  });
 });

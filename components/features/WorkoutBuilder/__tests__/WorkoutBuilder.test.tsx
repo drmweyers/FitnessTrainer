@@ -184,5 +184,60 @@ describe('WorkoutBuilder', () => {
       // Now the first exercise (Bench Press) should be in the section
       expect(screen.getByText('Bench Press')).toBeInTheDocument();
     });
+
+    it('should display exercise details after adding', () => {
+      render(<WorkoutBuilder {...defaultProps} />);
+      const placeholders = screen.getAllByText('Click to add an exercise or drag exercises here');
+      fireEvent.click(placeholders[0]);
+
+      expect(screen.getByText('Bench Press')).toBeInTheDocument();
+      expect(screen.getByText(/pectorals/)).toBeInTheDocument();
+      expect(screen.getByText(/barbell/)).toBeInTheDocument();
+    });
+
+    it('should show video button for added exercise', () => {
+      render(<WorkoutBuilder {...defaultProps} />);
+      const placeholders = screen.getAllByText('Click to add an exercise or drag exercises here');
+      fireEvent.click(placeholders[0]);
+
+      expect(screen.getByTestId('icon-video')).toBeInTheDocument();
+    });
+
+    it('should remove exercise from section and call onRemoveExercise', () => {
+      const handleRemove = jest.fn();
+      render(<WorkoutBuilder exercises={createMockExercises()} onRemoveExercise={handleRemove} />);
+
+      // Add exercise to first section
+      const placeholders = screen.getAllByText('Click to add an exercise or drag exercises here');
+      fireEvent.click(placeholders[0]);
+
+      expect(screen.getByText('Bench Press')).toBeInTheDocument();
+
+      // Find the exercise item container (has the exercise name)
+      const exerciseName = screen.getByText('Bench Press');
+      const exerciseContainer = exerciseName.closest('.flex.items-center.bg-gray-50')!;
+      // Find the trash icon within the exercise container
+      const exerciseTrash = exerciseContainer.querySelector('[data-testid="icon-trash"]')!.closest('button')!;
+      fireEvent.click(exerciseTrash);
+      expect(handleRemove).toHaveBeenCalledWith('ex-1');
+    });
+
+    it('should show exercise image', () => {
+      render(<WorkoutBuilder {...defaultProps} />);
+      const placeholders = screen.getAllByText('Click to add an exercise or drag exercises here');
+      fireEvent.click(placeholders[0]);
+
+      const img = screen.getByAltText('Bench Press');
+      expect(img).toBeInTheDocument();
+      expect(img).toHaveAttribute('src', '/gifs/bench-press.gif');
+    });
+
+    it('should show grip icon for drag handle', () => {
+      render(<WorkoutBuilder {...defaultProps} />);
+      const placeholders = screen.getAllByText('Click to add an exercise or drag exercises here');
+      fireEvent.click(placeholders[0]);
+
+      expect(screen.getByTestId('icon-grip')).toBeInTheDocument();
+    });
   });
 });

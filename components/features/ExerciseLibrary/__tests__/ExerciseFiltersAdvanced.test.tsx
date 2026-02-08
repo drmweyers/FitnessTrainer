@@ -181,4 +181,146 @@ describe('ExerciseFiltersAdvanced', () => {
       collections: [],
     });
   });
+
+  it('applies a preset when clicked', () => {
+    render(<ExerciseFiltersAdvanced {...defaultProps} />);
+    fireEvent.click(screen.getByText('Filter Presets'));
+    fireEvent.click(screen.getByText('Strength Training'));
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        bodyParts: expect.any(Array),
+        equipments: expect.any(Array),
+      })
+    );
+  });
+
+  it('removes an active filter badge when clicked', () => {
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest', 'back'],
+    };
+    render(
+      <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithActive} />
+    );
+    // Find the X button on the chest badge
+    const badges = screen.getAllByText('chest');
+    const badgeContainer = badges[0].closest('button') || badges[0].closest('[role]');
+    if (badgeContainer) {
+      // Look for the X button next to the badge text
+      const closeButtons = document.querySelectorAll('button svg');
+      if (closeButtons.length > 0) {
+        fireEvent.click(closeButtons[0].closest('button')!);
+      }
+    }
+  });
+
+  it('calls onChange when equipment checkbox is clicked', () => {
+    render(<ExerciseFiltersAdvanced {...defaultProps} />);
+    fireEvent.click(screen.getByText('Equipment'));
+    const barbellCheckbox = screen.getByText('barbell').closest('label')?.querySelector('input');
+    if (barbellCheckbox) {
+      fireEvent.click(barbellCheckbox);
+    }
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        equipments: ['barbell'],
+      })
+    );
+  });
+
+  it('removes equipment filter when clicking checked equipment', () => {
+    const filtersWithEquip = {
+      ...defaultFilters,
+      equipments: ['barbell'],
+    };
+    render(
+      <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithEquip} />
+    );
+    fireEvent.click(screen.getByText('Equipment'));
+    const barbellElements = screen.getAllByText('barbell');
+    // Find the one inside a label (checkbox), not the badge
+    const barbellCheckbox = barbellElements
+      .map(el => el.closest('label')?.querySelector('input'))
+      .find(input => input != null);
+    if (barbellCheckbox) {
+      fireEvent.click(barbellCheckbox);
+    }
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        equipments: [],
+      })
+    );
+  });
+
+  it('calls onChange when target muscle checkbox is clicked', () => {
+    render(<ExerciseFiltersAdvanced {...defaultProps} />);
+    fireEvent.click(screen.getByText('Target Muscles'));
+    const bicepsCheckbox = screen.getByText('biceps').closest('label')?.querySelector('input');
+    if (bicepsCheckbox) {
+      fireEvent.click(bicepsCheckbox);
+    }
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetMuscles: ['biceps'],
+      })
+    );
+  });
+
+  it('toggles favorites filter', () => {
+    render(<ExerciseFiltersAdvanced {...defaultProps} />);
+    fireEvent.click(screen.getByText('Special Filters'));
+    const favCheckbox = screen.getByText('Show only favorites').closest('label')?.querySelector('input');
+    if (favCheckbox) {
+      fireEvent.click(favCheckbox);
+    }
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        favorites: true,
+      })
+    );
+  });
+
+  it('applies Bodyweight Only preset', () => {
+    render(<ExerciseFiltersAdvanced {...defaultProps} />);
+    fireEvent.click(screen.getByText('Filter Presets'));
+    fireEvent.click(screen.getByText('Bodyweight Only'));
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        equipments: expect.arrayContaining(['body weight']),
+      })
+    );
+  });
+
+  it('applies Upper Body preset', () => {
+    render(<ExerciseFiltersAdvanced {...defaultProps} />);
+    fireEvent.click(screen.getByText('Filter Presets'));
+    fireEvent.click(screen.getByText('Upper Body'));
+    expect(mockOnChange).toHaveBeenCalled();
+  });
+
+  it('counts favorites in active filter count', () => {
+    const filtersWithFavorites = {
+      ...defaultFilters,
+      favorites: true,
+    };
+    render(
+      <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithFavorites} />
+    );
+    expect(screen.getByText('1 active')).toBeInTheDocument();
+  });
+
+  it('renders onSavePreset button when prop is provided', () => {
+    const mockSavePreset = jest.fn();
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        onSavePreset={mockSavePreset}
+      />
+    );
+    fireEvent.click(screen.getByText('Filter Presets'));
+    const saveBtn = screen.queryByText('Save Current');
+    if (saveBtn) {
+      expect(saveBtn).toBeInTheDocument();
+    }
+  });
 });

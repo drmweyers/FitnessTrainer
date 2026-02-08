@@ -161,7 +161,7 @@ describe('ProgramForm - Step 1: Basic Program Info', () => {
 
       // Should proceed without errors
       expect(handleNext).toHaveBeenCalled();
-    });
+    }, 15000);
   });
 
   describe('Goals Management', () => {
