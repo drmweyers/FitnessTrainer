@@ -9,8 +9,18 @@ import bcrypt from 'bcryptjs';
 jest.mock('@/lib/db/prisma');
 jest.mock('@/lib/middleware/auth');
 jest.mock('bcryptjs');
+jest.mock('@/lib/services/tokenService', () => ({
+  tokenService: {
+    generateAccessToken: jest.fn(() => 'mock-access-token'),
+    generateRefreshToken: jest.fn(() => Promise.resolve('mock-refresh-token')),
+  }
+}));
 
 const mockPrisma = require('@/lib/db/prisma').prisma;
+// Ensure userSession mock exists (tokenService may use it internally)
+if (!mockPrisma.userSession) {
+  mockPrisma.userSession = { create: jest.fn(), findMany: jest.fn(), deleteMany: jest.fn() };
+}
 
 describe('POST /api/auth/login', () => {
   beforeEach(() => {
@@ -30,11 +40,21 @@ describe('POST /api/auth/login', () => {
   const createMockRequest = (body: any) => {
     return {
       json: async () => body,
-    } as NextRequest;
+      headers: new Map([
+        ['user-agent', 'Mozilla/5.0 Chrome/120'],
+        ['x-forwarded-for', '127.0.0.1'],
+      ]),
+    } as unknown as NextRequest;
   };
 
   it('should login successfully with valid credentials', async () => {
     mockPrisma.user.findUnique.mockResolvedValue(validUser);
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: validUser.id,
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
     const request = createMockRequest({
@@ -166,6 +186,12 @@ describe('POST /api/auth/login', () => {
 
   it('should handle rememberMe option', async () => {
     mockPrisma.user.findUnique.mockResolvedValue(validUser);
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: validUser.id,
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
     const request = createMockRequest({

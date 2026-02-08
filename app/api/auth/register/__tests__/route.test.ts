@@ -9,8 +9,24 @@ import bcrypt from 'bcryptjs';
 jest.mock('@/lib/db/prisma');
 jest.mock('@/lib/middleware/auth');
 jest.mock('bcryptjs');
+jest.mock('@/lib/services/tokenService', () => ({
+  tokenService: {
+    generateAccessToken: jest.fn(() => 'mock-access-token'),
+    generateRefreshToken: jest.fn(() => Promise.resolve('mock-refresh-token')),
+  }
+}));
+jest.mock('@/lib/services/activity.service', () => ({
+  logClientSignup: jest.fn(),
+}));
 
 const mockPrisma = require('@/lib/db/prisma').prisma;
+// Ensure userSession mock exists (tokenService may use it internally)
+if (!mockPrisma.userSession) {
+  mockPrisma.userSession = { create: jest.fn(), findMany: jest.fn(), deleteMany: jest.fn() };
+}
+
+// Valid password meeting schema requirements (uppercase, lowercase, number, 8+ chars)
+const VALID_PASSWORD = 'Password1';
 
 describe('POST /api/auth/register', () => {
   beforeEach(() => {
@@ -21,7 +37,11 @@ describe('POST /api/auth/register', () => {
   const createMockRequest = (body: any) => {
     return {
       json: async () => body,
-    } as NextRequest;
+      headers: new Map([
+        ['user-agent', 'Mozilla/5.0 Chrome/120'],
+        ['x-forwarded-for', '127.0.0.1'],
+      ]),
+    } as unknown as NextRequest;
   };
 
   it('should register new user successfully', async () => {
@@ -29,14 +49,20 @@ describe('POST /api/auth/register', () => {
     mockPrisma.user.create.mockResolvedValue({
       id: 'user-123',
       email: 'newuser@example.com',
-      role: 'TRAINER',
+      role: 'trainer',
+      isVerified: true,
+    });
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     const request = createMockRequest({
       email: 'newuser@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     const response = await POST(request);
@@ -50,9 +76,8 @@ describe('POST /api/auth/register', () => {
   it('should return error for invalid email format', async () => {
     const request = createMockRequest({
       email: 'invalid-email',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     const response = await POST(request);
@@ -65,9 +90,8 @@ describe('POST /api/auth/register', () => {
   it('should return error for short password', async () => {
     const request = createMockRequest({
       email: 'test@example.com',
-      password: 'short',
-      confirmPassword: 'short',
-      role: 'TRAINER',
+      password: 'Ab1',
+      role: 'trainer',
     });
 
     const response = await POST(request);
@@ -77,12 +101,11 @@ describe('POST /api/auth/register', () => {
     expect(data.success).toBe(false);
   });
 
-  it('should return error for password mismatch', async () => {
+  it('should return error for password without uppercase', async () => {
     const request = createMockRequest({
       email: 'test@example.com',
-      password: 'password123',
-      confirmPassword: 'different123',
-      role: 'TRAINER',
+      password: 'password1',
+      role: 'trainer',
     });
 
     const response = await POST(request);
@@ -95,14 +118,12 @@ describe('POST /api/auth/register', () => {
   it('should return error for existing user', async () => {
     mockPrisma.user.findUnique.mockResolvedValue({
       id: 'existing-user',
-      email: 'existing@example.com',
     });
 
     const request = createMockRequest({
       email: 'existing@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     const response = await POST(request);
@@ -110,7 +131,7 @@ describe('POST /api/auth/register', () => {
 
     expect(response.status).toBe(409);
     expect(data.success).toBe(false);
-    expect(data.message).toContain('already exists');
+    expect(data.message).toContain('already registered');
   });
 
   it('should convert email to lowercase', async () => {
@@ -118,20 +139,27 @@ describe('POST /api/auth/register', () => {
     mockPrisma.user.create.mockResolvedValue({
       id: 'user-123',
       email: 'test@example.com',
-      role: 'TRAINER',
+      role: 'trainer',
+      isVerified: true,
+    });
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     const request = createMockRequest({
       email: 'Test@Example.COM',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     await POST(request);
 
     expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
       where: { email: 'test@example.com' },
+      select: { id: true },
     });
   });
 
@@ -140,19 +168,25 @@ describe('POST /api/auth/register', () => {
     mockPrisma.user.create.mockResolvedValue({
       id: 'user-123',
       email: 'test@example.com',
-      role: 'TRAINER',
+      role: 'trainer',
+      isVerified: true,
+    });
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     const request = createMockRequest({
       email: 'test@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     await POST(request);
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('password123', 12);
+    expect(bcrypt.hash).toHaveBeenCalledWith(VALID_PASSWORD, 10);
   });
 
   it('should handle database errors during create', async () => {
@@ -161,9 +195,8 @@ describe('POST /api/auth/register', () => {
 
     const request = createMockRequest({
       email: 'test@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     const response = await POST(request);
@@ -178,7 +211,8 @@ describe('POST /api/auth/register', () => {
       json: async () => {
         throw new Error('Invalid JSON');
       },
-    } as NextRequest;
+      headers: new Map(),
+    } as unknown as NextRequest;
 
     const response = await POST(request);
     const data = await response.json();
@@ -192,14 +226,20 @@ describe('POST /api/auth/register', () => {
     mockPrisma.user.create.mockResolvedValue({
       id: 'user-123',
       email: 'test@example.com',
-      role: 'TRAINER',
+      role: 'trainer',
+      isVerified: true,
+    });
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     const request = createMockRequest({
       email: 'test@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'TRAINER',
+      password: VALID_PASSWORD,
+      role: 'trainer',
     });
 
     await POST(request);
@@ -208,24 +248,31 @@ describe('POST /api/auth/register', () => {
       data: expect.objectContaining({
         email: 'test@example.com',
         passwordHash: 'hashed_password',
-        role: 'TRAINER',
+        role: 'trainer',
       }),
+      select: expect.any(Object),
     });
   });
 
-  it('should accept CLIENT role', async () => {
+  it('should accept client role', async () => {
     mockPrisma.user.findUnique.mockResolvedValue(null);
     mockPrisma.user.create.mockResolvedValue({
       id: 'user-123',
       email: 'client@example.com',
-      role: 'CLIENT',
+      role: 'client',
+      isVerified: true,
+    });
+    mockPrisma.userSession.create.mockResolvedValue({
+      id: 'session-123',
+      userId: 'user-123',
+      refreshToken: 'mock-refresh-token',
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
     const request = createMockRequest({
       email: 'client@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: 'CLIENT',
+      password: VALID_PASSWORD,
+      role: 'client',
     });
 
     const response = await POST(request);
@@ -238,8 +285,7 @@ describe('POST /api/auth/register', () => {
   it('should handle invalid role', async () => {
     const request = createMockRequest({
       email: 'test@example.com',
-      password: 'password123',
-      confirmPassword: 'password123',
+      password: VALID_PASSWORD,
       role: 'INVALID_ROLE',
     });
 

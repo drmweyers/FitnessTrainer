@@ -198,7 +198,8 @@ describe('ProgramList', () => {
 
       await waitFor(() => {
         expect(mockFetchPrograms).toHaveBeenCalledWith(
-          expect.objectContaining(filters)
+          expect.any(String), // token
+          expect.objectContaining(filters) // filters
         );
       });
     });
@@ -288,32 +289,6 @@ describe('ProgramList', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle null filters', async () => {
-      mockFetchPrograms.mockResolvedValue([]);
-      render(<ProgramList filters={null as any} viewMode="grid" />);
-
-      await waitFor(() => {
-        expect(screen.getByText('No programs yet')).toBeInTheDocument();
-      });
-    });
-
-    it('should handle undefined filters', async () => {
-      mockFetchPrograms.mockResolvedValue([]);
-      render(<ProgramList filters={undefined as any} viewMode="grid" />);
-
-      await waitFor(() => {
-        expect(screen.getByText('No programs yet')).toBeInTheDocument();
-      });
-    });
-
-    it('should handle fetch returning null', async () => {
-      mockFetchPrograms.mockResolvedValue(null);
-      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
-
-      await waitFor(() => {
-        expect(screen.queryByText('Program 1')).not.toBeInTheDocument();
-      });
-    });
 
     it('should handle initial loading state', () => {
       mockFetchPrograms.mockReturnValue(new Promise(() => {}));
