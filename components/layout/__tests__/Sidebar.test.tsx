@@ -168,4 +168,126 @@ describe('Sidebar', () => {
     render(<Sidebar {...defaultProps} />);
     expect(screen.getByText('Programs').closest('a')).toHaveAttribute('href', '/programs');
   });
+
+  it('calls onClose when mobile nav item is clicked on small screen', () => {
+    // Simulate mobile viewport
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    // Click Dashboard link
+    fireEvent.click(screen.getByText('Dashboard'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking sub-items on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    // Click All Exercises sub-item
+    fireEvent.click(screen.getByText('All Exercises'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking Workouts on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('Workouts'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking Programs on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('Programs'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking Analytics on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('Analytics'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking My Profile on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('My Profile'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking Settings on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('Settings'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking Client Management sub-items on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('All Clients'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('calls onClose when clicking Workout Tracker on mobile', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('Workout Tracker'));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('removes resize listener on unmount', () => {
+    const removeSpy = jest.spyOn(window, 'removeEventListener');
+    const { unmount } = render(<Sidebar {...defaultProps} />);
+    unmount();
+    expect(removeSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    removeSpy.mockRestore();
+  });
+
+  it('does not call onClose on desktop clicks', () => {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1200 });
+    window.dispatchEvent(new Event('resize'));
+
+    const onClose = jest.fn();
+    render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+    fireEvent.click(screen.getByText('Workouts'));
+    // onClose should NOT have been called for navigation (only for mobile)
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });
