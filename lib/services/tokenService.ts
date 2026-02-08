@@ -322,6 +322,20 @@ class TokenService {
   }
 }
 
-// Export singleton instance
-export const tokenService = new TokenService();
+// Lazy singleton - avoids throwing during Next.js build/page-data collection
+let _tokenService: TokenService | null = null;
+
+function getTokenService(): TokenService {
+  if (!_tokenService) {
+    _tokenService = new TokenService();
+  }
+  return _tokenService;
+}
+
+// Export lazy accessor as a proxy object so callers don't need to change
+export const tokenService = new Proxy({} as TokenService, {
+  get(_target, prop: string) {
+    return (getTokenService() as any)[prop];
+  },
+});
 export default tokenService;
