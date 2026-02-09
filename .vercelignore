@@ -1,82 +1,57 @@
-# Large data directories
+# Vercel Deploy Ignore File
+# CRITICAL: Do NOT exclude public/, package-lock.json, or source code
+
+# Large data directories (not needed for build/runtime)
 exerciseDB
-public
-web-bundles
-_bmad
-screenshots
 
-# Dependencies
-node_modules
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
+# Standalone backend (Next.js API routes are used instead)
+backend
 
-# Build outputs
-.next
-out
-dist
-build
-
-# Environment
-.env
-.env.local
-.env.development
-.env*.local
-.env*.production
-
-# Testing
+# Test files (not needed in production)
+__tests__
+tests
+test-screenshots
 coverage
 .nyc_output
 .playwright
 playwright-report
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
 
-# Logs
-logs
-*.log
+# Development/CI tooling
+.claude
+.auto-claude
+.worktrees
+_bmad
+screenshots
+verify-*.png
 
-# IDE
+# Documentation (not needed in production bundle)
+docs
+
+# IDE & OS
 .vscode
 .idea
 *.swp
 *.swo
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Temporary files
+# Logs & temp
+logs
+*.log
 .cache
 tmp
 temp
 *.tmp
 
-# Auto-Claude
-.claude
+# Docker/dev config
+docker-compose*.yml
+Dockerfile*
+.dockerignore
 
-# Documentation
-docs
-*.md
-!README.md
-
-# Backend
-backend
-
-# Test files
-tests
-test-screenshots
-*.test.ts
-*.test.tsx
-*.spec.ts
-*.spec.tsx
-__tests__
-
-# Images and screenshots
-*.png
-*.jpg
-*.jpeg
-*.gif
-final-test-failure.png
-program-builder-page.png
-navigation-test-failure.png
-page-content.html
+# Git
+.git
+.gitattributes

@@ -28,11 +28,13 @@ const nextConfig = {
     domains: [
       'localhost',
       '127.0.0.1',
-      'api.evofit.app', // Production API domain
-      'dev-api.evofit.app', // Development API domain
-      'i.ibb.co', // Exercise GIFs hosting
-      'raw.githubusercontent.com', // Exercise GIFs from GitHub
-      'picsum.photos', // Mock images for development
+      'api.evofit.app',
+      'dev-api.evofit.app',
+      'evo-fitness-trainer.vercel.app',
+      'i.ibb.co',
+      'raw.githubusercontent.com',
+      'picsum.photos',
+      'res.cloudinary.com',
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -148,9 +150,6 @@ const nextConfig = {
     return config;
   },
 
-  // Output configuration
-  output: 'standalone',
-  
   // Compression
   compress: true,
   

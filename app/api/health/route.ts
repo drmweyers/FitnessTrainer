@@ -9,11 +9,13 @@
  * - Database connection (PostgreSQL)
  * - Cache connection (Redis)
  * - Service availability
+ * - Environment configuration
  */
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { redis } from '@/lib/db/redis';
+import { getEnvironmentSummary } from '@/lib/utils/env-check';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,8 +34,9 @@ export async function GET() {
     platform: process.env.VERCEL ? 'vercel' : process.env.DIGITAL_OCEAN ? 'digital-ocean' : 'unknown',
     services: {
       database: { status: 'unknown' as string, latency: 0, error: undefined as string | undefined },
-      cache: { status: 'unknown' as string, latency: 0, error: undefined as string | undefined },
+      cache: { status: 'unknown' as string, latency: 0, error: undefined as string | undefined, configured: false },
     },
+    config: getEnvironmentSummary(),
     version: process.env.npm_package_version || '1.0.0',
     responseTime: 0,
   };
@@ -60,34 +63,52 @@ export async function GET() {
 
   // Check cache connection
   try {
-    const cacheStart = Date.now();
+    // Check if Redis is configured
+    const isRedisConfigured =
+      !!process.env.UPSTASH_REDIS_REST_URL || !!process.env.REDIS_URL;
 
-    // Set a test key
-    await redis.set('health_check', 'ok', 10);
-
-    // Get the test key
-    const result = await redis.get('health_check');
-
-    // Clean up
-    await redis.del('health_check');
-
-    const cacheLatency = Date.now() - cacheStart;
-
-    if (result === 'ok') {
+    if (!isRedisConfigured) {
+      // Redis not configured - this is OK, cache is optional
       health.services.cache = {
-        status: 'healthy',
-        latency: cacheLatency,
-        error: undefined,
+        status: 'disabled',
+        latency: 0,
+        error: 'Redis not configured (optional service)',
+        configured: false,
       };
     } else {
-      throw new Error('Cache read/write failed');
+      const cacheStart = Date.now();
+
+      // Use the redis.ping() method for health check
+      const pingSuccess = await redis.ping();
+
+      const cacheLatency = Date.now() - cacheStart;
+
+      if (pingSuccess) {
+        health.services.cache = {
+          status: 'healthy',
+          latency: cacheLatency,
+          error: undefined,
+          configured: true,
+        };
+      } else {
+        // Redis configured but not responding
+        health.status = 'degraded';
+        health.services.cache = {
+          status: 'unhealthy',
+          latency: cacheLatency,
+          error: 'Redis configured but connection failed',
+          configured: true,
+        };
+      }
     }
   } catch (error: any) {
+    // This should never happen with graceful degradation, but just in case
     health.status = 'degraded';
     health.services.cache = {
       status: 'unhealthy',
       latency: 0,
       error: error.message,
+      configured: true,
     };
   }
 
@@ -95,7 +116,9 @@ export async function GET() {
   health.responseTime = Date.now() - startTime;
 
   // Set appropriate HTTP status code
-  const statusCode = health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503;
+  // 200 for healthy or degraded (cache is optional)
+  // 503 for unhealthy (database is required)
+  const statusCode = health.status === 'unhealthy' ? 503 : 200;
 
   return NextResponse.json(health, { status: statusCode });
 }

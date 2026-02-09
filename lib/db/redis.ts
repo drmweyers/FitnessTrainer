@@ -54,6 +54,7 @@ export function getRedis() {
 
 /**
  * Redis operations (Upstash interface)
+ * All operations use graceful degradation - they never throw errors
  */
 export const redis = {
   /**
@@ -62,7 +63,13 @@ export const redis = {
   async get(key: string): Promise<string | null> {
     const client = getRedis();
     if (!client) return null;
-    return await client.get(key);
+
+    try {
+      return await client.get(key);
+    } catch (error: any) {
+      console.warn(`Redis GET failed for key "${key}":`, error.message);
+      return null;
+    }
   },
 
   /**
@@ -72,10 +79,14 @@ export const redis = {
     const client = getRedis();
     if (!client) return;
 
-    if (ttl) {
-      await client.setex(key, ttl, value);
-    } else {
-      await client.set(key, value);
+    try {
+      if (ttl) {
+        await client.setex(key, ttl, value);
+      } else {
+        await client.set(key, value);
+      }
+    } catch (error: any) {
+      console.warn(`Redis SET failed for key "${key}":`, error.message);
     }
   },
 
@@ -85,7 +96,12 @@ export const redis = {
   async del(key: string): Promise<void> {
     const client = getRedis();
     if (!client) return;
-    await client.del(key);
+
+    try {
+      await client.del(key);
+    } catch (error: any) {
+      console.warn(`Redis DEL failed for key "${key}":`, error.message);
+    }
   },
 
   /**
@@ -94,7 +110,13 @@ export const redis = {
   async incr(key: string): Promise<number> {
     const client = getRedis();
     if (!client) return 0;
-    return await client.incr(key);
+
+    try {
+      return await client.incr(key);
+    } catch (error: any) {
+      console.warn(`Redis INCR failed for key "${key}":`, error.message);
+      return 0;
+    }
   },
 
   /**
@@ -103,7 +125,12 @@ export const redis = {
   async expire(key: string, seconds: number): Promise<void> {
     const client = getRedis();
     if (!client) return;
-    await client.expire(key, seconds);
+
+    try {
+      await client.expire(key, seconds);
+    } catch (error: any) {
+      console.warn(`Redis EXPIRE failed for key "${key}":`, error.message);
+    }
   },
 
   /**
@@ -112,8 +139,38 @@ export const redis = {
   async exists(key: string): Promise<boolean> {
     const client = getRedis();
     if (!client) return false;
-    const result = await client.exists(key);
-    return result === 1;
+
+    try {
+      const result = await client.exists(key);
+      return result === 1;
+    } catch (error: any) {
+      console.warn(`Redis EXISTS failed for key "${key}":`, error.message);
+      return false;
+    }
+  },
+
+  /**
+   * Test Redis connection
+   * Returns true if connection is working, false otherwise
+   */
+  async ping(): Promise<boolean> {
+    const client = getRedis();
+    if (!client) return false;
+
+    try {
+      const testKey = '__redis_health_check__';
+      const testValue = 'ping';
+
+      // Try to set and get a test value
+      await client.set(testKey, testValue);
+      const result = await client.get(testKey);
+      await client.del(testKey);
+
+      return result === testValue;
+    } catch (error: any) {
+      console.warn('Redis PING failed:', error.message);
+      return false;
+    }
   },
 };
 
