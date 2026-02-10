@@ -67,7 +67,7 @@ describe('POST /api/auth/login', () => {
 
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
-    expect(data.data).toHaveProperty('accessToken');
+    expect(data.data.tokens).toHaveProperty('accessToken');
   });
 
   it('should return error for invalid email format', async () => {

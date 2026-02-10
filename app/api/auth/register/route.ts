@@ -111,13 +111,16 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Registration successful',
         data: {
-          accessToken,
-          refreshToken,
           user: {
             id: user.id,
             email: user.email,
             role: user.role,
             isVerified: user.isVerified,
+          },
+          tokens: {
+            accessToken,
+            refreshToken,
+            expiresIn: 900,
           },
         },
       },

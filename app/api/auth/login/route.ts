@@ -139,20 +139,22 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Login successful',
         data: {
-          accessToken,
-          refreshToken,
           user: {
             id: user.id,
             email: user.email,
             role: user.role,
             isVerified: user.isVerified,
           },
+          tokens: {
+            accessToken,
+            refreshToken,
+            expiresIn: 900, // 15 minutes in seconds
+          },
         },
       },
       {
         status: 200,
         headers: {
-          // Set token expiry based on rememberMe
           'Cache-Control': rememberMe ? 'private, max-age=604800' : 'private, max-age=3600',
         },
       }

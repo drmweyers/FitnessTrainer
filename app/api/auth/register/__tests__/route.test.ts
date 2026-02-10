@@ -70,7 +70,7 @@ describe('POST /api/auth/register', () => {
 
     expect(response.status).toBe(201);
     expect(data.success).toBe(true);
-    expect(data.data).toHaveProperty('accessToken');
+    expect(data.data.tokens).toHaveProperty('accessToken');
   });
 
   it('should return error for invalid email format', async () => {

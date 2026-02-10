@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Dumbbell, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface LoginFormData {
   email: string
@@ -19,6 +20,7 @@ interface FormErrors {
 
 export default function LoginPage() {
   const router = useRouter()
+  const { login } = useAuth()
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -60,46 +62,15 @@ export default function LoginPage() {
     setErrors({})
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-        credentials: 'include',
+      await login({
+        email: formData.email,
+        password: formData.password,
+        rememberMe: formData.rememberMe,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed')
-      }
-
-      // Store tokens
-      if (data.data?.accessToken) {
-        localStorage.setItem('accessToken', data.data.accessToken)
-      }
-      if (data.data?.refreshToken) {
-        localStorage.setItem('refreshToken', data.data.refreshToken)
-      }
-
-      // Store user data
-      if (data.data?.user) {
-        localStorage.setItem('user', JSON.stringify(data.data.user))
-      }
-
-      // Redirect based on user role
-      const userRole = data.data?.user?.role
-      if (userRole === 'trainer') {
-        router.push('/dashboard')
-      } else if (userRole === 'client') {
-        router.push('/client-dashboard')
-      } else {
-        router.push('/')
-      }
+      // AuthContext is now updated with user + tokens
+      // Redirect to dashboard (role-based routing happens there)
+      router.push('/dashboard')
     } catch (error: any) {
       setErrors({
         general: error.message || 'An error occurred during login. Please try again.'
@@ -321,11 +292,11 @@ export default function LoginPage() {
             </summary>
             <div className="mt-2 p-3 bg-gray-50 rounded text-xs text-gray-600">
               <p className="font-medium mb-1">Trainer Account:</p>
-              <p>Email: trainer@evofit.com</p>
-              <p>Password: Test123!</p>
+              <p>Email: coach.sarah@evofittrainer.com</p>
+              <p>Password: Demo1234!</p>
               <p className="mt-2 font-medium mb-1">Client Account:</p>
-              <p>Email: client@evofit.com</p>
-              <p>Password: Test123!</p>
+              <p>Email: emma.wilson@email.com</p>
+              <p>Password: Demo1234!</p>
             </div>
           </details>
         </div>

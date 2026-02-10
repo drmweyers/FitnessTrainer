@@ -106,11 +106,28 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  // Decode user info from JWT token payload as fallback
+  const decodeUserFromToken = useCallback((token: string): AuthUser | null => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role,
+        isActive: true,
+        isVerified: true,
+        createdAt: new Date().toISOString(),
+      };
+    } catch {
+      return null;
+    }
+  }, []);
+
   // Initialize authentication state from stored tokens
   const initializeAuth = useCallback(async () => {
     try {
       const { accessToken, refreshToken } = tokenUtils.getTokens();
-      
+
       if (!accessToken || !refreshToken) {
         dispatch({ type: 'AUTH_LOGOUT' });
         return;
@@ -122,19 +139,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
           const response = await authApi.refreshToken({ refreshToken });
           const { tokens } = response.data;
-          
+
           tokenUtils.setTokens(tokens.accessToken, tokens.refreshToken);
           dispatch({ type: 'SET_TOKENS', payload: tokens });
-          
+
           // Get user info with new token
-          const userResponse = await authApi.getCurrentUser();
-          dispatch({ 
-            type: 'AUTH_SUCCESS', 
-            payload: { 
-              user: userResponse.data.user, 
-              tokens 
-            } 
-          });
+          try {
+            const userResponse = await authApi.getCurrentUser();
+            dispatch({
+              type: 'AUTH_SUCCESS',
+              payload: {
+                user: userResponse.data.user,
+                tokens
+              }
+            });
+          } catch {
+            // Fallback: decode user from new token
+            const user = decodeUserFromToken(tokens.accessToken);
+            if (user) {
+              dispatch({ type: 'AUTH_SUCCESS', payload: { user, tokens } });
+            } else {
+              tokenUtils.clearTokens();
+              dispatch({ type: 'AUTH_LOGOUT' });
+            }
+          }
         } catch (refreshError) {
           // Refresh failed, clear tokens and logout
           tokenUtils.clearTokens();
@@ -144,24 +172,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Access token is valid, get user info
         try {
           const userResponse = await authApi.getCurrentUser();
-          dispatch({ 
-            type: 'AUTH_SUCCESS', 
-            payload: { 
-              user: userResponse.data.user, 
-              tokens: { accessToken, refreshToken, expiresIn: 15 * 60 } 
-            } 
+          dispatch({
+            type: 'AUTH_SUCCESS',
+            payload: {
+              user: userResponse.data.user,
+              tokens: { accessToken, refreshToken, expiresIn: 15 * 60 }
+            }
           });
         } catch (userError) {
-          // Failed to get user, clear tokens
-          tokenUtils.clearTokens();
-          dispatch({ type: 'AUTH_LOGOUT' });
+          // Fallback: decode user from existing token
+          const user = decodeUserFromToken(accessToken);
+          if (user) {
+            dispatch({
+              type: 'AUTH_SUCCESS',
+              payload: {
+                user,
+                tokens: { accessToken, refreshToken, expiresIn: 15 * 60 }
+              }
+            });
+          } else {
+            tokenUtils.clearTokens();
+            dispatch({ type: 'AUTH_LOGOUT' });
+          }
         }
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error);
       dispatch({ type: 'AUTH_LOGOUT' });
     }
-  }, []);
+  }, [decodeUserFromToken]);
 
   // Initialize on mount
   useEffect(() => {
