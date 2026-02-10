@@ -27,12 +27,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <Menu size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Image
-              src="/logo.png"
+            <img
+              src="/logo.svg"
               alt="Logo"
               width={32}
               height={32}
-              priority
             />
             <span className="font-semibold text-lg hidden sm:inline">EvoFit Fitness</span>
           </div>

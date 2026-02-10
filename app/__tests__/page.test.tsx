@@ -66,7 +66,7 @@ describe('HomePage', () => {
     it('should render the logo image', () => {
       const logo = screen.getAllByAltText('EvoFit Trainer');
       expect(logo.length).toBeGreaterThanOrEqual(1);
-      expect(logo[0]).toHaveAttribute('src', '/logo.png');
+      expect(logo[0]).toHaveAttribute('src', '/logo.svg');
     });
 
     it('should render Get Started Free button linking to register', () => {

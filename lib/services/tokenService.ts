@@ -40,18 +40,24 @@ class TokenService {
   private readonly accessTokenExpiry: string;
   private readonly refreshTokenExpiry: string;
 
+  private validated = false;
+
   constructor() {
     this.accessTokenSecret = process.env.JWT_ACCESS_SECRET || 'dev-access-secret';
     this.refreshTokenSecret = process.env.JWT_REFRESH_SECRET || 'dev-refresh-secret';
     this.accessTokenExpiry = process.env.JWT_ACCESS_EXPIRE || '15m';
     this.refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRE || '7d';
+  }
 
-    // Production validation check
+  /** Validate secrets on first use (not at import/build time) */
+  private ensureSecrets(): void {
+    if (this.validated) return;
+    this.validated = true;
     if (process.env.NODE_ENV === 'production') {
-      if (!this.accessTokenSecret || this.accessTokenSecret.includes('dev-')) {
+      if (!process.env.JWT_ACCESS_SECRET) {
         throw new Error('JWT_ACCESS_SECRET not configured for production');
       }
-      if (!this.refreshTokenSecret || this.refreshTokenSecret.includes('dev-')) {
+      if (!process.env.JWT_REFRESH_SECRET) {
         throw new Error('JWT_REFRESH_SECRET not configured for production');
       }
     }
@@ -65,6 +71,7 @@ class TokenService {
     email: string;
     role: 'trainer' | 'client' | 'admin';
   }): string {
+    this.ensureSecrets();
     const tokenId = uuidv4();
 
     const payload: TokenPayload = {
@@ -112,6 +119,7 @@ class TokenService {
    * Verify JWT access token
    */
   verifyAccessToken(token: string): TokenPayload {
+    this.ensureSecrets();
     try {
       const payload = jwt.verify(token, this.accessTokenSecret) as TokenPayload;
       return payload;

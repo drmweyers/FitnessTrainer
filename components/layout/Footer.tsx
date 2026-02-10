@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Footer() {
   const [currentDateTime, setCurrentDateTime] = useState("");
@@ -35,12 +34,11 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-                <Image
-                  src="/logo.png"
+                <img
+                  src="/logo.svg"
                   alt="Logo"
                   width={40}
                   height={40}
-                  priority
                 />
                 <div>
                   <p className="text-sm font-medium text-gray-900">EvoFit Fitness</p>

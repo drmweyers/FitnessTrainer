@@ -140,9 +140,9 @@ describe('Vercel Deployment Configuration', () => {
       expect(fs.existsSync(logoPath)).toBe(true);
     });
 
-    it('should have logo.png in public/', () => {
+    it('should not have fake logo.png in public/', () => {
       const logoPath = path.join(ROOT, 'public', 'logo.png');
-      expect(fs.existsSync(logoPath)).toBe(true);
+      expect(fs.existsSync(logoPath)).toBe(false);
     });
   });
 

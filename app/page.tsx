@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
@@ -102,13 +101,12 @@ export default function HomePage() {
             className="text-center max-w-4xl mx-auto"
           >
             <motion.div variants={fadeInUp} className="mb-6">
-              <Image
-                src="/logo.png"
+              <img
+                src="/logo.svg"
                 alt="EvoFit Trainer"
                 width={72}
                 height={72}
                 className="mx-auto rounded-xl shadow-lg"
-                priority
               />
             </motion.div>
 
@@ -494,8 +492,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <Image
-                  src="/logo.png"
+                <img
+                  src="/logo.svg"
                   alt="EvoFit Trainer"
                   width={36}
                   height={36}

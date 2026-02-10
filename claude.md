@@ -169,15 +169,16 @@ tests/e2e/              # Playwright E2E tests
 
 | Issue | Workaround |
 |-------|-----------|
-| PostgreSQL connection failures | Verify `DATABASE_URL` in `.env` |
+| **No production DATABASE_URL** | Need Neon/Supabase/Railway PostgreSQL, add to Vercel env |
 | TypeScript build errors | `ignoreBuildErrors: true` (temporary) |
 | ESLint warnings | Ignored during builds (needs cleanup) |
 | Exercise GIF database (1.3GB) | Excluded from git via `.gitignore` |
 | Duplicate footer on sidebar pages | Footer renders in both layout and page |
-| Cloudinary env vars needed | Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` |
-| Resend env var needed | Set `RESEND_API_KEY` for email sending |
+| Cloudinary env vars needed | Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` in Vercel |
+| Resend env var needed | Set `RESEND_API_KEY` in Vercel for email sending |
 | Scheduling needs DB migration | Run `npx prisma migrate dev` for new Appointment/TrainerAvailability tables |
 | Nested `<select>` warning | On `/programs/new` builder page |
+| `.env.production` file corrupted | Don't trust values - use `vercel env ls` as source of truth |
 
 ---
 
@@ -196,21 +197,38 @@ tests/e2e/              # Playwright E2E tests
 
 ## Environment Variables
 
+### Local Development
 ```env
-# Database
 DATABASE_URL=postgresql://user:pass@localhost:5432/evofittrainer
-
-# Authentication
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=15m
-REFRESH_TOKEN_EXPIRES_IN=7d
-
-# Redis Cache
+JWT_ACCESS_SECRET=dev-access-secret
+JWT_REFRESH_SECRET=dev-refresh-secret
+JWT_ACCESS_EXPIRE=15m
+JWT_REFRESH_EXPIRE=7d
 REDIS_URL=redis://localhost:6380
-
-# Deployment
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
+
+### Vercel Production (set via CLI)
+```bash
+# Check current: npx vercel env ls production
+# Set new:       printf 'value' | npx vercel env add NAME production
+# Remove:        npx vercel env rm NAME production
+```
+
+| Variable | Set? | Notes |
+|----------|------|-------|
+| `JWT_ACCESS_SECRET` | Yes | |
+| `JWT_REFRESH_SECRET` | Yes | |
+| `JWT_ACCESS_EXPIRE` | Yes | `15m` |
+| `JWT_REFRESH_EXPIRE` | Yes | `7d` |
+| `UPSTASH_REDIS_REST_URL` | Yes | Upstash Redis |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes | |
+| `CORS_ORIGIN` | Yes | `https://evofittrainer.vercel.app` |
+| `NODE_ENV` | Yes | `production` |
+| `DATABASE_URL` | **NO** | Need production PostgreSQL |
+| `CLOUDINARY_*` | No | For photo uploads |
+| `RESEND_API_KEY` | No | For email sending |
+| `NEXT_PUBLIC_APP_URL` | No | For password reset links |
 
 ---
 
@@ -263,23 +281,39 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 ---
 
-## Browser Verification Results (Feb 7, 2026)
+## Vercel Deployment (Feb 9, 2026)
+
+**Production URL:** `https://evofittrainer-six.vercel.app`
+**Status:** Frontend LIVE, Backend DEGRADED (needs DATABASE_URL)
+
+### Env Vars Configured in Vercel (production):
+`JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRE`, `JWT_REFRESH_EXPIRE`,
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `CORS_ORIGIN`, `NODE_ENV`
+
+### Env Vars Still Needed:
+`DATABASE_URL` (critical), `CLOUDINARY_*` (photos), `RESEND_API_KEY` (email), `NEXT_PUBLIC_APP_URL`
+
+### Logo
+- Uses `public/logo.svg` (dumbbell + "EvoFit" text)
+- All references use `<img src="/logo.svg">` (not next/image `<Image>`)
+- `public/logo.png` was deleted (was a fake text file)
+
+---
+
+## Browser Verification Results (Feb 9, 2026 - Production)
 
 | Flow | Status | Notes |
 |------|--------|-------|
-| Login (`/auth/login`) | WORKS | Form, social login, test accounts |
-| Register (`/auth/register`) | WORKS | Role selection, validation |
-| Dashboard (`/dashboard`) | WORKS | Auth guard redirects to login |
-| Exercise Library | WORKS | Search, filters, grid/list toggle |
-| Programs (`/programs`) | WORKS | List, filters, create button |
-| Program Builder (`/programs/new`) | WORKS | 4-step wizard |
-| Workout Builder (`/workouts`) | WORKS | Sections, exercise search, save |
-| Clients (`/clients`) | WORKS | List, add client button |
-| Profile (`/profile`) | WORKS | View profile info |
-| Workout History | PARTIAL | No auth redirect when unauthenticated |
-| Analytics (`/analytics`) | PARTIAL | Page empty, API exists but UI not wired |
+| Homepage (`/`) | WORKS | Full landing page, SVG logo, all sections, CTAs |
+| Login (`/auth/login`) | WORKS | Form, social login, test accounts, forgot pw link |
+| Register (`/auth/register`) | WORKS | Full form, role selection, ToS links |
+| Forgot Password (`/auth/forgot-password`) | WORKS | Email form, back link |
+| Exercises (`/exercises`) | UI WORKS | Renders, API fails (no DATABASE_URL) |
+| Programs (`/programs`) | AUTH GUARD WORKS | Redirects to login correctly |
+| Dashboard (`/dashboard`) | AUTH GUARD WORKS | Redirects to login correctly |
+| Health (`/api/health`) | DEGRADED | Reports missing DATABASE_URL |
 
-Full report: `docs/plans/2026-02-07-browser-verification-report.md`
+Previous local verification (Feb 7): `docs/plans/2026-02-07-browser-verification-report.md`
 
 ---
 
@@ -323,9 +357,11 @@ run_in_background: true
 | **Business Logic** | `docs/businesslogic.md` |
 | **Epics** | `docs/epics/*.md` (12 files) |
 | **Stories** | `docs/stories/*.md` (108 files) |
-| **Browser Report** | `docs/plans/2026-02-07-browser-verification-report.md` |
+| **Browser Report (local)** | `docs/plans/2026-02-07-browser-verification-report.md` |
+| **Launch Day Plan** | `docs/plans/2026-02-08-launch-day-plan.md` |
 | **Execution Plans** | `docs/plans/2026-02-07-parallel-abc-execution.md` |
 | **Testing Protocol** | `docs/plans/2026-02-06-comprehensive-testing-protocol.md` |
+| **Project Memory** | `~/.claude/projects/.../memory/MEMORY.md` |
 
 ---
 

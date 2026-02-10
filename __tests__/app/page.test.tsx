@@ -70,7 +70,7 @@ describe('HomePage', () => {
       const logos = screen.getAllByAltText('EvoFit Trainer')
       expect(logos.length).toBeGreaterThan(0)
       const heroLogo = logos[0]
-      expect(heroLogo).toHaveAttribute('src', '/logo.png')
+      expect(heroLogo).toHaveAttribute('src', '/logo.svg')
       expect(heroLogo).toHaveAttribute('width', '72')
       expect(heroLogo).toHaveAttribute('height', '72')
     })
