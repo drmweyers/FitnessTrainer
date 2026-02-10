@@ -47,7 +47,7 @@ export function handleApiError(error: any): NextResponse {
   console.error('API Error:', {
     message: error.message,
     name: error.name,
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
+    stack: error.stack,
   });
 
   // Zod validation errors

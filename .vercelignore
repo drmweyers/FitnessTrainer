@@ -47,6 +47,10 @@ tmp
 temp
 *.tmp
 
+# Environment files (Vercel dashboard env vars are authoritative)
+.env*
+!.env.example
+
 # Docker/dev config
 docker-compose*.yml
 Dockerfile*
