@@ -109,11 +109,12 @@ export default function ExerciseList({ preloadedExercises }: ExerciseListProps =
 
         const data = await response.json()
 
-        if (!data.success) {
+        // API returns { exercises, pagination, filters } directly
+        if (data.error) {
           throw new Error(data.message || 'API returned error')
         }
 
-        setExercises(data.data.exercises)
+        setExercises(data.exercises)
       } catch (err) {
         console.error('Error loading exercises:', err)
         setError(err instanceof Error ? err.message : 'Failed to load exercises')

@@ -85,11 +85,12 @@ export default function ExerciseTypePage({
 
         const data = await response.json()
 
-        if (!data.success) {
+        // API returns { exercises, pagination, filters } directly
+        if (data.error) {
           throw new Error(data.message || 'API returned error')
         }
 
-        let filteredExercises = data.data.exercises
+        let filteredExercises = data.exercises
 
         // Additional client-side filtering for strength exercises
         if (params.type === 'strength') {

@@ -56,8 +56,8 @@ export default function AIWorkoutBuilder() {
 
         if (response.ok) {
           const data = await response.json()
-          if (data.success) {
-            setExercises(data.data.exercises)
+          if (data.exercises) {
+            setExercises(data.exercises)
           }
         }
       } catch (error) {

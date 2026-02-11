@@ -35,13 +35,14 @@ export const loadExercises = async (): Promise<ExerciseWithUserData[]> => {
     }
     
     const data = await response.json()
-    
-    if (!data.success) {
+
+    // API returns { exercises, pagination, filters } directly
+    if (data.error) {
       throw new Error(data.message || 'API returned error')
     }
-    
+
     // Transform backend exercises to frontend format
-    return data.data.exercises.map(transformExercise)
+    return data.exercises.map(transformExercise)
   } catch (error) {
     console.error('Error loading exercises:', error)
     // Return empty array as fallback
@@ -89,12 +90,13 @@ export const getExerciseById = async (exerciseId: string): Promise<ExerciseWithU
     }
     
     const data = await response.json()
-    
-    if (!data.success) {
+
+    // API returns exercise directly
+    if (data.error) {
       throw new Error(data.message || 'API returned error')
     }
-    
-    return transformExercise(data.data)
+
+    return transformExercise(data)
   } catch (error) {
     console.error('Error loading exercise:', error)
     return null
@@ -145,15 +147,16 @@ export const searchExercises = async (
     }
     
     const data = await response.json()
-    
-    if (!data.success) {
+
+    // API returns { exercises, pagination, filters } directly
+    if (data.error) {
       throw new Error(data.message || 'API returned error')
     }
-    
+
     return {
-      exercises: data.data.exercises.map(transformExercise),
-      totalCount: data.data.pagination.total,
-      hasNextPage: data.data.pagination.hasMore
+      exercises: data.exercises.map(transformExercise),
+      totalCount: data.pagination.total,
+      hasNextPage: data.pagination.page < data.pagination.totalPages
     }
   } catch (error) {
     console.error('Error searching exercises:', error)
