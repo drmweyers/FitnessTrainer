@@ -31,10 +31,10 @@ export function WorkoutHistory({ clientId, limit = 10 }: WorkoutHistoryProps) {
   const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<string>('all');
 
-  const filteredWorkouts = workouts?.filter((workout) => {
+  const filteredWorkouts = (Array.isArray(workouts) ? workouts : []).filter((workout) => {
     if (dateFilter !== 'all') {
-      const workoutDate = new Date(workout.startTime).toISOString().split('T')[0];
-      return workoutDate === dateFilter;
+      const workoutDate = new Date(workout.startTime || workout.scheduledDate).toISOString().split('T')[0];
+      return workoutDate >= dateFilter;
     }
     return true;
   });
@@ -124,7 +124,7 @@ interface WorkoutSummaryCardProps {
 }
 
 function WorkoutSummaryCard({ workout, onSelect }: WorkoutSummaryCardProps) {
-  const date = new Date(workout.startTime);
+  const date = new Date(workout.startTime || workout.scheduledDate);
   const duration = workout.endTime
     ? Math.round((new Date(workout.endTime).getTime() - date.getTime()) / 60000)
     : null;
@@ -135,10 +135,10 @@ function WorkoutSummaryCard({ workout, onSelect }: WorkoutSummaryCardProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-base">
-              {date.toLocaleDateString()}
+              {!isNaN(date.getTime()) ? date.toLocaleDateString() : 'Unknown Date'}
             </CardTitle>
             <p className="text-sm text-gray-500">
-              {workout.programWorkout?.name || 'Workout'}
+              {workout.programWorkout?.name || workout.workout?.name || 'Workout'}
             </p>
           </div>
           <Badge
@@ -190,7 +190,7 @@ function WorkoutDetail({ workoutId, onClose }: { workoutId: string; onClose: () 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Date</p>
-                <p>{new Date(workout.startTime).toLocaleDateString()}</p>
+                <p>{new Date(workout.startTime || workout.scheduledDate).toLocaleDateString()}</p>
               </div>
               <div>
                 <p className="text-gray-500">Program</p>
