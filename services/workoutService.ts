@@ -50,7 +50,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to fetch workouts');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -66,7 +67,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to fetch workout');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -88,7 +90,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to start workout');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -106,7 +109,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to update workout');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -124,7 +128,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to log set');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -163,7 +168,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to fetch active workout');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -187,7 +193,8 @@ export const workoutService = {
       throw new Error(error.error || 'Failed to fetch progress');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
