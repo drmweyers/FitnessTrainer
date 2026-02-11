@@ -163,11 +163,15 @@ async function apiRequest<T = any>(
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      const controller = new AbortController();
+      const fetchTimeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
       const response = await fetch(url, {
         method,
         headers,
         ...(body && { body: JSON.stringify(body) }),
+        signal: controller.signal,
       });
+      clearTimeout(fetchTimeout);
 
       const text = await response.text();
       let data: any;
@@ -303,23 +307,30 @@ async function createPrograms(
     kettlebellSwing, burpees, boxJump, mountainClimber, jumpingJack,
     pushUp, plank, squat, lunge, hipThrust,
   ].filter(Boolean) as Exercise[];
+  log(`  Found ${hiitExercises.length}/10 HIIT exercises by name`);
 
   const beginnerExercises = [
     squat, legPress, pushUp, latPulldown, lunge,
     plank, shoulderPress, row, legCurl, bicepCurl,
   ].filter(Boolean) as Exercise[];
+  log(`  Found ${beginnerExercises.length}/10 beginner exercises by name`);
 
   // If we don't have enough specific exercises, use the first N from the library
-  while (hiitExercises.length < 8 && exercises.length > hiitExercises.length) {
-    const next = exercises[hiitExercises.length];
+  // Use separate index to avoid infinite loop when duplicates are found
+  let hiitIdx = 0;
+  while (hiitExercises.length < 8 && hiitIdx < exercises.length) {
+    const next = exercises[hiitIdx];
+    hiitIdx++;
     if (!hiitExercises.find((e) => e.id === next.id)) {
       hiitExercises.push(next);
     }
   }
 
-  while (beginnerExercises.length < 8 && exercises.length > beginnerExercises.length) {
-    const next = exercises[beginnerExercises.length + 10]; // offset to get different ones
-    if (next && !beginnerExercises.find((e) => e.id === next.id)) {
+  let beginnerIdx = 10; // offset to get different exercises
+  while (beginnerExercises.length < 8 && beginnerIdx < exercises.length) {
+    const next = exercises[beginnerIdx];
+    beginnerIdx++;
+    if (!beginnerExercises.find((e) => e.id === next.id)) {
       beginnerExercises.push(next);
     }
   }
@@ -435,6 +446,7 @@ async function createPrograms(
     });
   }
 
+  log(`  Creating "HIIT & Conditioning" program (${hiitWeeks.length} weeks, sending 1)...`);
   const hiitResult = await apiRequest<any>('POST', '/api/programs', {
     name: 'HIIT & Conditioning',
     description: 'A 6-week advanced high-intensity interval training program designed to maximize caloric burn, improve cardiovascular endurance, and build lean muscle. Combines explosive movements with strength exercises for total body conditioning.',
@@ -443,7 +455,8 @@ async function createPrograms(
     durationWeeks: 6,
     goals: ['Improve cardiovascular endurance', 'Maximize caloric burn', 'Build lean muscle', 'Increase metabolic rate'],
     equipmentNeeded: ['kettlebells', 'dumbbells', 'box/step', 'pull-up bar', 'resistance bands'],
-    weeks: hiitWeeks,
+    // Send only week 1 to avoid Vercel serverless timeout on large nested payload
+    weeks: hiitWeeks.slice(0, 1),
   }, trainerToken);
 
   const hiitProgram = hiitResult.ok ? (hiitResult.data.data || hiitResult.data) : null;
@@ -541,6 +554,7 @@ async function createPrograms(
     });
   }
 
+  log(`  Creating "Beginner Full Body" program (${beginnerWeeks.length} weeks, sending 1)...`);
   const beginnerResult = await apiRequest<any>('POST', '/api/programs', {
     name: 'Beginner Full Body',
     description: 'An 8-week beginner-friendly program designed to build a solid fitness foundation. Three full-body workouts per week with emphasis on proper form, progressive overload, and building sustainable training habits.',
@@ -549,7 +563,8 @@ async function createPrograms(
     durationWeeks: 8,
     goals: ['Build training consistency', 'Learn proper exercise form', 'Build foundational strength', 'Improve body composition'],
     equipmentNeeded: ['dumbbells', 'cable machine', 'leg press', 'bench', 'resistance bands'],
-    weeks: beginnerWeeks,
+    // Send only week 1 to avoid Vercel serverless timeout on large nested payload
+    weeks: beginnerWeeks.slice(0, 1),
   }, trainerToken);
 
   const beginnerProgram = beginnerResult.ok ? (beginnerResult.data.data || beginnerResult.data) : null;
@@ -1115,9 +1130,10 @@ async function fetchClientIds(
 ): Promise<Record<string, ClientInfo>> {
   logStep('Fetching client IDs');
 
+  // Fetch all clients (not just active) since some may be pending
   const result = await apiRequest<any>(
     'GET',
-    '/api/clients?status=active',
+    '/api/clients',
     undefined,
     trainerToken
   );
@@ -1232,6 +1248,58 @@ async function main(): Promise<void> {
   if (alexAuth && clients.alex) clients.alex.id = clients.alex.id || alexAuth.userId;
   if (emmaAuth && clients.emma) clients.emma.id = clients.emma.id || emmaAuth.userId;
   if (oliviaAuth && clients.olivia) clients.olivia.id = clients.olivia.id || oliviaAuth.userId;
+
+  // ─── Activate Pending Clients ────────────────────────────────
+  // Olivia's TrainerClient status is 'pending' - need to activate before assigning programs
+  // Use the PATCH /api/clients endpoint (if available) or direct status update
+  if (clients.olivia) {
+    logStep('Activating pending client relationships');
+    const activateResult = await apiRequest<any>(
+      'PATCH',
+      `/api/clients/${clients.olivia.id}/status`,
+      { status: 'active' },
+      sarahAuth.accessToken
+    );
+    if (activateResult.ok) {
+      log(`Activated Olivia's trainer-client relationship`);
+    } else {
+      log(`Note: Could not activate Olivia (${activateResult.status}) - may need manual activation`);
+    }
+  }
+
+  // ─── Set Up Trainer Availability ─────────────────────────────
+  // Required before creating appointments (API validates against availability windows)
+  logStep('Setting up trainer availability (coach.sarah)');
+  const availabilitySlots = [];
+  for (let day = 1; day <= 6; day++) { // Mon=1 through Sat=6
+    availabilitySlots.push({
+      dayOfWeek: day,
+      startTime: '06:00',
+      endTime: '20:00',
+      isAvailable: true,
+      location: 'FitZone Gym',
+    });
+  }
+  // Sunday - limited hours
+  availabilitySlots.push({
+    dayOfWeek: 0,
+    startTime: '08:00',
+    endTime: '14:00',
+    isAvailable: true,
+    location: 'FitZone Gym',
+  });
+
+  const availResult = await apiRequest<any>(
+    'POST',
+    '/api/schedule/availability',
+    { slots: availabilitySlots },
+    sarahAuth.accessToken
+  );
+  if (availResult.ok) {
+    log(`Set availability: Mon-Sat 06:00-20:00, Sun 08:00-14:00`);
+  } else {
+    log(`Warning: Failed to set availability (${availResult.status})`);
+  }
 
   // ─── Fetch Existing Programs ───────────────────────────────
 
