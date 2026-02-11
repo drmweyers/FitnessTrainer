@@ -25,8 +25,8 @@ export function ClientWorkouts({ clientId, limit = 10 }: ClientWorkoutsProps) {
 
   const filteredWorkouts = workouts?.filter((workout: any) => {
     if (dateFilter !== 'all') {
-      const workoutDate = new Date(workout.startTime).toISOString().split('T')[0];
-      return workoutDate === dateFilter;
+      const workoutDate = new Date(workout.startTime || workout.scheduledDate).toISOString().split('T')[0];
+      return workoutDate >= dateFilter;
     }
     return true;
   });
@@ -100,7 +100,7 @@ interface WorkoutSummaryCardProps {
 }
 
 function WorkoutSummaryCard({ workout }: WorkoutSummaryCardProps) {
-  const date = new Date(workout.startTime);
+  const date = new Date(workout.startTime || workout.scheduledDate);
   const duration = workout.endTime
     ? Math.round((new Date(workout.endTime).getTime() - date.getTime()) / 60000)
     : null;

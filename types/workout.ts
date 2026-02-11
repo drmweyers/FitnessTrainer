@@ -28,17 +28,30 @@ export interface DayPlan {
 export interface WorkoutSession {
   id: string
   workoutId: string
-  startTime: Date
+  startTime?: Date
   endTime?: Date
+  scheduledDate?: string
+  actualStartTime?: string | null
+  actualEndTime?: string | null
+  trainerId?: string
+  clientId?: string
+  programAssignmentId?: string
   exercises: WorkoutExercise[]
   exerciseLogs?: ExerciseLog[]
   notes?: string
-  status?: 'planned' | 'in_progress' | 'completed' | 'skipped'
+  clientNotes?: string | null
+  trainerFeedback?: string | null
+  status?: 'planned' | 'in_progress' | 'completed' | 'skipped' | 'scheduled'
   program?: Program
   programWorkout?: ProgramWorkout
+  programAssignment?: { program: Program }
+  workout?: { name: string; workoutType?: string; estimatedDuration?: number }
+  client?: { id: string; email: string; userProfile?: any }
   totalVolume?: number
   totalSets?: number
   completedSets?: number
+  totalDuration?: number | null
+  averageRpe?: number | null
   weekNumber?: number
   dayNumber?: number
   programId?: string

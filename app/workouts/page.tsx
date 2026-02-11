@@ -125,7 +125,7 @@ export default function WorkoutsPage() {
                         {workout.programWorkout?.name || 'In Progress Workout'}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
-                        Started {new Date(workout.startTime).toLocaleString()}
+                        Started {new Date(workout.actualStartTime || workout.startTime || workout.scheduledDate || '').toLocaleString()}
                       </p>
                     </div>
                     <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">

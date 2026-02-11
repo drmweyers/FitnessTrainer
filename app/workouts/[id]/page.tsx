@@ -45,9 +45,9 @@ export default function WorkoutDetailPage() {
   }
 
   const isActive = workout.status === 'in_progress';
-  const date = new Date(workout.startTime);
-  const duration = workout.endTime
-    ? Math.round((new Date(workout.endTime).getTime() - date.getTime()) / 60000)
+  const date = new Date(workout.actualStartTime || workout.startTime || workout.scheduledDate || '');
+  const duration = workout.actualEndTime || workout.endTime
+    ? Math.round((new Date((workout.actualEndTime || workout.endTime)!).getTime() - date.getTime()) / 60000)
     : null;
 
   return (

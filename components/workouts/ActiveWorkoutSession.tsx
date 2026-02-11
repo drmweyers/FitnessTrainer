@@ -107,7 +107,7 @@ export function ActiveWorkoutSession({ clientId }: { clientId?: string }) {
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">
-                Started: {new Date(workout.startTime).toLocaleTimeString()}
+                Started: {new Date(workout.actualStartTime || workout.startTime || workout.scheduledDate || '').toLocaleTimeString()}
               </p>
             </div>
           </div>

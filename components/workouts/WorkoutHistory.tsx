@@ -33,7 +33,7 @@ export function WorkoutHistory({ clientId, limit = 10 }: WorkoutHistoryProps) {
 
   const filteredWorkouts = (Array.isArray(workouts) ? workouts : []).filter((workout) => {
     if (dateFilter !== 'all') {
-      const workoutDate = new Date(workout.startTime || workout.scheduledDate).toISOString().split('T')[0];
+      const workoutDate = new Date(workout.startTime || workout.scheduledDate || '').toISOString().split('T')[0];
       return workoutDate >= dateFilter;
     }
     return true;
@@ -124,7 +124,7 @@ interface WorkoutSummaryCardProps {
 }
 
 function WorkoutSummaryCard({ workout, onSelect }: WorkoutSummaryCardProps) {
-  const date = new Date(workout.startTime || workout.scheduledDate);
+  const date = new Date(workout.startTime || workout.scheduledDate || '');
   const duration = workout.endTime
     ? Math.round((new Date(workout.endTime).getTime() - date.getTime()) / 60000)
     : null;
@@ -190,7 +190,7 @@ function WorkoutDetail({ workoutId, onClose }: { workoutId: string; onClose: () 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Date</p>
-                <p>{new Date(workout.startTime || workout.scheduledDate).toLocaleDateString()}</p>
+                <p>{new Date(workout.startTime || workout.scheduledDate || '').toLocaleDateString()}</p>
               </div>
               <div>
                 <p className="text-gray-500">Program</p>
