@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Dumbbell, Mail, Lock, Eye, EyeOff, AlertCircle, User } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface RegisterFormData {
   firstName: string
@@ -27,6 +28,7 @@ interface FormErrors {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { register } = useAuth()
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
@@ -91,34 +93,11 @@ export default function RegisterPage() {
     setErrors({})
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-        }),
-        credentials: 'include',
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed')
-      }
-
-      if (data.data?.accessToken) {
-        localStorage.setItem('accessToken', data.data.accessToken)
-      }
-      if (data.data?.refreshToken) {
-        localStorage.setItem('refreshToken', data.data.refreshToken)
-      }
-      if (data.data?.user) {
-        localStorage.setItem('user', JSON.stringify(data.data.user))
-      }
+      await register({
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      } as any)
 
       router.push('/dashboard')
     } catch (error: any) {
