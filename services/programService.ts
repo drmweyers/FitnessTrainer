@@ -57,7 +57,12 @@ export const programService = {
       throw new Error(error.error || 'Failed to fetch programs');
     }
 
-    return response.json();
+    const result = await response.json();
+    // API returns { success, data: Program[], count } - map to ProgramListResponse
+    return {
+      programs: result.data || result.programs || [],
+      pagination: result.pagination || result.meta,
+    };
   },
 
   /**
@@ -73,7 +78,8 @@ export const programService = {
       throw new Error(error.error || 'Failed to fetch program');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -91,7 +97,8 @@ export const programService = {
       throw new Error(error.error || 'Failed to create program');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -109,7 +116,8 @@ export const programService = {
       throw new Error(error.error || 'Failed to update program');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -142,7 +150,8 @@ export const programService = {
       throw new Error(error.error || 'Failed to duplicate program');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -160,7 +169,8 @@ export const programService = {
       throw new Error(error.error || 'Failed to assign program');
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   },
 
   /**
@@ -178,6 +188,6 @@ export const programService = {
     }
 
     const data = await response.json();
-    return data.templates;
+    return data.templates || data.data || [];
   },
 };
