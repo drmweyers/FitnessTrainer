@@ -14,6 +14,19 @@ import {
   ArrowRight,
   RefreshCw,
 } from 'lucide-react'
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 
 interface DashboardMetrics {
   totalUsers: number
@@ -181,28 +194,86 @@ export default function AdminDashboardPage() {
         })}
       </div>
 
-      {/* Growth Indicator */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">User Growth</h2>
-        <div className="flex items-center gap-6">
-          <div>
-            <span className="text-sm text-gray-500">New this month</span>
-            <div className="text-2xl font-bold text-gray-900">{metrics?.newThisMonth ?? 0}</div>
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* User Growth Bar Chart */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">User Growth</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-1">
+              {monthTrend >= 0 ? (
+                <TrendingUp size={18} className="text-green-500" />
+              ) : (
+                <TrendingDown size={18} className="text-red-500" />
+              )}
+              <span className={`text-sm font-medium ${monthTrend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {monthTrend >= 0 ? '+' : ''}{monthTrend} vs last month
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            {monthTrend >= 0 ? (
-              <TrendingUp size={20} className="text-green-500" />
-            ) : (
-              <TrendingDown size={20} className="text-red-500" />
-            )}
-            <span className={`text-sm font-medium ${monthTrend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {monthTrend >= 0 ? '+' : ''}{monthTrend} vs last month
-            </span>
-          </div>
-          <div className="ml-auto">
-            <span className="text-sm text-gray-500">Last month</span>
-            <div className="text-lg font-semibold text-gray-700">{metrics?.newLastMonth ?? 0}</div>
-          </div>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart
+              data={[
+                { month: 'Last Month', users: metrics?.newLastMonth ?? 0 },
+                { month: 'This Month', users: metrics?.newThisMonth ?? 0 },
+              ]}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="month" stroke="#6b7280" style={{ fontSize: '12px' }} />
+              <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                }}
+              />
+              <Bar dataKey="users" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* User Distribution Pie Chart */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">User Distribution</h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={[
+                  { name: 'Trainers', value: metrics?.totalTrainers ?? 0, color: '#3b82f6' },
+                  { name: 'Clients', value: metrics?.totalClients ?? 0, color: '#10b981' },
+                  { name: 'Admins', value: metrics?.totalAdmins ?? 0, color: '#ef4444' },
+                ]}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {[
+                  { name: 'Trainers', value: metrics?.totalTrainers ?? 0, color: '#3b82f6' },
+                  { name: 'Clients', value: metrics?.totalClients ?? 0, color: '#10b981' },
+                  { name: 'Admins', value: metrics?.totalAdmins ?? 0, color: '#ef4444' },
+                ].map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                }}
+              />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                iconType="circle"
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
