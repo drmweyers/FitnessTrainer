@@ -229,8 +229,9 @@ describe('DELETE /api/schedule/availability', () => {
       Object.assign(makeRequest('/api/schedule/availability'), { user: mockUser })
     );
 
+    const slotId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
     const mockSlot = {
-      id: 'slot-1',
+      id: slotId,
       trainerId: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999',
       dayOfWeek: 1,
       startTime: '09:00',
@@ -242,7 +243,7 @@ describe('DELETE /api/schedule/availability', () => {
 
     const request = makeRequest('/api/schedule/availability', {
       method: 'DELETE',
-      body: JSON.stringify({ slotId: 'slot-1' }),
+      body: JSON.stringify({ slotId }),
     });
     const response = await DELETE(request);
     const data = await response.json();
@@ -251,7 +252,7 @@ describe('DELETE /api/schedule/availability', () => {
     expect(data.success).toBe(true);
     expect(data.message).toBe('Slot deleted');
     expect(mockedPrisma.trainerAvailability.delete).toHaveBeenCalledWith({
-      where: { id: 'slot-1' },
+      where: { id: slotId },
     });
   });
 
@@ -261,8 +262,9 @@ describe('DELETE /api/schedule/availability', () => {
       Object.assign(makeRequest('/api/schedule/availability'), { user: mockUser })
     );
 
+    const slotId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
     const mockSlot = {
-      id: 'slot-1',
+      id: slotId,
       trainerId: 'other-trainer',
       dayOfWeek: 1,
       startTime: '09:00',
@@ -273,7 +275,7 @@ describe('DELETE /api/schedule/availability', () => {
 
     const request = makeRequest('/api/schedule/availability', {
       method: 'DELETE',
-      body: JSON.stringify({ slotId: 'slot-1' }),
+      body: JSON.stringify({ slotId }),
     });
     const response = await DELETE(request);
     const data = await response.json();
@@ -291,14 +293,13 @@ describe('DELETE /api/schedule/availability', () => {
 
     const request = makeRequest('/api/schedule/availability', {
       method: 'DELETE',
-      body: JSON.stringify({ slotId: 'slot-1' }),
+      body: JSON.stringify({ slotId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' }),
     });
     const response = await DELETE(request);
     const data = await response.json();
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(403);
     expect(data.success).toBe(false);
-    // Zod validation error comes before role check
-    expect(data.error).toBe('Validation failed');
+    expect(data.error).toBe('Only trainers can modify availability');
   });
 });

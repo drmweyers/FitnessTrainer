@@ -83,13 +83,19 @@ describe('GET /api/schedule/slots', () => {
       },
     ];
 
-    // Existing appointment from 10:00-11:00 (use date string to match how API constructs dates)
+    // Construct dates exactly the same way the route does: new Date(dateStr) then setHours()
+    // This avoids timezone mismatches between UTC-parsed date-only strings and local setHours()
+    const apptStart = new Date(date);
+    apptStart.setHours(10, 0, 0, 0);
+    const apptEnd = new Date(date);
+    apptEnd.setHours(11, 0, 0, 0);
+
     const mockAppointments = [
       {
         id: 'appt-1',
         trainerId: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999',
-        startDatetime: new Date(date + 'T10:00:00'),
-        endDatetime: new Date(date + 'T11:00:00'),
+        startDatetime: apptStart,
+        endDatetime: apptEnd,
         status: 'scheduled',
       },
     ];
@@ -235,13 +241,18 @@ describe('GET /api/schedule/slots', () => {
       },
     ];
 
-    // Appointment covering entire availability window (use date string for consistency)
+    // Construct dates exactly the same way the route does: new Date(dateStr) then setHours()
+    const apptStart = new Date(date);
+    apptStart.setHours(10, 0, 0, 0);
+    const apptEnd = new Date(date);
+    apptEnd.setHours(11, 0, 0, 0);
+
     const mockAppointments = [
       {
         id: 'appt-1',
         trainerId: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999',
-        startDatetime: new Date(date + 'T10:00:00'),
-        endDatetime: new Date(date + 'T11:00:00'),
+        startDatetime: apptStart,
+        endDatetime: apptEnd,
         status: 'scheduled',
       },
     ];

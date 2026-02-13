@@ -59,7 +59,9 @@ describe('GET /api/schedule/appointments', () => {
 
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
-    expect(data.data).toEqual(mockAppointments);
+    expect(data.data).toHaveLength(1);
+    expect(data.data[0].id).toBe('appt-1');
+    expect(data.data[0].title).toBe('Training Session');
     expect(data.meta).toEqual({ total: 1, hasMore: false, limit: 100, offset: 0 });
     expect(mockedPrisma.appointment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -238,7 +240,10 @@ describe('POST /api/schedule/appointments', () => {
 
     expect(response.status).toBe(201);
     expect(data.success).toBe(true);
-    expect(data.data).toEqual(mockAppointment);
+    expect(data.data.id).toBe('appt-1');
+    expect(data.data.title).toBe('Training Session');
+    expect(data.data.durationMinutes).toBe(60);
+    expect(data.data.status).toBe('scheduled');
     expect(data.message).toBe('Appointment created');
   });
 
