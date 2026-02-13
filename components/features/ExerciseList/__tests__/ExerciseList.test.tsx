@@ -220,7 +220,7 @@ describe('ExerciseList', () => {
     it('should show empty state when API returns no exercises', async () => {
       global.fetch = jest.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({ success: true, data: { exercises: [] } }),
+        json: () => Promise.resolve({ exercises: [] }),
       });
       render(<ExerciseList />);
 

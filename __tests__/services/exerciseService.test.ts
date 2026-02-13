@@ -39,8 +39,7 @@ describe('loadExercises', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: { exercises: [backendExercise] },
+        exercises: [backendExercise],
       }),
     });
 
@@ -71,7 +70,7 @@ describe('loadExercises', () => {
   it('returns empty array when API returns error', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: async () => ({ success: false, message: 'Something went wrong' }),
+      json: async () => ({ error: true, message: 'Something went wrong' }),
     });
 
     const result = await loadExercises();
@@ -153,10 +152,7 @@ describe('getExerciseById', () => {
   it('returns transformed exercise', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: async () => ({
-        success: true,
-        data: backendExercise,
-      }),
+      json: async () => (backendExercise),
     });
 
     const result = await getExerciseById('ex-1');
@@ -192,7 +188,7 @@ describe('getExerciseById', () => {
   it('returns null when API returns error', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: async () => ({ success: false, message: 'Error' }),
+      json: async () => ({ error: true, message: 'Error' }),
     });
 
     const result = await getExerciseById('ex-1');
@@ -216,11 +212,8 @@ describe('searchExercises', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          exercises: [backendExercise],
-          pagination: { total: 1, hasMore: false },
-        },
+        exercises: [backendExercise],
+        pagination: { total: 1, page: 1, totalPages: 1, hasMore: false },
       }),
     });
 
@@ -252,11 +245,8 @@ describe('searchExercises', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          exercises: [],
-          pagination: { total: 0, hasMore: false },
-        },
+        exercises: [],
+        pagination: { total: 0, page: 1, totalPages: 0, hasMore: false },
       }),
     });
 
@@ -278,11 +268,8 @@ describe('searchExercises', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          exercises: [],
-          pagination: { total: 0, hasMore: false },
-        },
+        exercises: [],
+        pagination: { total: 0, page: 1, totalPages: 0, hasMore: false },
       }),
     });
 
@@ -336,14 +323,11 @@ describe('getExercisesByIds', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, data: backendExercise }),
+        json: async () => (backendExercise),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
-          success: true,
-          data: { ...backendExercise, id: 'ex-2', name: 'Squat' },
-        }),
+        json: async () => ({ ...backendExercise, id: 'ex-2', name: 'Squat' }),
       });
 
     const result = await getExercisesByIds(['ex-1', 'ex-2']);
@@ -357,7 +341,7 @@ describe('getExercisesByIds', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, data: backendExercise }),
+        json: async () => (backendExercise),
       })
       .mockResolvedValueOnce({
         ok: false,
@@ -377,11 +361,8 @@ describe('getExercisesByBodyPart', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          exercises: [backendExercise],
-          pagination: { total: 1, hasMore: false },
-        },
+        exercises: [backendExercise],
+        pagination: { total: 1, page: 1, totalPages: 1, hasMore: false },
       }),
     });
 
@@ -400,11 +381,8 @@ describe('getExercisesByEquipment', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          exercises: [backendExercise],
-          pagination: { total: 1, hasMore: false },
-        },
+        exercises: [backendExercise],
+        pagination: { total: 1, page: 1, totalPages: 1, hasMore: false },
       }),
     });
 
@@ -423,11 +401,8 @@ describe('getRandomExercises', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        success: true,
-        data: {
-          exercises: [backendExercise],
-          pagination: { total: 1, hasMore: false },
-        },
+        exercises: [backendExercise],
+        pagination: { total: 1, page: 1, totalPages: 1, hasMore: false },
       }),
     });
 

@@ -20,41 +20,38 @@ describe('AIWorkoutBuilder', () => {
       ok: true,
       json: () =>
         Promise.resolve({
-          success: true,
-          data: {
-            exercises: [
-              {
-                id: 'ex-1',
-                name: 'Push Ups',
-                bodyParts: ['chest'],
-                targetMuscles: ['pectorals'],
-                equipment: 'body weight',
-                equipments: ['body weight'],
-                gifUrl: 'pushups.gif',
-                difficulty: 'beginner',
-              },
-              {
-                id: 'ex-2',
-                name: 'Squats',
-                bodyParts: ['upper legs'],
-                targetMuscles: ['quadriceps'],
-                equipment: 'body weight',
-                equipments: ['body weight'],
-                gifUrl: 'squats.gif',
-                difficulty: 'intermediate',
-              },
-              {
-                id: 'ex-3',
-                name: 'Lunges',
-                bodyParts: ['upper legs'],
-                targetMuscles: ['quadriceps'],
-                equipment: 'body weight',
-                equipments: ['body weight'],
-                gifUrl: 'lunges.gif',
-                difficulty: 'intermediate',
-              },
-            ],
-          },
+          exercises: [
+            {
+              id: 'ex-1',
+              name: 'Push Ups',
+              bodyParts: ['chest'],
+              targetMuscles: ['pectorals'],
+              equipment: 'body weight',
+              equipments: ['body weight'],
+              gifUrl: 'pushups.gif',
+              difficulty: 'beginner',
+            },
+            {
+              id: 'ex-2',
+              name: 'Squats',
+              bodyParts: ['upper legs'],
+              targetMuscles: ['quadriceps'],
+              equipment: 'body weight',
+              equipments: ['body weight'],
+              gifUrl: 'squats.gif',
+              difficulty: 'intermediate',
+            },
+            {
+              id: 'ex-3',
+              name: 'Lunges',
+              bodyParts: ['upper legs'],
+              targetMuscles: ['quadriceps'],
+              equipment: 'body weight',
+              equipments: ['body weight'],
+              gifUrl: 'lunges.gif',
+              difficulty: 'intermediate',
+            },
+          ],
         }),
     });
   });

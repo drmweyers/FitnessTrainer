@@ -206,8 +206,8 @@ describe('POST /api/auth/login', () => {
 
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
-    expect(body.data.accessToken).toBe('access-jwt');
-    expect(body.data.refreshToken).toBe('refresh-token');
+    expect(body.data.tokens.accessToken).toBe('access-jwt');
+    expect(body.data.tokens.refreshToken).toBe('refresh-token');
     expect(body.data.user.id).toBe('user-1');
     expect(body.data.user.email).toBe('user@test.com');
     expect(body.data.user.role).toBe('trainer');

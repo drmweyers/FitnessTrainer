@@ -127,8 +127,8 @@ describe('POST /api/auth/register', () => {
 
     expect(response.status).toBe(201);
     expect(body.success).toBe(true);
-    expect(body.data.accessToken).toBe('access-jwt');
-    expect(body.data.refreshToken).toBe('refresh-token');
+    expect(body.data.tokens.accessToken).toBe('access-jwt');
+    expect(body.data.tokens.refreshToken).toBe('refresh-token');
     expect(body.data.user.id).toBe('new-user-1');
     expect(body.data.user.email).toBe('new@test.com');
     expect(body.data.user.role).toBe('client');
