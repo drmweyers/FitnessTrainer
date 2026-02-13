@@ -246,10 +246,17 @@ export async function DELETE(
       },
     });
 
+    // Check if this is a late cancellation (less than 24 hours before appointment)
+    const hoursUntilAppointment = (existing.startDatetime.getTime() - Date.now()) / (1000 * 60 * 60);
+    const isLateCancellation = hoursUntilAppointment < 24 && hoursUntilAppointment > 0;
+
     return NextResponse.json({
       success: true,
       message: 'Appointment cancelled',
-      data: appointment,
+      data: {
+        ...appointment,
+        ...(isLateCancellation && { lateCancellation: true }),
+      },
     });
   } catch (error: any) {
     console.error('Error cancelling appointment:', error);
