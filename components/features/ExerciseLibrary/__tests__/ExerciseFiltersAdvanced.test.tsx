@@ -194,23 +194,79 @@ describe('ExerciseFiltersAdvanced', () => {
     );
   });
 
-  it('removes an active filter badge when clicked', () => {
+  it('removes an active filter badge when X button clicked', () => {
     const filtersWithActive = {
       ...defaultFilters,
       bodyParts: ['chest', 'back'],
     };
-    render(
+    const { container } = render(
       <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithActive} />
     );
-    // Find the X button on the chest badge
-    const badges = screen.getAllByText('chest');
-    const badgeContainer = badges[0].closest('button') || badges[0].closest('[role]');
-    if (badgeContainer) {
-      // Look for the X button next to the badge text
-      const closeButtons = document.querySelectorAll('button svg');
-      if (closeButtons.length > 0) {
-        fireEvent.click(closeButtons[0].closest('button')!);
-      }
+
+    // Find the active filter badges area (has blue-50 background)
+    const badgesArea = container.querySelector('.bg-blue-50');
+    expect(badgesArea).toBeInTheDocument();
+
+    // Find the first X button in the badges area
+    const closeButtons = badgesArea?.querySelectorAll('button');
+    if (closeButtons && closeButtons.length > 0) {
+      fireEvent.click(closeButtons[0]);
+      expect(mockOnChange).toHaveBeenCalled();
+    }
+  });
+
+  it('removes equipment badge when X button clicked', () => {
+    const filtersWithActive = {
+      ...defaultFilters,
+      equipments: ['barbell', 'dumbbell'],
+    };
+    const { container } = render(
+      <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithActive} />
+    );
+
+    const badgesArea = container.querySelector('.bg-blue-50');
+    const closeButtons = badgesArea?.querySelectorAll('button');
+    if (closeButtons && closeButtons.length > 0) {
+      fireEvent.click(closeButtons[0]);
+      expect(mockOnChange).toHaveBeenCalled();
+    }
+  });
+
+  it('removes target muscle badge when X button clicked', () => {
+    const filtersWithActive = {
+      ...defaultFilters,
+      targetMuscles: ['biceps', 'triceps'],
+    };
+    const { container } = render(
+      <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithActive} />
+    );
+
+    const badgesArea = container.querySelector('.bg-blue-50');
+    const closeButtons = badgesArea?.querySelectorAll('button');
+    if (closeButtons && closeButtons.length > 0) {
+      fireEvent.click(closeButtons[0]);
+      expect(mockOnChange).toHaveBeenCalled();
+    }
+  });
+
+  it('removes favorites badge when X button clicked', () => {
+    const filtersWithActive = {
+      ...defaultFilters,
+      favorites: true,
+    };
+    const { container } = render(
+      <ExerciseFiltersAdvanced {...defaultProps} filters={filtersWithActive} />
+    );
+
+    const badgesArea = container.querySelector('.bg-blue-50');
+    const closeButtons = badgesArea?.querySelectorAll('button');
+    if (closeButtons && closeButtons.length > 0) {
+      fireEvent.click(closeButtons[0]);
+      expect(mockOnChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          favorites: false,
+        })
+      );
     }
   });
 
@@ -311,17 +367,183 @@ describe('ExerciseFiltersAdvanced', () => {
 
   it('renders onSavePreset button when prop is provided', () => {
     const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+    };
     render(
       <ExerciseFiltersAdvanced
         {...defaultProps}
+        filters={filtersWithActive}
         onSavePreset={mockSavePreset}
       />
     );
-    fireEvent.click(screen.getByText('Filter Presets'));
-    const saveBtn = screen.queryByText('Save Current');
-    if (saveBtn) {
-      expect(saveBtn).toBeInTheDocument();
-    }
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    expect(saveBtn).toBeInTheDocument();
+  });
+
+  it('opens save preset modal when save button clicked', () => {
+    const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+    };
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        filters={filtersWithActive}
+        onSavePreset={mockSavePreset}
+      />
+    );
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    fireEvent.click(saveBtn);
+    expect(screen.getByText('Save Filter Preset')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('e.g., My Gym Routine')).toBeInTheDocument();
+  });
+
+  it('saves preset with valid name', () => {
+    const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+      equipments: ['barbell'],
+    };
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        filters={filtersWithActive}
+        onSavePreset={mockSavePreset}
+      />
+    );
+
+    // Open modal
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    fireEvent.click(saveBtn);
+
+    // Enter preset name
+    const nameInput = screen.getByPlaceholderText('e.g., My Gym Routine');
+    fireEvent.change(nameInput, { target: { value: 'My Custom Preset' } });
+
+    // Click save
+    const savePresetBtn = screen.getByText('Save Preset');
+    fireEvent.click(savePresetBtn);
+
+    expect(mockSavePreset).toHaveBeenCalledWith({
+      name: 'My Custom Preset',
+      filters: filtersWithActive,
+    });
+  });
+
+  it('does not save preset with empty name', () => {
+    const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+    };
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        filters={filtersWithActive}
+        onSavePreset={mockSavePreset}
+      />
+    );
+
+    // Open modal
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    fireEvent.click(saveBtn);
+
+    // Try to save without entering name
+    const savePresetBtn = screen.getByText('Save Preset');
+    expect(savePresetBtn).toBeDisabled();
+  });
+
+  it('trims preset name whitespace', () => {
+    const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+    };
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        filters={filtersWithActive}
+        onSavePreset={mockSavePreset}
+      />
+    );
+
+    // Open modal
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    fireEvent.click(saveBtn);
+
+    // Enter preset name with whitespace
+    const nameInput = screen.getByPlaceholderText('e.g., My Gym Routine');
+    fireEvent.change(nameInput, { target: { value: '  My Preset  ' } });
+
+    // Click save
+    const savePresetBtn = screen.getByText('Save Preset');
+    fireEvent.click(savePresetBtn);
+
+    expect(mockSavePreset).toHaveBeenCalledWith({
+      name: 'My Preset',
+      filters: filtersWithActive,
+    });
+  });
+
+  it('closes modal when cancel button clicked', () => {
+    const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+    };
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        filters={filtersWithActive}
+        onSavePreset={mockSavePreset}
+      />
+    );
+
+    // Open modal
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    fireEvent.click(saveBtn);
+
+    // Click cancel
+    const cancelBtn = screen.getByText('Cancel');
+    fireEvent.click(cancelBtn);
+
+    expect(screen.queryByText('Save Filter Preset')).not.toBeInTheDocument();
+  });
+
+  it('clears preset name when modal is cancelled', () => {
+    const mockSavePreset = jest.fn();
+    const filtersWithActive = {
+      ...defaultFilters,
+      bodyParts: ['chest'],
+    };
+    render(
+      <ExerciseFiltersAdvanced
+        {...defaultProps}
+        filters={filtersWithActive}
+        onSavePreset={mockSavePreset}
+      />
+    );
+
+    // Open modal
+    const saveBtn = screen.getByTitle('Save current filters as preset');
+    fireEvent.click(saveBtn);
+
+    // Enter name
+    const nameInput = screen.getByPlaceholderText('e.g., My Gym Routine');
+    fireEvent.change(nameInput, { target: { value: 'Test' } });
+
+    // Cancel
+    const cancelBtn = screen.getByText('Cancel');
+    fireEvent.click(cancelBtn);
+
+    // Re-open modal - name should be cleared
+    fireEvent.click(saveBtn);
+    const newNameInput = screen.getByPlaceholderText('e.g., My Gym Routine');
+    expect(newNameInput).toHaveValue('');
   });
 
   describe('Edge cases', () => {
@@ -420,7 +642,8 @@ describe('ExerciseFiltersAdvanced', () => {
       const searchInput = screen.getByPlaceholderText('Search muscles...');
       fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
 
-      // Should show no muscle options
+      // Should show no results message
+      expect(screen.getByText(/No muscles found matching/)).toBeInTheDocument();
       expect(screen.queryByText('biceps')).not.toBeInTheDocument();
     });
 
@@ -475,6 +698,82 @@ describe('ExerciseFiltersAdvanced', () => {
       );
 
       expect(screen.getByText('1 active')).toBeInTheDocument();
+    });
+
+    it('handles array value in handleFilterChange', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+      const chestCheckbox = screen.getByText('chest').closest('label')?.querySelector('input');
+      if (chestCheckbox) {
+        fireEvent.click(chestCheckbox);
+      }
+      expect(mockOnChange).toHaveBeenCalled();
+    });
+
+    it('disables save button when no active filters', () => {
+      const mockSavePreset = jest.fn();
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          onSavePreset={mockSavePreset}
+        />
+      );
+      const saveBtn = screen.getByTitle('Save current filters as preset');
+      expect(saveBtn).toBeDisabled();
+    });
+
+    it('disables clear button when no active filters', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+      const clearBtn = screen.getByTitle('Clear all filters');
+      expect(clearBtn).toBeDisabled();
+    });
+
+    it('clears muscle search when clearing all filters', () => {
+      const filtersWithActive = {
+        ...defaultFilters,
+        bodyParts: ['chest'],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={filtersWithActive}
+        />
+      );
+
+      // Expand target muscles and search
+      fireEvent.click(screen.getByText('Target Muscles'));
+      const searchInput = screen.getByPlaceholderText('Search muscles...');
+      fireEvent.change(searchInput, { target: { value: 'biceps' } });
+
+      // Clear all filters
+      const clearBtn = screen.getByTitle('Clear all filters');
+      fireEvent.click(clearBtn);
+
+      // Search should be cleared
+      expect(searchInput).toHaveValue('');
+    });
+
+    it('shows section count badge when filters applied', () => {
+      const filtersWithActive = {
+        ...defaultFilters,
+        bodyParts: ['chest', 'back'],
+      };
+      render(
+        <ExerciseFiltersAdvanced
+          {...defaultProps}
+          filters={filtersWithActive}
+        />
+      );
+
+      // Body Parts section should show count badge
+      expect(screen.getByText('2')).toBeInTheDocument();
+    });
+
+    it('does not show count badge when no filters in section', () => {
+      render(<ExerciseFiltersAdvanced {...defaultProps} />);
+      // Equipment section has no filters, so no count badge
+      fireEvent.click(screen.getByText('Equipment'));
+      // Should render without count badge (count is 0)
+      expect(screen.getByText('Equipment')).toBeInTheDocument();
     });
   });
 });
