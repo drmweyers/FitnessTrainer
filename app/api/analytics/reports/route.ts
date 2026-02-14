@@ -4,6 +4,40 @@ import { prisma } from '@/lib/db/prisma'
 
 export const dynamic = 'force-dynamic'
 
+/**
+ * GET /api/analytics/reports
+ * List saved analytics reports for the authenticated user
+ */
+export async function GET(request: NextRequest) {
+  const authResult = await authenticate(request)
+  if (authResult instanceof NextResponse) return authResult
+  const req = authResult as AuthenticatedRequest
+
+  try {
+    const userId = req.user!.id
+
+    const reports = await prisma.analyticsReport.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        reportType: true,
+        periodStart: true,
+        periodEnd: true,
+        generatedAt: true,
+      },
+      orderBy: { generatedAt: 'desc' },
+    })
+
+    return NextResponse.json({ success: true, data: reports })
+  } catch (error) {
+    console.error('Error fetching reports:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch reports' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   const authResult = await authenticate(request)
   if (authResult instanceof NextResponse) return authResult
