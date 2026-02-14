@@ -286,4 +286,175 @@ describe('ClientNotes', () => {
       expect(mockGetNotes).not.toHaveBeenCalled();
     });
   });
+
+  describe('Add Note Error Handling', () => {
+    it('shows error when adding note fails with ApiError', async () => {
+      const ApiError = require('@/lib/api/clients').ApiError;
+      mockAddNote.mockRejectedValue(new ApiError('Server error'));
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('Add Note')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Add Note'));
+      const textarea = screen.getByPlaceholderText('Add a note about this client...');
+      fireEvent.change(textarea, { target: { value: 'New note' } });
+
+      const saveBtn = screen.getByText('Save Note');
+      fireEvent.click(saveBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText('Server error')).toBeInTheDocument();
+      });
+    });
+
+    it('shows generic error when adding note fails with unknown error', async () => {
+      mockAddNote.mockRejectedValue(new Error('Unknown error'));
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('Add Note')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Add Note'));
+      const textarea = screen.getByPlaceholderText('Add a note about this client...');
+      fireEvent.change(textarea, { target: { value: 'New note' } });
+
+      const saveBtn = screen.getByText('Save Note');
+      fireEvent.click(saveBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to add note')).toBeInTheDocument();
+      });
+    });
+
+    it('does not submit if note text is empty or whitespace', async () => {
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('Add Note')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Add Note'));
+      const textarea = screen.getByPlaceholderText('Add a note about this client...');
+      fireEvent.change(textarea, { target: { value: '   ' } });
+
+      const saveBtn = screen.getByText('Save Note');
+      fireEvent.click(saveBtn);
+
+      expect(mockAddNote).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Edit Note Error Handling', () => {
+    it('shows error when updating note fails with ApiError', async () => {
+      const ApiError = require('@/lib/api/clients').ApiError;
+      mockUpdateNote.mockRejectedValue(new ApiError('Update failed'));
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const editIcons = screen.getAllByTestId('icon-edit');
+      fireEvent.click(editIcons[0].closest('button')!);
+
+      const textareas = document.querySelectorAll('textarea');
+      const editTextarea = Array.from(textareas).find(
+        (ta) => ta.value === 'First session went well'
+      );
+
+      fireEvent.change(editTextarea!, { target: { value: 'Updated note' } });
+
+      const saveIcons = screen.getAllByTestId('icon-save');
+      fireEvent.click(saveIcons[0].closest('button')!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Update failed')).toBeInTheDocument();
+      });
+    });
+
+    it('shows generic error when updating note fails with unknown error', async () => {
+      mockUpdateNote.mockRejectedValue(new Error('Network error'));
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const editIcons = screen.getAllByTestId('icon-edit');
+      fireEvent.click(editIcons[0].closest('button')!);
+
+      const textareas = document.querySelectorAll('textarea');
+      const editTextarea = Array.from(textareas).find(
+        (ta) => ta.value === 'First session went well'
+      );
+
+      fireEvent.change(editTextarea!, { target: { value: 'Updated note' } });
+
+      const saveIcons = screen.getAllByTestId('icon-save');
+      fireEvent.click(saveIcons[0].closest('button')!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to update note')).toBeInTheDocument();
+      });
+    });
+
+    it('does not submit edit if text is empty or whitespace', async () => {
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const editIcons = screen.getAllByTestId('icon-edit');
+      fireEvent.click(editIcons[0].closest('button')!);
+
+      const textareas = document.querySelectorAll('textarea');
+      const editTextarea = Array.from(textareas).find(
+        (ta) => ta.value === 'First session went well'
+      );
+
+      fireEvent.change(editTextarea!, { target: { value: '   ' } });
+
+      const saveIcons = screen.getAllByTestId('icon-save');
+      fireEvent.click(saveIcons[0].closest('button')!);
+
+      expect(mockUpdateNote).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Delete Note Error Handling', () => {
+    it('shows error when deleting note fails with ApiError', async () => {
+      const ApiError = require('@/lib/api/clients').ApiError;
+      mockDeleteNote.mockRejectedValue(new ApiError('Delete failed'));
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const trashIcons = screen.getAllByTestId('icon-trash');
+      fireEvent.click(trashIcons[0].closest('button')!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Delete failed')).toBeInTheDocument();
+      });
+    });
+
+    it('shows generic error when deleting note fails with unknown error', async () => {
+      mockDeleteNote.mockRejectedValue(new Error('Network error'));
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const trashIcons = screen.getAllByTestId('icon-trash');
+      fireEvent.click(trashIcons[0].closest('button')!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to delete note')).toBeInTheDocument();
+      });
+    });
+  });
 });
