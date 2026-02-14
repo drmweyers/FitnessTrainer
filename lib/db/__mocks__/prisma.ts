@@ -260,6 +260,7 @@ const mockPrismaClient = {
   },
   $queryRaw: jest.fn(),
   $queryRawUnsafe: jest.fn(),
+  $executeRaw: jest.fn(),
   $transaction: jest.fn((fn: any) => fn(mockPrismaClient)),
   $connect: jest.fn(),
   $disconnect: jest.fn(),
