@@ -283,4 +283,316 @@ describe('TemplateLibrary', () => {
     render(<TemplateLibrary onSelectTemplate={jest.fn()} />);
     expect(screen.queryByText('Close')).not.toBeInTheDocument();
   });
+
+  it('toggles filters panel when Filters button is clicked', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const filtersBtns = screen.getAllByRole('button', { name: /Filters/ });
+    const filtersButton = filtersBtns[0];
+
+    // Filters should not be visible initially
+    expect(screen.queryByText('Category')).not.toBeInTheDocument();
+
+    fireEvent.click(filtersButton);
+
+    // Filters should now be visible
+    expect(screen.getByText('Category')).toBeInTheDocument();
+    expect(screen.getByText('Difficulty')).toBeInTheDocument();
+    expect(screen.getByText('Sort By')).toBeInTheDocument();
+  });
+
+  it('filters by category', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const filtersBtns = screen.getAllByRole('button', { name: /Filters/ });
+    fireEvent.click(filtersBtns[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Category')).toBeInTheDocument();
+    });
+
+    const selects = screen.getAllByRole('combobox');
+    const categorySelect = selects[0] as HTMLSelectElement;
+    fireEvent.change(categorySelect, { target: { value: 'Strength Training' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+      expect(screen.getByText('Starting Strength')).toBeInTheDocument();
+    });
+  });
+
+  it('filters by difficulty level', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const filtersBtns = screen.getAllByRole('button', { name: /Filters/ });
+    fireEvent.click(filtersBtns[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Difficulty')).toBeInTheDocument();
+    });
+
+    const selects = screen.getAllByRole('combobox');
+    const difficultySelect = selects[1] as HTMLSelectElement;
+    fireEvent.change(difficultySelect, { target: { value: 'beginner' } });
+
+    await waitFor(() => {
+      expect(screen.queryByText('PPL Split')).not.toBeInTheDocument();
+      expect(screen.getByText('Starting Strength')).toBeInTheDocument();
+      expect(screen.getByText('1 template found')).toBeInTheDocument();
+    });
+  });
+
+  it('sorts by use count', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const filtersBtns = screen.getAllByRole('button', { name: /Filters/ });
+    fireEvent.click(filtersBtns[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Sort By')).toBeInTheDocument();
+    });
+
+    const selects = screen.getAllByRole('combobox');
+    const sortSelect = selects[2] as HTMLSelectElement;
+    fireEvent.change(sortSelect, { target: { value: 'useCount' } });
+
+    await waitFor(() => {
+      const templateCards = screen.getAllByText(/uses/);
+      // Starting Strength (500 uses) should come before PPL (120 uses)
+      expect(templateCards[0]).toHaveTextContent('500');
+    });
+  });
+
+  it('sorts by newest', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const filtersBtns = screen.getAllByRole('button', { name: /Filters/ });
+    fireEvent.click(filtersBtns[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Sort By')).toBeInTheDocument();
+    });
+
+    const selects = screen.getAllByRole('combobox');
+    const sortSelect = selects[2] as HTMLSelectElement;
+    fireEvent.change(sortSelect, { target: { value: 'newest' } });
+
+    await waitFor(() => {
+      const useButtons = screen.getAllByText('Use Template');
+      // Starting Strength (2025-02-01) should be first
+      expect(useButtons.length).toBe(2);
+    });
+  });
+
+  it('filters by bookmarked only', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const filtersBtns = screen.getAllByRole('button', { name: /Filters/ });
+    fireEvent.click(filtersBtns[0]);
+
+    const bookmarkedCheckbox = screen.getByRole('checkbox', { name: /Bookmarked Only/ }) as HTMLInputElement;
+    fireEvent.click(bookmarkedCheckbox);
+
+    await waitFor(() => {
+      expect(screen.getByText('No templates found')).toBeInTheDocument();
+    });
+  });
+
+  it('toggles bookmark when bookmark icon is clicked', async () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const bookmarkButtons = screen.getAllByTestId('bookmark-icon');
+    fireEvent.click(bookmarkButtons[0].closest('button')!);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Toggle bookmark for template:', expect.any(String));
+
+    consoleSpy.mockRestore();
+  });
+
+  it('expands template preview when Preview button is clicked', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const previewButtons = screen.getAllByText('Preview');
+    fireEvent.click(previewButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Program Preview')).toBeInTheDocument();
+    });
+  });
+
+  it('collapses template preview when Hide Preview is clicked', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const previewButtons = screen.getAllByText('Preview');
+    fireEvent.click(previewButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Hide Preview')).toBeInTheDocument();
+    });
+
+    const hideButton = screen.getByText('Hide Preview');
+    fireEvent.click(hideButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Program Preview')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows difficulty color for intermediate level', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+      const intermediateBadges = screen.getAllByText('intermediate');
+      const difficultyBadge = intermediateBadges.find(el =>
+        el.className.includes('bg-yellow-100') && el.className.includes('text-yellow-800')
+      );
+      expect(difficultyBadge).toBeTruthy();
+    });
+  });
+
+  it('filters by search term in tags', async () => {
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText(/Search templates/);
+    fireEvent.change(searchInput, { target: { value: 'hypertrophy' } });
+
+    expect(screen.getByText('PPL Split')).toBeInTheDocument();
+    expect(screen.queryByText('Starting Strength')).not.toBeInTheDocument();
+    expect(screen.getByText('1 template found')).toBeInTheDocument();
+  });
+
+});
+
+describe('TemplateLibrary - Advanced difficulty and error handling', () => {
+  const defaultProps = {
+    onSelectTemplate: jest.fn(),
+    onClose: jest.fn(),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const { getTemplates } = require('@/lib/api/programs');
+    getTemplates.mockReset();
+  });
+
+  it('shows difficulty color for advanced level', async () => {
+    const { getTemplates } = require('@/lib/api/programs');
+    getTemplates.mockImplementation(() => Promise.resolve([
+      {
+        id: 'tmpl-adv',
+        name: 'Advanced Program',
+        description: 'For advanced athletes',
+        program: {
+          programType: 'strength',
+          difficultyLevel: 'advanced',
+          durationWeeks: 12,
+        },
+        rating: 5.0,
+        useCount: 200,
+        tags: ['strength', 'elite'],
+        creator: { email: 'pro@example.com' },
+        createdAt: '2025-03-01T00:00:00Z',
+        category: 'Powerlifting',
+      },
+    ]));
+
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Advanced Program')).toBeInTheDocument();
+      const difficultyBadges = screen.getAllByText('advanced');
+      // The difficulty level badge should have advanced coloring
+      const difficultyBadge = difficultyBadges.find(el =>
+        el.className.includes('bg-red-100') && el.className.includes('text-red-800')
+      );
+      expect(difficultyBadge).toBeTruthy();
+    });
+  });
+
+  it('handles API error gracefully', async () => {
+    const { getTemplates } = require('@/lib/api/programs');
+    const consoleError = jest.spyOn(console, 'error').mockImplementation();
+    getTemplates.mockImplementation(() => Promise.reject(new Error('API Error')));
+
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No templates found')).toBeInTheDocument();
+    });
+
+    expect(consoleError).toHaveBeenCalledWith('Failed to load templates:', expect.any(Error));
+    consoleError.mockRestore();
+  });
+
+  it('shows more than 3 tags indicator', async () => {
+    const { getTemplates } = require('@/lib/api/programs');
+    getTemplates.mockImplementation(() => Promise.resolve([
+      {
+        id: 'tmpl-many-tags',
+        name: 'Full Program',
+        description: 'Comprehensive program',
+        program: {
+          programType: 'strength',
+          difficultyLevel: 'intermediate',
+          durationWeeks: 12,
+        },
+        rating: 4.5,
+        useCount: 150,
+        tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
+        creator: { email: 'coach@example.com' },
+        createdAt: '2025-01-15T00:00:00Z',
+        category: 'Bodybuilding',
+      },
+    ]));
+
+    render(<TemplateLibrary {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Full Program')).toBeInTheDocument();
+      expect(screen.getByText('+2')).toBeInTheDocument();
+    });
+  });
 });
