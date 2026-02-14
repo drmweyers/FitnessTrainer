@@ -84,4 +84,97 @@ describe('GoalsSection', () => {
     render(<GoalsSection goals={[]} />);
     expect(screen.getByText('0/0 completed')).toBeInTheDocument();
   });
+
+  it('should enable Save when goal input has content', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    fireEvent.click(screen.getByText('Add Goal'));
+    const input = screen.getByPlaceholderText('Enter goal...');
+    fireEvent.change(input, { target: { value: 'New fitness goal' } });
+    expect(screen.getByText('Save')).not.toBeDisabled();
+  });
+
+  it('should disable Save when goal input contains only whitespace', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    fireEvent.click(screen.getByText('Add Goal'));
+    const input = screen.getByPlaceholderText('Enter goal...');
+    fireEvent.change(input, { target: { value: '   ' } });
+    expect(screen.getByText('Save')).toBeDisabled();
+  });
+
+  it('should update input value when typing', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    fireEvent.click(screen.getByText('Add Goal'));
+    const input = screen.getByPlaceholderText('Enter goal...') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'Complete marathon' } });
+    expect(input.value).toBe('Complete marathon');
+  });
+
+  it('should clear input and hide form when Save is clicked', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    fireEvent.click(screen.getByText('Add Goal'));
+    const input = screen.getByPlaceholderText('Enter goal...');
+    fireEvent.change(input, { target: { value: 'New goal' } });
+    fireEvent.click(screen.getByText('Save'));
+    expect(screen.queryByPlaceholderText('Enter goal...')).not.toBeInTheDocument();
+  });
+
+  it('should calculate correct progress percentage', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    // 1 of 3 goals completed = 33.33%
+    const progressBar = document.querySelector('.bg-blue-600');
+    expect(progressBar).toHaveStyle({ width: '33.33333333333333%' });
+  });
+
+  it('should show 0% progress when no goals', () => {
+    render(<GoalsSection goals={[]} />);
+    const progressBar = document.querySelector('.bg-blue-600');
+    expect(progressBar).toHaveStyle({ width: '0%' });
+  });
+
+  it('should show 100% progress when all goals completed', () => {
+    const allCompleted = [
+      { id: '1', text: 'Goal 1', completed: true },
+      { id: '2', text: 'Goal 2', completed: true },
+    ];
+    render(<GoalsSection goals={allCompleted} />);
+    const progressBar = document.querySelector('.bg-blue-600');
+    expect(progressBar).toHaveStyle({ width: '100%' });
+    expect(screen.getByText('2/2 completed')).toBeInTheDocument();
+  });
+
+  it('should apply line-through style to completed goals', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    const completedGoal = screen.getByText('Lose 10 pounds');
+    expect(completedGoal).toHaveClass('line-through');
+    expect(completedGoal).toHaveClass('text-gray-500');
+  });
+
+  it('should not apply line-through to incomplete goals', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    const incompleteGoal = screen.getByText('Run a 5K');
+    expect(incompleteGoal).not.toHaveClass('line-through');
+    expect(incompleteGoal).toHaveClass('text-gray-700');
+  });
+
+  it('should show Progress label', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    expect(screen.getByText('Progress')).toBeInTheDocument();
+  });
+
+  it('should show Plus icon in Add Goal button', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    expect(screen.getByTestId('icon-plus')).toBeInTheDocument();
+  });
+
+  it('should not show add form initially', () => {
+    render(<GoalsSection goals={mockGoals} />);
+    expect(screen.queryByPlaceholderText('Enter goal...')).not.toBeInTheDocument();
+  });
+
+  it('should render single goal correctly', () => {
+    const singleGoal = [{ id: '1', text: 'Single goal', completed: false }];
+    render(<GoalsSection goals={singleGoal} />);
+    expect(screen.getByText('Single goal')).toBeInTheDocument();
+    expect(screen.getByText('0/1 completed')).toBeInTheDocument();
+  });
 });
