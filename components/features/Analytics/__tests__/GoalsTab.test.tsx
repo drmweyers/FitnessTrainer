@@ -29,28 +29,46 @@ const mockActiveGoal = {
   id: 'goal1',
   userId: 'user123',
   goalType: 'weight_loss',
+  specificGoal: 'Lose weight to 70kg',
   targetValue: 70,
-  currentValue: 75,
-  unit: 'kg',
-  startDate: '2026-01-01',
   targetDate: '2027-06-01',
-  status: 'active',
+  priority: 3,
+  isActive: true,
+  achievedAt: null,
   createdAt: '2026-01-01T00:00:00Z',
-  updatedAt: '2026-01-01T00:00:00Z',
+  goalProgress: [
+    {
+      id: 'progress1',
+      goalId: 'goal1',
+      currentValue: 75,
+      recordedDate: '2026-02-01',
+      percentageComplete: 0,
+      createdAt: '2026-02-01T00:00:00Z',
+    },
+  ],
 };
 
 const mockCompletedGoal = {
   id: 'goal2',
   userId: 'user123',
   goalType: 'strength',
+  specificGoal: 'Bench press 100kg',
   targetValue: 100,
-  currentValue: 100,
-  unit: 'kg',
-  startDate: '2023-10-01',
   targetDate: '2024-01-01',
-  status: 'completed',
+  priority: 3,
+  isActive: false,
+  achievedAt: '2024-01-05T00:00:00Z',
   createdAt: '2023-10-01T00:00:00Z',
-  updatedAt: '2024-01-05T00:00:00Z',
+  goalProgress: [
+    {
+      id: 'progress2',
+      goalId: 'goal2',
+      currentValue: 100,
+      recordedDate: '2024-01-05',
+      percentageComplete: 100,
+      createdAt: '2024-01-05T00:00:00Z',
+    },
+  ],
 };
 
 describe('GoalsTab', () => {
@@ -113,7 +131,8 @@ describe('GoalsTab', () => {
     });
 
     expect(screen.getByText('Weight Loss')).toBeInTheDocument();
-    expect(screen.getByText(/Target: 70 kg/)).toBeInTheDocument();
+    expect(screen.getByText('Lose weight to 70kg')).toBeInTheDocument();
+    expect(screen.getByText(/Target date:/)).toBeInTheDocument();
   });
 
   it('renders completed goals', async () => {
@@ -129,7 +148,7 @@ describe('GoalsTab', () => {
     });
 
     expect(screen.getByText('Strength')).toBeInTheDocument();
-    expect(screen.getByText(/Achieved: 100 kg/)).toBeInTheDocument();
+    expect(screen.getByText('Bench press 100kg')).toBeInTheDocument();
   });
 
   it('calculates progress percentage correctly', async () => {
@@ -138,8 +157,11 @@ describe('GoalsTab', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText('75 / 70 kg')).toBeInTheDocument();
+      expect(screen.getByText('Active Goals')).toBeInTheDocument();
     });
+
+    // New format: currentValue / targetValue (no unit in display)
+    expect(screen.getByText('75.0 / 70')).toBeInTheDocument();
 
     // Progress is (75/70)*100 = 107.14%
     expect(screen.getByText(/107.1% complete/)).toBeInTheDocument();
@@ -166,7 +188,8 @@ describe('GoalsTab', () => {
 
     expect(screen.getByText('Create New Goal')).toBeInTheDocument();
     expect(screen.getByLabelText('Goal Type')).toBeInTheDocument();
-    expect(screen.getByLabelText('Target Value')).toBeInTheDocument();
+    expect(screen.getByLabelText('Specific Goal (optional)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Target Value (optional)')).toBeInTheDocument();
   });
 
   it('submits create goal form', async () => {
@@ -189,7 +212,10 @@ describe('GoalsTab', () => {
     fireEvent.change(screen.getByLabelText('Goal Type'), {
       target: { value: 'weight_loss' },
     });
-    fireEvent.change(screen.getByLabelText('Target Value'), {
+    fireEvent.change(screen.getByLabelText('Specific Goal (optional)'), {
+      target: { value: 'Lose weight to 70kg' },
+    });
+    fireEvent.change(screen.getByLabelText('Target Value (optional)'), {
       target: { value: '70' },
     });
     fireEvent.change(screen.getByLabelText('Target Date'), {
