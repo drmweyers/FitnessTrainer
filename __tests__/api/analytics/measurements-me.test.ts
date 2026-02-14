@@ -99,6 +99,30 @@ describe('GET /api/analytics/measurements/me', () => {
     );
   });
 
+  it('handles null weight value', async () => {
+    mockAuth(clientUser);
+
+    const mockRows = [{
+      id: 'm-3',
+      user_id: clientUser.id,
+      height: 180,
+      weight: null,
+      body_fat_percentage: 15,
+      muscle_mass: 35,
+      measurements: { chest: 100 },
+      recorded_at: new Date('2024-06-01T00:00:00Z'),
+    }];
+
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockRows);
+
+    const req = createMockRequest('/api/analytics/measurements/me');
+    const res = await GET(req);
+    const { body } = await parseJsonResponse(res);
+
+    expect(body.data[0].weight).toBeUndefined();
+    expect(body.data[0].height).toBe(180);
+  });
+
   describe('time range filtering', () => {
     it('filters by 7d time range', async () => {
       mockAuth(clientUser);
