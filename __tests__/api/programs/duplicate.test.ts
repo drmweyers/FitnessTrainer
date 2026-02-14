@@ -386,6 +386,65 @@ describe('POST /api/programs/[id]/duplicate', () => {
     );
   });
 
+  it('handles null setsConfig in exercises', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const original = {
+      id: programId,
+      trainerId: mockTrainerUser.id,
+      name: 'Test',
+      description: null,
+      programType: 'strength',
+      difficultyLevel: 'beginner',
+      durationWeeks: 1,
+      goals: [],
+      equipmentNeeded: [],
+      weeks: [{
+        id: 'w1',
+        weekNumber: 1,
+        name: 'Week 1',
+        isDeload: false,
+        workouts: [{
+          id: 'wo1',
+          dayNumber: 1,
+          name: 'Day 1',
+          workoutType: 'strength',
+          isRestDay: false,
+          exercises: [{
+            id: 'ex1',
+            exerciseId: '00000000-0000-0000-0000-000000000010',
+            orderIndex: 0,
+            supersetGroup: null,
+            setsConfig: null,
+            notes: null,
+            configurations: [],
+          }],
+        }],
+      }],
+    };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(original);
+    (prisma.program.create as jest.Mock).mockResolvedValue({ id: 'new-p1' });
+    (prisma.programWeek.create as jest.Mock).mockResolvedValue({ id: 'new-w1' });
+    (prisma.programWorkout.create as jest.Mock).mockResolvedValue({ id: 'new-wo1' });
+    (prisma.workoutExercise.create as jest.Mock).mockResolvedValue({ id: 'new-ex1' });
+
+    const request = createMockRequest(`/api/programs/${programId}/duplicate`, {
+      method: 'POST',
+      body: { newName: 'Duplicate' },
+    });
+    const response = await POST(request, params);
+    const { status } = await parseJsonResponse(response);
+
+    expect(status).toBe(201);
+    expect(prisma.workoutExercise.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          setsConfig: {},
+        }),
+      })
+    );
+  });
+
   it('handles database errors gracefully', async () => {
     authenticate.mockResolvedValue(mockAuthUser);
 
@@ -413,5 +472,35 @@ describe('POST /api/programs/[id]/duplicate', () => {
 
     expect(status).toBe(500);
     expect(body.success).toBe(false);
+  });
+
+  it('handles errors without message property', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const original = {
+      id: programId,
+      trainerId: mockTrainerUser.id,
+      name: 'Test',
+      description: null,
+      programType: 'strength',
+      difficultyLevel: 'beginner',
+      durationWeeks: 1,
+      goals: [],
+      equipmentNeeded: [],
+      weeks: [],
+    };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(original);
+    (prisma.program.create as jest.Mock).mockRejectedValue({ code: 'DUPLICATE_ERROR' });
+
+    const request = createMockRequest(`/api/programs/${programId}/duplicate`, {
+      method: 'POST',
+      body: {},
+    });
+    const response = await POST(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to duplicate program');
   });
 });
