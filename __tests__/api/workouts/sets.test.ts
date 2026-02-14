@@ -342,6 +342,45 @@ describe('POST /api/workouts/[id]/sets', () => {
     expect(status).toBe(400);
   });
 
+  it('handles all optional fields in update', async () => {
+    authAs({ ...mockClientUser, role: 'client' });
+    (prisma.workoutSession.findFirst as jest.Mock).mockResolvedValue({ id: 'sess-1' });
+    (prisma.workoutExerciseLog.findFirst as jest.Mock).mockResolvedValue({ id: validBody.exerciseLogId });
+    (prisma.workoutSetLog.upsert as jest.Mock).mockResolvedValue({});
+    (prisma.workoutSetLog.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.workoutSetLog.count as jest.Mock).mockResolvedValue(0);
+    (prisma.workoutSession.update as jest.Mock).mockResolvedValue({});
+
+    const bodyWithAllOptionalFields = {
+      ...validBody,
+      rir: 2,
+      duration: 45,
+      restTime: 90,
+      tempo: '3-0-1-0',
+      notes: 'Felt strong',
+    };
+
+    const req = createMockRequest('/api/workouts/sess-1/sets', {
+      method: 'POST',
+      body: bodyWithAllOptionalFields,
+    });
+    const res = await POST(req, mockParams);
+    const { status } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(prisma.workoutSetLog.upsert).toHaveBeenCalledWith({
+      where: expect.any(Object),
+      update: expect.objectContaining({
+        rir: 2,
+        duration: 45,
+        restTime: 90,
+        tempo: '3-0-1-0',
+        notes: 'Felt strong',
+      }),
+      create: expect.any(Object),
+    });
+  });
+
   it('handles server errors', async () => {
     authAs({ ...mockClientUser, role: 'client' });
     (prisma.workoutSession.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
