@@ -368,6 +368,102 @@ describe('POST /api/programs', () => {
     );
   });
 
+  it('creates program with weeks but no workouts', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+    (prisma.program.create as jest.Mock).mockResolvedValue({ id: 'p1' });
+
+    const bodyWithWeeksNoWorkouts = {
+      ...validBody,
+      weeks: [
+        {
+          weekNumber: 1,
+          name: 'Week 1',
+          description: 'Intro week',
+          isDeload: false,
+          // NO workouts array
+        },
+      ],
+    };
+
+    const request = createMockRequest('/api/programs', { method: 'POST', body: bodyWithWeeksNoWorkouts });
+    const response = await POST(request);
+    const { status } = await parseJsonResponse(response);
+
+    expect(status).toBe(201);
+  });
+
+  it('creates program with weeks and workouts but no exercises', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+    (prisma.program.create as jest.Mock).mockResolvedValue({ id: 'p1' });
+
+    const bodyWithWorkoutsNoExercises = {
+      ...validBody,
+      weeks: [
+        {
+          weekNumber: 1,
+          name: 'Week 1',
+          workouts: [
+            {
+              dayNumber: 1,
+              name: 'Day 1',
+              workoutType: 'strength',
+              isRestDay: false,
+              // NO exercises array
+            },
+          ],
+        },
+      ],
+    };
+
+    const request = createMockRequest('/api/programs', { method: 'POST', body: bodyWithWorkoutsNoExercises });
+    const response = await POST(request);
+    const { status } = await parseJsonResponse(response);
+
+    expect(status).toBe(201);
+  });
+
+  it('creates program with exercises including configurations', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+    (prisma.program.create as jest.Mock).mockResolvedValue({ id: 'p1' });
+
+    const bodyWithConfigurations = {
+      ...validBody,
+      weeks: [
+        {
+          weekNumber: 1,
+          name: 'Week 1',
+          workouts: [
+            {
+              dayNumber: 1,
+              name: 'Day 1',
+              exercises: [
+                {
+                  exerciseId: '00000000-0000-0000-0000-000000000010',
+                  orderIndex: 0,
+                  setsConfig: {},
+                  configurations: [
+                    {
+                      setNumber: 1,
+                      setType: 'working',
+                      reps: '8-12',
+                      restSeconds: 90,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const request = createMockRequest('/api/programs', { method: 'POST', body: bodyWithConfigurations });
+    const response = await POST(request);
+    const { status } = await parseJsonResponse(response);
+
+    expect(status).toBe(201);
+  });
+
   it('handles database errors gracefully', async () => {
     authenticate.mockResolvedValue(mockAuthUser);
     (prisma.program.create as jest.Mock).mockRejectedValue(new Error('Unique constraint violation'));
