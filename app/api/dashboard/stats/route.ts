@@ -149,10 +149,10 @@ export async function GET(request: NextRequest) {
     if (role === 'client') {
       // Client dashboard stats - measurements
       const latestMeasurement = await prisma.$queryRaw<any[]>`
-        SELECT weight, body_fat_percentage, measurements, measured_at
+        SELECT weight, body_fat_percentage, measurements, recorded_at
         FROM user_measurements
         WHERE user_id = ${userId}::uuid
-        ORDER BY measured_at DESC
+        ORDER BY recorded_at DESC
         LIMIT 1`
 
       const [totalWorkouts] = await prisma.$queryRaw<CountResult[]>`

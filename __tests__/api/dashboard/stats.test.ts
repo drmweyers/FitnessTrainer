@@ -217,7 +217,7 @@ describe('GET /api/dashboard/stats', () => {
           weight: 82.5,
           body_fat_percentage: 18,
           measurements: { chest: 100, waist: 80 },
-          measured_at: '2024-06-01',
+          recorded_at: '2024-06-01',
         }])
         .mockResolvedValueOnce([{ count: BigInt(42) }])    // totalWorkouts
         .mockResolvedValueOnce([{ streak: 7 }]);           // workoutStreak
