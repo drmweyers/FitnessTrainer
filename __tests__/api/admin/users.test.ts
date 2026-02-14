@@ -281,6 +281,42 @@ describe('GET /api/admin/users', () => {
     expect(data.error).toBe('Failed to fetch users');
   });
 
+  it('handles non-Error exceptions', async () => {
+    mockedPrisma.$queryRawUnsafe.mockRejectedValueOnce({ code: 'CONNECTION_ERROR' });
+
+    const request = makeRequest('/api/admin/users');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.details).toBe('Unknown error');
+  });
+
+  it('handles Date objects in timestamps', async () => {
+    mockedPrisma.$queryRawUnsafe
+      .mockResolvedValueOnce([{ count: BigInt(1) }])
+      .mockResolvedValueOnce([
+        {
+          id: 'u1',
+          email: 'user@test.com',
+          role: 'client',
+          is_active: true,
+          is_verified: true,
+          created_at: new Date('2024-01-15T10:00:00Z'),
+          last_login_at: new Date('2024-03-01T08:45:00Z'),
+        },
+      ]);
+
+    const request = makeRequest('/api/admin/users');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data.users[0].createdAt).toBe('2024-01-15T10:00:00.000Z');
+    expect(data.data.users[0].lastLoginAt).toBe('2024-03-01T08:45:00.000Z');
+  });
+
   it('handles users without names correctly', async () => {
     mockedPrisma.$queryRawUnsafe
       .mockResolvedValueOnce([{ count: BigInt(1) }])
