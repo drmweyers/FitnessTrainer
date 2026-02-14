@@ -271,4 +271,27 @@ describe('POST /api/programs/[id]/assign', () => {
     expect(status).toBe(500);
     expect(body.success).toBe(false);
   });
+
+  it('handles errors without message property', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const program = { id: programId, trainerId: mockTrainerUser.id, name: 'Test', durationWeeks: 4 };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(program);
+
+    const clientRelation = { trainerId: mockTrainerUser.id, clientId: mockClientUser.id, status: 'active' };
+    (prisma.trainerClient.findFirst as jest.Mock).mockResolvedValue(clientRelation);
+
+    (prisma.programAssignment.create as jest.Mock).mockRejectedValue({ code: 'CONSTRAINT_ERROR' });
+
+    const request = createMockRequest(`/api/programs/${programId}/assign`, {
+      method: 'POST',
+      body: validBody,
+    });
+    const response = await POST(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to assign program');
+  });
 });
