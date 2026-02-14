@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { POST } from '@/app/api/analytics/measurements/route';
+import { GET, POST } from '@/app/api/analytics/measurements/route';
 import { prisma } from '@/lib/db/prisma';
 import { createMockRequest, parseJsonResponse } from '@/tests/helpers/test-utils';
 
@@ -20,6 +20,170 @@ function mockAuthFail() {
     NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
   );
 }
+
+describe('GET /api/analytics/measurements', () => {
+  const clientUser = { id: 'client-1', email: 'client@test.com', role: 'client' };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
+
+  it('returns 401 when unauthenticated', async () => {
+    mockAuthFail();
+
+    const req = createMockRequest('/api/analytics/measurements', { method: 'GET' });
+    const res = await GET(req);
+    const { status } = await parseJsonResponse(res);
+
+    expect(status).toBe(401);
+  });
+
+  it('returns all measurements without timeRange filter', async () => {
+    mockAuth(clientUser);
+
+    const mockRows = [
+      {
+        id: 'm-1',
+        user_id: clientUser.id,
+        height: 180,
+        weight: 80,
+        body_fat_percentage: 15,
+        muscle_mass: 35,
+        measurements: { chest: 100 },
+        recorded_at: new Date('2024-06-01'),
+      },
+    ];
+
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockRows);
+
+    const req = createMockRequest('/api/analytics/measurements', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data).toHaveLength(1);
+    expect(body.data[0].id).toBe('m-1');
+    expect(body.data[0].weight).toBe(80);
+  });
+
+  it('filters measurements with 7d timeRange', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/measurements?timeRange=7d', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(mockPrisma.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining('recorded_at >='),
+      clientUser.id,
+      expect.any(Date)
+    );
+  });
+
+  it('filters measurements with 30d timeRange', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/measurements?timeRange=30d', { method: 'GET' });
+    await GET(req);
+
+    expect(mockPrisma.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining('recorded_at >='),
+      clientUser.id,
+      expect.any(Date)
+    );
+  });
+
+  it('filters measurements with 3m timeRange', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/measurements?timeRange=3m', { method: 'GET' });
+    await GET(req);
+
+    expect(mockPrisma.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining('recorded_at >='),
+      clientUser.id,
+      expect.any(Date)
+    );
+  });
+
+  it('filters measurements with 6m timeRange', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/measurements?timeRange=6m', { method: 'GET' });
+    await GET(req);
+
+    expect(mockPrisma.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining('recorded_at >='),
+      clientUser.id,
+      expect.any(Date)
+    );
+  });
+
+  it('filters measurements with 1y timeRange', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/measurements?timeRange=1y', { method: 'GET' });
+    await GET(req);
+
+    expect(mockPrisma.$queryRawUnsafe).toHaveBeenCalledWith(
+      expect.stringContaining('recorded_at >='),
+      clientUser.id,
+      expect.any(Date)
+    );
+  });
+
+  it('handles null values in measurement data', async () => {
+    mockAuth(clientUser);
+
+    const mockRows = [
+      {
+        id: 'm-2',
+        user_id: clientUser.id,
+        height: null,
+        weight: null,
+        body_fat_percentage: null,
+        muscle_mass: null,
+        measurements: null,
+        recorded_at: new Date('2024-06-01'),
+      },
+    ];
+
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockResolvedValue(mockRows);
+
+    const req = createMockRequest('/api/analytics/measurements', { method: 'GET' });
+    const res = await GET(req);
+    const { body } = await parseJsonResponse(res);
+
+    expect(body.data[0].weight).toBeUndefined();
+    expect(body.data[0].height).toBeUndefined();
+    expect(body.data[0].measurements).toEqual({});
+  });
+
+  it('returns 500 on database error', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.$queryRawUnsafe as jest.Mock).mockRejectedValue(new Error('DB error'));
+
+    const req = createMockRequest('/api/analytics/measurements', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to fetch measurements');
+  });
+});
 
 describe('POST /api/analytics/measurements', () => {
   const clientUser = { id: 'client-1', email: 'client@test.com', role: 'client' };
