@@ -52,6 +52,12 @@ playwright-report/
 screenshots/
 coverage/
 
+# Browser verification & test screenshots (root level)
+/*.png
+/*.jpeg
+test-screenshots/
+.playwright-mcp/
+
 # Development logs
 backend/logs/
 backend/server.log
