@@ -98,20 +98,40 @@ async function cleanupDuplicatePrograms(dryRun: boolean): Promise<void> {
       console.log(`  DELETE: ${dup.id.slice(0, 8)}... (${dup.workoutCount} workouts, ${dup.assignmentCount} assignments)`);
 
       if (dup.assignmentCount > 0) {
-        console.log(`    → Will reassign ${dup.assignmentCount} client assignment(s) to keeper`);
+        console.log(`    → Will delete ${dup.assignmentCount} duplicate assignment(s) (client already assigned to keeper)`);
         totalReassigned += dup.assignmentCount;
 
         if (!dryRun) {
-          // Reassign program_assignments to the keeper
-          await prisma.programAssignment.updateMany({
+          // Delete duplicate assignments (client should already have assignment to keeper)
+          await prisma.programAssignment.deleteMany({
             where: { programId: dup.id },
-            data: { programId: keeper.id },
           });
         }
       }
 
       if (!dryRun) {
-        // Delete the duplicate program (cascade will handle weeks/workouts)
+        // Get all workout IDs in this duplicate program
+        const dupWorkouts = await prisma.programWorkout.findMany({
+          where: { week: { programId: dup.id } },
+          select: { id: true },
+        });
+        const dupWorkoutIds = dupWorkouts.map(w => w.id);
+
+        if (dupWorkoutIds.length > 0) {
+          // Delete workout exercise logs first (they reference workout sessions)
+          await prisma.workoutExerciseLog.deleteMany({
+            where: { workoutSessionId: { in: (await prisma.workoutSession.findMany({
+              where: { workoutId: { in: dupWorkoutIds } },
+              select: { id: true },
+            })).map(s => s.id) } },
+          });
+          // Delete workout sessions that reference these workouts
+          await prisma.workoutSession.deleteMany({
+            where: { workoutId: { in: dupWorkoutIds } },
+          });
+        }
+
+        // Now safe to delete the program (cascade handles weeks/workouts)
         await prisma.program.delete({
           where: { id: dup.id },
         });
