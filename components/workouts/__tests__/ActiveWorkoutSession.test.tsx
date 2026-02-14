@@ -321,4 +321,275 @@ describe('ActiveWorkoutSession', () => {
       expect.any(Object)
     );
   });
+
+  it('closes rest timer when close button is clicked', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      startTime: new Date().toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [
+        {
+          exercise: { id: 'ex-1', name: 'Bench' },
+          targetReps: '8-12',
+          restSeconds: 90,
+          setLogs: [],
+        },
+      ],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+
+    fireEvent.click(screen.getByText('Rest Timer'));
+    expect(screen.getByTestId('rest-timer')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Close Timer'));
+    expect(screen.queryByTestId('rest-timer')).not.toBeInTheDocument();
+  });
+
+  it('closes rest timer when rest is completed', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      startTime: new Date().toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [
+        {
+          exercise: { id: 'ex-1', name: 'Bench' },
+          targetReps: '8-12',
+          restSeconds: 90,
+          setLogs: [],
+        },
+      ],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+
+    fireEvent.click(screen.getByText('Rest Timer'));
+    fireEvent.click(screen.getByText('Complete Rest'));
+    expect(screen.queryByTestId('rest-timer')).not.toBeInTheDocument();
+  });
+
+  it('uses actualStartTime if available for display', () => {
+    const actualStart = new Date('2024-01-15T10:30:00');
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      actualStartTime: actualStart.toISOString(),
+      startTime: new Date('2024-01-15T08:00:00').toISOString(),
+      scheduledDate: new Date('2024-01-14T08:00:00').toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+    expect(screen.getByText(/Started:/)).toBeInTheDocument();
+  });
+
+  it('falls back to scheduledDate if neither actualStartTime nor startTime available', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      scheduledDate: new Date('2024-01-14T08:00:00').toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+    expect(screen.getByText(/Started:/)).toBeInTheDocument();
+  });
+
+  it('calculates 0% progress when no exercises', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      startTime: new Date().toISOString(),
+      totalSets: 0,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+    expect(screen.getByText('0 / 0 exercises')).toBeInTheDocument();
+  });
+
+  it('does not show target weight if not provided', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      startTime: new Date().toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [
+        {
+          exercise: { id: 'ex-1', name: 'Push-ups' },
+          targetReps: '15-20',
+          restSeconds: 60,
+          targetWeight: null,
+          setLogs: [],
+        },
+      ],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+    expect(screen.getByText('15-20')).toBeInTheDocument();
+    expect(screen.getByText('60s')).toBeInTheDocument();
+    // Weight should not be shown
+    expect(screen.queryByText(/Weight:/)).not.toBeInTheDocument();
+  });
+
+  it('renders with clientId prop', () => {
+    mockUseActiveWorkout.mockReturnValue({
+      data: null,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession clientId="client-123" />);
+    expect(screen.getByText('No Active Workout')).toBeInTheDocument();
+  });
+
+  it('logs set and calls mutation', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      startTime: new Date().toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [
+        {
+          exercise: { id: 'ex-1', name: 'Bench' },
+          targetReps: '8-12',
+          restSeconds: 90,
+          setLogs: [
+            { id: 'set-1', actualReps: 0 },
+          ],
+        },
+      ],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+
+    const logButton = screen.getByText('Log Set');
+    fireEvent.click(logButton);
+
+    expect(mockLogSetMutate).toHaveBeenCalledWith(
+      { sessionId: 'session-1', setData: { actualReps: 10 } },
+      expect.any(Object)
+    );
+  });
+
+  it('shows Target icon in empty state', () => {
+    mockUseActiveWorkout.mockReturnValue({
+      data: null,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+    expect(screen.getByTestId('target-icon')).toBeInTheDocument();
+  });
+
+  it('shows Clock icon in rest timer button', () => {
+    const mockWorkout = {
+      id: 'session-1',
+      programWorkout: { name: 'Push' },
+      program: { name: 'PPL' },
+      weekNumber: 1,
+      dayNumber: 1,
+      startTime: new Date().toISOString(),
+      totalSets: 1,
+      completedSets: 0,
+      totalVolume: '0',
+      status: 'in_progress',
+      exerciseLogs: [
+        {
+          exercise: { id: 'ex-1', name: 'Bench' },
+          targetReps: '8-12',
+          restSeconds: 90,
+          setLogs: [],
+        },
+      ],
+    };
+
+    mockUseActiveWorkout.mockReturnValue({
+      data: mockWorkout,
+      isLoading: false,
+    });
+
+    render(<ActiveWorkoutSession />);
+    expect(screen.getByTestId('clock-icon')).toBeInTheDocument();
+  });
 });
