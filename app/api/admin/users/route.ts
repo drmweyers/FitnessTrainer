@@ -89,8 +89,8 @@ export async function GET(request: NextRequest) {
       role: u.role,
       isActive: u.is_active,
       isVerified: u.is_verified,
-      createdAt: u.created_at,
-      lastLoginAt: u.last_login_at,
+      createdAt: typeof u.created_at === 'string' ? u.created_at : new Date(u.created_at).toISOString(),
+      lastLoginAt: u.last_login_at ? (typeof u.last_login_at === 'string' ? u.last_login_at : new Date(u.last_login_at).toISOString()) : null,
       avatarUrl: u.profile_photo_url || null,
     }))
 
@@ -108,8 +108,16 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Admin user list error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch users' },
+      {
+        success: false,
+        error: 'Failed to fetch users',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      },
       { status: 500 }
     )
   }
