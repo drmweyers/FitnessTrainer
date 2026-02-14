@@ -146,6 +146,50 @@ describe('GET /api/admin/dashboard', () => {
     expect(data.error).toBe('Failed to fetch dashboard metrics');
   });
 
+  it('handles non-Error exceptions', async () => {
+    mockedPrisma.$queryRaw.mockRejectedValueOnce({ code: 'DB_ERROR', detail: 'Connection lost' });
+
+    const request = makeRequest('/api/admin/dashboard');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Failed to fetch dashboard metrics');
+    expect(data.details).toBe('Unknown error');
+  });
+
+  it('handles Date objects in created_at field', async () => {
+    mockedPrisma.$queryRaw
+      .mockResolvedValueOnce([{ count: BigInt(100) }])
+      .mockResolvedValueOnce([{ count: BigInt(10) }])
+      .mockResolvedValueOnce([{ count: BigInt(80) }])
+      .mockResolvedValueOnce([{ count: BigInt(5) }])
+      .mockResolvedValueOnce([{ count: BigInt(3) }])
+      .mockResolvedValueOnce([{ count: BigInt(12) }])
+      .mockResolvedValueOnce([{ count: BigInt(8) }])
+      .mockResolvedValueOnce([{ count: BigInt(50) }])
+      .mockResolvedValueOnce([{ count: BigInt(25) }])
+      .mockResolvedValueOnce([{ count: BigInt(200) }])
+      .mockResolvedValueOnce([{ count: BigInt(40) }])
+      .mockResolvedValueOnce([
+        {
+          id: 'u1',
+          email: 'user1@test.com',
+          role: 'client',
+          created_at: new Date('2026-01-15T10:30:00Z'),
+          is_active: true,
+        },
+      ]);
+
+    const request = makeRequest('/api/admin/dashboard');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data.recentSignups[0].signupDate).toBe('2026-01-15T10:30:00.000Z');
+  });
+
   it('converts BigInt counts to numbers correctly', async () => {
     mockedPrisma.$queryRaw
       .mockResolvedValueOnce([{ count: BigInt(999999) }])  // Large number
