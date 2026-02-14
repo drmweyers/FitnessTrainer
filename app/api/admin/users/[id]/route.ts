@@ -79,9 +79,9 @@ export async function GET(
         role: user.role,
         isActive: user.is_active,
         isVerified: user.is_verified,
-        createdAt: user.created_at,
-        updatedAt: user.updated_at,
-        lastLoginAt: user.last_login_at,
+        createdAt: typeof user.created_at === 'string' ? user.created_at : new Date(user.created_at).toISOString(),
+        updatedAt: user.updated_at ? (typeof user.updated_at === 'string' ? user.updated_at : new Date(user.updated_at).toISOString()) : null,
+        lastLoginAt: user.last_login_at ? (typeof user.last_login_at === 'string' ? user.last_login_at : new Date(user.last_login_at).toISOString()) : null,
         bio: user.bio,
         phone: user.phone,
         avatarUrl: user.profile_photo_url,
@@ -94,8 +94,16 @@ export async function GET(
     })
   } catch (error) {
     console.error('Admin user detail error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch user details' },
+      {
+        success: false,
+        error: 'Failed to fetch user details',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      },
       { status: 500 }
     )
   }
@@ -167,8 +175,16 @@ export async function PUT(
     })
   } catch (error) {
     console.error('Admin user update error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
-      { success: false, error: 'Failed to update user' },
+      {
+        success: false,
+        error: 'Failed to update user',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      },
       { status: 500 }
     )
   }
