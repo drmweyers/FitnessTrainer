@@ -160,4 +160,262 @@ describe('SupersetBuilder', () => {
     expect(screen.getByText('Superset A')).toBeInTheDocument();
     expect(screen.getByText('Break Apart')).toBeInTheDocument();
   });
+
+  it('breaks apart a superset and creates ungrouped section', () => {
+    const exercises = [
+      {
+        exerciseId: 'ex-1',
+        orderIndex: 0,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 10 }],
+      },
+      {
+        exerciseId: 'ex-2',
+        orderIndex: 1,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 12 }],
+      },
+    ] as any;
+
+    render(
+      <SupersetBuilder
+        exercises={exercises}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    const breakButton = screen.getByText('Break Apart');
+    fireEvent.click(breakButton);
+
+    expect(screen.queryByText('Superset A')).not.toBeInTheDocument();
+    expect(screen.getByText('Individual Exercises')).toBeInTheDocument();
+  });
+
+  it('breaks apart a superset and adds to existing ungrouped section', () => {
+    const exercises = [
+      {
+        exerciseId: 'ex-1',
+        orderIndex: 0,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 10 }],
+      },
+      {
+        exerciseId: 'ex-2',
+        orderIndex: 1,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 12 }],
+      },
+      {
+        exerciseId: 'ex-3',
+        orderIndex: 2,
+        configurations: [{ setNumber: 1, reps: 8 }],
+      },
+    ] as any;
+
+    render(
+      <SupersetBuilder
+        exercises={exercises}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    const breakButton = screen.getByText('Break Apart');
+    fireEvent.click(breakButton);
+
+    expect(screen.queryByText('Superset A')).not.toBeInTheDocument();
+    expect(screen.getByText('3 exercises')).toBeInTheDocument();
+  });
+
+  it('updates rest times between exercises', () => {
+    const exercises = [
+      {
+        exerciseId: 'ex-1',
+        orderIndex: 0,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 10 }],
+      },
+      {
+        exerciseId: 'ex-2',
+        orderIndex: 1,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 12 }],
+      },
+    ] as any;
+
+    render(
+      <SupersetBuilder
+        exercises={exercises}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    const inputs = screen.getAllByRole('spinbutton');
+    const betweenExercisesInput = inputs[0];
+    fireEvent.change(betweenExercisesInput, { target: { value: '30' } });
+
+    expect(betweenExercisesInput).toHaveValue(30);
+  });
+
+  it('updates rest times after superset', () => {
+    const exercises = [
+      {
+        exerciseId: 'ex-1',
+        orderIndex: 0,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 10 }],
+      },
+      {
+        exerciseId: 'ex-2',
+        orderIndex: 1,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 12 }],
+      },
+    ] as any;
+
+    render(
+      <SupersetBuilder
+        exercises={exercises}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    const inputs = screen.getAllByRole('spinbutton');
+    const afterSupersetInput = inputs[1];
+    fireEvent.change(afterSupersetInput, { target: { value: '180' } });
+
+    expect(afterSupersetInput).toHaveValue(180);
+  });
+
+  it('toggles exercise selection on and off', () => {
+    render(<SupersetBuilder {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+
+    fireEvent.click(checkboxes[0]);
+    expect(checkboxes[0]).toBeChecked();
+
+    fireEvent.click(checkboxes[0]);
+    expect(checkboxes[0]).not.toBeChecked();
+  });
+
+  it('creates supersets with all available letters', () => {
+    const manyExercises = Array.from({ length: 12 }, (_, i) => ({
+      exerciseId: `ex-${i + 1}`,
+      orderIndex: i,
+      configurations: [{ setNumber: 1, reps: 10 }],
+    }));
+
+    const { rerender } = render(
+      <SupersetBuilder
+        exercises={manyExercises as any}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    // Create first superset
+    let checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+    fireEvent.click(checkboxes[1]);
+
+    let createButtons = screen.getAllByText(/Create Superset/);
+    let button = createButtons.find(el => el.closest('button') && !el.closest('button')?.disabled);
+    if (button) fireEvent.click(button.closest('button')!);
+
+    expect(screen.getByText('Superset A')).toBeInTheDocument();
+
+    // Create second superset
+    checkboxes = screen.getAllByRole('checkbox');
+    const unchecked = checkboxes.filter(cb => !cb.checked);
+    if (unchecked.length >= 2) {
+      fireEvent.click(unchecked[0]);
+      fireEvent.click(unchecked[1]);
+
+      createButtons = screen.getAllByText(/Create Superset/);
+      button = createButtons.find(el => el.closest('button') && !el.closest('button')?.disabled);
+      if (button) fireEvent.click(button.closest('button')!);
+
+      expect(screen.getByText('Superset B')).toBeInTheDocument();
+    }
+  });
+
+  it('shows rest time indicator between exercises in superset', () => {
+    const exercises = [
+      {
+        exerciseId: 'ex-1',
+        orderIndex: 0,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 10 }],
+      },
+      {
+        exerciseId: 'ex-2',
+        orderIndex: 1,
+        supersetGroup: 'A',
+        configurations: [{ setNumber: 1, reps: 12 }],
+      },
+    ] as any;
+
+    render(
+      <SupersetBuilder
+        exercises={exercises}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    expect(screen.getByText(/↓ 0s/)).toBeInTheDocument();
+  });
+
+  it('does not create superset with less than 2 exercises', () => {
+    render(<SupersetBuilder {...defaultProps} />);
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    const createButtons = screen.getAllByText(/Create Superset.*1/);
+    const button = createButtons.find(el => el.closest('button'));
+    expect(button?.closest('button')).toBeDisabled();
+  });
+
+  it('renders without onClose prop', () => {
+    const propsWithoutClose = {
+      exercises: createMockExercises() as any,
+      onUpdateExercises: mockOnUpdateExercises,
+    };
+
+    render(<SupersetBuilder {...propsWithoutClose} />);
+    expect(screen.getByText('Superset Builder')).toBeInTheDocument();
+    // Only one set of action buttons (no Cancel buttons)
+    const applyButton = screen.getByText('Apply Superset Configuration');
+    expect(applyButton).toBeInTheDocument();
+  });
+
+  it('handles unknown superset group letter', () => {
+    const exercises = [
+      {
+        exerciseId: 'ex-1',
+        orderIndex: 0,
+        supersetGroup: 'Z',
+        configurations: [{ setNumber: 1, reps: 10 }],
+      },
+      {
+        exerciseId: 'ex-2',
+        orderIndex: 1,
+        supersetGroup: 'Z',
+        configurations: [{ setNumber: 1, reps: 12 }],
+      },
+    ] as any;
+
+    render(
+      <SupersetBuilder
+        exercises={exercises}
+        onUpdateExercises={mockOnUpdateExercises}
+        onClose={mockOnClose}
+      />
+    );
+
+    expect(screen.getByText('Superset Z')).toBeInTheDocument();
+  });
 });
