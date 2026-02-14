@@ -47,18 +47,19 @@ describe('GET /api/workouts/progress', () => {
     },
   };
 
-  const mockWorkoutFrequency = [
-    { scheduledDate: new Date('2024-06-01'), _count: { id: 1 } },
-    { scheduledDate: new Date('2024-06-02'), _count: { id: 2 } },
+  // Raw query results match the shape returned by $queryRaw in the route
+  const mockWorkoutFrequencyRaw = [
+    { scheduled_date: new Date('2024-06-01'), count: BigInt(1) },
+    { scheduled_date: new Date('2024-06-02'), count: BigInt(2) },
+  ];
+
+  const mockTopExercisesRaw = [
+    { exercise_id: 'ex-1', total_volume: 20000, session_count: BigInt(5) },
   ];
 
   const mockVolumeProgression = [
     { scheduledDate: new Date('2024-06-01'), totalVolume: 4000 },
     { scheduledDate: new Date('2024-06-02'), totalVolume: 5000 },
-  ];
-
-  const mockTopExercises = [
-    { exerciseId: 'ex-1', _sum: { totalVolume: 20000 }, _count: { id: 5 } },
   ];
 
   const mockExerciseDetails = [
@@ -68,9 +69,11 @@ describe('GET /api/workouts/progress', () => {
   function setupSuccessMocks() {
     authAs({ ...mockClientUser, role: 'client' });
     (prisma.workoutSession.aggregate as jest.Mock).mockResolvedValue(mockWorkoutStats);
-    (prisma.workoutSession.groupBy as jest.Mock).mockResolvedValue(mockWorkoutFrequency);
+    // $queryRaw is called twice: first for frequency, then for top exercises
+    (prisma.$queryRaw as jest.Mock)
+      .mockResolvedValueOnce(mockWorkoutFrequencyRaw)
+      .mockResolvedValueOnce(mockTopExercisesRaw);
     (prisma.workoutSession.findMany as jest.Mock).mockResolvedValue(mockVolumeProgression);
-    (prisma.workoutExerciseLog.groupBy as jest.Mock).mockResolvedValue(mockTopExercises);
     (prisma.exercise.findMany as jest.Mock).mockResolvedValue(mockExerciseDetails);
   }
 
@@ -150,11 +153,12 @@ describe('GET /api/workouts/progress', () => {
   it('handles unknown exercises gracefully', async () => {
     authAs({ ...mockClientUser, role: 'client' });
     (prisma.workoutSession.aggregate as jest.Mock).mockResolvedValue(mockWorkoutStats);
-    (prisma.workoutSession.groupBy as jest.Mock).mockResolvedValue([]);
+    (prisma.$queryRaw as jest.Mock)
+      .mockResolvedValueOnce([])  // frequency
+      .mockResolvedValueOnce([    // top exercises
+        { exercise_id: 'unknown-ex', total_volume: 1000, session_count: BigInt(1) },
+      ]);
     (prisma.workoutSession.findMany as jest.Mock).mockResolvedValue([]);
-    (prisma.workoutExerciseLog.groupBy as jest.Mock).mockResolvedValue([
-      { exerciseId: 'unknown-ex', _sum: { totalVolume: 1000 }, _count: { id: 1 } },
-    ]);
     (prisma.exercise.findMany as jest.Mock).mockResolvedValue([]);
 
     const req = createMockRequest('/api/workouts/progress');
@@ -168,9 +172,10 @@ describe('GET /api/workouts/progress', () => {
   it('skips exercise detail query when no top exercises', async () => {
     authAs({ ...mockClientUser, role: 'client' });
     (prisma.workoutSession.aggregate as jest.Mock).mockResolvedValue(mockWorkoutStats);
-    (prisma.workoutSession.groupBy as jest.Mock).mockResolvedValue([]);
+    (prisma.$queryRaw as jest.Mock)
+      .mockResolvedValueOnce([])  // frequency
+      .mockResolvedValueOnce([]); // top exercises (empty)
     (prisma.workoutSession.findMany as jest.Mock).mockResolvedValue([]);
-    (prisma.workoutExerciseLog.groupBy as jest.Mock).mockResolvedValue([]);
 
     const req = createMockRequest('/api/workouts/progress');
     await GET(req);
@@ -232,9 +237,10 @@ describe('GET /api/workouts/progress', () => {
   it('allows trainer to view client progress', async () => {
     authAs({ ...mockTrainerUser, role: 'trainer' });
     (prisma.workoutSession.aggregate as jest.Mock).mockResolvedValue(mockWorkoutStats);
-    (prisma.workoutSession.groupBy as jest.Mock).mockResolvedValue([]);
+    (prisma.$queryRaw as jest.Mock)
+      .mockResolvedValueOnce([])  // frequency
+      .mockResolvedValueOnce([]); // top exercises
     (prisma.workoutSession.findMany as jest.Mock).mockResolvedValue([]);
-    (prisma.workoutExerciseLog.groupBy as jest.Mock).mockResolvedValue([]);
 
     const clientId = '00000000-0000-0000-0000-000000000099';
     const req = createMockRequest('/api/workouts/progress', {
@@ -254,9 +260,10 @@ describe('GET /api/workouts/progress', () => {
   it('uses own id for trainer without clientId', async () => {
     authAs({ ...mockTrainerUser, role: 'trainer' });
     (prisma.workoutSession.aggregate as jest.Mock).mockResolvedValue(mockWorkoutStats);
-    (prisma.workoutSession.groupBy as jest.Mock).mockResolvedValue([]);
+    (prisma.$queryRaw as jest.Mock)
+      .mockResolvedValueOnce([])  // frequency
+      .mockResolvedValueOnce([]); // top exercises
     (prisma.workoutSession.findMany as jest.Mock).mockResolvedValue([]);
-    (prisma.workoutExerciseLog.groupBy as jest.Mock).mockResolvedValue([]);
 
     const req = createMockRequest('/api/workouts/progress');
     await GET(req);

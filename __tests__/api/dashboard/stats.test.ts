@@ -282,7 +282,7 @@ describe('GET /api/dashboard/stats', () => {
   });
 
   describe('error handling', () => {
-    it('returns success with error message when database fails (graceful degradation)', async () => {
+    it('returns 500 with error message when database fails', async () => {
       mockAuth({ id: 'admin-1', email: 'admin@test.com', role: 'admin' });
       (mockPrisma.$queryRaw as jest.Mock).mockRejectedValue(new Error('DB timeout'));
 
@@ -290,10 +290,9 @@ describe('GET /api/dashboard/stats', () => {
       const res = await GET(req);
       const { status, body } = await parseJsonResponse(res);
 
-      expect(status).toBe(200);
-      expect(body.success).toBe(true);
-      expect(body.data.error).toBe('Stats temporarily unavailable');
-      expect(body.data.role).toBe('admin');
+      expect(status).toBe(500);
+      expect(body.success).toBe(false);
+      expect(body.error).toBe('DB timeout');
     });
   });
 });
