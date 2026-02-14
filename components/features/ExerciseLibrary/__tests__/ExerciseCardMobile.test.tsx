@@ -305,4 +305,36 @@ describe('ExerciseCardMobile', () => {
       expect(container).toBeInTheDocument();
     });
   });
+
+  describe('Multiple target muscles', () => {
+    it('shows +N for more than 2 target muscles', () => {
+      const exerciseMany = {
+        ...mockExercise,
+        targetMuscles: ['pec', 'deltoid', 'tricep', 'bicep'],
+      };
+      render(<ExerciseCardMobile {...defaultProps} exercise={exerciseMany as any} />);
+      expect(screen.getByText(/\+2/)).toBeInTheDocument();
+    });
+
+    it('shows all 2 muscles when exactly 2', () => {
+      const exerciseTwo = {
+        ...mockExercise,
+        targetMuscles: ['pec', 'deltoid'],
+      };
+      render(<ExerciseCardMobile {...defaultProps} exercise={exerciseTwo as any} />);
+      expect(screen.getByText(/pec, deltoid/)).toBeInTheDocument();
+    });
+  });
+
+  describe('Custom className', () => {
+    it('applies custom className in grid view', () => {
+      const { container } = render(<ExerciseCardMobile {...defaultProps} className="custom-test-class" />);
+      expect(container.querySelector('.custom-test-class')).toBeInTheDocument();
+    });
+
+    it('applies custom className in list view', () => {
+      const { container } = render(<ExerciseCardMobile {...defaultProps} viewMode="list" className="custom-list-class" />);
+      expect(container.querySelector('.custom-list-class')).toBeInTheDocument();
+    });
+  });
 });
