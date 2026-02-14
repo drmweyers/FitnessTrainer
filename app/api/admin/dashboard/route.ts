@@ -105,15 +105,23 @@ export async function GET(request: NextRequest) {
           name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email.split('@')[0],
           email: u.email,
           role: u.role,
-          signupDate: u.created_at,
+          signupDate: typeof u.created_at === 'string' ? u.created_at : new Date(u.created_at).toISOString(),
           isActive: u.is_active,
         })),
       },
     })
   } catch (error) {
     console.error('Admin dashboard metrics error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch dashboard metrics' },
+      {
+        success: false,
+        error: 'Failed to fetch dashboard metrics',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      },
       { status: 500 }
     )
   }
