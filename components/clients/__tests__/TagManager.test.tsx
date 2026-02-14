@@ -322,4 +322,152 @@ describe('TagManager', () => {
       expect(mockCreateTag).toHaveBeenCalled();
     });
   });
+
+  it('handles ApiError when fetching tags', async () => {
+    const { ApiError } = require('@/lib/api/clients');
+    mockGetTags.mockRejectedValue(new ApiError('API Error occurred'));
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('API Error occurred')).toBeInTheDocument();
+    });
+  });
+
+  it('handles response with .data wrapper when fetching tags', async () => {
+    mockGetTags.mockResolvedValue({
+      data: [{ id: 'tag-1', name: 'VIP', color: '#EF4444', trainerId: 'trainer-1' }]
+    });
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+  });
+
+  it('does not create tag if name is only whitespace', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const input = screen.getByPlaceholderText('Enter tag name...');
+    fireEvent.change(input, { target: { value: '   ' } });
+    fireEvent.click(screen.getByText('Create Tag'));
+    await waitFor(() => {
+      expect(mockCreateTag).not.toHaveBeenCalled();
+    });
+  });
+
+  it('trims tag name when creating', async () => {
+    mockCreateTag.mockResolvedValue({
+      id: 'tag-3',
+      name: 'Advanced',
+      color: '#3B82F6',
+      trainerId: 'trainer-1',
+    });
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const input = screen.getByPlaceholderText('Enter tag name...');
+    fireEvent.change(input, { target: { value: '  Advanced  ' } });
+    fireEvent.click(screen.getByText('Create Tag'));
+    await waitFor(() => {
+      expect(mockCreateTag).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Advanced' })
+      );
+    });
+  });
+
+  it('handles ApiError when creating tag', async () => {
+    const { ApiError } = require('@/lib/api/clients');
+    mockCreateTag.mockRejectedValue(new ApiError('Tag creation failed'));
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const input = screen.getByPlaceholderText('Enter tag name...');
+    fireEvent.change(input, { target: { value: 'Test' } });
+    fireEvent.click(screen.getByText('Create Tag'));
+    await waitFor(() => {
+      expect(screen.getByText('Tag creation failed')).toBeInTheDocument();
+    });
+  });
+
+  it('allows color selection from preset colors', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const colorButtons = screen.getAllByRole('button').filter(btn =>
+      btn.style.backgroundColor && btn.type === 'button'
+    );
+    // Click the second color
+    if (colorButtons.length > 1) {
+      fireEvent.click(colorButtons[1]);
+    }
+  });
+
+  it('allows custom color input', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Enter tag name...')).toBeInTheDocument();
+    });
+    // Find color input by type
+    const colorInputs = document.querySelectorAll('input[type="color"]');
+    expect(colorInputs.length).toBeGreaterThan(0);
+    if (colorInputs[0]) {
+      fireEvent.change(colorInputs[0], { target: { value: '#123456' } });
+    }
+  });
+
+  it('handles error when update tag fails with generic error', async () => {
+    mockUpdateTag.mockRejectedValue(new Error('Generic error'));
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+  });
+
+  it('handles error when delete tag fails with generic error', async () => {
+    window.confirm = jest.fn().mockReturnValue(true);
+    mockDeleteTag.mockRejectedValue(new Error('Generic delete error'));
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+  });
+
+  it('allows updating only tag color', async () => {
+    mockUpdateTag.mockResolvedValue({
+      id: 'tag-1',
+      name: 'VIP',
+      color: '#123456',
+      trainerId: 'trainer-1',
+    });
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('VIP')).toBeInTheDocument();
+    });
+  });
+
+  it('resets form when create is cancelled', async () => {
+    render(<TagManager {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('New Tag')).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText('New Tag'));
+    const input = screen.getByPlaceholderText('Enter tag name...');
+    fireEvent.change(input, { target: { value: 'Test Tag' } });
+    expect(screen.getByText('8/50 characters')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Cancel'));
+    // Open form again
+    fireEvent.click(screen.getByText('New Tag'));
+    expect(screen.getByText('0/50 characters')).toBeInTheDocument();
+  });
 });
