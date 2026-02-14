@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         error: 'Failed to fetch users',
-        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     )

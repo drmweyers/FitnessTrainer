@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       // Trainer dashboard stats
       const [totalClients] = await prisma.$queryRaw<CountResult[]>`
         SELECT COUNT(*)::bigint as count FROM trainer_clients
-        WHERE trainer_id = ${userId}::uuid AND status != 'disconnected'`
+        WHERE trainer_id = ${userId}::uuid AND status != 'archived'`
       const [activeClients] = await prisma.$queryRaw<CountResult[]>`
         SELECT COUNT(*)::bigint as count FROM trainer_clients
         WHERE trainer_id = ${userId}::uuid AND status = 'active'`
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
         FROM trainer_clients tc
         JOIN users u ON u.id = tc.client_id
         LEFT JOIN user_profiles p ON p.user_id = tc.client_id
-        WHERE tc.trainer_id = ${userId}::uuid AND tc.status != 'disconnected'
+        WHERE tc.trainer_id = ${userId}::uuid AND tc.status != 'archived'
         ORDER BY tc.connected_at DESC
         LIMIT 10`
 
