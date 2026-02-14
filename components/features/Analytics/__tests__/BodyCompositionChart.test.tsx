@@ -18,14 +18,18 @@ jest.mock('chart.js', () => ({
   Legend: jest.fn(),
 }));
 
-// Mock react-chartjs-2
+// Capture chart props for callback testing
+let capturedChartProps: any = null;
 jest.mock('react-chartjs-2', () => ({
-  Line: ({ data, options }: any) => (
-    <div data-testid="line-chart">
-      <span data-testid="chart-labels">{JSON.stringify(data.labels)}</span>
-      <span data-testid="chart-datasets">{data.datasets.length} datasets</span>
-    </div>
-  ),
+  Line: ({ data, options }: any) => {
+    capturedChartProps = { data, options };
+    return (
+      <div data-testid="line-chart">
+        <span data-testid="chart-labels">{JSON.stringify(data.labels)}</span>
+        <span data-testid="chart-datasets">{data.datasets.length} datasets</span>
+      </div>
+    );
+  },
 }));
 
 describe('BodyCompositionChart', () => {
@@ -352,6 +356,108 @@ describe('BodyCompositionChart', () => {
       render(<BodyCompositionChart data={data} />);
       // muscleMassChange should be 0 since last.muscleMass is undefined
       expect(screen.queryByText('Muscle Mass Change')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Chart options callbacks', () => {
+    const fullData = [
+      { date: '2025-01-15', weight: 80, bodyFat: 20, muscleMass: 35 },
+      { date: '2025-02-15', weight: 79, bodyFat: 19, muscleMass: 36 },
+    ];
+
+    it('legend filter callback returns true for datasets with data', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const filterFn = capturedChartProps.options.plugins.legend.labels.filter;
+      // Test with a valid dataset (has non-null data)
+      const chartRef = { data: capturedChartProps.data };
+      const result = filterFn({ datasetIndex: 0 }, chartRef);
+      expect(result).toBe(true);
+    });
+
+    it('tooltip title callback formats date', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const titleCb = capturedChartProps.options.plugins.tooltip.callbacks.title;
+      const result = titleCb([{ dataIndex: 0 }]);
+      expect(result).toContain('2025');
+      expect(result).toContain('January');
+    });
+
+    it('tooltip label callback shows kg for weight', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const labelCb = capturedChartProps.options.plugins.tooltip.callbacks.label;
+      const result = labelCb({
+        dataset: { label: 'Weight' },
+        parsed: { y: 80 },
+      });
+      expect(result).toBe('Weight: 80.0 kg');
+    });
+
+    it('tooltip label callback shows % for body fat', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const labelCb = capturedChartProps.options.plugins.tooltip.callbacks.label;
+      const result = labelCb({
+        dataset: { label: 'Body Fat %' },
+        parsed: { y: 20 },
+      });
+      expect(result).toBe('Body Fat %: 20.0%');
+    });
+
+    it('tooltip label callback handles null value', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const labelCb = capturedChartProps.options.plugins.tooltip.callbacks.label;
+      const result = labelCb({
+        dataset: { label: 'Muscle Mass' },
+        parsed: { y: null },
+      });
+      expect(result).toBe('Muscle Mass: No data');
+    });
+
+    it('tooltip afterBody shows fat/lean mass when both weight and bodyFat exist', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const afterBodyCb = capturedChartProps.options.plugins.tooltip.callbacks.afterBody;
+      const result = afterBodyCb([{ dataIndex: 0 }]);
+      // weight=80, bodyFat=20 => fatMass=16, leanMass=64
+      expect(result).toEqual(expect.arrayContaining([
+        expect.stringContaining('Fat Mass: 16.0 kg'),
+        expect.stringContaining('Lean Mass: 64.0 kg'),
+      ]));
+    });
+
+    it('tooltip afterBody returns empty array when no body fat', () => {
+      const weightOnly = [
+        { date: '2025-01-15', weight: 80 },
+        { date: '2025-02-15', weight: 79 },
+      ];
+      render(<BodyCompositionChart data={weightOnly} />);
+      const afterBodyCb = capturedChartProps.options.plugins.tooltip.callbacks.afterBody;
+      const result = afterBodyCb([{ dataIndex: 0 }]);
+      expect(result).toEqual([]);
+    });
+
+    it('y-axis tick callback appends kg', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const tickCb = capturedChartProps.options.scales.y.ticks.callback;
+      expect(tickCb(75)).toBe('75 kg');
+    });
+
+    it('y1-axis tick callback appends %', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      const tickCb = capturedChartProps.options.scales.y1.ticks.callback;
+      expect(tickCb(20)).toBe('20%');
+    });
+
+    it('y1-axis is hidden when no body fat data', () => {
+      const weightOnly = [
+        { date: '2025-01-15', weight: 80 },
+        { date: '2025-02-15', weight: 79 },
+      ];
+      render(<BodyCompositionChart data={weightOnly} />);
+      expect(capturedChartProps.options.scales.y1.display).toBe(false);
+    });
+
+    it('y1-axis is shown when body fat data exists', () => {
+      render(<BodyCompositionChart data={fullData} />);
+      expect(capturedChartProps.options.scales.y1.display).toBe(true);
     });
   });
 });

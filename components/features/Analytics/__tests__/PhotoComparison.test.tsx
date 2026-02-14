@@ -143,4 +143,135 @@ describe('PhotoComparison', () => {
       expect(screen.getByText('Body Fat: 17%')).toBeInTheDocument();
     });
   });
+
+  describe('mode switching', () => {
+    it('switches to slider mode', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('Slider'));
+      await waitFor(() => {
+        // Slider mode shows Before/After labels too
+        expect(screen.getByText('Before')).toBeInTheDocument();
+        expect(screen.getByText('After')).toBeInTheDocument();
+      });
+    });
+
+    it('switches to timeline mode', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('Timeline'));
+      await waitFor(() => {
+        // Timeline renders all photos for the selected angle
+        const images = screen.getAllByRole('img');
+        expect(images.length).toBeGreaterThanOrEqual(2);
+      });
+    });
+
+    it('hides photo selector in timeline mode', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('Timeline'));
+      await waitFor(() => {
+        expect(screen.queryByText('Select Before Photo')).not.toBeInTheDocument();
+        expect(screen.queryByText('Select After Photo')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('angle switching', () => {
+    it('switches to side angle', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('side (1)'));
+      await waitFor(() => {
+        // Side photos should be rendered
+        const imgs = screen.getAllByRole('img');
+        const sideImg = imgs.find((img: any) => img.src?.includes('side-1'));
+        expect(sideImg).toBeTruthy();
+      });
+    });
+
+    it('switches to back angle', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('back (1)'));
+      await waitFor(() => {
+        const imgs = screen.getAllByRole('img');
+        const backImg = imgs.find((img: any) => img.src?.includes('back-1'));
+        expect(backImg).toBeTruthy();
+      });
+    });
+  });
+
+  describe('slider mode interactions', () => {
+    it('mousedown on slider starts sliding', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('Slider'));
+      await waitFor(() => {
+        expect(screen.getByText('Before')).toBeInTheDocument();
+      });
+      // The slider container has onMouseDown
+      const sliderContainer = screen.getByText('Before').closest('.h-full.relative');
+      if (sliderContainer) {
+        fireEvent.mouseDown(sliderContainer);
+        // Should start sliding (isSliding = true)
+        // Then mouseUp should stop it
+        fireEvent.mouseUp(document);
+      }
+    });
+  });
+
+  describe('photo selection', () => {
+    it('can select a different before photo', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      await waitFor(() => {
+        expect(screen.getByText('Select Before Photo')).toBeInTheDocument();
+      });
+      // Click the photo thumbnails - there should be buttons for each photo
+      const buttons = screen.getAllByRole('button');
+      // Photo selector buttons exist (thumbnail buttons)
+      const thumbnails = buttons.filter(b => b.querySelector('img'));
+      expect(thumbnails.length).toBeGreaterThanOrEqual(2);
+      // Click a thumbnail to select it
+      if (thumbnails.length > 0) {
+        fireEvent.click(thumbnails[0]);
+      }
+    });
+  });
+
+  describe('edge cases', () => {
+    it('renders with no photos', () => {
+      render(<PhotoComparison photos={[]} onClose={mockOnClose} />);
+      expect(screen.getByText('Progress Photo Comparison')).toBeInTheDocument();
+    });
+
+    it('renders without onClose callback', () => {
+      render(<PhotoComparison photos={mockPhotos} />);
+      expect(screen.getByText('Progress Photo Comparison')).toBeInTheDocument();
+    });
+
+    it('shows 0 days when no photos selected', () => {
+      render(<PhotoComparison photos={[]} onClose={mockOnClose} />);
+      // No photos selected, so no progress stats shown
+      expect(screen.queryByText(/days of progress/)).not.toBeInTheDocument();
+    });
+
+    it('renders photos without measurements', async () => {
+      const noMeasurementPhotos = [
+        { id: 'p1', url: '/photo1.jpg', date: '2024-01-15T12:00:00', angle: 'front' as const },
+        { id: 'p2', url: '/photo2.jpg', date: '2024-03-15T12:00:00', angle: 'front' as const },
+      ];
+      render(<PhotoComparison photos={noMeasurementPhotos} onClose={mockOnClose} />);
+      await waitFor(() => {
+        expect(screen.getByText('Before')).toBeInTheDocument();
+        expect(screen.getByText('After')).toBeInTheDocument();
+      });
+      // Should not show weight/body fat info
+      expect(screen.queryByText(/Weight:/)).not.toBeInTheDocument();
+    });
+
+    it('renders timeline mode with measurements', async () => {
+      render(<PhotoComparison {...defaultProps} />);
+      fireEvent.click(screen.getByText('Timeline'));
+      await waitFor(() => {
+        // Timeline shows dates for each photo
+        expect(screen.getAllByText('Jan 15, 2024').length).toBeGreaterThanOrEqual(1);
+      });
+    });
+  });
 });

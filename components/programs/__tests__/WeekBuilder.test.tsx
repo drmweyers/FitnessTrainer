@@ -203,4 +203,205 @@ describe('WeekBuilder', () => {
     const downBtns = screen.getAllByTestId('icon-down').map(i => i.closest('button')!);
     expect(downBtns[1]).toBeDisabled();
   });
+
+  describe('adding weeks', () => {
+    it('opens add week dialog when Add Week button is clicked', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Week');
+      fireEvent.click(addBtns[0]);
+      // Dialog should be visible since open=true
+      expect(screen.getByText('Add New Week')).toBeInTheDocument();
+      expect(screen.getByText('Create a new week for your program')).toBeInTheDocument();
+    });
+
+    it('fills in week name and adds week', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      // Open dialog
+      const addBtns = screen.getAllByText('Add Week');
+      fireEvent.click(addBtns[0]);
+
+      // Fill in name
+      const nameInput = screen.getByPlaceholderText('e.g., Week 1 - Foundation');
+      fireEvent.change(nameInput, { target: { value: 'Strength Phase' } });
+
+      // Fill in description
+      const descInput = screen.getByPlaceholderText('Optional description for this week...');
+      fireEvent.change(descInput, { target: { value: 'Focus on heavy compounds' } });
+
+      // Submit
+      // Find the "Add Week" button inside the dialog footer
+      const dialogAddBtns = screen.getAllByText('Add Week');
+      const footerBtn = dialogAddBtns[dialogAddBtns.length - 1];
+      fireEvent.click(footerBtn);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Strength Phase' }),
+        ])
+      );
+    });
+
+    it('does not add week with empty name', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Week');
+      fireEvent.click(addBtns[0]);
+
+      // Try to add without filling name (empty string)
+      const dialogAddBtns = screen.getAllByText('Add Week');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).not.toHaveBeenCalled();
+    });
+
+    it('can set deload toggle when adding week', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Week');
+      fireEvent.click(addBtns[0]);
+
+      // Toggle deload first (before name change to avoid stale closure)
+      const deloadSwitch = screen.getByRole('checkbox');
+      fireEvent.click(deloadSwitch);
+
+      // Fill name
+      const nameInput = screen.getByPlaceholderText('e.g., Week 1 - Foundation');
+      fireEvent.change(nameInput, { target: { value: 'Recovery' } });
+
+      // Add the week
+      const dialogAddBtns = screen.getAllByText('Add Week');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Recovery', isDeload: true }),
+        ])
+      );
+    });
+
+    it('cancel button closes dialog without adding', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Week');
+      fireEvent.click(addBtns[0]);
+
+      fireEvent.click(screen.getByText('Cancel'));
+      expect(mockOnUpdate).not.toHaveBeenCalled();
+    });
+
+    it('opens dialog from Add First Week button in empty state', () => {
+      render(<WeekBuilder weeks={[]} onUpdate={mockOnUpdate} />);
+      fireEvent.click(screen.getByText('Add First Week'));
+      // Dialog should show
+      expect(screen.getByText('Add New Week')).toBeInTheDocument();
+    });
+  });
+
+  describe('editing weeks', () => {
+    it('enters edit mode when edit button is clicked', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const editBtns = screen.getAllByTestId('icon-edit').map(i => i.closest('button')!);
+      fireEvent.click(editBtns[0]);
+
+      // Should show input with current name
+      const nameInput = screen.getByDisplayValue('Foundation');
+      expect(nameInput).toBeInTheDocument();
+    });
+
+    it('shows save and cancel buttons in edit mode', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const editBtns = screen.getAllByTestId('icon-edit').map(i => i.closest('button')!);
+      fireEvent.click(editBtns[0]);
+
+      expect(screen.getByText('✓')).toBeInTheDocument();
+      expect(screen.getByText('✕')).toBeInTheDocument();
+    });
+
+    it('saves edited week name', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const editBtns = screen.getAllByTestId('icon-edit').map(i => i.closest('button')!);
+      fireEvent.click(editBtns[0]);
+
+      const nameInput = screen.getByDisplayValue('Foundation');
+      fireEvent.change(nameInput, { target: { value: 'Hypertrophy' } });
+
+      fireEvent.click(screen.getByText('✓'));
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Hypertrophy' }),
+        ])
+      );
+    });
+
+    it('edits week description', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const editBtns = screen.getAllByTestId('icon-edit').map(i => i.closest('button')!);
+      fireEvent.click(editBtns[0]);
+
+      const descInput = screen.getByDisplayValue('Base building phase');
+      fireEvent.change(descInput, { target: { value: 'Updated description' } });
+
+      fireEvent.click(screen.getByText('✓'));
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ description: 'Updated description' }),
+        ])
+      );
+    });
+  });
+
+  describe('moving weeks', () => {
+    it('moves week down', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const downBtns = screen.getAllByTestId('icon-down').map(i => i.closest('button')!);
+      // First week's down button should be enabled
+      expect(downBtns[0]).not.toBeDisabled();
+      fireEvent.click(downBtns[0]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ weekNumber: 1 }),
+          expect.objectContaining({ weekNumber: 2 }),
+        ])
+      );
+    });
+
+    it('moves week up', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const upBtns = screen.getAllByTestId('icon-up').map(i => i.closest('button')!);
+      // Second week's up button should be enabled
+      expect(upBtns[1]).not.toBeDisabled();
+      fireEvent.click(upBtns[1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ weekNumber: 1 }),
+          expect.objectContaining({ weekNumber: 2 }),
+        ])
+      );
+    });
+
+    it('renumbers weeks after delete', () => {
+      render(<WeekBuilder weeks={mockWeeks} onUpdate={mockOnUpdate} />);
+      const trashBtns = screen.getAllByTestId('icon-trash').map(i => i.closest('button')!);
+      fireEvent.click(trashBtns[0]);
+
+      // After deleting first week, remaining week should be renumbered to 1
+      expect(mockOnUpdate).toHaveBeenCalledWith([
+        expect.objectContaining({ weekNumber: 1, name: 'Deload Week' }),
+      ]);
+    });
+  });
+
+  describe('single workout count', () => {
+    it('renders singular workout text for 1 workout', () => {
+      const singleWorkout = [{
+        id: 'w1',
+        weekNumber: 1,
+        name: 'Test',
+        description: '',
+        isDeload: false,
+        workouts: [{ id: 'wo1', name: 'Day 1', dayNumber: 1 }],
+      }] as any;
+      render(<WeekBuilder weeks={singleWorkout} onUpdate={mockOnUpdate} />);
+      expect(screen.getByText('1 workout scheduled')).toBeInTheDocument();
+    });
+  });
 });
