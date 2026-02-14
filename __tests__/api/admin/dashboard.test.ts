@@ -50,18 +50,14 @@ describe('GET /api/admin/dashboard', () => {
           email: 'user1@test.com',
           role: 'client',
           created_at: '2026-01-01T00:00:00Z',
-          is_active: true,
-          first_name: 'John',
-          last_name: 'Doe'
+          is_active: true
         },
         {
           id: 'u2',
           email: 'user2@test.com',
           role: 'trainer',
           created_at: '2026-01-02T00:00:00Z',
-          is_active: true,
-          first_name: null,
-          last_name: null
+          is_active: true
         }
       ]);
 
@@ -87,7 +83,7 @@ describe('GET /api/admin/dashboard', () => {
     expect(data.data.recentSignups).toHaveLength(2);
     expect(data.data.recentSignups[0]).toMatchObject({
       id: 'u1',
-      name: 'John Doe',
+      name: 'user1',
       email: 'user1@test.com',
       role: 'client',
       isActive: true,
@@ -113,9 +109,7 @@ describe('GET /api/admin/dashboard', () => {
           email: 'noname@test.com',
           role: 'client',
           created_at: '2026-01-01T00:00:00Z',
-          is_active: true,
-          first_name: null,
-          last_name: null
+          is_active: true
         }
       ]);
 
@@ -218,18 +212,14 @@ describe('GET /api/admin/dashboard', () => {
           email: 'onlyfirst@test.com',
           role: 'client',
           created_at: '2026-01-01T00:00:00Z',
-          is_active: true,
-          first_name: 'John',
-          last_name: null
+          is_active: true
         },
         {
           id: 'u2',
           email: 'onlylast@test.com',
           role: 'trainer',
           created_at: '2026-01-02T00:00:00Z',
-          is_active: true,
-          first_name: null,
-          last_name: 'Doe'
+          is_active: true
         }
       ]);
 
@@ -237,8 +227,8 @@ describe('GET /api/admin/dashboard', () => {
     const response = await GET(request);
     const data = await response.json();
 
-    expect(data.data.recentSignups[0].name).toBe('John');
-    expect(data.data.recentSignups[1].name).toBe('Doe');
+    expect(data.data.recentSignups[0].name).toBe('onlyfirst');
+    expect(data.data.recentSignups[1].name).toBe('onlylast');
   });
 
   it('includes all required metric fields', async () => {

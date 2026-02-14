@@ -42,8 +42,6 @@ describe('GET /api/admin/users', () => {
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
           last_login_at: null,
-          first_name: 'Test',
-          last_name: 'User',
           profile_photo_url: null
         }
       ]);
@@ -58,7 +56,7 @@ describe('GET /api/admin/users', () => {
     expect(data.data.users[0]).toMatchObject({
       id: 'u1',
       email: 'user@test.com',
-      name: 'Test User',
+      name: 'user',
       role: 'client',
       isActive: true,
       isVerified: true,
@@ -83,8 +81,6 @@ describe('GET /api/admin/users', () => {
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
           last_login_at: null,
-          first_name: 'John',
-          last_name: 'Doe',
           profile_photo_url: null
         }
       ]);
@@ -114,8 +110,6 @@ describe('GET /api/admin/users', () => {
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
           last_login_at: null,
-          first_name: 'Coach',
-          last_name: 'Smith',
           profile_photo_url: null
         }
       ]);
@@ -168,8 +162,6 @@ describe('GET /api/admin/users', () => {
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
           last_login_at: '2026-02-01T00:00:00Z',
-          first_name: 'Active',
-          last_name: 'User',
           profile_photo_url: null
         }
       ]);
@@ -194,8 +186,6 @@ describe('GET /api/admin/users', () => {
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
           last_login_at: null,
-          first_name: 'Inactive',
-          last_name: 'User',
           profile_photo_url: null
         }
       ]);
@@ -303,8 +293,6 @@ describe('GET /api/admin/users', () => {
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
           last_login_at: null,
-          first_name: null,
-          last_name: null,
           profile_photo_url: null
         }
       ]);
@@ -330,7 +318,7 @@ describe('GET /api/admin/users', () => {
     expect(calls[0][2]).toBe('trainer');
   });
 
-  it('includes avatarUrl when profile_photo_url is present', async () => {
+  it('sets avatarUrl to null (not included in user list)', async () => {
     mockedPrisma.$queryRawUnsafe
       .mockResolvedValueOnce([{ count: BigInt(1) }])
       .mockResolvedValueOnce([
@@ -341,10 +329,7 @@ describe('GET /api/admin/users', () => {
           is_active: true,
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
-          last_login_at: null,
-          first_name: 'Photo',
-          last_name: 'User',
-          profile_photo_url: 'https://example.com/photo.jpg'
+          last_login_at: null
         }
       ]);
 
@@ -352,10 +337,10 @@ describe('GET /api/admin/users', () => {
     const response = await GET(request);
     const data = await response.json();
 
-    expect(data.data.users[0].avatarUrl).toBe('https://example.com/photo.jpg');
+    expect(data.data.users[0].avatarUrl).toBeNull();
   });
 
-  it('sets avatarUrl to null when profile_photo_url is missing', async () => {
+  it('always sets avatarUrl to null in user list', async () => {
     mockedPrisma.$queryRawUnsafe
       .mockResolvedValueOnce([{ count: BigInt(1) }])
       .mockResolvedValueOnce([
@@ -366,10 +351,7 @@ describe('GET /api/admin/users', () => {
           is_active: true,
           is_verified: true,
           created_at: '2026-01-01T00:00:00Z',
-          last_login_at: null,
-          first_name: 'No',
-          last_name: 'Photo',
-          profile_photo_url: null
+          last_login_at: null
         }
       ]);
 

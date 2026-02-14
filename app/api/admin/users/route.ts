@@ -13,9 +13,6 @@ interface UserRow {
   is_verified: boolean
   created_at: string
   last_login_at: string | null
-  first_name: string | null
-  last_name: string | null
-  profile_photo_url: string | null
 }
 
 interface CountResult {
@@ -42,11 +39,7 @@ export async function GET(request: NextRequest) {
     let paramIndex = 1
 
     if (search) {
-      conditions.push(`(
-        u.email ILIKE $${paramIndex}
-        OR p.first_name ILIKE $${paramIndex}
-        OR p.last_name ILIKE $${paramIndex}
-      )`)
+      conditions.push(`u.email ILIKE $${paramIndex}`)
       params.push(`%${search}%`)
       paramIndex++
     }
@@ -66,16 +59,14 @@ export async function GET(request: NextRequest) {
     const whereClause = conditions.join(' AND ')
 
     // Count total
-    const countQuery = `SELECT COUNT(*)::bigint as count FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id WHERE ${whereClause}`
+    const countQuery = `SELECT COUNT(*)::bigint as count FROM users u WHERE ${whereClause}`
     const [totalResult] = await prisma.$queryRawUnsafe<CountResult[]>(countQuery, ...params)
     const total = Number(totalResult.count)
 
     // Fetch users
     const usersQuery = `
-      SELECT u.id, u.email, u.role, u.is_active, u.is_verified, u.created_at, u.last_login_at,
-             p.first_name, p.last_name, p.profile_photo_url
+      SELECT u.id, u.email, u.role, u.is_active, u.is_verified, u.created_at, u.last_login_at
       FROM users u
-      LEFT JOIN user_profiles p ON p.user_id = u.id
       WHERE ${whereClause}
       ORDER BY u.created_at DESC
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
@@ -85,13 +76,13 @@ export async function GET(request: NextRequest) {
     const formattedUsers = users.map(u => ({
       id: u.id,
       email: u.email,
-      name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email.split('@')[0],
+      name: u.email.split('@')[0].replace(/[._]/g, ' '),
       role: u.role,
       isActive: u.is_active,
       isVerified: u.is_verified,
       createdAt: typeof u.created_at === 'string' ? u.created_at : new Date(u.created_at).toISOString(),
       lastLoginAt: u.last_login_at ? (typeof u.last_login_at === 'string' ? u.last_login_at : new Date(u.last_login_at).toISOString()) : null,
-      avatarUrl: u.profile_photo_url || null,
+      avatarUrl: null,
     }))
 
     return NextResponse.json({

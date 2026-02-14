@@ -42,8 +42,6 @@ describe('GET /api/admin/users/[id]', () => {
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-05T00:00:00Z',
           last_login_at: '2026-02-01T00:00:00Z',
-          first_name: 'John',
-          last_name: 'Doe',
           bio: 'Certified trainer',
           phone: '555-1234',
           profile_photo_url: 'https://example.com/photo.jpg'
@@ -62,9 +60,7 @@ describe('GET /api/admin/users/[id]', () => {
     expect(data.data).toMatchObject({
       id: 'user-1',
       email: 'user@test.com',
-      name: 'John Doe',
-      firstName: 'John',
-      lastName: 'Doe',
+      name: 'user',
       role: 'trainer',
       isActive: true,
       isVerified: true,
@@ -116,8 +112,6 @@ describe('GET /api/admin/users/[id]', () => {
           created_at: '2026-01-01T00:00:00Z',
           updated_at: null,
           last_login_at: null,
-          first_name: null,
-          last_name: null,
           bio: null,
           phone: null,
           profile_photo_url: null
@@ -132,8 +126,6 @@ describe('GET /api/admin/users/[id]', () => {
     const data = await response.json();
 
     expect(data.data.name).toBe('minimal');
-    expect(data.data.firstName).toBeNull();
-    expect(data.data.lastName).toBeNull();
     expect(data.data.stats.programsCreated).toBe(0);
   });
 

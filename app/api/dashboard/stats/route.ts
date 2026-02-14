@@ -15,8 +15,6 @@ interface StreakResult {
 interface ClientRow {
   id: string
   client_id: string
-  first_name: string | null
-  last_name: string | null
   email: string
   status: string
   connected_at: string
@@ -28,8 +26,6 @@ interface RecentUserRow {
   role: string
   created_at: string
   is_active: boolean
-  first_name: string | null
-  last_name: string | null
 }
 
 export async function GET(request: NextRequest) {
@@ -51,10 +47,8 @@ export async function GET(request: NextRequest) {
 
       // Recent signups
       const recentSignups = await prisma.$queryRaw<RecentUserRow[]>`
-        SELECT u.id, u.email, u.role, u.created_at, u.is_active,
-               p.first_name, p.last_name
+        SELECT u.id, u.email, u.role, u.created_at, u.is_active
         FROM users u
-        LEFT JOIN user_profiles p ON p.user_id = u.id
         WHERE u.deleted_at IS NULL
         ORDER BY u.created_at DESC
         LIMIT 5`
@@ -68,7 +62,7 @@ export async function GET(request: NextRequest) {
           totalClients: Number(totalClients.count),
           recentSignups: recentSignups.map(u => ({
             id: u.id,
-            name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email.split('@')[0],
+            name: u.email.split('@')[0].replace(/[._]/g, ' '),
             email: u.email,
             role: u.role,
             signupDate: u.created_at,
@@ -93,10 +87,9 @@ export async function GET(request: NextRequest) {
 
       // Client list with names and workout streaks
       const clients = await prisma.$queryRaw<ClientRow[]>`
-        SELECT tc.id, tc.client_id, p.first_name, p.last_name, u.email, tc.status, tc.connected_at
+        SELECT tc.id, tc.client_id, u.email, tc.status, tc.connected_at
         FROM trainer_clients tc
         JOIN users u ON u.id = tc.client_id
-        LEFT JOIN user_profiles p ON p.user_id = tc.client_id
         WHERE tc.trainer_id = ${userId}::uuid AND tc.status != 'archived'
         ORDER BY tc.connected_at DESC
         LIMIT 10`
@@ -129,7 +122,7 @@ export async function GET(request: NextRequest) {
 
           return {
             id: c.id,
-            name: [c.first_name, c.last_name].filter(Boolean).join(' ') || c.email.split('@')[0],
+            name: c.email.split('@')[0].replace(/[._]/g, ' '),
             email: c.email,
             status: c.status,
             connectedAt: c.connected_at,

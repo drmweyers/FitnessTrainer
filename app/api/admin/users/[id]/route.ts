@@ -18,8 +18,6 @@ interface UserDetailRow {
   created_at: string
   updated_at: string | null
   last_login_at: string | null
-  first_name: string | null
-  last_name: string | null
   bio: string | null
   phone: string | null
   profile_photo_url: string | null
@@ -39,7 +37,7 @@ export async function GET(
     const users = await prisma.$queryRaw<UserDetailRow[]>`
       SELECT u.id, u.email, u.role, u.is_active, u.is_verified,
              u.created_at, u.updated_at, u.last_login_at,
-             p.first_name, p.last_name, p.bio, p.phone, p.profile_photo_url
+             p.bio, p.phone, p.profile_photo_url
       FROM users u
       LEFT JOIN user_profiles p ON p.user_id = u.id
       WHERE u.id = ${userId}::uuid AND u.deleted_at IS NULL
@@ -73,9 +71,7 @@ export async function GET(
       data: {
         id: user.id,
         email: user.email,
-        name: [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email.split('@')[0],
-        firstName: user.first_name,
-        lastName: user.last_name,
+        name: user.email.split('@')[0].replace(/[._]/g, ' '),
         role: user.role,
         isActive: user.is_active,
         isVerified: user.is_verified,
@@ -102,7 +98,7 @@ export async function GET(
       {
         success: false,
         error: 'Failed to fetch user details',
-        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     )

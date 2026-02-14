@@ -15,8 +15,6 @@ interface RecentUserRow {
   role: string
   created_at: string
   is_active: boolean
-  first_name: string | null
-  last_name: string | null
 }
 
 export async function GET(request: NextRequest) {
@@ -76,10 +74,8 @@ export async function GET(request: NextRequest) {
 
     // Recent signups (latest 10)
     const recentSignups = await prisma.$queryRaw<RecentUserRow[]>`
-      SELECT u.id, u.email, u.role, u.created_at, u.is_active,
-             p.first_name, p.last_name
+      SELECT u.id, u.email, u.role, u.created_at, u.is_active
       FROM users u
-      LEFT JOIN user_profiles p ON p.user_id = u.id
       WHERE u.deleted_at IS NULL
       ORDER BY u.created_at DESC
       LIMIT 10`
@@ -102,7 +98,7 @@ export async function GET(request: NextRequest) {
         },
         recentSignups: recentSignups.map(u => ({
           id: u.id,
-          name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email.split('@')[0],
+          name: u.email.split('@')[0].replace(/[._]/g, ' '),
           email: u.email,
           role: u.role,
           signupDate: typeof u.created_at === 'string' ? u.created_at : new Date(u.created_at).toISOString(),
