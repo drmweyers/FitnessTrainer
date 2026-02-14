@@ -207,15 +207,15 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: { role } })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Dashboard stats error:', error)
-    // Return empty stats on error (tables may not exist yet)
-    return NextResponse.json({
-      success: true,
-      data: {
-        role,
-        error: 'Stats temporarily unavailable',
+    // Return proper error response with status 500
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || 'Failed to fetch dashboard stats',
       },
-    })
+      { status: 500 }
+    )
   }
 }

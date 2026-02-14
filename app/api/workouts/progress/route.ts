@@ -89,13 +89,26 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Get workout frequency over time
-    const workoutFrequency = await prisma.workoutSession.groupBy({
-      by: ['scheduledDate'],
-      where,
-      _count: { id: true },
-      orderBy: { scheduledDate: 'asc' },
-    });
+    // Get workout frequency over time using raw query to avoid @map issues
+    interface FrequencyRow {
+      scheduled_date: Date;
+      count: bigint;
+    }
+    const workoutFrequencyRaw = await prisma.$queryRaw<FrequencyRow[]>`
+      SELECT scheduled_date, COUNT(*)::bigint as count
+      FROM workout_sessions
+      WHERE client_id = ${targetUserId}::uuid
+        AND status = 'completed'
+        AND actual_end_time >= ${startDate}::timestamp
+        AND actual_end_time <= ${endDate}::timestamp
+      GROUP BY scheduled_date
+      ORDER BY scheduled_date ASC
+    `;
+
+    const workoutFrequency = workoutFrequencyRaw.map((item) => ({
+      scheduledDate: item.scheduled_date,
+      _count: { id: Number(item.count) },
+    }));
 
     // Get volume progression
     const volumeProgression = await prisma.workoutSession.findMany({
@@ -110,20 +123,33 @@ export async function GET(request: NextRequest) {
       orderBy: { scheduledDate: 'asc' },
     });
 
-    // Get top exercises by volume
-    const topExercises = await prisma.workoutExerciseLog.groupBy({
-      by: ['exerciseId'],
-      where: {
-        workoutSession: where,
-        totalVolume: { not: null },
-      },
-      _sum: { totalVolume: true },
-      _count: { id: true },
-      orderBy: {
-        _sum: { totalVolume: 'desc' },
-      },
-      take: 10,
-    });
+    // Get top exercises by volume using raw query
+    interface ExerciseVolumeRow {
+      exercise_id: string;
+      total_volume: number;
+      session_count: bigint;
+    }
+    const topExercisesRaw = await prisma.$queryRaw<ExerciseVolumeRow[]>`
+      SELECT wel.exercise_id,
+             SUM(wel.total_volume)::numeric as total_volume,
+             COUNT(DISTINCT wel.workout_session_id)::bigint as session_count
+      FROM workout_exercise_logs wel
+      JOIN workout_sessions ws ON ws.id = wel.workout_session_id
+      WHERE ws.client_id = ${targetUserId}::uuid
+        AND ws.status = 'completed'
+        AND ws.actual_end_time >= ${startDate}::timestamp
+        AND ws.actual_end_time <= ${endDate}::timestamp
+        AND wel.total_volume IS NOT NULL
+      GROUP BY wel.exercise_id
+      ORDER BY total_volume DESC
+      LIMIT 10
+    `;
+
+    const topExercises = topExercisesRaw.map((item) => ({
+      exerciseId: item.exercise_id,
+      _sum: { totalVolume: Number(item.total_volume) },
+      _count: { id: Number(item.session_count) },
+    }));
 
     // Get exercise details for top exercises
     const topExerciseDetails =
