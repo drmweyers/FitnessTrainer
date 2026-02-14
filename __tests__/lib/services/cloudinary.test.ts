@@ -1,18 +1,21 @@
-// Mock cloudinary before import
-const mockUploadStream = jest.fn();
-const mockDestroy = jest.fn();
+import { v2 as cloudinary } from 'cloudinary';
+import {
+  uploadImage,
+  deleteImage,
+  getPublicIdFromUrl,
+} from '@/lib/services/cloudinary';
 
 jest.mock('cloudinary', () => ({
   v2: {
     config: jest.fn(),
     uploader: {
-      upload_stream: (...args: any[]) => mockUploadStream(...args),
-      destroy: (...args: any[]) => mockDestroy(...args),
+      upload_stream: jest.fn(),
+      destroy: jest.fn(),
     },
   },
 }));
 
-import { uploadImage, deleteImage, getPublicIdFromUrl } from '@/lib/services/cloudinary';
+const mockCloudinary = cloudinary as jest.Mocked<typeof cloudinary>;
 
 describe('Cloudinary Service', () => {
   beforeEach(() => {
@@ -21,127 +24,129 @@ describe('Cloudinary Service', () => {
 
   describe('uploadImage', () => {
     it('should upload image successfully', async () => {
-      const mockBuffer = Buffer.from('test-image-data');
+      const mockBuffer = Buffer.from('fake-image-data');
       const mockResult = {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v123/folder/image.jpg',
-        public_id: 'folder/image',
+        secure_url: 'https://cloudinary.com/image.jpg',
+        public_id: 'profile-photos/user123',
         width: 800,
         height: 600,
         format: 'jpg',
         bytes: 12345,
       };
 
-      // Mock upload_stream to return a stream that calls callback with result
-      mockUploadStream.mockImplementation((options, callback) => {
-        // Simulate successful upload
-        setTimeout(() => callback(null, mockResult), 0);
-        return {
-          end: jest.fn(),
-        };
-      });
+      // Mock upload_stream to call callback with success
+      (mockCloudinary.uploader.upload_stream as jest.Mock).mockImplementation(
+        (options, callback) => {
+          // Simulate successful upload
+          callback(null, mockResult);
+          return { end: jest.fn() };
+        }
+      );
 
-      const result = await uploadImage(mockBuffer, 'test-folder');
+      const result = await uploadImage(mockBuffer, 'profile-photos');
 
       expect(result).toEqual({
-        url: 'https://res.cloudinary.com/test/image/upload/v123/folder/image.jpg',
-        publicId: 'folder/image',
+        url: 'https://cloudinary.com/image.jpg',
+        publicId: 'profile-photos/user123',
         width: 800,
         height: 600,
         format: 'jpg',
         bytes: 12345,
       });
-
-      expect(mockUploadStream).toHaveBeenCalledWith(
-        expect.objectContaining({
-          folder: 'test-folder',
+      expect(mockCloudinary.uploader.upload_stream).toHaveBeenCalledWith(
+        {
+          folder: 'profile-photos',
           resource_type: 'image',
-        }),
+        },
         expect.any(Function)
       );
     });
 
-    it('should upload image with transformation options', async () => {
-      const mockBuffer = Buffer.from('test-image-data');
+    it('should upload with transformation options', async () => {
+      const mockBuffer = Buffer.from('fake-image-data');
       const mockResult = {
-        secure_url: 'https://res.cloudinary.com/test/image/upload/v123/folder/thumb.jpg',
-        public_id: 'folder/thumb',
-        width: 200,
-        height: 200,
+        secure_url: 'https://cloudinary.com/image-transformed.jpg',
+        public_id: 'photos/user456',
+        width: 400,
+        height: 400,
         format: 'jpg',
         bytes: 5000,
       };
 
-      mockUploadStream.mockImplementation((options, callback) => {
-        setTimeout(() => callback(null, mockResult), 0);
-        return {
-          end: jest.fn(),
-        };
-      });
+      (mockCloudinary.uploader.upload_stream as jest.Mock).mockImplementation(
+        (options, callback) => {
+          callback(null, mockResult);
+          return { end: jest.fn() };
+        }
+      );
 
-      const transformOptions = { transformation: { width: 200, height: 200, crop: 'fill' } };
-      await uploadImage(mockBuffer, 'thumbnails', transformOptions);
+      const options = {
+        transformation: { width: 400, height: 400, crop: 'fill' },
+      };
 
-      expect(mockUploadStream).toHaveBeenCalledWith(
-        expect.objectContaining({
-          folder: 'thumbnails',
+      await uploadImage(mockBuffer, 'photos', options);
+
+      expect(mockCloudinary.uploader.upload_stream).toHaveBeenCalledWith(
+        {
+          folder: 'photos',
           resource_type: 'image',
-          transformation: { width: 200, height: 200, crop: 'fill' },
-        }),
+          transformation: { width: 400, height: 400, crop: 'fill' },
+        },
         expect.any(Function)
       );
     });
 
-    it('should handle upload error from Cloudinary', async () => {
-      const mockBuffer = Buffer.from('test-image-data');
-      const mockError = { message: 'Invalid API credentials' };
+    it('should reject when upload fails with error', async () => {
+      const mockBuffer = Buffer.from('fake-image-data');
+      const mockError = new Error('Network error');
 
-      mockUploadStream.mockImplementation((options, callback) => {
-        setTimeout(() => callback(mockError, null), 0);
-        return {
-          end: jest.fn(),
-        };
-      });
+      (mockCloudinary.uploader.upload_stream as jest.Mock).mockImplementation(
+        (options, callback) => {
+          callback(mockError, null);
+          return { end: jest.fn() };
+        }
+      );
 
-      await expect(uploadImage(mockBuffer, 'test-folder')).rejects.toThrow(
-        'Cloudinary upload failed: Invalid API credentials'
+      await expect(uploadImage(mockBuffer, 'photos')).rejects.toThrow(
+        'Cloudinary upload failed: Network error'
       );
     });
 
-    it('should handle null result from Cloudinary', async () => {
-      const mockBuffer = Buffer.from('test-image-data');
+    it('should reject when result is null/undefined', async () => {
+      const mockBuffer = Buffer.from('fake-image-data');
 
-      mockUploadStream.mockImplementation((options, callback) => {
-        setTimeout(() => callback(null, null), 0);
-        return {
-          end: jest.fn(),
-        };
-      });
+      (mockCloudinary.uploader.upload_stream as jest.Mock).mockImplementation(
+        (options, callback) => {
+          callback(null, null);
+          return { end: jest.fn() };
+        }
+      );
 
-      await expect(uploadImage(mockBuffer, 'test-folder')).rejects.toThrow(
+      await expect(uploadImage(mockBuffer, 'photos')).rejects.toThrow(
         'Cloudinary upload returned no result'
       );
     });
 
-    it('should call stream.end with buffer', async () => {
-      const mockBuffer = Buffer.from('test-image-data');
+    it('should call uploadStream.end with buffer', async () => {
+      const mockBuffer = Buffer.from('fake-image-data');
+      const mockEnd = jest.fn();
       const mockResult = {
-        secure_url: 'https://res.cloudinary.com/test/image.jpg',
-        public_id: 'image',
-        width: 100,
-        height: 100,
+        secure_url: 'https://cloudinary.com/image.jpg',
+        public_id: 'photos/user789',
+        width: 800,
+        height: 600,
         format: 'jpg',
-        bytes: 1000,
+        bytes: 10000,
       };
 
-      const mockEnd = jest.fn();
-      mockUploadStream.mockImplementation((options, callback) => {
-        setTimeout(() => callback(null, mockResult), 0);
-        return {
-          end: mockEnd,
-        };
-      });
+      (mockCloudinary.uploader.upload_stream as jest.Mock).mockImplementation(
+        (options, callback) => {
+          callback(null, mockResult);
+          return { end: mockEnd };
+        }
+      );
 
-      await uploadImage(mockBuffer, 'folder');
+      await uploadImage(mockBuffer, 'photos');
 
       expect(mockEnd).toHaveBeenCalledWith(mockBuffer);
     });
@@ -149,61 +154,94 @@ describe('Cloudinary Service', () => {
 
   describe('deleteImage', () => {
     it('should delete image by public ID', async () => {
-      mockDestroy.mockResolvedValue({ result: 'ok' });
+      (mockCloudinary.uploader.destroy as jest.Mock).mockResolvedValue({
+        result: 'ok',
+      });
 
-      await deleteImage('folder/image-123');
+      await deleteImage('photos/user123');
 
-      expect(mockDestroy).toHaveBeenCalledWith('folder/image-123');
+      expect(mockCloudinary.uploader.destroy).toHaveBeenCalledWith(
+        'photos/user123'
+      );
     });
 
-    it('should handle deletion errors gracefully', async () => {
-      mockDestroy.mockRejectedValue(new Error('Image not found'));
+    it('should handle deletion errors', async () => {
+      (mockCloudinary.uploader.destroy as jest.Mock).mockRejectedValue(
+        new Error('Delete failed')
+      );
 
-      await expect(deleteImage('non-existent')).rejects.toThrow('Image not found');
+      await expect(deleteImage('photos/user456')).rejects.toThrow(
+        'Delete failed'
+      );
     });
   });
 
   describe('getPublicIdFromUrl', () => {
     it('should extract public ID from standard Cloudinary URL', () => {
-      const url = 'https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg';
+      const url =
+        'https://res.cloudinary.com/demo/image/upload/profile-photos/user123.jpg';
       const publicId = getPublicIdFromUrl(url);
 
-      expect(publicId).toBe('sample');
+      expect(publicId).toBe('profile-photos/user123');
     });
 
-    it('should extract public ID from URL with folder', () => {
-      const url = 'https://res.cloudinary.com/demo/image/upload/v1234567890/folder/subfolder/image.png';
+    it('should extract public ID from versioned URL', () => {
+      const url =
+        'https://res.cloudinary.com/demo/image/upload/v1234567890/profile-photos/user456.jpg';
       const publicId = getPublicIdFromUrl(url);
 
-      expect(publicId).toBe('folder/subfolder/image');
+      expect(publicId).toBe('profile-photos/user456');
     });
 
-    it('should extract public ID from URL without version', () => {
-      const url = 'https://res.cloudinary.com/demo/image/upload/sample.jpg';
+    it('should extract public ID with nested folders', () => {
+      const url =
+        'https://res.cloudinary.com/demo/image/upload/v1/photos/profiles/user789.png';
       const publicId = getPublicIdFromUrl(url);
 
-      expect(publicId).toBe('sample');
+      expect(publicId).toBe('photos/profiles/user789');
+    });
+
+    it('should extract public ID without version', () => {
+      const url =
+        'https://res.cloudinary.com/demo/image/upload/simple-folder/image.jpg';
+      const publicId = getPublicIdFromUrl(url);
+
+      expect(publicId).toBe('simple-folder/image');
     });
 
     it('should return null for invalid URL format', () => {
-      const url = 'https://example.com/random-image.jpg';
+      const url = 'https://example.com/image.jpg';
       const publicId = getPublicIdFromUrl(url);
 
       expect(publicId).toBeNull();
     });
 
     it('should return null for malformed Cloudinary URL', () => {
-      const url = 'https://res.cloudinary.com/demo/invalid-path';
+      const url = 'https://res.cloudinary.com/demo/malformed';
       const publicId = getPublicIdFromUrl(url);
 
       expect(publicId).toBeNull();
     });
 
-    it('should handle exception and return null', () => {
-      // Pass something that will cause match to fail
-      const publicId = getPublicIdFromUrl('');
+    it('should return null when URL parsing throws', () => {
+      const invalidUrl = null as any;
+      const publicId = getPublicIdFromUrl(invalidUrl);
 
       expect(publicId).toBeNull();
+    });
+
+    it('should handle URLs with different file extensions', () => {
+      const urls = [
+        'https://res.cloudinary.com/demo/image/upload/folder/image.jpg',
+        'https://res.cloudinary.com/demo/image/upload/folder/image.png',
+        'https://res.cloudinary.com/demo/image/upload/folder/image.webp',
+        'https://res.cloudinary.com/demo/image/upload/folder/image.gif',
+      ];
+
+      urls.forEach((url) => {
+        const publicId = getPublicIdFromUrl(url);
+        expect(publicId).toBe('folder/image');
+      });
     });
   });
 });
