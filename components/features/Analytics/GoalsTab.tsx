@@ -11,8 +11,8 @@ export default function GoalsTab() {
   const [newGoal, setNewGoal] = useState({
     goalType: '',
     targetValue: 0,
-    unit: 'kg',
     targetDate: '',
+    specificGoal: '',
   });
 
   const { data: goals, isLoading } = useQuery<UserGoal[]>({
@@ -29,8 +29,8 @@ export default function GoalsTab() {
       setNewGoal({
         goalType: '',
         targetValue: 0,
-        unit: 'kg',
         targetDate: '',
+        specificGoal: '',
       });
     },
   });
@@ -50,12 +50,12 @@ export default function GoalsTab() {
 
     createGoalMutation.mutate({
       userId,
-      goalType: newGoal.goalType,
+      goalType: newGoal.goalType as any,
+      specificGoal: newGoal.specificGoal,
       targetValue: newGoal.targetValue,
-      unit: newGoal.unit,
-      startDate: new Date().toISOString().split('T')[0],
       targetDate: newGoal.targetDate,
-      status: 'active',
+      priority: 3, // Default medium priority
+      isActive: true,
     });
   };
 
@@ -67,8 +67,8 @@ export default function GoalsTab() {
     );
   }
 
-  const activeGoals = goals?.filter(g => g.status === 'active') || [];
-  const completedGoals = goals?.filter(g => g.status === 'completed') || [];
+  const activeGoals = goals?.filter(g => g.isActive && !g.achievedAt) || [];
+  const completedGoals = goals?.filter(g => g.achievedAt !== null) || [];
 
   return (
     <div className="space-y-6">
@@ -113,39 +113,33 @@ export default function GoalsTab() {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="target-value" className="block text-sm font-medium text-gray-700 mb-1">
-                  Target Value
-                </label>
-                <input
-                  id="target-value"
-                  type="number"
-                  step="0.1"
-                  value={newGoal.targetValue}
-                  onChange={e => setNewGoal({ ...newGoal, targetValue: parseFloat(e.target.value) })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  required
-                />
-              </div>
+            <div>
+              <label htmlFor="specific-goal" className="block text-sm font-medium text-gray-700 mb-1">
+                Specific Goal (optional)
+              </label>
+              <input
+                id="specific-goal"
+                type="text"
+                placeholder="e.g., Bench press 100kg, Run 5k under 25min"
+                value={newGoal.specificGoal}
+                onChange={e => setNewGoal({ ...newGoal, specificGoal: e.target.value })}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Unit
-                </label>
-                <select
-                  value={newGoal.unit}
-                  onChange={e => setNewGoal({ ...newGoal, unit: e.target.value })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  required
-                >
-                  <option value="kg">kg</option>
-                  <option value="lbs">lbs</option>
-                  <option value="%">%</option>
-                  <option value="reps">reps</option>
-                  <option value="minutes">minutes</option>
-                </select>
-              </div>
+            <div>
+              <label htmlFor="target-value" className="block text-sm font-medium text-gray-700 mb-1">
+                Target Value (optional)
+              </label>
+              <input
+                id="target-value"
+                type="number"
+                step="0.1"
+                placeholder="e.g., 100 for 100kg"
+                value={newGoal.targetValue}
+                onChange={e => setNewGoal({ ...newGoal, targetValue: parseFloat(e.target.value) || 0 })}
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+              />
             </div>
 
             <div>
@@ -196,55 +190,66 @@ export default function GoalsTab() {
             ) : (
               <div className="space-y-4">
                 {activeGoals.map(goal => {
-                  const progress = (goal.currentValue / goal.targetValue) * 100;
-                  const daysRemaining = Math.ceil(
-                    (new Date(goal.targetDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-                  );
+                  const currentValue = goal.goalProgress?.[0]?.currentValue || 0;
+                  const targetValue = goal.targetValue || 100;
+                  const progress = (currentValue / targetValue) * 100;
+                  const daysRemaining = goal.targetDate
+                    ? Math.ceil((new Date(goal.targetDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                    : null;
 
                   return (
                     <div key={goal.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-semibold text-gray-900">
-                            {goal.goalType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            {goal.goalType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </h4>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Target: {goal.targetValue} {goal.unit} by{' '}
-                            {new Date(goal.targetDate).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            })}
-                          </p>
+                          {goal.specificGoal && (
+                            <p className="text-sm text-gray-600 mt-1">{goal.specificGoal}</p>
+                          )}
+                          {goal.targetDate && (
+                            <p className="text-sm text-gray-500 mt-1">
+                              Target date:{' '}
+                              {new Date(goal.targetDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          )}
                         </div>
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            daysRemaining > 30
-                              ? 'bg-green-100 text-green-800'
-                              : daysRemaining > 7
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {daysRemaining > 0 ? `${daysRemaining} days left` : 'Overdue'}
-                        </span>
+                        {daysRemaining !== null && (
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-medium ${
+                              daysRemaining > 30
+                                ? 'bg-green-100 text-green-800'
+                                : daysRemaining > 7
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {daysRemaining > 0 ? `${daysRemaining} days left` : 'Overdue'}
+                          </span>
+                        )}
                       </div>
 
-                      <div className="mb-2">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-600">Progress</span>
-                          <span className="font-medium text-gray-900">
-                            {goal.currentValue} / {goal.targetValue} {goal.unit}
-                          </span>
+                      {goal.targetValue && (
+                        <div className="mb-2">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-gray-600">Progress</span>
+                            <span className="font-medium text-gray-900">
+                              {currentValue.toFixed(1)} / {goal.targetValue}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div
+                              className="bg-blue-600 h-3 rounded-full transition-all"
+                              style={{ width: `${Math.min(progress, 100)}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1 text-right">{progress.toFixed(1)}% complete</p>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                          <div
-                            className="bg-blue-600 h-3 rounded-full transition-all"
-                            style={{ width: `${Math.min(progress, 100)}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1 text-right">{progress.toFixed(1)}% complete</p>
-                      </div>
+                      )}
                     </div>
                   );
                 })}
@@ -268,20 +273,22 @@ export default function GoalsTab() {
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900">
-                            {goal.goalType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            {goal.goalType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </h4>
-                          <p className="text-sm text-gray-600">
-                            Achieved: {goal.currentValue} {goal.unit}
-                          </p>
+                          {goal.specificGoal && (
+                            <p className="text-sm text-gray-600">{goal.specificGoal}</p>
+                          )}
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500">
-                        {new Date(goal.updatedAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </span>
+                      {goal.achievedAt && (
+                        <span className="text-sm text-gray-500">
+                          {new Date(goal.achievedAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}

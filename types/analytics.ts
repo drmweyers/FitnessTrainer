@@ -57,15 +57,17 @@ export interface UserGoal {
   id: string;
   userId: string;
   goalType: string;
-  targetValue: number;
-  currentValue: number;
-  unit: string;
-  startDate: string;
-  targetDate: string;
-  status: string;
+  specificGoal?: string;
+  targetValue?: number;
+  targetDate?: string;
+  priority?: number;
+  isActive: boolean;
+  achievedAt?: string;
   createdAt: string;
-  updatedAt: string;
   goalProgress?: GoalProgress[];
+  // Computed from latest goalProgress
+  currentValue?: number;
+  unit?: string; // Kept for backwards compatibility, but not in DB
 }
 
 export interface GoalProgress {
