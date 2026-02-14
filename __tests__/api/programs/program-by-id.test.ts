@@ -115,6 +115,19 @@ describe('GET /api/programs/[id]', () => {
     expect(status).toBe(500);
     expect(body.success).toBe(false);
   });
+
+  it('handles errors without message property', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+    (prisma.program.findFirst as jest.Mock).mockRejectedValue({ code: 'DB_ERROR' });
+
+    const request = createMockRequest(`/api/programs/${validId}`);
+    const response = await GET(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to fetch program');
+  });
 });
 
 describe('PUT /api/programs/[id]', () => {
@@ -218,6 +231,22 @@ describe('PUT /api/programs/[id]', () => {
     expect(body.success).toBe(false);
   });
 
+  it('handles update errors without message property', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const existing = { id: validId, trainerId: mockTrainerUser.id };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(existing);
+    (prisma.program.update as jest.Mock).mockRejectedValue({ code: 'UPDATE_ERROR' });
+
+    const request = createMockRequest(`/api/programs/${validId}`, { method: 'PUT', body: updateBody });
+    const response = await PUT(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to update program');
+  });
+
   it('allows partial updates with optional fields', async () => {
     authenticate.mockResolvedValue(mockAuthUser);
 
@@ -318,5 +347,21 @@ describe('DELETE /api/programs/[id]', () => {
     expect(status).toBe(500);
     expect(body.success).toBe(false);
     expect(body.error).toBe('FK constraint');
+  });
+
+  it('handles delete errors without message property', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const existing = { id: validId, trainerId: mockTrainerUser.id };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(existing);
+    (prisma.program.delete as jest.Mock).mockRejectedValue({ code: 'DELETE_ERROR' });
+
+    const request = createMockRequest(`/api/programs/${validId}`, { method: 'DELETE' });
+    const response = await DELETE(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to delete program');
   });
 });
