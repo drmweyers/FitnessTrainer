@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { POST } from '@/app/api/analytics/performance/route';
+import { GET, POST } from '@/app/api/analytics/performance/route';
 import { prisma } from '@/lib/db/prisma';
 import { createMockRequest, parseJsonResponse } from '@/tests/helpers/test-utils';
 
@@ -250,5 +250,261 @@ describe('POST /api/analytics/performance', () => {
     expect(status).toBe(500);
     expect(body.success).toBe(false);
     expect(body.error).toBe('Failed to record performance metric');
+  });
+});
+
+describe('GET /api/analytics/performance', () => {
+  const clientUser = { id: 'client-1', email: 'client@test.com', role: 'client' };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
+
+  it('returns 401 when unauthenticated', async () => {
+    mockAuthFail();
+
+    const req = createMockRequest('/api/analytics/performance', { method: 'GET' });
+    const res = await GET(req);
+    const { status } = await parseJsonResponse(res);
+
+    expect(status).toBe(401);
+  });
+
+  it('fetches all metrics for authenticated user without filters', async () => {
+    mockAuth(clientUser);
+
+    const mockMetrics = [
+      {
+        id: 'pm-1',
+        userId: clientUser.id,
+        exerciseId: '00000000-0000-0000-0000-000000000010',
+        metricType: 'one_rm',
+        value: 100,
+        unit: 'kg',
+        recordedAt: new Date('2024-06-01'),
+        exercise: { id: '00000000-0000-0000-0000-000000000010', name: 'Bench Press' },
+      },
+      {
+        id: 'pm-2',
+        userId: clientUser.id,
+        exerciseId: '00000000-0000-0000-0000-000000000011',
+        metricType: 'volume',
+        value: 5000,
+        unit: 'kg',
+        recordedAt: new Date('2024-06-02'),
+        exercise: { id: '00000000-0000-0000-0000-000000000011', name: 'Squat' },
+      },
+    ];
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+
+    const req = createMockRequest('/api/analytics/performance', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data).toHaveLength(2);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: { userId: clientUser.id },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('filters metrics by exerciseId', async () => {
+    mockAuth(clientUser);
+
+    const mockMetrics = [
+      {
+        id: 'pm-1',
+        userId: clientUser.id,
+        exerciseId: '00000000-0000-0000-0000-000000000010',
+        metricType: 'one_rm',
+        value: 100,
+        unit: 'kg',
+        exercise: { id: '00000000-0000-0000-0000-000000000010', name: 'Bench Press' },
+      },
+    ];
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+
+    const req = createMockRequest('/api/analytics/performance?exerciseId=00000000-0000-0000-0000-000000000010', {
+      method: 'GET',
+    });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data).toHaveLength(1);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: clientUser.id,
+        exerciseId: '00000000-0000-0000-0000-000000000010',
+      },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('filters metrics by metricType', async () => {
+    mockAuth(clientUser);
+
+    const mockMetrics = [
+      {
+        id: 'pm-1',
+        userId: clientUser.id,
+        metricType: 'one_rm',
+        value: 100,
+        unit: 'kg',
+        exercise: { id: '00000000-0000-0000-0000-000000000010', name: 'Bench Press' },
+      },
+    ];
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+
+    const req = createMockRequest('/api/analytics/performance?metricType=one_rm', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: clientUser.id,
+        metricType: 'one_rm',
+      },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('filters metrics by date range (startDate only)', async () => {
+    mockAuth(clientUser);
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/performance?startDate=2024-06-01', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: clientUser.id,
+        recordedAt: { gte: new Date('2024-06-01') },
+      },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('filters metrics by date range (endDate only)', async () => {
+    mockAuth(clientUser);
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/performance?endDate=2024-06-30', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: clientUser.id,
+        recordedAt: { lte: new Date('2024-06-30') },
+      },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('filters metrics by date range (both startDate and endDate)', async () => {
+    mockAuth(clientUser);
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/performance?startDate=2024-06-01&endDate=2024-06-30', {
+      method: 'GET',
+    });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: clientUser.id,
+        recordedAt: {
+          gte: new Date('2024-06-01'),
+          lte: new Date('2024-06-30'),
+        },
+      },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('filters with multiple query parameters combined', async () => {
+    mockAuth(clientUser);
+
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest(
+      '/api/analytics/performance?exerciseId=00000000-0000-0000-0000-000000000010&metricType=one_rm&startDate=2024-06-01&endDate=2024-06-30',
+      { method: 'GET' }
+    );
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: clientUser.id,
+        exerciseId: '00000000-0000-0000-0000-000000000010',
+        metricType: 'one_rm',
+        recordedAt: {
+          gte: new Date('2024-06-01'),
+          lte: new Date('2024-06-30'),
+        },
+      },
+      include: { exercise: { select: { id: true, name: true } } },
+      orderBy: { recordedAt: 'asc' },
+    });
+  });
+
+  it('returns 500 on database error', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockRejectedValue(new Error('DB error'));
+
+    const req = createMockRequest('/api/analytics/performance', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(500);
+    expect(body.success).toBe(false);
+    expect(body.error).toBe('Failed to fetch performance metrics');
+  });
+
+  it('returns empty array when no metrics found', async () => {
+    mockAuth(clientUser);
+    (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue([]);
+
+    const req = createMockRequest('/api/analytics/performance', { method: 'GET' });
+    const res = await GET(req);
+    const { status, body } = await parseJsonResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data).toEqual([]);
   });
 });
