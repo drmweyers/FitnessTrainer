@@ -140,6 +140,49 @@ describe('GET /api/admin/users/[id]', () => {
     expect(data.success).toBe(false);
     expect(data.error).toBe('Failed to fetch user details');
   });
+
+  it('handles non-Error exceptions', async () => {
+    mockedPrisma.$queryRaw.mockRejectedValueOnce({ code: 'DB_ERROR' });
+
+    const request = makeRequest('/api/admin/users/user-1');
+    const response = await GET(request, { params: { id: 'user-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.details).toBe('Unknown error');
+  });
+
+  it('handles Date objects in timestamps', async () => {
+    const mockUser = {
+      id: 'user-1',
+      email: 'user@test.com',
+      role: 'client',
+      is_active: true,
+      is_verified: true,
+      created_at: new Date('2024-01-15T10:00:00Z'),
+      updated_at: new Date('2024-02-20T15:30:00Z'),
+      last_login_at: new Date('2024-03-01T08:45:00Z'),
+      bio: 'Test bio',
+      phone: '123-456-7890',
+      profile_photo_url: 'https://example.com/photo.jpg',
+    };
+
+    mockedPrisma.$queryRaw
+      .mockResolvedValueOnce([mockUser])
+      .mockResolvedValueOnce([{ count: BigInt(5) }])
+      .mockResolvedValueOnce([{ count: BigInt(10) }])
+      .mockResolvedValueOnce([{ count: BigInt(3) }]);
+
+    const request = makeRequest('/api/admin/users/user-1');
+    const response = await GET(request, { params: { id: 'user-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data.createdAt).toBe('2024-01-15T10:00:00.000Z');
+    expect(data.data.updatedAt).toBe('2024-02-20T15:30:00.000Z');
+    expect(data.data.lastLoginAt).toBe('2024-03-01T08:45:00.000Z');
+  });
 });
 
 describe('PUT /api/admin/users/[id]', () => {
@@ -367,6 +410,76 @@ describe('PUT /api/admin/users/[id]', () => {
     expect(response.status).toBe(500);
     expect(data.success).toBe(false);
     expect(data.error).toBe('Failed to update user');
+  });
+
+  it('handles non-Error exceptions on update', async () => {
+    mockedPrisma.user.findFirst.mockResolvedValueOnce({
+      id: 'user-1',
+      email: 'user@test.com',
+    });
+
+    mockedPrisma.user.update.mockRejectedValueOnce({ code: 'UPDATE_ERROR' });
+
+    const request = makeRequest('/api/admin/users/user-1', {
+      method: 'PUT',
+      body: JSON.stringify({ isActive: false }),
+    });
+
+    const response = await PUT(request, { params: { id: 'user-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+  });
+
+  it('includes error details in development mode', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+
+    mockedPrisma.user.findFirst.mockResolvedValueOnce({
+      id: 'user-1',
+      email: 'user@test.com',
+    });
+
+    mockedPrisma.user.update.mockRejectedValueOnce(new Error('Validation failed'));
+
+    const request = makeRequest('/api/admin/users/user-1', {
+      method: 'PUT',
+      body: JSON.stringify({ isActive: false }),
+    });
+
+    const response = await PUT(request, { params: { id: 'user-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.details).toBe('Validation failed');
+
+    process.env.NODE_ENV = originalNodeEnv;
+  });
+
+  it('includes unknown error in development for non-Error exceptions', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+
+    mockedPrisma.user.findFirst.mockResolvedValueOnce({
+      id: 'user-1',
+      email: 'user@test.com',
+    });
+
+    mockedPrisma.user.update.mockRejectedValueOnce({ code: 'CONSTRAINT_VIOLATION' });
+
+    const request = makeRequest('/api/admin/users/user-1', {
+      method: 'PUT',
+      body: JSON.stringify({ isActive: false }),
+    });
+
+    const response = await PUT(request, { params: { id: 'user-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.details).toBe('Unknown error');
+
+    process.env.NODE_ENV = originalNodeEnv;
   });
 
   it('accepts boolean false values correctly', async () => {
