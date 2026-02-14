@@ -246,4 +246,112 @@ describe('BodyCompositionChart', () => {
     render(<BodyCompositionChart data={data} />);
     expect(screen.queryByText('Muscle Mass Change')).not.toBeInTheDocument();
   });
+
+  describe('Chart configuration callbacks', () => {
+    it('renders chart with proper datasets including muscle mass', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, bodyFat: 20, muscleMass: 35 },
+        { date: '2025-01-15', weight: 79, bodyFat: 19, muscleMass: 36 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should have 3 datasets: weight, muscle mass, body fat
+      expect(screen.getByTestId('chart-datasets')).toHaveTextContent('3 datasets');
+    });
+
+    it('renders chart without muscle mass dataset when no muscle data', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, bodyFat: 20 },
+        { date: '2025-01-15', weight: 79, bodyFat: 19 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should have 2 datasets: weight, body fat (no muscle mass)
+      expect(screen.getByTestId('chart-datasets')).toHaveTextContent('2 datasets');
+    });
+
+    it('renders chart without body fat dataset when no body fat data', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, muscleMass: 35 },
+        { date: '2025-01-15', weight: 79, muscleMass: 36 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should have 2 datasets: weight, muscle mass (no body fat)
+      expect(screen.getByTestId('chart-datasets')).toHaveTextContent('2 datasets');
+    });
+
+    it('handles data with null/undefined values in muscle mass', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, muscleMass: 35 },
+        { date: '2025-01-08', weight: 79 }, // No muscle mass
+        { date: '2025-01-15', weight: 78, muscleMass: 36 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should still render with muscle mass dataset (spanGaps: true)
+      expect(screen.getByTestId('line-chart')).toBeInTheDocument();
+    });
+
+    it('handles data with null/undefined values in body fat', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, bodyFat: 20 },
+        { date: '2025-01-08', weight: 79 }, // No body fat
+        { date: '2025-01-15', weight: 78, bodyFat: 19 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should still render with body fat dataset (spanGaps: true)
+      expect(screen.getByTestId('line-chart')).toBeInTheDocument();
+    });
+  });
+
+  describe('Insights calculation edge cases', () => {
+    it('calculates insights with only weight data', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80 },
+        { date: '2025-01-15', weight: 78 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      expect(screen.getByText('Weight Change')).toBeInTheDocument();
+      // No body fat or muscle mass changes should be shown
+      expect(screen.queryByText('Body Fat Change')).not.toBeInTheDocument();
+      expect(screen.queryByText('Muscle Mass Change')).not.toBeInTheDocument();
+    });
+
+    it('shows recommendation when only body fat decreases (no muscle data)', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, bodyFat: 22 },
+        { date: '2025-01-15', weight: 78, bodyFat: 20 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should show fat loss recommendation
+      expect(screen.getByText(/losing weight and body fat/)).toBeInTheDocument();
+    });
+
+    it('shows recommendation for muscle gain without body fat data', () => {
+      const data = [
+        { date: '2025-01-01', weight: 75, muscleMass: 33 },
+        { date: '2025-01-15', weight: 78, muscleMass: 35 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // Should show muscle building recommendation
+      expect(screen.getByText(/building muscle mass/)).toBeInTheDocument();
+    });
+
+    it('handles missing body fat in first data point only', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80 },
+        { date: '2025-01-15', weight: 79, bodyFat: 19 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // bodyFatChange should be 0 since first.bodyFat is undefined
+      expect(screen.queryByText('Body Fat Change')).not.toBeInTheDocument();
+    });
+
+    it('handles missing muscle mass in last data point only', () => {
+      const data = [
+        { date: '2025-01-01', weight: 80, muscleMass: 35 },
+        { date: '2025-01-15', weight: 79 },
+      ];
+      render(<BodyCompositionChart data={data} />);
+      // muscleMassChange should be 0 since last.muscleMass is undefined
+      expect(screen.queryByText('Muscle Mass Change')).not.toBeInTheDocument();
+    });
+  });
 });
