@@ -97,6 +97,18 @@ describe('validateQuery', () => {
     expect((result as any).tags).toEqual(['a', 'b']);
   });
 
+  it('handles three or more array query parameters (push case)', () => {
+    const arraySchema = z.object({
+      tags: z.array(z.string()),
+    });
+
+    const searchParams = new URLSearchParams('tags=a&tags=b&tags=c');
+    const result = validateQuery(searchParams, arraySchema);
+
+    expect(result).not.toBeInstanceOf(NextResponse);
+    expect((result as any).tags).toEqual(['a', 'b', 'c']);
+  });
+
   it('handles single value that could be array', () => {
     const flexSchema = z.object({
       name: z.string(),
@@ -107,6 +119,19 @@ describe('validateQuery', () => {
 
     expect(result).not.toBeInstanceOf(NextResponse);
     expect((result as any).name).toBe('test');
+  });
+
+  it('handles non-ZodError exceptions in validateQuery', () => {
+    const badSchema = {
+      parse: () => {
+        throw new Error('Unexpected error');
+      },
+    } as any;
+
+    const searchParams = new URLSearchParams('page=1');
+    const result = validateQuery(searchParams, badSchema);
+
+    expect(result).toBeInstanceOf(NextResponse);
   });
 });
 
@@ -126,6 +151,19 @@ describe('validateParams', () => {
   it('returns 400 on invalid params', () => {
     const params = { id: 'not-a-uuid' };
     const result = validateParams(params, paramSchema);
+
+    expect(result).toBeInstanceOf(NextResponse);
+  });
+
+  it('handles non-ZodError exceptions in validateParams', () => {
+    const badSchema = {
+      parse: () => {
+        throw new Error('Unexpected error');
+      },
+    } as any;
+
+    const params = { id: 'test' };
+    const result = validateParams(params, badSchema);
 
     expect(result).toBeInstanceOf(NextResponse);
   });
