@@ -188,9 +188,11 @@ const mockPrismaClient = {
     create: jest.fn(),
   },
   trainerClient: {
+    findUnique: jest.fn(),
     findFirst: jest.fn(),
     findMany: jest.fn(),
     create: jest.fn(),
+    count: jest.fn(),
   },
   profileCompletion: {
     findUnique: jest.fn(),
