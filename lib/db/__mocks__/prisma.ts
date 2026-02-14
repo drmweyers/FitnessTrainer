@@ -251,6 +251,13 @@ const mockPrismaClient = {
     delete: jest.fn(),
     count: jest.fn(),
   },
+  analyticsReport: {
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
   $queryRaw: jest.fn(),
   $queryRawUnsafe: jest.fn(),
   $transaction: jest.fn((fn: any) => fn(mockPrismaClient)),
