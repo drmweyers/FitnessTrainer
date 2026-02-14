@@ -65,4 +65,67 @@ describe('NotesSection', () => {
     fireEvent.click(screen.getByText('Add Note'));
     expect(screen.getByText('Save Note')).toBeDisabled();
   });
+
+  it('should enable Save Note when textarea has content', () => {
+    render(<NotesSection notes={mockNotes} />);
+    fireEvent.click(screen.getByText('Add Note'));
+    const textarea = screen.getByPlaceholderText('Enter your note here...');
+    fireEvent.change(textarea, { target: { value: 'New note content' } });
+    expect(screen.getByText('Save Note')).not.toBeDisabled();
+  });
+
+  it('should disable Save Note when textarea contains only whitespace', () => {
+    render(<NotesSection notes={mockNotes} />);
+    fireEvent.click(screen.getByText('Add Note'));
+    const textarea = screen.getByPlaceholderText('Enter your note here...');
+    fireEvent.change(textarea, { target: { value: '   ' } });
+    expect(screen.getByText('Save Note')).toBeDisabled();
+  });
+
+  it('should update textarea value when typing', () => {
+    render(<NotesSection notes={mockNotes} />);
+    fireEvent.click(screen.getByText('Add Note'));
+    const textarea = screen.getByPlaceholderText('Enter your note here...') as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: 'My new note' } });
+    expect(textarea.value).toBe('My new note');
+  });
+
+  it('should clear textarea and hide form when Save Note is clicked', () => {
+    render(<NotesSection notes={mockNotes} />);
+    fireEvent.click(screen.getByText('Add Note'));
+    const textarea = screen.getByPlaceholderText('Enter your note here...');
+    fireEvent.change(textarea, { target: { value: 'New note content' } });
+    fireEvent.click(screen.getByText('Save Note'));
+    expect(screen.queryByPlaceholderText('Enter your note here...')).not.toBeInTheDocument();
+  });
+
+  it('should render note with formatted date', () => {
+    const notes = [{ id: '1', date: '2024-12-25', text: 'Holiday workout' }];
+    render(<NotesSection notes={notes} />);
+    expect(screen.getByText('Holiday workout')).toBeInTheDocument();
+    // Check for formatted date containing year
+    expect(screen.getByText(/2024/)).toBeInTheDocument();
+  });
+
+  it('should show Plus icon in Add Note button', () => {
+    render(<NotesSection notes={mockNotes} />);
+    expect(screen.getByTestId('icon-plus')).toBeInTheDocument();
+  });
+
+  it('should not show add form initially', () => {
+    render(<NotesSection notes={mockNotes} />);
+    expect(screen.queryByPlaceholderText('Enter your note here...')).not.toBeInTheDocument();
+  });
+
+  it('should render multiple notes correctly', () => {
+    const manyNotes = [
+      { id: '1', date: '2024-03-15', text: 'Note 1' },
+      { id: '2', date: '2024-03-14', text: 'Note 2' },
+      { id: '3', date: '2024-03-13', text: 'Note 3' },
+    ];
+    render(<NotesSection notes={manyNotes} />);
+    expect(screen.getByText('Note 1')).toBeInTheDocument();
+    expect(screen.getByText('Note 2')).toBeInTheDocument();
+    expect(screen.getByText('Note 3')).toBeInTheDocument();
+  });
 });
