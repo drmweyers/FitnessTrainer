@@ -306,5 +306,82 @@ describe('WeekBuilder - Story 005-02: Build Weekly Structure', () => {
       expect(screen.getByText('Rest')).toBeInTheDocument();
       expect(screen.getByText('Active')).toBeInTheDocument();
     });
+
+    it('should prevent saving when week name is empty', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Click edit button
+      const editButton = document.querySelector('[title="Edit week"]');
+      await user.click(editButton as HTMLElement);
+
+      // Clear the week name
+      const nameInput = screen.getByDisplayValue(/Week 1/i);
+      await user.clear(nameInput);
+
+      // Try to save
+      const saveButton = screen.getByText('Save Changes');
+      expect(saveButton).toBeDisabled();
+    });
+
+    it('should show workout count and rest day count in stats', () => {
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Week starts expanded, should show stats
+      expect(screen.getByText('Total Days')).toBeInTheDocument();
+      expect(screen.getByText('Training')).toBeInTheDocument();
+      expect(screen.getByText('Rest')).toBeInTheDocument();
+    });
+
+    it('should show deload warning in tips section', () => {
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Check for deload week tip
+      expect(screen.getByText(/Deload weeks/i)).toBeInTheDocument();
+      expect(screen.getByText(/lighter training weeks for recovery/i)).toBeInTheDocument();
+    });
+
+    it('should toggle week type between regular and deload', async () => {
+      const user = userEvent.setup();
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Click edit button
+      const editButton = document.querySelector('[title="Edit week"]');
+      await user.click(editButton as HTMLElement);
+
+      // Should see Regular and Deload radio buttons
+      expect(screen.getByText('Regular')).toBeInTheDocument();
+      expect(screen.getByText('Deload')).toBeInTheDocument();
+
+      // Click Deload
+      const deloadRadio = screen.getByText('Deload').closest('label')?.querySelector('input');
+      await user.click(deloadRadio as HTMLElement);
+
+      // Save changes
+      await user.click(screen.getByText('Save Changes'));
+
+      // Should show deload badge
+      await waitFor(() => {
+        expect(screen.getByText('Deload Week')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Validation', () => {
+    it('should alert when trying to continue with no weeks', async () => {
+      const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+      // Create a provider with no weeks
+      const { ProgramBuilderProvider } = require('../ProgramBuilderContext');
+
+      // Manually delete all weeks by clicking delete multiple times
+      renderWithProvider(<WeekBuilder onNext={jest.fn()} onPrev={jest.fn()} />);
+
+      // Continue button should be disabled when no weeks
+      const continueButton = screen.getByRole('button', { name: /Continue to Workouts/i });
+      expect(continueButton).toBeDisabled();
+
+      alertSpy.mockRestore();
+    });
   });
 });

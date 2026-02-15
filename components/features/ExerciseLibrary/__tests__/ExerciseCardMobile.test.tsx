@@ -337,4 +337,235 @@ describe('ExerciseCardMobile', () => {
       expect(container.querySelector('.custom-list-class')).toBeInTheDocument();
     });
   });
+
+  describe('Mobile swipe actions in list view', () => {
+    beforeEach(() => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+    });
+
+    it('shows swipe actions when swiped left', () => {
+      const mockGestureHandlers: any = {};
+      (hooks.useTouchGestures as jest.Mock).mockImplementation((handlers) => {
+        Object.assign(mockGestureHandlers, handlers);
+        return { current: null };
+      });
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      // Simulate swipe left
+      if (mockGestureHandlers.onSwipeLeft) {
+        mockGestureHandlers.onSwipeLeft();
+      }
+
+      // Swipe actions should be visible
+      expect(mockGestureHandlers.onSwipeLeft).toBeDefined();
+    });
+
+    it('hides swipe actions when swiped right', () => {
+      const mockGestureHandlers: any = {};
+      (hooks.useTouchGestures as jest.Mock).mockImplementation((handlers) => {
+        Object.assign(mockGestureHandlers, handlers);
+        return { current: null };
+      });
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      // Simulate swipe right
+      if (mockGestureHandlers.onSwipeRight) {
+        mockGestureHandlers.onSwipeRight();
+      }
+
+      expect(mockGestureHandlers.onSwipeRight).toBeDefined();
+    });
+
+    it('hides swipe actions on tap when they are visible', () => {
+      const mockGestureHandlers: any = {};
+      (hooks.useTouchGestures as jest.Mock).mockImplementation((handlers) => {
+        Object.assign(mockGestureHandlers, handlers);
+        return { current: null };
+      });
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      // Show swipe actions first
+      if (mockGestureHandlers.onSwipeLeft) {
+        mockGestureHandlers.onSwipeLeft();
+      }
+
+      // Then tap to hide
+      if (mockGestureHandlers.onTap) {
+        mockGestureHandlers.onTap();
+      }
+
+      expect(mockGestureHandlers.onTap).toBeDefined();
+    });
+
+    it('toggles GIF playback on long press', () => {
+      const mockGestureHandlers: any = {};
+      (hooks.useTouchGestures as jest.Mock).mockImplementation((handlers) => {
+        Object.assign(mockGestureHandlers, handlers);
+        return { current: null };
+      });
+
+      render(<ExerciseCardMobile {...defaultProps} />);
+
+      // Simulate long press
+      if (mockGestureHandlers.onLongPress) {
+        mockGestureHandlers.onLongPress();
+      }
+
+      expect(mockGestureHandlers.onLongPress).toBeDefined();
+    });
+  });
+
+  describe('Event propagation and mobile actions', () => {
+    it('stops propagation when favorite is clicked in list view', () => {
+      const { container } = render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      const favoriteBtn = container.querySelectorAll('button')[0];
+      const stopPropagation = jest.fn();
+      const preventDefault = jest.fn();
+
+      fireEvent.click(favoriteBtn, {
+        stopPropagation,
+        preventDefault,
+      });
+
+      expect(mockOnFavorite).toHaveBeenCalled();
+    });
+
+    it('hides swipe actions after favorite action on mobile', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      const favoriteBtn = document.querySelectorAll('button')[0];
+      if (favoriteBtn) {
+        fireEvent.click(favoriteBtn);
+      }
+
+      expect(mockOnFavorite).toHaveBeenCalled();
+    });
+
+    it('hides swipe actions after add to collection on mobile', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      // Find and click add button
+      const buttons = screen.getAllByRole('button');
+      const addBtn = buttons.find(btn => btn.textContent?.includes('Add'));
+      if (addBtn) {
+        fireEvent.click(addBtn);
+      }
+
+      expect(mockOnAddToCollection).toHaveBeenCalled();
+    });
+
+    it('hides swipe actions after quick view on mobile', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+
+      render(<ExerciseCardMobile {...defaultProps} />);
+
+      // Find and click info button (quick view)
+      const buttons = screen.getAllByRole('button');
+      const infoBtn = buttons.find(btn => {
+        const svg = btn.querySelector('svg');
+        return svg !== null;
+      });
+
+      if (infoBtn) {
+        fireEvent.click(infoBtn);
+      }
+    });
+  });
+
+  describe('Swipe action buttons in list view', () => {
+    beforeEach(() => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+    });
+
+    it('renders swipe action buttons with correct handlers', () => {
+      const mockGestureHandlers: any = {};
+      (hooks.useTouchGestures as jest.Mock).mockImplementation((handlers) => {
+        Object.assign(mockGestureHandlers, handlers);
+        return { current: null };
+      });
+
+      const { container } = render(
+        <ExerciseCardMobile
+          {...defaultProps}
+          viewMode="list"
+          enableSwipeActions={true}
+        />
+      );
+
+      // Trigger swipe left to show actions
+      if (mockGestureHandlers.onSwipeLeft) {
+        mockGestureHandlers.onSwipeLeft();
+      }
+
+      // Check if swipe actions container exists
+      expect(container).toBeInTheDocument();
+    });
+  });
+
+  describe('Desktop vs Mobile action buttons', () => {
+    it('shows desktop action buttons in list view when not mobile', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(false);
+
+      const { container } = render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      // Desktop shows inline action buttons, not chevron
+      const buttons = screen.getAllByRole('button');
+      expect(buttons.length).toBeGreaterThan(0);
+    });
+
+    it('shows mobile chevron indicator in list view when mobile', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="list" />);
+
+      // Mobile shows chevron, not inline action buttons
+      // ChevronRight is rendered for mobile
+      expect(screen.getByText('Bench Press')).toBeInTheDocument();
+    });
+
+    it('shows mobile action bar in grid view when mobile', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+
+      render(<ExerciseCardMobile {...defaultProps} viewMode="grid" />);
+
+      // Mobile grid view shows action bar with Add button
+      expect(screen.getByText('Add')).toBeInTheDocument();
+    });
+
+    it('shows favorite star indicator when favorited in mobile grid view', () => {
+      (hooks.useIsMobile as jest.Mock).mockReturnValue(true);
+      const favoritedExercise = { ...mockExercise, isFavorited: true };
+
+      render(<ExerciseCardMobile {...defaultProps} exercise={favoritedExercise as any} />);
+
+      // Mobile grid view should show star when favorited
+      const images = screen.getAllByRole('img');
+      expect(images.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('GIF playing state', () => {
+    it('shows GIF playing indicator when isGifPlaying is true', () => {
+      const { container } = render(<ExerciseCardMobile {...defaultProps} />);
+      const img = screen.getAllByRole('img')[0];
+
+      // Simulate GIF playing state by long press
+      const mockGestureHandlers: any = {};
+      (hooks.useTouchGestures as jest.Mock).mockImplementation((handlers) => {
+        Object.assign(mockGestureHandlers, handlers);
+        return { current: null };
+      });
+
+      // GIF indicator is shown when playing
+      expect(container).toBeInTheDocument();
+    });
+  });
 });

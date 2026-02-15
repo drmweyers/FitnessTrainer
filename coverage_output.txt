@@ -1,0 +1,316 @@
+-------------------------------------------------|---------|----------|---------|---------|-------------------------------------------------------------------------
+File                                             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                       
+-------------------------------------------------|---------|----------|---------|---------|-------------------------------------------------------------------------
+All files                                        |   89.79 |    80.78 |   86.44 |   91.39 |                                                                         
+ app/api/activities                              |   96.87 |    92.85 |     100 |     100 |                                                                         
+  route.ts                                       |   96.87 |    92.85 |     100 |     100 | 102                                                                     
+ app/api/admin/dashboard                         |   96.42 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   96.42 |      100 |     100 |     100 |                                                                         
+ app/api/admin/system/health                     |   89.65 |    77.77 |     100 |   92.59 |                                                                         
+  route.ts                                       |   89.65 |    77.77 |     100 |   92.59 | 67-68                                                                   
+ app/api/admin/users                             |   97.72 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.72 |      100 |     100 |     100 |                                                                         
+ app/api/admin/users/[id]                        |   97.95 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.95 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/goals                         |   97.05 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.05 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/goals/[id]                    |   98.21 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.21 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/goals/[id]/progress           |   97.91 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.91 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/measurements                  |   98.36 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.36 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/measurements/[id]             |   98.88 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.88 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/measurements/me               |   97.22 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.22 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/milestones                    |   93.75 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   93.75 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/milestones/me                 |   93.75 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   93.75 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/performance                   |      98 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |      98 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/performance/me                |   96.87 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   96.87 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/performance/me/personal-bests |   94.44 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   94.44 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/personal-bests                |   94.44 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   94.44 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/reports                       |      94 |    51.85 |      80 |   95.45 |                                                                         
+  route.ts                                       |      94 |    51.85 |      80 |   95.45 | 162-168                                                                 
+ app/api/analytics/training-load                 |   95.65 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   95.65 |      100 |     100 |     100 |                                                                         
+ app/api/analytics/training-load/calculate       |   97.95 |       90 |     100 |     100 |                                                                         
+  route.ts                                       |   97.95 |       90 |     100 |     100 | 103                                                                     
+ app/api/analytics/training-load/me              |   95.65 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   95.65 |      100 |     100 |     100 |                                                                         
+ app/api/auth/forgot-password                    |      92 |      100 |      50 |   95.83 |                                                                         
+  route.ts                                       |      92 |      100 |      50 |   95.83 | 45                                                                      
+ app/api/auth/login                              |    75.8 |    62.96 |     100 |   87.75 |                                                                         
+  route.ts                                       |    75.8 |    62.96 |     100 |   87.75 | 174,177,189-193                                                         
+ app/api/auth/me                                 |    92.3 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |    92.3 |      100 |     100 |     100 |                                                                         
+ app/api/auth/register                           |   74.57 |    54.54 |     100 |   86.95 |                                                                         
+  route.ts                                       |   74.57 |    54.54 |     100 |   86.95 | 141,144,156-160                                                         
+ app/api/auth/reset-password                     |   96.15 |    83.33 |     100 |     100 |                                                                         
+  route.ts                                       |   96.15 |    83.33 |     100 |     100 | 73                                                                      
+ app/api/clients                                 |    98.3 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |    98.3 |      100 |     100 |     100 |                                                                         
+ app/api/clients/[id]/status                     |   96.29 |       90 |     100 |     100 |                                                                         
+  route.ts                                       |   96.29 |       90 |     100 |     100 | 79                                                                      
+ app/api/dashboard/stats                         |   97.36 |    93.75 |     100 |     100 |                                                                         
+  route.ts                                       |   97.36 |    93.75 |     100 |     100 | 209                                                                     
+ app/api/exercises                               |   93.02 |    78.57 |     100 |   97.56 |                                                                         
+  route.ts                                       |   93.02 |    78.57 |     100 |   97.56 | 103                                                                     
+ app/api/exercises/[id]                          |   90.38 |     62.5 |     100 |   95.91 |                                                                         
+  route.ts                                       |   90.38 |     62.5 |     100 |   95.91 | 83,133                                                                  
+ app/api/exercises/by-id/[exerciseId]            |   93.33 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   93.33 |      100 |     100 |     100 |                                                                         
+ app/api/exercises/collections                   |   97.05 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.05 |      100 |     100 |     100 |                                                                         
+ app/api/exercises/collections/[id]              |   97.95 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.95 |      100 |     100 |     100 |                                                                         
+ app/api/exercises/collections/[id]/exercises    |   98.11 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.11 |      100 |     100 |     100 |                                                                         
+ app/api/exercises/favorites                     |   98.21 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.21 |      100 |     100 |     100 |                                                                         
+ app/api/exercises/filters                       |    90.9 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |    90.9 |      100 |     100 |     100 |                                                                         
+ app/api/exercises/search                        |      95 |       80 |     100 |     100 |                                                                         
+  route.ts                                       |      95 |       80 |     100 |     100 | 16                                                                      
+ app/api/health                                  |   91.17 |       75 |     100 |   93.93 |                                                                         
+  route.ts                                       |   91.17 |       75 |     100 |   93.93 | 106-107                                                                 
+ app/api/profiles/certifications                 |   97.14 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.14 |      100 |     100 |     100 |                                                                         
+ app/api/profiles/certifications/[id]            |   97.43 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.43 |      100 |     100 |     100 |                                                                         
+ app/api/profiles/health                         |   96.66 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   96.66 |      100 |     100 |     100 |                                                                         
+ app/api/profiles/me                             |   96.87 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   96.87 |      100 |     100 |     100 |                                                                         
+ app/api/profiles/me/photo                       |   98.11 |      100 |      50 |     100 |                                                                         
+  route.ts                                       |   98.11 |      100 |      50 |     100 |                                                                         
+ app/api/profiles/progress-photos                |   98.61 |      100 |      60 |     100 |                                                                         
+  route.ts                                       |   98.61 |      100 |      60 |     100 |                                                                         
+ app/api/programs                                |   97.22 |    89.65 |     100 |     100 |                                                                         
+  route.ts                                       |   97.22 |    89.65 |     100 |     100 | 119,165,208                                                             
+ app/api/programs/[id]                           |   98.18 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.18 |      100 |     100 |     100 |                                                                         
+ app/api/programs/[id]/assign                    |   97.05 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.05 |      100 |     100 |     100 |                                                                         
+ app/api/programs/[id]/duplicate                 |   97.14 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.14 |      100 |     100 |     100 |                                                                         
+ app/api/programs/templates                      |   93.75 |       80 |     100 |     100 |                                                                         
+  route.ts                                       |   93.75 |       80 |     100 |     100 | 70                                                                      
+ app/api/schedule/appointments                   |   88.88 |    83.87 |     100 |   92.15 |                                                                         
+  route.ts                                       |   88.88 |    83.87 |     100 |   92.15 | 91-92,209-210                                                           
+ app/api/schedule/appointments/[id]              |      80 |     61.7 |     100 |   89.74 |                                                                         
+  route.ts                                       |      80 |     61.7 |     100 |   89.74 | 84-85,188-195,262-263                                                   
+ app/api/schedule/availability                   |   79.66 |    55.55 |     100 |   85.45 |                                                                         
+  route.ts                                       |   79.66 |    55.55 |     100 |   85.45 | 47-48,121-122,164-171                                                   
+ app/api/schedule/slots                          |   92.72 |       75 |     100 |   96.22 |                                                                         
+  route.ts                                       |   92.72 |       75 |     100 |   96.22 | 128-129                                                                 
+ app/api/workouts                                |   98.24 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.24 |      100 |     100 |     100 |                                                                         
+ app/api/workouts/[id]                           |   98.11 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.11 |      100 |     100 |     100 |                                                                         
+ app/api/workouts/[id]/complete                  |   98.41 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.41 |      100 |     100 |     100 |                                                                         
+ app/api/workouts/[id]/sets                      |   98.03 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   98.03 |      100 |     100 |     100 |                                                                         
+ app/api/workouts/active                         |   94.11 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   94.11 |      100 |     100 |     100 |                                                                         
+ app/api/workouts/history                        |      96 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |      96 |      100 |     100 |     100 |                                                                         
+ app/api/workouts/progress                       |   97.95 |      100 |     100 |     100 |                                                                         
+  route.ts                                       |   97.95 |      100 |     100 |     100 |                                                                         
+ components/auth                                 |   89.28 |      100 |   66.66 |   88.88 |                                                                         
+  ProtectedRoute.tsx                             |   89.28 |      100 |   66.66 |   88.88 | 34,124-130                                                              
+ components/clients                              |   82.46 |    70.86 |   73.48 |   84.05 |                                                                         
+  ClientCard.tsx                                 |   88.63 |      100 |   78.57 |   88.63 | 146-159,273                                                             
+  ClientForm.tsx                                 |   76.63 |    78.94 |   68.51 |   77.45 | 143-145,362-404,436,456-457,473,498-515,542,562-563,579,622             
+  ClientInviteForm.tsx                           |     100 |    92.85 |     100 |     100 | 50                                                                      
+  ClientNotes.tsx                                |   82.85 |    70.73 |   66.66 |    83.5 | 84-90,123-124,128,141,197,260,365-387                                   
+  ClientProfile.tsx                              |     100 |    73.33 |     100 |     100 | 29,33-34,68                                                             
+  ClientPrograms.tsx                             |     100 |    58.33 |     100 |     100 | 111-142                                                                 
+  ClientProgress.tsx                             |     100 |      100 |     100 |     100 |                                                                         
+  ClientTags.tsx                                 |    96.1 |    66.66 |    91.3 |   97.18 | 193-205                                                                 
+  ClientWorkouts.tsx                             |      85 |    54.54 |      80 |      85 | 28-29,62                                                                
+  TagManager.tsx                                 |   68.81 |    45.94 |      60 |   70.73 | 84-104,117-120,125-126,133-134,317-382                                  
+  index.ts                                       |       0 |      100 |     100 |       0 | 7-10                                                                    
+ components/features/AIWorkoutBuilder            |   99.01 |    79.24 |   96.77 |   98.94 |                                                                         
+  AIWorkoutBuilder.tsx                           |   99.01 |    79.24 |   96.77 |   98.94 | 253                                                                     
+ components/features/Analytics                   |   92.96 |    89.51 |   91.19 |   93.62 |                                                                         
+  BodyCompositionChart.tsx                       |     100 |    97.01 |     100 |     100 | 296-297                                                                 
+  GoalsTab.tsx                                   |   95.12 |    66.66 |     100 |   94.87 | 43-44                                                                   
+  MeasurementTracker.tsx                         |   81.03 |    88.67 |      68 |      84 | 94,296-312                                                              
+  MultiLineChart.tsx                             |   79.41 |    61.11 |   85.71 |   77.41 | 100-112,166                                                             
+  PerformanceTab.tsx                             |     100 |       85 |     100 |     100 | 75,121,213                                                              
+  PhotoComparison.tsx                            |   86.44 |    92.72 |    90.9 |   89.28 | 58-63,378                                                               
+  PhotoGallery.tsx                               |   85.18 |    98.18 |   82.14 |   85.18 | 96,237-257,385-411                                                      
+  PhotoUpload.tsx                                |     100 |      100 |     100 |     100 |                                                                         
+  ProgressChart.tsx                              |   98.59 |    94.11 |     100 |     100 | 138,287                                                                 
+  ReportModal.tsx                                |     100 |    95.83 |     100 |     100 | 77                                                                      
+  TrainingLoadTab.tsx                            |     100 |     90.9 |     100 |     100 | 194                                                                     
+ components/features/Calender                    |   92.85 |       84 |     100 |   92.72 |                                                                         
+  CalenderGrid.tsx                               |     100 |       50 |     100 |     100 | 260                                                                     
+  DayCell.tsx                                    |     100 |       95 |     100 |     100 | 29                                                                      
+  WeekRow.tsx                                    |     100 |      100 |     100 |     100 |                                                                         
+  WorkoutCard.tsx                                |      84 |    78.57 |     100 |      84 | 23,29,41,47                                                             
+ components/features/ClientDashboard             |   85.84 |    76.66 |   83.58 |   85.71 |                                                                         
+  ClientProfile.tsx                              |     100 |      100 |     100 |     100 |                                                                         
+  ClientProgramDashboard.tsx                     |   80.43 |    59.09 |   66.66 |      80 | 153-157,186,191,292-302,363-368                                         
+  EnhancedClientDashboard.tsx                    |   74.24 |       90 |   77.77 |   73.84 | 92-93,100-110,115-120,138-139                                           
+  GoalsSection.tsx                               |     100 |      100 |     100 |     100 |                                                                         
+  LimitationsSection.tsx                         |     100 |      100 |     100 |     100 |                                                                         
+  MetricsDisplay.tsx                             |   89.47 |    69.09 |      75 |   91.66 | 67-75,238                                                               
+  NotesSection.tsx                               |     100 |      100 |     100 |     100 |                                                                         
+  TrainingOverview.tsx                           |     100 |      100 |     100 |     100 |                                                                         
+  WorkoutHistory.tsx                             |     100 |      100 |     100 |     100 |                                                                         
+ components/features/ClientManagement            |   94.01 |    72.41 |     100 |   96.62 |                                                                         
+  ClientConnectionList.tsx                       |   90.19 |    61.76 |     100 |   93.61 | 129-133                                                                 
+  InvitationNotifications.tsx                    |   94.36 |       70 |     100 |   96.72 | 145,202                                                                 
+  InviteClientModal.tsx                          |   97.77 |     91.3 |     100 |     100 | 55,139                                                                  
+ components/features/Dashboard                   |   96.15 |    94.11 |     100 |   96.15 |                                                                         
+  ProfileCompletionWidget.tsx                    |   96.15 |    94.11 |     100 |   96.15 | 52                                                                      
+ components/features/ExerciseFilters             |   97.14 |    84.61 |     100 |     100 |                                                                         
+  ExerciseFilters.tsx                            |   97.14 |    84.61 |     100 |     100 | 84,135                                                                  
+ components/features/ExerciseLibrary             |   76.52 |    71.72 |   70.55 |   77.53 |                                                                         
+  CollectionManager.tsx                          |     100 |      100 |     100 |     100 |                                                                         
+  ExerciseCard.tsx                               |      80 |    70.21 |   61.11 |      80 | 51,55,62,68,72-73,122-123,224-225                                       
+  ExerciseCardMobile.tsx                         |   56.75 |    57.14 |   43.47 |   57.53 | 62-72,79-100,115-116,121-127,132-138,178-210                            
+  ExerciseDetailView.tsx                         |   93.93 |    93.02 |    87.5 |   93.93 | 235,390                                                                 
+  ExerciseFiltersAdvanced.tsx                    |   98.66 |    97.14 |     100 |   98.59 | 125                                                                     
+  ExerciseGrid.tsx                               |     100 |       90 |     100 |     100 | 74                                                                      
+  ExerciseGridSkeleton.tsx                       |     100 |      100 |     100 |     100 |                                                                         
+  ExerciseLibrary.tsx                            |      90 |      100 |      80 |      90 | 65                                                                      
+  ExerciseSearch.tsx                             |     100 |      100 |     100 |     100 |                                                                         
+  GifPlayer.tsx                                  |   77.63 |    82.14 |   81.81 |   78.37 | 60-64,83,89-94,101,114,117,292                                          
+  GifPlayerMobile.tsx                            |   58.26 |    64.86 |   41.17 |    60.9 | 64-106,120-124,130-134,149-162,167-170,176,180,209,353-360              
+  RelatedExercises.tsx                           |   82.97 |    66.66 |      60 |   84.78 | 50-51,65,69,73,193-194                                                  
+ components/features/ExerciseList                |   74.61 |    67.94 |   58.82 |   79.16 |                                                                         
+  ExerciseList.tsx                               |   74.61 |    67.94 |   58.82 |   79.16 | 107,114,149,152,155,169,185,208,227,325,377-464,545-572,585-590,610     
+ components/features/Profile                     |     100 |    97.36 |     100 |     100 |                                                                         
+  ProgressPhotosGallery.tsx                      |     100 |    97.36 |     100 |     100 | 149                                                                     
+ components/features/ProgramBuilder              |   90.62 |    76.14 |   89.97 |   92.09 |                                                                         
+  ExerciseSelector.tsx                           |   89.44 |    66.66 |      90 |   92.76 | 218-219,259,438-472,562-563,701,725-726,789                             
+  ProgramBuilder.tsx                             |   85.71 |    96.77 |    90.9 |   85.45 | 58-70                                                                   
+  ProgramBuilderContext.tsx                      |   92.79 |    76.82 |    87.5 |   94.23 | 123-124,133,380,401,456                                                 
+  ProgramForm.tsx                                |     100 |       96 |     100 |     100 | 267                                                                     
+  ProgramPreview.tsx                             |   73.49 |     60.2 |    62.5 |   72.72 | 152-172,221-227,291,328-334,343-344,352,504,523,569-611                 
+  ProgressionBuilder.tsx                         |     100 |    84.61 |     100 |     100 | 148,165,176-177,184-185,200-220,237,248,398-400,415,436,453-454,469,487 
+  RPEIntegration.tsx                             |   86.25 |    71.42 |   88.88 |   95.23 | 76-77,307                                                               
+  SupersetBuilder.tsx                            |   97.67 |    79.06 |     100 |     100 | 84-130,161-172,294,323-343                                              
+  TemplateLibrary.tsx                            |    97.1 |    73.13 |     100 |   97.01 | 143,156                                                                 
+  WeekBuilder.tsx                                |   73.61 |    54.54 |   70.37 |   74.64 | 54,191-264,325,344-356,367-368,477                                      
+  WorkoutBuilder.tsx                             |   95.12 |     92.2 |   97.36 |    94.8 | 74,267,472-473                                                          
+ components/features/Programs                    |   81.78 |    79.74 |   75.49 |   82.48 |                                                                         
+  BulkAssignmentModal.tsx                        |   80.64 |    67.85 |   73.52 |   80.48 | 87-88,153-170,262,356-409                                               
+  ProgramCard.tsx                                |   80.95 |      100 |   73.07 |   84.37 | 155-184                                                                 
+  ProgramFilters.tsx                             |   84.84 |     87.5 |   77.77 |   84.37 | 71,79,182-202                                                           
+  ProgramList.tsx                                |   82.08 |    81.35 |   79.16 |   82.81 | 119-169,174,355                                                         
+ components/features/TrainerDashboard            |   85.84 |    55.55 |    91.3 |   86.59 |                                                                         
+  EnhancedTrainerDashboard.tsx                   |   87.23 |      100 |      80 |   86.36 | 86-87,107-108,126,226                                                   
+  TrainerProgressDashboard.tsx                   |   84.74 |    53.84 |     100 |   86.79 | 160,170,176-178,200,217-218                                             
+ components/features/WorkoutBuilder              |   67.24 |       75 |   80.76 |   72.54 |                                                                         
+  WorkoutBuilder.tsx                             |   67.24 |       75 |   80.76 |   72.54 | 123-150                                                                 
+ components/features/WorkoutExecution            |   77.66 |    65.75 |   63.15 |    77.2 |                                                                         
+  DailyWorkoutView.tsx                           |   78.08 |    60.31 |   68.42 |   77.77 | 96,174-201,212-213,221-227,240,242,244,287,514                          
+  WorkoutExecutionScreen.tsx                     |   77.41 |    69.87 |   60.52 |   76.85 | 114-121,171-179,184-190,197-210,362-436,484-525,527                     
+ components/features/WorkoutModal                |   85.91 |    53.65 |   69.69 |   85.71 |                                                                         
+  WorkoutModal.tsx                               |   85.91 |    53.65 |   69.69 |   85.71 | 118,236,260,264-265,310-346,435                                         
+ components/layout                               |   86.45 |    94.93 |   73.33 |   85.71 |                                                                         
+  AppLayout.tsx                                  |    91.3 |       85 |      80 |    90.9 | 34,68                                                                   
+  Footer.tsx                                     |     100 |      100 |     100 |     100 |                                                                         
+  Header.tsx                                     |     100 |      100 |     100 |     100 |                                                                         
+  Layout.tsx                                     |      90 |    83.33 |      75 |      90 | 25                                                                      
+  Sidebar.tsx                                    |   78.26 |      100 |   67.74 |   76.74 | 139,154-166,203,214,229-247                                             
+ components/navigation                           |    85.6 |     91.3 |   87.09 |   88.61 |                                                                         
+  BreadcrumbNav.tsx                              |     100 |      100 |     100 |     100 |                                                                         
+  MainNavigation.tsx                             |   93.75 |      100 |      75 |   93.75 | 137                                                                     
+  MobileMenu.tsx                                 |      96 |    81.81 |     100 |   95.83 | 23                                                                      
+  NavigationItem.tsx                             |   85.71 |    84.61 |      80 |   85.71 | 142-145                                                                 
+  UserMenu.tsx                                   |   92.15 |      100 |   84.61 |   91.83 | 43-44,63,121                                                            
+  index.ts                                       |       0 |      100 |     100 |       0 | 1-5                                                                     
+ components/programs                             |   86.14 |    83.45 |   76.43 |   86.28 |                                                                         
+  ClientAssignment.tsx                           |   87.09 |       60 |   57.14 |      90 | 140-176                                                                 
+  ExerciseConfiguration.tsx                      |   97.29 |    88.88 |      95 |   97.22 | 130                                                                     
+  ExerciseSelector.tsx                           |   95.45 |    85.29 |   90.47 |      95 | 66,139                                                                  
+  ProgramBuilder.tsx                             |   85.71 |    91.89 |   74.07 |   86.15 | 124-126,186,239-313,408                                                 
+  ProgramList.tsx                                |   55.26 |    43.47 |   18.75 |   55.26 | 44-48,54-57,78-136,171-298                                              
+  ProgramPreview.tsx                             |   96.96 |       90 |     100 |   96.87 | 29                                                                      
+  ProgramTemplates.tsx                           |    91.3 |    77.27 |   77.77 |    91.3 | 77,118                                                                  
+  WeekBuilder.tsx                                |     100 |      100 |     100 |     100 |                                                                         
+  WorkoutBuilder.tsx                             |   62.16 |    73.91 |   43.75 |   62.85 | 55-72,106,129-192,218                                                   
+ components/shared                               |   88.55 |    96.18 |   95.31 |   93.02 |                                                                         
+  ActivityFeed.tsx                               |    91.3 |    92.85 |     100 |   94.73 | 86                                                                      
+  Button.tsx                                     |     100 |      100 |     100 |     100 |                                                                         
+  Card.tsx                                       |     100 |      100 |     100 |     100 |                                                                         
+  DashboardLayout.tsx                            |     100 |      100 |     100 |     100 |                                                                         
+  DropdownSelect.tsx                             |   83.33 |       75 |     100 |      90 | 37                                                                      
+  Input.tsx                                      |     100 |       95 |     100 |     100 | 82                                                                      
+  NumberInput.tsx                                |     100 |      100 |     100 |     100 |                                                                         
+  QuickActions.tsx                               |   93.33 |      100 |     100 |   93.33 | 122                                                                     
+  StatCard.tsx                                   |     100 |      100 |     100 |     100 |                                                                         
+  TextInput.tsx                                  |     100 |    88.88 |     100 |     100 | 51                                                                      
+  Textarea.tsx                                   |     100 |      100 |     100 |     100 |                                                                         
+  Toast.tsx                                      |   94.91 |      100 |    91.3 |      96 | 31-32                                                                   
+  index.ts                                       |       0 |      100 |     100 |       0 | 1-9                                                                     
+  use-toast.tsx                                  |   95.23 |      100 |   91.66 |   93.75 | 66                                                                      
+ components/workouts                             |   96.42 |    84.39 |   95.65 |   96.74 |                                                                         
+  ActiveWorkoutSession.tsx                       |   84.21 |    69.56 |      75 |   86.11 | 33-36,49-50                                                             
+  OfflineIndicator.tsx                           |     100 |      100 |     100 |     100 |                                                                         
+  RestTimer.tsx                                  |     100 |    93.33 |     100 |     100 | 70,269                                                                  
+  SetLogger.tsx                                  |     100 |    95.65 |     100 |     100 | 100,169,283                                                             
+  WorkoutHistory.tsx                             |   92.85 |       75 |     100 |   92.59 | 36-37                                                                   
+  WorkoutLogger.tsx                              |     100 |      100 |     100 |     100 |                                                                         
+  WorkoutProgress.tsx                            |     100 |    85.71 |     100 |     100 | 61                                                                      
+ contexts                                        |   77.63 |    74.41 |   85.71 |   79.48 |                                                                         
+  AuthContext.tsx                                |   79.11 |    74.41 |   85.71 |      80 | 93,113,158-163,186,200-201,222,235-248,311-329                          
+  index.ts                                       |       0 |      100 |     100 |       0 | 2                                                                       
+ hooks                                           |    88.5 |    56.55 |   96.42 |   88.05 |                                                                         
+  useClients.ts                                  |     100 |    70.58 |     100 |     100 | 87-153,249-300                                                          
+  useCollections.ts                              |   93.27 |    57.62 |     100 |   92.92 | 223,240-242,257,272-274                                                 
+  useFavorites.ts                                |   96.38 |    70.37 |     100 |    96.1 | 165-167                                                                 
+  useMediaQuery.ts                               |     100 |      100 |     100 |     100 |                                                                         
+  useNotes.ts                                    |     100 |    74.28 |     100 |     100 | 29-32,89-137                                                            
+  useProgramTemplates.ts                         |     100 |      100 |     100 |     100 |                                                                         
+  usePrograms.ts                                 |     100 |      100 |     100 |     100 |                                                                         
+  useTags.ts                                     |     100 |    65.38 |     100 |     100 | 60-136,175-245                                                          
+  useTouchGestures.ts                            |   31.93 |    34.52 |   53.33 |   31.57 | 85,91-94,101-123,128-161,168-232,247-260                                
+  useWorkouts.ts                                 |     100 |      100 |     100 |     100 |                                                                         
+ lib                                             |     100 |      100 |     100 |     100 |                                                                         
+  api.ts                                         |     100 |      100 |     100 |     100 |                                                                         
+  utils.ts                                       |     100 |      100 |     100 |     100 |                                                                         
+ lib/api                                         |   94.97 |    81.97 |   98.23 |   96.17 |                                                                         
+  analytics.ts                                   |      96 |    83.72 |      95 |   95.71 | 38,110-114                                                              
+  apiClient.ts                                   |    97.1 |    86.95 |     100 |    98.5 | 46                                                                      
+  auth.ts                                        |    82.6 |    65.51 |     100 |   85.48 | 106,117,128,142,156,167,181,195,207                                     
+  clients.ts                                     |   98.73 |     92.3 |     100 |     100 | 19                                                                      
+  programs.ts                                    |   98.83 |    82.92 |     100 |     100 | 12,36,109-154,238,262                                                   
+ lib/db                                          |   94.87 |    94.11 |   88.88 |   97.05 |                                                                         
+  prisma.ts                                      |      70 |       80 |       0 |   77.77 | 22,36                                                                   
+  redis.ts                                       |   98.52 |      100 |     100 |     100 |                                                                         
+ lib/middleware                                  |   97.47 |    97.95 |     100 |   99.61 |                                                                         
+  admin.ts                                       |     100 |      100 |     100 |     100 |                                                                         
+  auth.ts                                        |     100 |      100 |     100 |     100 |                                                                         
+  authorize.ts                                   |   95.83 |      100 |     100 |     100 |                                                                         
+  error-handler.ts                               |   98.87 |      100 |     100 |     100 |                                                                         
+  rate-limit.ts                                  |      95 |      100 |     100 |   97.36 | 104                                                                     
+  validation.ts                                  |   95.08 |       90 |     100 |     100 | 150,160                                                                 
+ lib/services                                    |   95.43 |    85.22 |     100 |   96.12 |                                                                         
+  activity.service.ts                            |     100 |      100 |     100 |     100 |                                                                         
+  cloudinary.ts                                  |     100 |      100 |     100 |     100 |                                                                         
+  email.ts                                       |     100 |    93.75 |     100 |     100 | 7                                                                       
+  exercise.service.ts                            |     100 |      100 |     100 |     100 |                                                                         
+  tokenService.ts                                |    87.5 |    58.62 |     100 |   89.41 | 57-61,132,315,320,324,328                                               
+ lib/types                                       |   66.66 |      100 |     100 |     100 |                                                                         
+  auth.ts                                        |   66.66 |      100 |     100 |     100 |                                                                         
+ lib/utils                                       |   96.42 |    93.33 |   93.75 |      96 |                                                                         
+  env-check.ts                                   |   96.42 |    93.33 |   93.75 |      96 | 149-151                                                                 
+ services                                        |   93.49 |    87.87 |      98 |   93.48 |                                                                         
+  clientConnectionService.ts                     |   97.82 |     92.3 |     100 |     100 | 1                                                                       
+  exerciseService.ts                             |   87.36 |    71.42 |   91.66 |    86.9 | 153,185-211                                                             
+  programService.ts                              |   95.94 |    91.07 |     100 |   95.38 | 23-25                                                                   
+  workoutService.ts                              |    96.1 |    96.29 |     100 |   95.71 | 21-23                                                                   
+-------------------------------------------------|---------|----------|---------|---------|-------------------------------------------------------------------------

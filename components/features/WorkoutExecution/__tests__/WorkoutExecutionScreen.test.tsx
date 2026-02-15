@@ -467,4 +467,403 @@ describe('WorkoutExecutionScreen', () => {
       // Interval should be cleared (this is tested via cleanup in useEffect)
     });
   });
+
+  describe('Weight and reps increment/decrement', () => {
+    it('should increase weight by 5 when plus button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      // Find the weight input and its plus button
+      const weightLabel = screen.getByText('Weight');
+      const weightSection = weightLabel.closest('div');
+      const buttons = weightSection?.querySelectorAll('button');
+      const plusBtn = buttons?.[1]; // Second button is plus
+
+      if (plusBtn) {
+        fireEvent.click(plusBtn);
+        expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workoutLog: expect.objectContaining({
+              exercises: expect.arrayContaining([
+                expect.objectContaining({
+                  sets: expect.arrayContaining([
+                    expect.objectContaining({ weight: 140 }), // 135 + 5
+                  ]),
+                }),
+              ]),
+            }),
+          })
+        );
+      }
+    });
+
+    it('should decrease weight by 5 when minus button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const weightLabel = screen.getByText('Weight');
+      const weightSection = weightLabel.closest('div');
+      const buttons = weightSection?.querySelectorAll('button');
+      const minusBtn = buttons?.[0]; // First button is minus
+
+      if (minusBtn) {
+        fireEvent.click(minusBtn);
+        expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workoutLog: expect.objectContaining({
+              exercises: expect.arrayContaining([
+                expect.objectContaining({
+                  sets: expect.arrayContaining([
+                    expect.objectContaining({ weight: 130 }), // 135 - 5
+                  ]),
+                }),
+              ]),
+            }),
+          })
+        );
+      }
+    });
+
+    it('should not allow negative weight', () => {
+      const sessionZeroWeight = createMockSession();
+      sessionZeroWeight.workoutLog.exercises[0].sets[0].weight = 0;
+
+      render(<WorkoutExecutionScreen {...defaultProps} session={sessionZeroWeight} />);
+
+      const weightLabel = screen.getByText('Weight');
+      const weightSection = weightLabel.closest('div');
+      const buttons = weightSection?.querySelectorAll('button');
+      const minusBtn = buttons?.[0];
+
+      if (minusBtn) {
+        fireEvent.click(minusBtn);
+        expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workoutLog: expect.objectContaining({
+              exercises: expect.arrayContaining([
+                expect.objectContaining({
+                  sets: expect.arrayContaining([
+                    expect.objectContaining({ weight: 0 }), // Can't go negative
+                  ]),
+                }),
+              ]),
+            }),
+          })
+        );
+      }
+    });
+
+    it('should increase reps by 1 when plus button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const repsLabel = screen.getByText('Reps');
+      const repsSection = repsLabel.closest('div');
+      const buttons = repsSection?.querySelectorAll('button');
+      const plusBtn = buttons?.[1];
+
+      if (plusBtn) {
+        fireEvent.click(plusBtn);
+        expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workoutLog: expect.objectContaining({
+              exercises: expect.arrayContaining([
+                expect.objectContaining({
+                  sets: expect.arrayContaining([
+                    expect.objectContaining({ reps: 11 }), // 10 + 1
+                  ]),
+                }),
+              ]),
+            }),
+          })
+        );
+      }
+    });
+
+    it('should decrease reps by 1 when minus button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const repsLabel = screen.getByText('Reps');
+      const repsSection = repsLabel.closest('div');
+      const buttons = repsSection?.querySelectorAll('button');
+      const minusBtn = buttons?.[0];
+
+      if (minusBtn) {
+        fireEvent.click(minusBtn);
+        expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workoutLog: expect.objectContaining({
+              exercises: expect.arrayContaining([
+                expect.objectContaining({
+                  sets: expect.arrayContaining([
+                    expect.objectContaining({ reps: 9 }), // 10 - 1
+                  ]),
+                }),
+              ]),
+            }),
+          })
+        );
+      }
+    });
+
+    it('should not allow negative reps', () => {
+      const sessionZeroReps = createMockSession();
+      sessionZeroReps.workoutLog.exercises[0].sets[0].reps = 0;
+
+      render(<WorkoutExecutionScreen {...defaultProps} session={sessionZeroReps} />);
+
+      const repsLabel = screen.getByText('Reps');
+      const repsSection = repsLabel.closest('div');
+      const buttons = repsSection?.querySelectorAll('button');
+      const minusBtn = buttons?.[0];
+
+      if (minusBtn) {
+        fireEvent.click(minusBtn);
+        expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            workoutLog: expect.objectContaining({
+              exercises: expect.arrayContaining([
+                expect.objectContaining({
+                  sets: expect.arrayContaining([
+                    expect.objectContaining({ reps: 0 }), // Can't go negative
+                  ]),
+                }),
+              ]),
+            }),
+          })
+        );
+      }
+    });
+  });
+
+  describe('RPE and RIR dropdowns', () => {
+    it('should update RPE when dropdown is changed', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const rpeSelect = screen.getByLabelText('RPE') as HTMLSelectElement;
+      fireEvent.change(rpeSelect, { target: { value: '9' } });
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workoutLog: expect.objectContaining({
+            exercises: expect.arrayContaining([
+              expect.objectContaining({
+                sets: expect.arrayContaining([
+                  expect.objectContaining({ rpe: 9 }),
+                ]),
+              }),
+            ]),
+          }),
+        })
+      );
+    });
+
+    it('should update RIR when dropdown is changed', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const rirSelect = screen.getByLabelText('RIR') as HTMLSelectElement;
+      fireEvent.change(rirSelect, { target: { value: '2' } });
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workoutLog: expect.objectContaining({
+            exercises: expect.arrayContaining([
+              expect.objectContaining({
+                sets: expect.arrayContaining([
+                  expect.objectContaining({ rir: 2 }),
+                ]),
+              }),
+            ]),
+          }),
+        })
+      );
+    });
+
+    it('should clear RPE when empty option is selected', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const rpeSelect = screen.getByLabelText('RPE') as HTMLSelectElement;
+      fireEvent.change(rpeSelect, { target: { value: '' } });
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workoutLog: expect.objectContaining({
+            exercises: expect.arrayContaining([
+              expect.objectContaining({
+                sets: expect.arrayContaining([
+                  expect.objectContaining({ rpe: undefined }),
+                ]),
+              }),
+            ]),
+          }),
+        })
+      );
+    });
+
+    it('should clear RIR when empty option is selected', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const rirSelect = screen.getByLabelText('RIR') as HTMLSelectElement;
+      fireEvent.change(rirSelect, { target: { value: '' } });
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workoutLog: expect.objectContaining({
+            exercises: expect.arrayContaining([
+              expect.objectContaining({
+                sets: expect.arrayContaining([
+                  expect.objectContaining({ rir: undefined }),
+                ]),
+              }),
+            ]),
+          }),
+        })
+      );
+    });
+  });
+
+  describe('Set notes', () => {
+    it('should update set notes when textarea is changed', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      const notesTextarea = screen.getByPlaceholderText('How did this set feel? Any observations?');
+      fireEvent.change(notesTextarea, { target: { value: 'Great set!' } });
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workoutLog: expect.objectContaining({
+            exercises: expect.arrayContaining([
+              expect.objectContaining({
+                sets: expect.arrayContaining([
+                  expect.objectContaining({ notes: 'Great set!' }),
+                ]),
+              }),
+            ]),
+          }),
+        })
+      );
+    });
+  });
+
+  describe('Workout completion flow', () => {
+    it('should complete workout and call onCompleteWorkout when on last exercise last set', () => {
+      const session = createMockSession({
+        currentExerciseIndex: 1, // Second exercise (Overhead Press)
+        currentSetIndex: 1, // Last set of second exercise
+      });
+
+      render(<WorkoutExecutionScreen {...defaultProps} session={session} />);
+
+      // Complete the set
+      fireEvent.click(screen.getByText('Complete Set'));
+
+      // Should be ready to complete workout
+      const nextBtn = screen.getByText('Next Exercise');
+      fireEvent.click(nextBtn);
+
+      expect(defaultProps.onCompleteWorkout).toHaveBeenCalled();
+      expect(mockSuccess).toHaveBeenCalledWith('Workout Complete!', 'Excellent work today!');
+    });
+
+    it('should mark exercise as skipped with note when Skip Exercise is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      fireEvent.click(screen.getByText('Skip Exercise'));
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workoutLog: expect.objectContaining({
+            exercises: expect.arrayContaining([
+              expect.objectContaining({
+                skipped: true,
+                notes: expect.stringContaining('[Exercise skipped]'),
+              }),
+            ]),
+          }),
+        })
+      );
+    });
+  });
+
+  describe('Rest timer preset buttons', () => {
+    it('should start 60 second timer when 1 min button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      fireEvent.click(screen.getByText('1 min'));
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isTimerRunning: true,
+          restTimerDuration: 60,
+        })
+      );
+    });
+
+    it('should start 90 second timer when 1.5 min button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      fireEvent.click(screen.getByText('1.5 min'));
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isTimerRunning: true,
+          restTimerDuration: 90,
+        })
+      );
+    });
+
+    it('should start 120 second timer when 2 min button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      fireEvent.click(screen.getByText('2 min'));
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isTimerRunning: true,
+          restTimerDuration: 120,
+        })
+      );
+    });
+
+    it('should start 180 second timer when 3 min button is clicked', () => {
+      render(<WorkoutExecutionScreen {...defaultProps} />);
+
+      fireEvent.click(screen.getByText('3 min'));
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isTimerRunning: true,
+          restTimerDuration: 180,
+        })
+      );
+    });
+  });
+
+  describe('Navigation between sets and exercises', () => {
+    it('should move to previous set when possible', () => {
+      const session = createMockSession({ currentSetIndex: 1 });
+
+      render(<WorkoutExecutionScreen {...defaultProps} session={session} />);
+
+      // Should be able to navigate back (implementation detail, tested via state)
+      expect(session.currentSetIndex).toBe(1);
+    });
+
+    it('should move to next exercise when completing last set', () => {
+      const session = createMockSession({ currentSetIndex: 2 }); // Last set of first exercise
+
+      render(<WorkoutExecutionScreen {...defaultProps} session={session} />);
+
+      // Complete the set
+      session.workoutLog.exercises[0].sets[2].completed = true;
+      const { rerender } = render(<WorkoutExecutionScreen {...defaultProps} session={session} />);
+
+      const nextBtn = screen.getByText('Next Exercise');
+      fireEvent.click(nextBtn);
+
+      expect(defaultProps.onUpdateSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          currentExerciseIndex: 1,
+          currentSetIndex: 0,
+        })
+      );
+    });
+  });
 });

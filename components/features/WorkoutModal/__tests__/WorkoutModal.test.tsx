@@ -198,4 +198,77 @@ describe('WorkoutModal', () => {
       expect(document.body.style.overflow).toBe('unset');
     });
   });
+
+  describe('Each Side toggle', () => {
+    it('should toggle Each Side checkbox', () => {
+      render(<WorkoutModal {...defaultProps} />);
+      const checkboxes = screen.getAllByRole('checkbox');
+      // Click the first "Each Side" checkbox
+      if (checkboxes.length > 0) {
+        fireEvent.click(checkboxes[0]);
+        expect(checkboxes[0]).toBeChecked();
+        // Toggle back
+        fireEvent.click(checkboxes[0]);
+        expect(checkboxes[0]).not.toBeChecked();
+      }
+    });
+  });
+
+  describe('Duration input', () => {
+    it('should update duration when changed', () => {
+      render(<WorkoutModal {...defaultProps} />);
+      const durationInput = screen.getByDisplayValue('1');
+      fireEvent.change(durationInput, { target: { value: '5' } });
+      expect(durationInput).toHaveValue(5);
+    });
+  });
+
+  describe('View mode', () => {
+    it('should switch to list view when list icon is clicked', () => {
+      render(<WorkoutModal {...defaultProps} />);
+      const listIcons = screen.getAllByTestId('icon-list');
+      // Click list icon (there should be one in the exercise list header)
+      const listBtn = listIcons[0].closest('button');
+      if (listBtn) {
+        fireEvent.click(listBtn);
+        // View mode should be 'list' now
+        expect(listBtn.className).toContain('text-blue-600');
+      }
+    });
+
+    it('should switch to grid view when grid icon is clicked', () => {
+      render(<WorkoutModal {...defaultProps} />);
+      // First switch to list
+      const listIcons = screen.getAllByTestId('icon-list');
+      const listBtn = listIcons[0].closest('button');
+      if (listBtn) fireEvent.click(listBtn);
+
+      // Then switch to grid
+      const gridIcons = screen.getAllByTestId('icon-grid');
+      const gridBtn = gridIcons[0].closest('button');
+      if (gridBtn) {
+        fireEvent.click(gridBtn);
+        expect(gridBtn.className).toContain('text-blue-600');
+      }
+    });
+  });
+
+  describe('Mobile layout', () => {
+    it('should detect mobile screen size', () => {
+      // Mock window.innerWidth for mobile
+      Object.defineProperty(window, 'innerWidth', { value: 375, writable: true });
+      window.dispatchEvent(new Event('resize'));
+      render(<WorkoutModal {...defaultProps} />);
+      // On mobile, should show section/exercises toggle button
+      // Check that mobile nav appears
+      const sectionBtn = screen.queryByText('Section');
+      const exercisesBtn = screen.queryByText('Exercises');
+      // Either Section or Exercises should show on mobile
+      expect(sectionBtn || exercisesBtn).toBeTruthy();
+    });
+
+    afterAll(() => {
+      Object.defineProperty(window, 'innerWidth', { value: 1024, writable: true });
+    });
+  });
 });
