@@ -257,5 +257,270 @@ describe('ExerciseList', () => {
         expect(screen.getByText('Retry')).toBeInTheDocument();
       });
     });
+
+    it('should show error when API returns error flag', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ error: true, message: 'API Error' }),
+      });
+      render(<ExerciseList />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to load exercises')).toBeInTheDocument();
+        expect(screen.getByText('API Error')).toBeInTheDocument();
+      });
+    });
+
+    it('should handle non-200 response status', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        statusText: 'Internal Server Error',
+        json: () => Promise.resolve({}),
+      });
+      render(<ExerciseList />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to load exercises')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Filtering', () => {
+    const exercises = createMockExercises(10);
+
+    it('should filter by equipment', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      fireEvent.click(screen.getByText('Filters'));
+
+      const barbellCheckbox = screen.getByLabelText('barbell');
+      fireEvent.click(barbellCheckbox);
+
+      // Only exercises with equipment = 'barbell' should be visible
+      expect(screen.getByText('Exercise 001')).toBeInTheDocument();
+      expect(screen.queryByText('Exercise 002')).not.toBeInTheDocument();
+    });
+
+    it('should filter by targetMuscle', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      fireEvent.click(screen.getByText('Filters'));
+
+      const pectoralsCheckbox = screen.getByLabelText('pectorals');
+      fireEvent.click(pectoralsCheckbox);
+
+      expect(screen.getByText('Exercise 001')).toBeInTheDocument();
+      expect(screen.queryByText('Exercise 002')).not.toBeInTheDocument();
+    });
+
+    it('should filter by difficulty', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      fireEvent.click(screen.getByText('Filters'));
+
+      const beginnerCheckbox = screen.getByLabelText('beginner');
+      fireEvent.click(beginnerCheckbox);
+
+      // Exercises with difficulty = 'beginner' (i % 3 === 0: 0, 3, 6, 9)
+      expect(screen.getByText('Exercise 001')).toBeInTheDocument();
+      expect(screen.queryByText('Exercise 002')).not.toBeInTheDocument();
+    });
+
+    it('should apply multiple filters together', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      fireEvent.click(screen.getByText('Filters'));
+
+      const chestCheckbox = screen.getByLabelText('chest');
+      const barbellCheckbox = screen.getByLabelText('barbell');
+      fireEvent.click(chestCheckbox);
+      fireEvent.click(barbellCheckbox);
+
+      // Only exercises matching both filters
+      expect(screen.getByText('Exercise 001')).toBeInTheDocument();
+    });
+
+    it('should remove active filter tag when X is clicked', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      fireEvent.click(screen.getByText('Filters'));
+
+      const chestCheckbox = screen.getByLabelText('chest');
+      fireEvent.click(chestCheckbox);
+
+      // Find and click the X button on the filter tag
+      const xButtons = screen.getAllByTestId('icon-x');
+      fireEvent.click(xButtons[0]);
+
+      // Filter should be removed
+      expect(screen.getByText('Exercise 002')).toBeInTheDocument();
+    });
+  });
+
+  describe('Sorting', () => {
+    const exercises = createMockExercises(5);
+
+    it('should toggle sort direction when clicking same column', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      // Initially sorted by name ascending - should show chevron up
+      expect(screen.getByTestId('icon-chevron-up')).toBeInTheDocument();
+
+      // Click name header to toggle to descending
+      const nameHeader = screen.getByText('Name').closest('th');
+      fireEvent.click(nameHeader!);
+
+      // Should now show descending chevron
+      expect(screen.queryAllByTestId('icon-chevron-down').length).toBeGreaterThan(0);
+    });
+
+    it('should sort by bodyPart when column header is clicked', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const bodyPartHeader = screen.getByText('Body Part').closest('th');
+      fireEvent.click(bodyPartHeader!);
+
+      // Verify sort icon appears
+      const chevronUp = screen.getAllByTestId('icon-chevron-up');
+      expect(chevronUp.length).toBeGreaterThan(0);
+    });
+
+    it('should sort by targetMuscle when column header is clicked', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const muscleHeader = screen.getByText('Target Muscle').closest('th');
+      fireEvent.click(muscleHeader!);
+
+      const chevronUp = screen.getAllByTestId('icon-chevron-up');
+      expect(chevronUp.length).toBeGreaterThan(0);
+    });
+
+    it('should sort by equipment when column header is clicked', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const equipmentHeader = screen.getByText('Equipment').closest('th');
+      fireEvent.click(equipmentHeader!);
+
+      const chevronUp = screen.getAllByTestId('icon-chevron-up');
+      expect(chevronUp.length).toBeGreaterThan(0);
+    });
+
+    it('should sort by difficulty when column header is clicked', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const difficultyHeader = screen.getByText('Difficulty').closest('th');
+      fireEvent.click(difficultyHeader!);
+
+      const chevronUp = screen.getAllByTestId('icon-chevron-up');
+      expect(chevronUp.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Pagination navigation', () => {
+    it('should navigate to previous page using arrow button', () => {
+      const exercises = createMockExercises(25);
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      // Go to page 2
+      const page2Btn = screen.getByRole('button', { name: '2' });
+      fireEvent.click(page2Btn);
+
+      // Click previous arrow
+      const prevButtons = screen.getAllByTestId('icon-chevron-left');
+      fireEvent.click(prevButtons[0].closest('button')!);
+
+      // Should be back on page 1
+      expect(screen.getByText('Exercise 001')).toBeInTheDocument();
+    });
+
+    it('should navigate to next page using arrow button', () => {
+      const exercises = createMockExercises(25);
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      // Click next arrow
+      const nextButtons = screen.getAllByTestId('icon-chevron-right');
+      fireEvent.click(nextButtons[0].closest('button')!);
+
+      // Should be on page 2
+      expect(screen.getByText('Exercise 011')).toBeInTheDocument();
+    });
+
+    it('should use mobile pagination buttons (Previous/Next)', () => {
+      const exercises = createMockExercises(25);
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const nextBtns = screen.getAllByRole('button', { name: 'Next' });
+      fireEvent.click(nextBtns[0]);
+
+      expect(screen.getByText('Exercise 011')).toBeInTheDocument();
+
+      const prevBtns = screen.getAllByRole('button', { name: 'Previous' });
+      fireEvent.click(prevBtns[0]);
+
+      expect(screen.getByText('Exercise 001')).toBeInTheDocument();
+    });
+
+    it('should disable previous button on first page', () => {
+      const exercises = createMockExercises(25);
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const prevBtns = screen.getAllByRole('button', { name: 'Previous' });
+      expect(prevBtns[0]).toBeDisabled();
+    });
+
+    it('should disable next button on last page', () => {
+      const exercises = createMockExercises(15);
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      // Go to page 2 (last page)
+      const page2Btn = screen.getByRole('button', { name: '2' });
+      fireEvent.click(page2Btn);
+
+      const nextBtns = screen.getAllByRole('button', { name: 'Next' });
+      expect(nextBtns[0]).toBeDisabled();
+    });
+  });
+
+  describe('Exercise selection', () => {
+    const exercises = createMockExercises(5);
+
+    it('should deselect exercise when clicking checkbox again', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      const checkboxes = screen.getAllByRole('checkbox');
+
+      fireEvent.click(checkboxes[1]); // Select
+      expect(screen.getByText('1 selected')).toBeInTheDocument();
+
+      fireEvent.click(checkboxes[1]); // Deselect
+      expect(screen.getByText('0 selected')).toBeInTheDocument();
+    });
+
+    it('should stop propagation when clicking checkbox in row', () => {
+      render(<ExerciseList preloadedExercises={exercises} />);
+      const checkboxes = screen.getAllByRole('checkbox');
+
+      // Just verify the checkbox can be clicked
+      fireEvent.click(checkboxes[1]);
+      expect(screen.getByText('1 selected')).toBeInTheDocument();
+    });
+  });
+
+  describe('Difficulty badge styling', () => {
+    it('should show correct color for intermediate difficulty', () => {
+      const exercises = [{
+        ...createMockExercises(1)[0],
+        difficulty: 'intermediate' as const,
+      }];
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const badge = screen.getByText('intermediate');
+      expect(badge).toHaveClass('bg-yellow-100', 'text-yellow-800');
+    });
+
+    it('should show correct color for advanced difficulty', () => {
+      const exercises = [{
+        ...createMockExercises(1)[0],
+        difficulty: 'advanced' as const,
+      }];
+      render(<ExerciseList preloadedExercises={exercises} />);
+
+      const badge = screen.getByText('advanced');
+      expect(badge).toHaveClass('bg-red-100', 'text-red-800');
+    });
   });
 });

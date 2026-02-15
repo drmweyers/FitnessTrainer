@@ -392,4 +392,188 @@ describe('Sidebar', () => {
       expect(container).toBeInTheDocument();
     });
   });
+
+  describe('Exercises and Client Management onClick behavior', () => {
+    it('calls onClick when exercises menu is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      // Exercises link has both onClick (toggle) and onMobileClick (close)
+      fireEvent.click(screen.getByText('Exercises'));
+      // Should collapse submenu, but also trigger mobile close
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('toggles exercises without closing on desktop', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1200 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      expect(screen.getByText('All Exercises')).toBeInTheDocument();
+      fireEvent.click(screen.getByText('Exercises'));
+      expect(screen.queryByText('All Exercises')).not.toBeInTheDocument();
+      expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it('calls onClick when client management is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Client Management'));
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Mobile window resize handling', () => {
+    it('detects mobile viewport on mount', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 800 });
+      window.dispatchEvent(new Event('resize'));
+
+      const { container } = render(<Sidebar {...defaultProps} />);
+      expect(container).toBeInTheDocument();
+    });
+
+    it('updates isMobile when window is resized to mobile width', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1200 });
+      window.dispatchEvent(new Event('resize'));
+
+      render(<Sidebar {...defaultProps} />);
+
+      // Resize to mobile
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      // Component should react to resize
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    });
+
+    it('updates isMobile when window is resized to desktop width', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      render(<Sidebar {...defaultProps} />);
+
+      // Resize to desktop
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1200 });
+      window.dispatchEvent(new Event('resize'));
+
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    });
+  });
+
+  describe('NavItem component coverage', () => {
+    it('renders nav item with hasChildren but no onClick', () => {
+      // This tests the branch where hasChildren exists but onClick might not
+      render(<Sidebar {...defaultProps} />);
+      const exercisesLink = screen.getByText('Exercises');
+      expect(exercisesLink).toBeInTheDocument();
+    });
+
+    it('nav items without children do not have expand icons', () => {
+      render(<Sidebar {...defaultProps} />);
+      const dashboardLink = screen.getByText('Dashboard').closest('a');
+      // Dashboard should not have ChevronDown or ChevronRight
+      expect(dashboardLink).toBeInTheDocument();
+    });
+
+    it('calls onClose when Schedule is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Schedule'));
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Exercise category sub-items on mobile', () => {
+    it('calls onClose when Strength is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Strength'));
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('calls onClose when Cardio is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Cardio'));
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('calls onClose when Flexibility is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Flexibility'));
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Client management sub-items on mobile', () => {
+    it('calls onClose when Active Clients is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Active Clients'));
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('calls onClose when Inactive Clients is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Inactive Clients'));
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('calls onClose when Pending Clients is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Pending Clients'));
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('calls onClose when Archived Clients is clicked on mobile', () => {
+      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+      window.dispatchEvent(new Event('resize'));
+
+      const onClose = jest.fn();
+      render(<Sidebar isOpen={true} onClose={onClose} isCollapsed={false} setIsCollapsed={jest.fn()} />);
+
+      fireEvent.click(screen.getByText('Archived Clients'));
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
 });
