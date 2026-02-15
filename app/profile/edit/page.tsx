@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
+import WhatsAppSetup from '@/components/shared/WhatsAppSetup';
 
 interface Certification {
   id: string;
@@ -59,6 +60,8 @@ export default function ProfileEditPage() {
   const [editingCertId, setEditingCertId] = useState<string | null>(null);
   const [isCertSaving, setIsCertSaving] = useState(false);
 
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+
   const [form, setForm] = useState({
     bio: '',
     dateOfBirth: '',
@@ -96,6 +99,7 @@ export default function ProfileEditPage() {
               preferredUnits: p.preferredUnits || 'metric',
               isPublic: p.isPublic ?? true,
             });
+            if (p.whatsappNumber) setWhatsappNumber(p.whatsappNumber);
           }
         })
         .catch(err => console.error('Failed to load profile:', err))
@@ -497,6 +501,27 @@ export default function ProfileEditPage() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* WhatsApp Integration (trainers only) */}
+        {user?.role === 'trainer' && (
+          <WhatsAppSetup
+            currentNumber={whatsappNumber}
+            onSave={async (number) => {
+              const token = localStorage.getItem('accessToken');
+              const res = await fetch('/api/profiles/me', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token && { Authorization: `Bearer ${token}` }),
+                },
+                body: JSON.stringify({ whatsappNumber: number || null }),
+              });
+              const result = await res.json();
+              if (!result.success) throw new Error(result.error || 'Failed to save');
+              setWhatsappNumber(number);
+            }}
+          />
         )}
 
         {/* Actions */}

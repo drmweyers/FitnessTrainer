@@ -5,6 +5,9 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { MainNavigation, BreadcrumbNav, type BreadcrumbItem } from '@/components/navigation';
 import Footer from './Footer';
+import OfflineIndicator from '@/components/shared/OfflineIndicator';
+import InstallPrompt from '@/components/shared/InstallPrompt';
+import UpdateAvailable from '@/components/shared/UpdateAvailable';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -62,8 +65,13 @@ export default function AppLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* PWA: Offline indicator, install prompt, update toast */}
+      <OfflineIndicator />
+      <InstallPrompt />
+      <UpdateAvailable />
+
       {/* Navigation */}
-      <MainNavigation 
+      <MainNavigation
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         showSidebar={shouldShowSidebar}
@@ -72,11 +80,11 @@ export default function AppLayout({
       {/* Main Content Area */}
       <div className="flex">
         {/* Content */}
-        <main 
+        <main
           className={`
             flex-1 flex flex-col transition-all duration-300 ease-in-out
-            ${shouldShowSidebar 
-              ? (isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64') 
+            ${shouldShowSidebar
+              ? (isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64')
               : ''
             }
             ${className}

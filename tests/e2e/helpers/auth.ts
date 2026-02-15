@@ -61,9 +61,9 @@ export async function loginViaAPI(
   expect(response.ok()).toBeTruthy();
   const body = await response.json();
 
-  // Handle both possible response shapes
-  const accessToken = body.data?.accessToken || body.accessToken;
-  const refreshToken = body.data?.refreshToken || body.refreshToken;
+  // Handle the actual API response shape: body.data.tokens.accessToken
+  const accessToken = body.data?.tokens?.accessToken || body.data?.accessToken || body.accessToken;
+  const refreshToken = body.data?.tokens?.refreshToken || body.data?.refreshToken || body.refreshToken;
   const user = body.data?.user || body.user;
 
   expect(accessToken).toBeTruthy();

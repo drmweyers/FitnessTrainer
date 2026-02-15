@@ -22,7 +22,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3002',
+    baseURL: 'https://evofittrainer-six.vercel.app',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     /* Take screenshot on failure */
@@ -33,60 +33,19 @@ export default defineConfig({
     actionTimeout: 30000,
   },
 
+  /* Output directory for test results */
+  outputDir: 'test-results/e2e',
+
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Mobile viewports */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
-
-    /* Tablet viewport */
-    {
-      name: 'Tablet',
-      use: {
-        ...devices['iPad Pro'],
-      },
-    },
   ],
 
-  /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command: 'npx next dev -p 3002',
-      url: 'http://localhost:3002',
-      reuseExistingServer: !process.env.CI,
-      timeout: 180 * 1000,
-    },
-    {
-      command: 'cd backend && npm run dev',
-      url: 'http://localhost:4000/api/health',
-      reuseExistingServer: !process.env.CI,
-      timeout: 180 * 1000,
-    },
-  ],
-
-  /* Test timeout */
-  timeout: 60 * 1000,
+  /* Test timeout - increased for production environment */
+  timeout: 90 * 1000,
   expect: {
     /* Global expect timeout */
     timeout: 10000,

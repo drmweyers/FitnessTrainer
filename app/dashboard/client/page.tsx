@@ -15,10 +15,11 @@ import {
   QuickAction
 } from '@/types/dashboard';
 import ProfileCompletionWidget from '@/components/features/Dashboard/ProfileCompletionWidget';
+import WhatsAppButton from '@/components/shared/WhatsAppButton';
 
 /**
  * Client Dashboard
- * 
+ *
  * Comprehensive dashboard for fitness clients.
  * Features:
  * - Today's workout overview
@@ -27,11 +28,13 @@ import ProfileCompletionWidget from '@/components/features/Dashboard/ProfileComp
  * - Recent workout history
  * - Upcoming workouts schedule
  * - Quick actions for common client tasks
+ * - Floating WhatsApp button to message trainer
  */
 export default function ClientDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [trainerWhatsApp, setTrainerWhatsApp] = useState<{ phone: string; name: string } | null>(null);
 
   const [progressSummary, setProgressSummary] = useState<ProgressSummary>({
     currentWeight: 0,
@@ -145,6 +148,24 @@ export default function ClientDashboard() {
         })
         .catch(err => console.error('Failed to load activities:', err))
         .finally(() => setIsDataLoading(false));
+
+      // Fetch trainer's WhatsApp number for floating button
+      fetch('/api/clients/trainer', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+        .then(res => res.ok ? res.json() : null)
+        .then(result => {
+          if (result?.success && result.data?.whatsappNumber) {
+            setTrainerWhatsApp({
+              phone: result.data.whatsappNumber,
+              name: result.data.name || result.data.email?.split('@')[0] || 'Trainer',
+            });
+          }
+        })
+        .catch(() => { /* trainer endpoint may not exist yet */ });
     }
   }, [isLoading, isAuthenticated, user, router]);
 
@@ -288,6 +309,15 @@ export default function ClientDashboard() {
         </div>
 
       </div>
+
+      {/* Floating WhatsApp button to message trainer */}
+      {trainerWhatsApp && (
+        <WhatsAppButton
+          phone={trainerWhatsApp.phone}
+          name={trainerWhatsApp.name}
+          variant="floating"
+        />
+      )}
     </DashboardLayout>
   );
 }
