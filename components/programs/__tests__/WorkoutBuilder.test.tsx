@@ -212,4 +212,201 @@ describe('WorkoutBuilder', () => {
     fireEvent.click(trashBtns[0].closest('button')!);
     expect(mockOnUpdate).not.toHaveBeenCalled();
   });
+
+  describe('adding workouts via dialog', () => {
+    it('opens add workout dialog when Add Workout button is clicked', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+      expect(screen.getByText('Add a workout to this week')).toBeInTheDocument();
+    });
+
+    it('shows dialog form fields', () => {
+      render(<WorkoutBuilder workouts={[]} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+      expect(screen.getByText('Day *')).toBeInTheDocument();
+      expect(screen.getByText('Workout Name *')).toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument();
+      expect(screen.getByText('Duration (minutes)')).toBeInTheDocument();
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      // "Rest Day" label (no workout cards since empty, so no badge conflict)
+      expect(screen.getByText('Rest Day')).toBeInTheDocument();
+    });
+
+    it('fills in workout name and adds workout', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      const nameInput = screen.getByPlaceholderText('e.g., Upper Body Strength');
+      fireEvent.change(nameInput, { target: { value: 'Push Day' } });
+
+      // Click "Add Workout" in dialog footer
+      const dialogAddBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          ...mockWorkouts,
+          expect.objectContaining({ name: 'Push Day', id: 'test-uuid-456' }),
+        ])
+      );
+    });
+
+    it('does not add workout with empty name', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      // Click Add without filling name
+      const dialogAddBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).not.toHaveBeenCalled();
+    });
+
+    it('fills in description when adding workout', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      const nameInput = screen.getByPlaceholderText('e.g., Upper Body Strength');
+      fireEvent.change(nameInput, { target: { value: 'Legs Day' } });
+
+      const descInput = screen.getByPlaceholderText('Optional description...');
+      fireEvent.change(descInput, { target: { value: 'Squat focus' } });
+
+      const dialogAddBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Legs Day', description: 'Squat focus' }),
+        ])
+      );
+    });
+
+    it('changes duration when adding workout', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      const nameInput = screen.getByPlaceholderText('e.g., Upper Body Strength');
+      fireEvent.change(nameInput, { target: { value: 'Quick Session' } });
+
+      const durationInput = screen.getByDisplayValue('60');
+      fireEvent.change(durationInput, { target: { value: '30' } });
+
+      const dialogAddBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Quick Session', estimatedDuration: 30 }),
+        ])
+      );
+    });
+
+    it('sets rest day toggle when adding workout', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      // Toggle rest day first
+      const restDaySwitch = screen.getAllByRole('checkbox');
+      const restSwitch = restDaySwitch.find(cb => cb.getAttribute('id') === 'rest-day');
+      if (restSwitch) {
+        fireEvent.click(restSwitch);
+      }
+
+      const nameInput = screen.getByPlaceholderText('e.g., Upper Body Strength');
+      fireEvent.change(nameInput, { target: { value: 'Recovery Day' } });
+
+      const dialogAddBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Recovery Day', isRestDay: true }),
+        ])
+      );
+    });
+
+    it('cancel button closes dialog without adding', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      fireEvent.click(screen.getByText('Cancel'));
+      expect(mockOnUpdate).not.toHaveBeenCalled();
+    });
+
+    it('handles invalid duration input (NaN defaults to 60)', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(addBtns[0]);
+
+      const nameInput = screen.getByPlaceholderText('e.g., Upper Body Strength');
+      fireEvent.change(nameInput, { target: { value: 'Test' } });
+
+      const durationInput = screen.getByDisplayValue('60');
+      fireEvent.change(durationInput, { target: { value: 'abc' } });
+
+      const dialogAddBtns = screen.getAllByText('Add Workout');
+      fireEvent.click(dialogAddBtns[dialogAddBtns.length - 1]);
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Test', estimatedDuration: 60 }),
+        ])
+      );
+    });
+
+    it('opens dialog from empty state Add Workout button', () => {
+      render(<WorkoutBuilder workouts={[]} onUpdate={mockOnUpdate} />);
+      const addBtns = screen.getAllByText('Add Workout');
+      // There should be both the header button and empty state button
+      // Click empty state one (last one)
+      fireEvent.click(addBtns[addBtns.length - 1]);
+      expect(screen.getByText('Add a workout to this week')).toBeInTheDocument();
+    });
+  });
+
+  describe('workout card details', () => {
+    it('shows rest day styling', () => {
+      render(<WorkoutBuilder workouts={mockWorkouts} onUpdate={mockOnUpdate} />);
+      // Rest day card has green border class
+      const restCard = screen.getByText('Rest & Recovery').closest('div[class*="border-green"]');
+      expect(restCard).toBeTruthy();
+    });
+
+    it('shows singular exercise text for single exercise', () => {
+      const singleExerciseWorkouts = [{
+        id: 'wo-single',
+        dayNumber: 1,
+        name: 'Quick Workout',
+        workoutType: 'strength',
+        estimatedDuration: 30,
+        isRestDay: false,
+        exercises: [{ id: 'e1', name: 'Push Up' }],
+      }] as any;
+      render(<WorkoutBuilder workouts={singleExerciseWorkouts} onUpdate={mockOnUpdate} />);
+      expect(screen.getByText(/1 exercise$/)).toBeInTheDocument();
+    });
+
+    it('does not show duration text in rest day card', () => {
+      const restOnly = [{
+        id: 'wo-rest',
+        dayNumber: 1,
+        name: 'Rest',
+        isRestDay: true,
+        estimatedDuration: 0,
+        exercises: [],
+      }] as any;
+      render(<WorkoutBuilder workouts={restOnly} onUpdate={mockOnUpdate} readOnly />);
+      // Rest day card should not show "X minutes" text
+      expect(screen.queryByText(/\d+ minutes/)).not.toBeInTheDocument();
+    });
+  });
 });
