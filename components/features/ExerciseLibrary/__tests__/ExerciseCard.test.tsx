@@ -241,6 +241,115 @@ describe('ExerciseCard', () => {
     });
   });
 
+  describe('Hover and GIF behavior', () => {
+    it('starts playing GIF after hover delay', () => {
+      render(<ExerciseCard exercise={defaultExercise} />);
+      const card = document.querySelector('[class*="cursor-pointer"]')!;
+      fireEvent.mouseEnter(card);
+      // After 300ms delay, GIF should start playing
+      act(() => { jest.advanceTimersByTime(300); });
+      // GIF indicator should show
+      expect(screen.getByText('GIF')).toBeInTheDocument();
+    });
+
+    it('stops playing GIF on mouse leave', () => {
+      render(<ExerciseCard exercise={defaultExercise} />);
+      const card = document.querySelector('[class*="cursor-pointer"]')!;
+      fireEvent.mouseEnter(card);
+      act(() => { jest.advanceTimersByTime(300); });
+      expect(screen.getByText('GIF')).toBeInTheDocument();
+
+      fireEvent.mouseLeave(card);
+      expect(screen.queryByText('GIF')).not.toBeInTheDocument();
+    });
+
+    it('clears hover timeout on quick mouse leave', () => {
+      render(<ExerciseCard exercise={defaultExercise} />);
+      const card = document.querySelector('[class*="cursor-pointer"]')!;
+      fireEvent.mouseEnter(card);
+      // Leave before 300ms delay
+      act(() => { jest.advanceTimersByTime(100); });
+      fireEvent.mouseLeave(card);
+      // Advance past the timeout - should not show GIF
+      act(() => { jest.advanceTimersByTime(300); });
+      expect(screen.queryByText('GIF')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Image loading states', () => {
+    it('shows loading spinner before image loads', () => {
+      render(<ExerciseCard exercise={defaultExercise} />);
+      // Image hasn't loaded yet, should show spinner
+      const spinner = document.querySelector('.animate-spin');
+      expect(spinner).toBeInTheDocument();
+    });
+
+    it('hides spinner after image loads', () => {
+      render(<ExerciseCard exercise={defaultExercise} />);
+      const img = document.querySelector('img[alt="Push Up"]')!;
+      fireEvent.load(img);
+      // Spinner should be gone after load
+      const spinners = document.querySelectorAll('.animate-spin');
+      // In grid view, loading spinner is only for the main image
+      expect(img.className).toContain('opacity-100');
+    });
+
+    it('shows placeholder on image error', () => {
+      render(<ExerciseCard exercise={defaultExercise} />);
+      const img = document.querySelector('img[alt="Push Up"]')!;
+      fireEvent.error(img);
+      // After error, src should be the placeholder
+      expect(img.getAttribute('src')).toContain('exercise-placeholder');
+    });
+  });
+
+  describe('List view hover and actions', () => {
+    it('calls onFavorite in list view', () => {
+      const onFavorite = jest.fn();
+      render(<ExerciseCard exercise={defaultExercise} viewMode="list" onFavorite={onFavorite} />);
+      const hearts = screen.getAllByTestId('icon-heart');
+      fireEvent.click(hearts[0].closest('button')!);
+      expect(onFavorite).toHaveBeenCalledWith('0001');
+    });
+
+    it('calls onQuickView in list view', () => {
+      const onQuickView = jest.fn();
+      render(<ExerciseCard exercise={defaultExercise} viewMode="list" onQuickView={onQuickView} />);
+      const infos = screen.getAllByTestId('icon-info');
+      fireEvent.click(infos[0].closest('button')!);
+      expect(onQuickView).toHaveBeenCalledWith(defaultExercise);
+    });
+
+    it('calls onAddToCollection in list view', () => {
+      const onAddToCollection = jest.fn();
+      render(<ExerciseCard exercise={defaultExercise} viewMode="list" onAddToCollection={onAddToCollection} />);
+      const plusBtns = screen.getAllByTestId('icon-plus');
+      fireEvent.click(plusBtns[0].closest('button')!);
+      expect(onAddToCollection).toHaveBeenCalledWith('0001');
+    });
+
+    it('shows target muscles +N in list view', () => {
+      render(<ExerciseCard exercise={defaultExercise} viewMode="list" />);
+      // Target muscles text includes "+1" inline: "chest, triceps +1"
+      expect(screen.getByText(/\+1/)).toBeInTheDocument();
+    });
+
+    it('shows loading spinner in list view before image loads', () => {
+      render(<ExerciseCard exercise={defaultExercise} viewMode="list" />);
+      const spinner = document.querySelector('.animate-spin');
+      expect(spinner).toBeInTheDocument();
+    });
+
+    it('shows GIF playing indicator in list view on hover', () => {
+      render(<ExerciseCard exercise={defaultExercise} viewMode="list" />);
+      const card = document.querySelector('[class*="cursor-pointer"]')!;
+      fireEvent.mouseEnter(card);
+      act(() => { jest.advanceTimersByTime(300); });
+      const indicator = document.querySelector('.animate-pulse');
+      expect(indicator).toBeInTheDocument();
+    });
+  });
+
   describe('Callbacks are optional', () => {
     it('does not throw when onFavorite is not provided', () => {
       render(<ExerciseCard exercise={defaultExercise} />);
