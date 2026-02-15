@@ -377,6 +377,27 @@ describe('PUT /api/profiles/me', () => {
     expect(completionCall.update.basicInfo).toBe(false);
   });
 
+  it('includes whatsappNumber in create and update', async () => {
+    const authReq = Object.assign(
+      createMockRequest('/api/profiles/me', {
+        method: 'PUT',
+        body: { whatsappNumber: '+1234567890' },
+      }),
+      { user: { id: mockClientUser.id } }
+    );
+    const { authenticate } = require('@/lib/middleware/auth');
+    (authenticate as jest.Mock).mockResolvedValue(authReq);
+
+    mockPrisma.userProfile.upsert.mockResolvedValue({ whatsappNumber: '+1234567890' });
+    mockPrisma.profileCompletion.upsert.mockResolvedValue({});
+
+    await PUT(authReq);
+
+    const upsertCall = mockPrisma.userProfile.upsert.mock.calls[0][0];
+    expect(upsertCall.create.whatsappNumber).toBe('+1234567890');
+    expect(upsertCall.update.whatsappNumber).toBe('+1234567890');
+  });
+
   it('returns 500 on database error', async () => {
     const authReq = Object.assign(
       createMockRequest('/api/profiles/me', {

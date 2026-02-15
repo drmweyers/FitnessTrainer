@@ -229,24 +229,32 @@ const DailyWorkoutView: React.FC<DailyWorkoutViewProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    // Compare date strings directly to avoid timezone issues
+    // (new Date('2026-02-15') is UTC midnight, which can be "yesterday" in local time)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    const tomorrowStr = tomorrowDate.toISOString().split('T')[0];
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
 
-    if (date.toDateString() === today.toDateString()) {
+    const dateOnly = dateString.split('T')[0];
+
+    if (dateOnly === todayStr) {
       return 'Today';
-    } else if (date.toDateString() === tomorrow.toDateString()) {
+    } else if (dateOnly === tomorrowStr) {
       return 'Tomorrow';
-    } else if (date.toDateString() === yesterday.toDateString()) {
+    } else if (dateOnly === yesterdayStr) {
       return 'Yesterday';
     } else {
-      return date.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        month: 'short', 
-        day: 'numeric' 
+      // Parse with timezone offset to avoid off-by-one
+      const [year, month, day] = dateOnly.split('-').map(Number);
+      const localDate = new Date(year, month - 1, day);
+      return localDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric'
       });
     }
   };

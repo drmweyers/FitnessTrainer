@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { analyticsApi } from '@/lib/api/analytics';
 import { UserGoal } from '@/types/analytics';
+
+interface GoalWithUser extends UserGoal {
+  user?: { id: string; email: string };
+}
 
 export default function GoalsTab() {
   const queryClient = useQueryClient();
@@ -15,10 +19,26 @@ export default function GoalsTab() {
     specificGoal: '',
   });
 
-  const { data: goals, isLoading } = useQuery<UserGoal[]>({
+  const { data: goals, isLoading } = useQuery<GoalWithUser[]>({
     queryKey: ['user-goals'],
     queryFn: () => analyticsApi.getGoals(),
   });
+
+  // Determine if current user is viewing others' goals (trainer view)
+  const currentUserId = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const token = localStorage.getItem('accessToken');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.userId || payload.id;
+    } catch { return null; }
+  }, []);
+
+  const getClientName = (goal: GoalWithUser) => {
+    if (!goal.user || goal.user.id === currentUserId) return null;
+    return goal.user.email.split('@')[0].replace(/[._]/g, ' ');
+  };
 
   const createGoalMutation = useMutation({
     mutationFn: (goal: Omit<UserGoal, 'id' | 'createdAt' | 'updatedAt' | 'currentValue'>) =>
@@ -69,15 +89,20 @@ export default function GoalsTab() {
 
   const activeGoals = goals?.filter(g => g.isActive && !g.achievedAt) || [];
   const completedGoals = goals?.filter(g => g.achievedAt !== null) || [];
+  const hasClientGoals = goals?.some(g => g.user && g.user.id !== currentUserId) || false;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Your Goals</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {hasClientGoals ? 'Goals Overview' : 'Your Goals'}
+          </h2>
           <p className="text-sm text-gray-500 mt-1">
-            Track your progress towards your fitness goals
+            {hasClientGoals
+              ? 'Track your clients\' progress towards their fitness goals'
+              : 'Track your progress towards your fitness goals'}
           </p>
         </div>
         <button
@@ -109,7 +134,10 @@ export default function GoalsTab() {
                 <option value="muscle_gain">Muscle Gain</option>
                 <option value="strength">Strength</option>
                 <option value="endurance">Endurance</option>
-                <option value="body_fat">Body Fat Reduction</option>
+                <option value="flexibility">Flexibility</option>
+                <option value="general_fitness">General Fitness</option>
+                <option value="sport_specific">Sport Specific</option>
+                <option value="rehabilitation">Rehabilitation</option>
               </select>
             </div>
 
@@ -197,13 +225,21 @@ export default function GoalsTab() {
                     ? Math.ceil((new Date(goal.targetDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
                     : null;
 
+                  const clientName = getClientName(goal);
                   return (
                     <div key={goal.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h4 className="font-semibold text-gray-900">
-                            {goal.goalType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-900">
+                              {goal.goalType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </h4>
+                            {clientName && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {clientName}
+                              </span>
+                            )}
+                          </div>
                           {goal.specificGoal && (
                             <p className="text-sm text-gray-600 mt-1">{goal.specificGoal}</p>
                           )}
@@ -262,7 +298,9 @@ export default function GoalsTab() {
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Completed Goals</h3>
               <div className="space-y-3">
-                {completedGoals.map(goal => (
+                {completedGoals.map(goal => {
+                  const clientName = getClientName(goal);
+                  return (
                   <div key={goal.id} className="border border-green-200 bg-green-50 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -272,9 +310,16 @@ export default function GoalsTab() {
                           </svg>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-gray-900">
-                            {goal.goalType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-gray-900">
+                              {goal.goalType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </h4>
+                            {clientName && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {clientName}
+                              </span>
+                            )}
+                          </div>
                           {goal.specificGoal && (
                             <p className="text-sm text-gray-600">{goal.specificGoal}</p>
                           )}
@@ -291,7 +336,8 @@ export default function GoalsTab() {
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

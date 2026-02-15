@@ -86,15 +86,76 @@ describe('/api/analytics/goals', () => {
       expect(body.data[0].goalProgress).toHaveLength(1);
 
       expect(mockPrisma.userGoal.findMany).toHaveBeenCalledWith({
-        where: { userId: clientUser.id },
+        where: { userId: { in: [clientUser.id] } },
         include: {
           goalProgress: {
             orderBy: { recordedDate: 'desc' },
             take: 1,
           },
+          user: {
+            select: { id: true, email: true },
+          },
         },
         orderBy: [{ isActive: 'desc' }, { createdAt: 'desc' }],
       });
+    });
+
+    it('returns client goals for trainer role', async () => {
+      const trainerUser = { id: 'trainer-1', email: 'trainer@test.com', role: 'trainer' };
+      mockAuth(trainerUser);
+
+      (mockPrisma.trainerClient.findMany as jest.Mock).mockResolvedValue([
+        { clientId: 'client-1' },
+        { clientId: 'client-2' },
+      ]);
+
+      const mockGoals = [
+        { id: 'g-1', userId: 'client-1', goalType: 'weight_loss', user: { id: 'client-1', email: 'c1@test.com' } },
+        { id: 'g-2', userId: 'client-2', goalType: 'strength', user: { id: 'client-2', email: 'c2@test.com' } },
+      ];
+      (mockPrisma.userGoal.findMany as jest.Mock).mockResolvedValue(mockGoals);
+
+      const req = createMockRequest('/api/analytics/goals');
+      const res = await GET(req);
+      const { status, body } = await parseJsonResponse(res);
+
+      expect(status).toBe(200);
+      expect(body.data).toHaveLength(2);
+
+      expect(mockPrisma.trainerClient.findMany).toHaveBeenCalledWith({
+        where: { trainerId: trainerUser.id },
+        select: { clientId: true },
+      });
+
+      expect(mockPrisma.userGoal.findMany).toHaveBeenCalledWith({
+        where: { userId: { in: ['trainer-1', 'client-1', 'client-2'] } },
+        include: {
+          goalProgress: {
+            orderBy: { recordedDate: 'desc' },
+            take: 1,
+          },
+          user: {
+            select: { id: true, email: true },
+          },
+        },
+        orderBy: [{ isActive: 'desc' }, { createdAt: 'desc' }],
+      });
+    });
+
+    it('returns all goals for admin role', async () => {
+      const adminUser = { id: 'admin-1', email: 'admin@test.com', role: 'admin' };
+      mockAuth(adminUser);
+
+      (mockPrisma.userGoal.findMany as jest.Mock).mockResolvedValue([]);
+
+      const req = createMockRequest('/api/analytics/goals');
+      const res = await GET(req);
+      const { status } = await parseJsonResponse(res);
+
+      expect(status).toBe(200);
+      expect(mockPrisma.userGoal.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: {} })
+      );
     });
 
     it('returns empty array when user has no goals', async () => {

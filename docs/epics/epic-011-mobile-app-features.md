@@ -1,14 +1,26 @@
 # Epic 011: Mobile App Features
 
 ## Epic Overview
-**Epic ID**: EPIC-011  
-**Epic Name**: Mobile App Features  
-**Priority**: P0 (Critical)  
-**Estimated Effort**: 6-8 weeks  
-**Dependencies**: All previous epics (001-010)  
+**Epic ID**: EPIC-011
+**Epic Name**: Mobile App Features (PWA Approach)
+**Priority**: P0 (Critical)
+**Estimated Effort**: 1-2 weeks (PWA), 6-8 weeks (Native - deferred)
+**Status**: IN PROGRESS (~40%, Feb 2026) - PWA foundation implemented
+**Dependencies**: All previous epics (001-010)
+
+> **Note (Feb 2026):** The original spec called for React Native iOS/Android apps. For MVP, we chose a Progressive Web App (PWA) approach instead, which leverages all existing responsive components (ExerciseCardMobile, GifPlayerMobile, MobileMenu, useTouchGestures, useIsMobile) and provides installability, offline support, and home screen access without a separate codebase.
+
+## PWA Implementation (Feb 2026)
+- Web App Manifest (manifest.json) - installable from browser
+- Service Worker (sw.js) - offline caching, background sync
+- InstallPrompt component - "Add to Home Screen" banner
+- OfflineIndicator component - network status awareness
+- IndexedDB offline data storage - exercise cache, workout queue
+- Offline sync manager - queue workouts, sync when online
+- UpdateAvailable component - new version notification
 
 ## Business Value
-Mobile apps are essential for fitness tracking, as users need to log workouts at the gym and trainers need to manage their business on the go. Native mobile apps provide superior performance, offline capabilities, and device integration that are crucial for a seamless fitness experience, driving user engagement and retention.
+Mobile apps are essential for fitness tracking, as users need to log workouts at the gym and trainers need to manage their business on the go. The PWA approach provides the key mobile benefits (offline, installable, fast) without the complexity of maintaining separate native codebases, enabling faster iteration and deployment.
 
 ## Features Included
 

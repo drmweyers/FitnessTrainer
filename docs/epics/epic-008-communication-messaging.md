@@ -1,413 +1,106 @@
-# Epic 008: Communication & Messaging
+# Epic 008: WhatsApp Integration (Communication)
 
 ## Epic Overview
-**Epic ID**: EPIC-008  
-**Epic Name**: Communication & Messaging  
-**Priority**: P1 (High)  
-**Estimated Effort**: 4-5 weeks  
-**Dependencies**: EPIC-002 (Authentication), EPIC-003 (Client Management)  
+**Epic ID**: EPIC-008
+**Epic Name**: WhatsApp Integration
+**Priority**: P1 (High)
+**Estimated Effort**: 1 day (MVP approach)
+**Status**: COMPLETE (Feb 2026)
+**Dependencies**: EPIC-002 (Authentication), EPIC-003 (Client Management)
 
 ## Business Value
-Effective communication is essential for successful trainer-client relationships. This epic provides a centralized, professional communication platform that keeps all fitness-related conversations in one place, improves response times, and enhances the overall coaching experience while maintaining appropriate boundaries and documentation.
+Instead of building a full messaging system (WebSocket, real-time chat, media sharing), EvoFit leverages WhatsApp as the communication channel. Trainers already use WhatsApp with clients. This integration adds WhatsApp deep-links throughout the platform, making it seamless to start conversations without building and maintaining messaging infrastructure.
 
-## Features Included
+## MVP Approach (Implemented)
+The original Epic 008 spec called for a full messaging system with WebSocket, real-time chat, media sharing, templates, etc. This was replaced with WhatsApp deep-link integration for several reasons:
 
-### Messaging System
-- Real-time chat functionality
-- Message history and search
-- Rich media support (images, videos, files)
-- Voice messages
-- Read receipts and typing indicators
-- Message reactions
-- Thread organization
+1. **Trainers already use WhatsApp** - no behavior change required
+2. **Zero infrastructure cost** - no WebSocket server, no message storage
+3. **Rich media built-in** - WhatsApp handles photos, videos, voice messages
+4. **Reliability** - WhatsApp has 99.9%+ uptime, we don't need to match that
+5. **Time to market** - 1 day vs 4-5 weeks
 
-### Notifications
-- Push notifications
-- In-app notifications
-- Email notification digests
-- Customizable notification preferences
-- Do not disturb settings
-- Priority message flags
-- Notification grouping
+## Features Implemented
 
-### Communication Tools
-- Scheduled messages
-- Message templates
-- Automated responses
-- Form check videos
-- Progress photo sharing
-- Document sharing
-- Quick replies
+### Trainer WhatsApp Setup
+- `whatsappNumber` field added to UserProfile (Prisma schema)
+- WhatsAppSetup component for trainer profile settings
+- International phone format validation (+country code)
+- Preview of the wa.me link before saving
 
-### Professional Features
-- Business hours settings
-- Out-of-office messages
-- Message archiving
-- Conversation export
-- Compliance features
-- Message retention policies
-- Client communication logs
+### Client-Facing WhatsApp Button
+- WhatsAppButton component (inline + floating variants)
+- Green WhatsApp brand color (#25D366)
+- Pre-filled message with trainer name
+- Opens wa.me/{number} in new tab (works on mobile + desktop)
+- Floating variant for persistent access on client dashboard
+
+### Profile API Integration
+- GET /api/profiles/me returns whatsappNumber
+- PUT /api/profiles/me accepts whatsappNumber field
+
+## Technical Implementation
+
+### Database Change
+```sql
+ALTER TABLE user_profiles ADD COLUMN whatsapp_number VARCHAR(20);
+```
+Applied via `prisma db push` (no migration file).
+
+### Components
+- `components/shared/WhatsAppButton.tsx` - Reusable button (inline/floating)
+- `components/shared/WhatsAppSetup.tsx` - Trainer setup form
+
+### API
+- `app/api/profiles/me/route.ts` - Updated PUT handler to accept whatsappNumber
 
 ## User Stories
 
-### Story 1: Send and Receive Messages
-**As a** user  
-**I want to** send and receive messages  
-**So that I** can communicate with my trainer/client  
+### Story 1: Trainer Sets WhatsApp Number
+**As a** trainer
+**I want to** set my WhatsApp number in my profile
+**So that** clients can easily message me
 
 **Acceptance Criteria:**
-- Text message input
-- Real-time delivery
-- Message history
-- Conversation list
-- Unread indicators
-- Search messages
-- Delete messages
-- Edit recent messages
+- [x] WhatsApp number field in trainer profile settings
+- [x] International format validation
+- [x] Preview of the wa.me link
+- [x] Save/update number
+- [x] Clear number option
 
-### Story 2: Share Media
-**As a** user  
-**I want to** share photos and videos  
-**So that I** can demonstrate form or show progress  
+### Story 2: Client Messages Trainer via WhatsApp
+**As a** client
+**I want to** click a WhatsApp button to message my trainer
+**So that** I can quickly communicate about my training
 
 **Acceptance Criteria:**
-- Photo upload from gallery
-- Camera integration
-- Video upload (size limits)
-- File compression
-- Thumbnail previews
-- Full-screen viewing
-- Download options
-- Media organization
+- [x] WhatsApp button visible on client dashboard
+- [x] Pre-filled message includes trainer name
+- [x] Opens WhatsApp (web or app) in new tab
+- [x] Works on both mobile and desktop
 
-### Story 3: Voice Messages
-**As a** user  
-**I want to** send voice messages  
-**So that I** can communicate more personally  
+## Deferred to Post-MVP
+The following features from the original Epic 008 are deferred:
+- Real-time in-app chat (WebSocket)
+- Message history and search
+- Voice messages (within platform)
+- Message templates
+- Business hours / auto-responses
+- Form check videos
+- Conversation export
+- Push notifications for messages
 
-**Acceptance Criteria:**
-- Record voice messages
-- Playback before sending
-- Audio quality settings
-- Maximum duration limits
-- Playback speed control
-- Audio waveform display
-- Background playback
-- Transcript option (future)
-
-### Story 4: Notification Management
-**As a** user  
-**I want to** control my notifications  
-**So that I** can manage interruptions  
-
-**Acceptance Criteria:**
-- Notification preferences
-- Per-conversation settings
-- Quiet hours scheduling
-- Priority contacts
-- Notification sounds
-- Badge count management
-- Email digest settings
-- Platform-specific settings
-
-### Story 5: Message Templates
-**As a** trainer  
-**I want to** use message templates  
-**So that I** can respond efficiently  
-
-**Acceptance Criteria:**
-- Create custom templates
-- Template categories
-- Variable placeholders
-- Quick template access
-- Template sharing
-- Edit templates
-- Usage analytics
-- Template suggestions
-
-### Story 6: Form Check Videos
-**As a** client  
-**I want to** send form check videos  
-**So that my** trainer can review my technique  
-
-**Acceptance Criteria:**
-- Video recording interface
-- Multiple angle support
-- Annotation tools
-- Slow-motion playback
-- Side-by-side comparison
-- Feedback overlay
-- Save for reference
-- Privacy controls
-
-### Story 7: Business Hours
-**As a** trainer  
-**I want to** set business hours  
-**So that** clients know when to expect responses  
-
-**Acceptance Criteria:**
-- Weekly schedule setup
-- Holiday settings
-- Time zone handling
-- Auto-response outside hours
-- Override for emergencies
-- Visible to clients
-- Vacation mode
-- Response time expectations
-
-### Story 8: Conversation Export
-**As a** trainer  
-**I want to** export conversations  
-**So that I** can maintain records  
-
-**Acceptance Criteria:**
-- Export to PDF
-- Date range selection
-- Include media option
-- Metadata inclusion
-- Batch export
-- Secure download
-- Audit trail
-- GDPR compliance
-
-## Technical Requirements
-
-### Frontend Components
-- MessageList component
-- MessageInput component
-- ConversationView component
-- MediaViewer component
-- VoiceRecorder component
-- NotificationSettings component
-- TemplateManager component
-- BusinessHours component
-- MessageSearch component
-
-### Backend Services
-- MessagingService for real-time chat
-- NotificationService for push/email
-- MediaService for file handling
-- TemplateService for templates
-- ArchiveService for history
-- ComplianceService for regulations
-
-### Database Schema
-```sql
--- Conversations
-conversations (
-  id UUID PRIMARY KEY,
-  type ENUM('direct', 'group'),
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP,
-  last_message_at TIMESTAMP,
-  archived_at TIMESTAMP
-)
-
--- Conversation participants
-conversation_participants (
-  conversation_id UUID REFERENCES conversations(id),
-  user_id UUID REFERENCES users(id),
-  joined_at TIMESTAMP DEFAULT NOW(),
-  left_at TIMESTAMP,
-  is_muted BOOLEAN DEFAULT false,
-  last_read_at TIMESTAMP,
-  notification_preference VARCHAR(20),
-  PRIMARY KEY (conversation_id, user_id)
-)
-
--- Messages
-messages (
-  id UUID PRIMARY KEY,
-  conversation_id UUID REFERENCES conversations(id),
-  sender_id UUID REFERENCES users(id),
-  type ENUM('text', 'image', 'video', 'voice', 'file', 'form_check'),
-  content TEXT,
-  media_urls JSONB,
-  metadata JSONB,
-  is_edited BOOLEAN DEFAULT false,
-  edited_at TIMESTAMP,
-  deleted_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW()
-)
-
--- Message status
-message_status (
-  message_id UUID REFERENCES messages(id),
-  user_id UUID REFERENCES users(id),
-  delivered_at TIMESTAMP,
-  read_at TIMESTAMP,
-  PRIMARY KEY (message_id, user_id)
-)
-
--- Message reactions
-message_reactions (
-  id UUID PRIMARY KEY,
-  message_id UUID REFERENCES messages(id),
-  user_id UUID REFERENCES users(id),
-  reaction VARCHAR(10),
-  created_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE(message_id, user_id, reaction)
-)
-
--- Message templates
-message_templates (
-  id UUID PRIMARY KEY,
-  trainer_id UUID REFERENCES users(id),
-  title VARCHAR(100),
-  category VARCHAR(50),
-  content TEXT,
-  variables JSONB,
-  usage_count INTEGER DEFAULT 0,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW()
-)
-
--- Notification preferences
-notification_preferences (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id) UNIQUE,
-  push_enabled BOOLEAN DEFAULT true,
-  email_enabled BOOLEAN DEFAULT true,
-  sms_enabled BOOLEAN DEFAULT false,
-  quiet_hours_start TIME,
-  quiet_hours_end TIME,
-  email_digest_frequency ENUM('immediately', 'hourly', 'daily', 'weekly'),
-  notification_sound VARCHAR(50),
-  vibration_enabled BOOLEAN DEFAULT true
-)
-
--- Business hours
-business_hours (
-  id UUID PRIMARY KEY,
-  trainer_id UUID REFERENCES users(id),
-  day_of_week INTEGER, -- 0-6
-  start_time TIME,
-  end_time TIME,
-  is_available BOOLEAN DEFAULT true
-)
-
--- Automated responses
-automated_responses (
-  id UUID PRIMARY KEY,
-  trainer_id UUID REFERENCES users(id),
-  trigger_type ENUM('out_of_hours', 'vacation', 'initial_contact'),
-  message TEXT,
-  is_active BOOLEAN DEFAULT true,
-  start_date DATE,
-  end_date DATE
-)
-
--- Form check videos
-form_check_videos (
-  id UUID PRIMARY KEY,
-  message_id UUID REFERENCES messages(id),
-  exercise_id UUID REFERENCES exercises(id),
-  video_urls JSONB,
-  angles JSONB,
-  trainer_feedback JSONB,
-  created_at TIMESTAMP DEFAULT NOW()
-)
-
--- Message archives
-message_archives (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
-  conversation_id UUID REFERENCES conversations(id),
-  archived_at TIMESTAMP DEFAULT NOW(),
-  file_url VARCHAR(500),
-  date_range_start TIMESTAMP,
-  date_range_end TIMESTAMP
-)
-```
-
-### API Endpoints
-- GET /api/messages/conversations
-- GET /api/messages/conversations/:id
-- POST /api/messages/send
-- PUT /api/messages/:id
-- DELETE /api/messages/:id
-- POST /api/messages/media/upload
-- GET /api/messages/search
-- POST /api/messages/templates
-- GET /api/messages/templates
-- PUT /api/messages/settings/notifications
-- GET /api/messages/settings/business-hours
-- PUT /api/messages/settings/business-hours
-- POST /api/messages/form-check
-- POST /api/messages/export
-- WebSocket /ws/messages
-
-### Real-time Requirements
-- WebSocket for real-time messaging
-- Message delivery confirmation
-- Online/offline status
-- Typing indicators
-- Real-time notifications
-- Presence detection
-- Connection management
-
-### Security & Compliance
-- End-to-end encryption (optional)
-- Message retention policies
-- GDPR compliance
-- HIPAA considerations
-- Audit logging
-- Access controls
-- Data export capabilities
+These may be implemented if WhatsApp deep-links prove insufficient.
 
 ## Definition of Done
-- [ ] All user stories completed
-- [ ] Unit tests (>80% coverage)
-- [ ] Integration tests for messaging flows
-- [ ] Real-time features tested
-- [ ] Performance tested at scale
-- [ ] Security audit completed
-- [ ] Mobile apps integrated
-- [ ] Documentation complete
-- [ ] Deployed to staging
-
-## UI/UX Requirements
-- Chat-like interface
-- Smooth scrolling
-- Message grouping
-- Time stamps
-- Avatar display
-- Swipe actions
-- Long-press menus
-- Keyboard shortcuts
-- Dark mode support
-- Accessibility features
-
-## Risks & Mitigations
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Message delivery failures | High | Retry logic, offline queue |
-| Large media files | Medium | Compression, size limits |
-| Real-time scalability | High | WebSocket clustering |
-| Privacy concerns | High | Encryption, access controls |
-| Notification spam | Medium | Rate limiting, preferences |
+- [x] WhatsApp number field in database
+- [x] Profile API accepts whatsappNumber
+- [x] WhatsAppButton component (inline + floating)
+- [x] WhatsAppSetup component
+- [x] Unit tests passing
+- [x] wa.me links work correctly
 
 ## Metrics for Success
-- Message delivery time: <1 second
-- Media upload success: >98%
-- Notification delivery: >95%
-- User engagement: Daily active messaging >70%
-- Response time improvement: >30%
-- Template usage: >50% of trainers
-- Zero data breaches
-
-## Dependencies
-- Push notification service
-- WebSocket infrastructure
-- Media storage (S3)
-- Email service provider
-- Real-time database
-
-## Out of Scope
-- Video calling
-- Group messaging (>2 people)
-- Public forums
-- Social features
-- Translation services
-- Chatbot/AI responses
-- SMS messaging
+- Trainer WhatsApp setup rate: >80%
+- Client click-through rate on WhatsApp button: measured via analytics
+- Reduction in "how to contact trainer" support requests

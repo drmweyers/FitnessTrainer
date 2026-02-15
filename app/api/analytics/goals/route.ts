@@ -30,7 +30,7 @@ const createGoalSchema = z.object({
 
 /**
  * GET /api/analytics/goals
- * List the authenticated user's goals (active and completed)
+ * List goals - own goals for clients, client goals for trainers, all for admins
  */
 export async function GET(request: NextRequest) {
   const authResult = await authenticate(request)
@@ -39,13 +39,32 @@ export async function GET(request: NextRequest) {
 
   try {
     const userId = req.user!.id
+    const userRole = req.user!.role
+
+    let userIds: string[] = [userId]
+
+    // Trainers see their clients' goals
+    if (userRole === 'trainer') {
+      const trainerClients = await prisma.trainerClient.findMany({
+        where: { trainerId: userId },
+        select: { clientId: true },
+      })
+      const clientIds = trainerClients.map(tc => tc.clientId)
+      userIds = [userId, ...clientIds]
+    }
+
+    // Admins see all goals
+    const whereClause = userRole === 'admin' ? {} : { userId: { in: userIds } }
 
     const goals = await prisma.userGoal.findMany({
-      where: { userId },
+      where: whereClause,
       include: {
         goalProgress: {
           orderBy: { recordedDate: 'desc' },
           take: 1,
+        },
+        user: {
+          select: { id: true, email: true },
         },
       },
       orderBy: [{ isActive: 'desc' }, { createdAt: 'desc' }],

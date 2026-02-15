@@ -1,0 +1,54 @@
+{
+  "name": "EvoFit Trainer",
+  "short_name": "EvoFit",
+  "description": "Complete fitness platform for personal trainers and clients",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Exercises",
+      "url": "/exercises",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Workouts",
+      "url": "/workouts",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "categories": ["fitness", "health"]
+}

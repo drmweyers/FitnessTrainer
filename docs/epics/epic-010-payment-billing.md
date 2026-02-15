@@ -1,11 +1,14 @@
 # Epic 010: Payment & Billing
 
 ## Epic Overview
-**Epic ID**: EPIC-010  
-**Epic Name**: Payment & Billing  
-**Priority**: P0 (Critical)  
-**Estimated Effort**: 6-7 weeks  
-**Dependencies**: EPIC-003 (Client Management), EPIC-009 (Scheduling)  
+**Epic ID**: EPIC-010
+**Epic Name**: Payment & Billing
+**Priority**: P0 (Critical)
+**Estimated Effort**: 6-7 weeks
+**Status**: ON HOLD (Feb 2026) - Evaluate post-MVP
+**Dependencies**: EPIC-003 (Client Management), EPIC-009 (Scheduling)
+
+> **Note (Feb 2026):** Payment & Billing is deferred to post-MVP. The current focus is on core training features (programs, workouts, analytics, scheduling) and communication (WhatsApp). Payment integration will be evaluated once the platform has active paying users and a clearer pricing model emerges from user feedback.
 
 ## Business Value
 A robust payment system is essential for trainers to monetize their services and manage their business finances. This epic provides secure payment processing, flexible pricing options, automated billing, and comprehensive financial reporting, enabling trainers to focus on training while the platform handles the financial complexity.
