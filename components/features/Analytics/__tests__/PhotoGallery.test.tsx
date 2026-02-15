@@ -188,7 +188,7 @@ describe('PhotoGallery', () => {
     expect(compareBtn).toBeDisabled();
   });
 
-  it('calls onPrivacyToggle when privacy button is clicked', () => {
+  it('calls onPrivacyToggle when privacy button is clicked in grid view', () => {
     const handlePrivacyToggle = jest.fn();
     render(
       <PhotoGallery
@@ -198,10 +198,45 @@ describe('PhotoGallery', () => {
       />
     );
 
-    // Hover over a photo to see the privacy toggle button - but since we can't easily
-    // trigger hover in jsdom, let's check the buttons exist in the DOM
-    // The privacy toggle buttons are in the group-hover area
-    expect(handlePrivacyToggle).not.toHaveBeenCalled();
+    // Grid view privacy toggle buttons have title attributes
+    const makePrivateButtons = screen.getAllByTitle('Make Private');
+    expect(makePrivateButtons.length).toBeGreaterThan(0);
+    fireEvent.click(makePrivateButtons[0]);
+    expect(handlePrivacyToggle).toHaveBeenCalledWith('p3', false); // p3 is public, sorted first (most recent)
+  });
+
+  it('calls onDelete when delete button is clicked in grid view', () => {
+    const handleDelete = jest.fn();
+    window.confirm = jest.fn(() => true);
+    render(
+      <PhotoGallery
+        {...defaultProps}
+        canEdit
+        onDelete={handleDelete}
+      />
+    );
+
+    const deleteButtons = screen.getAllByTitle('Delete');
+    expect(deleteButtons.length).toBeGreaterThan(0);
+    fireEvent.click(deleteButtons[0]);
+    expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to delete this photo?');
+    expect(handleDelete).toHaveBeenCalledWith('p3'); // Most recent first
+  });
+
+  it('does not call onDelete in grid view when confirm is cancelled', () => {
+    const handleDelete = jest.fn();
+    window.confirm = jest.fn(() => false);
+    render(
+      <PhotoGallery
+        {...defaultProps}
+        canEdit
+        onDelete={handleDelete}
+      />
+    );
+
+    const deleteButtons = screen.getAllByTitle('Delete');
+    fireEvent.click(deleteButtons[0]);
+    expect(handleDelete).not.toHaveBeenCalled();
   });
 
   it('calls onDelete when delete button is clicked in timeline view', () => {
@@ -294,6 +329,35 @@ describe('PhotoGallery', () => {
 
     expect(screen.getByText('Share Progress Photos')).toBeInTheDocument();
     expect(screen.getByText(/shareable link has been created/)).toBeInTheDocument();
+  });
+
+  it('copies share link when Copy button is clicked', () => {
+    const writeText = jest.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    const handleShare = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onShare={handleShare} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+    fireEvent.click(screen.getByText('Share'));
+
+    fireEvent.click(screen.getByText('Copy'));
+    expect(writeText).toHaveBeenCalled();
+  });
+
+  it('renders share modal options (checkboxes)', () => {
+    const handleShare = jest.fn();
+    render(<PhotoGallery {...defaultProps} canEdit onShare={handleShare} />);
+    fireEvent.click(screen.getByText('Select'));
+
+    const photoContainers = screen.getAllByRole('img');
+    fireEvent.click(photoContainers[0].closest('[class*="cursor-pointer"]')!);
+    fireEvent.click(screen.getByText('Share'));
+
+    expect(screen.getByText('Include measurements')).toBeInTheDocument();
+    expect(screen.getByText('Expire after 7 days')).toBeInTheDocument();
   });
 
   it('closes share modal when Close button is clicked', () => {

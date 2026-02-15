@@ -411,4 +411,61 @@ describe('getRandomExercises', () => {
     expect(result).toHaveLength(1);
     expect(mockFetch).toHaveBeenCalled();
   });
+
+  it('returns empty array on error', async () => {
+    mockFetch.mockRejectedValue(new Error('Network error'));
+
+    const result = await getRandomExercises(6);
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe('searchExercises with filters', () => {
+  beforeEach(() => mockFetch.mockReset());
+
+  it('handles all filter combinations', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        exercises: [backendExercise],
+        pagination: { total: 1, page: 1, totalPages: 1, hasMore: false },
+      }),
+    });
+
+    await searchExercises({
+      search: 'test search',
+      bodyParts: ['chest', 'back'],
+      equipments: ['barbell', 'dumbbell'],
+      targetMuscles: ['pectorals', 'lats'],
+      difficulty: 'intermediate',
+    });
+
+    const url = mockFetch.mock.calls[0][0];
+    expect(url).toContain('search=test+search');
+    expect(url).toContain('bodyPart=chest%2Cback');
+    expect(url).toContain('equipment=barbell%2Cdumbbell');
+    expect(url).toContain('targetMuscle=pectorals%2Clats');
+    expect(url).toContain('difficulty=intermediate');
+  });
+
+  it('trims search whitespace', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        exercises: [],
+        pagination: { total: 0, page: 1, totalPages: 0, hasMore: false },
+      }),
+    });
+
+    await searchExercises({
+      search: '  test  ',
+      bodyParts: [],
+      equipments: [],
+      targetMuscles: [],
+    });
+
+    const url = mockFetch.mock.calls[0][0];
+    expect(url).toContain('search=test');
+  });
 });

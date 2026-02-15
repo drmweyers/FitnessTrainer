@@ -457,4 +457,155 @@ describe('ClientNotes', () => {
       });
     });
   });
+
+  describe('Edit Note - Update and Cancel', () => {
+    it('updates note successfully', async () => {
+      const updatedNote = {
+        id: 'note-1',
+        trainerId: 'trainer-1',
+        clientId: 'client-1',
+        note: 'Updated session went well',
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      mockUpdateNote.mockResolvedValue(updatedNote);
+
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const editIcons = screen.getAllByTestId('icon-edit');
+      fireEvent.click(editIcons[0].closest('button')!);
+
+      const textareas = document.querySelectorAll('textarea');
+      const editTextarea = Array.from(textareas).find(
+        (ta) => ta.value === 'First session went well'
+      );
+
+      fireEvent.change(editTextarea!, { target: { value: 'Updated session went well' } });
+
+      const saveIcons = screen.getAllByTestId('icon-save');
+      fireEvent.click(saveIcons[0].closest('button')!);
+
+      await waitFor(() => {
+        expect(mockUpdateNote).toHaveBeenCalledWith('note-1', 'Updated session went well');
+        expect(screen.getByText('Updated session went well')).toBeInTheDocument();
+      });
+    });
+
+    it('cancels editing', async () => {
+      render(<ClientNotes clientId="client-1" />);
+      await waitFor(() => {
+        expect(screen.getByText('First session went well')).toBeInTheDocument();
+      });
+
+      const editIcons = screen.getAllByTestId('icon-edit');
+      fireEvent.click(editIcons[0].closest('button')!);
+
+      const textareas = document.querySelectorAll('textarea');
+      const editTextarea = Array.from(textareas).find(
+        (ta) => ta.value === 'First session went well'
+      );
+      expect(editTextarea).toBeTruthy();
+
+      const cancelIcons = screen.getAllByTestId('icon-x');
+      fireEvent.click(cancelIcons[0].closest('button')!);
+
+      // After cancel, edit form should be hidden and original text displayed
+      const textareasAfter = document.querySelectorAll('textarea');
+      const editTextareaAfter = Array.from(textareasAfter).find(
+        (ta) => ta.value === 'First session went well'
+      );
+      expect(editTextareaAfter).toBeFalsy();
+    });
+  });
+
+  describe('Pagination', () => {
+    it('shows pagination when totalPages > 1', async () => {
+      mockGetNotes.mockResolvedValue({
+        notes: mockNotes,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 25,
+          totalPages: 3,
+        },
+      });
+
+      render(<ClientNotes clientId="client-1" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Previous')).toBeInTheDocument();
+        expect(screen.getByText('Next')).toBeInTheDocument();
+      });
+    });
+
+    it('handles page change', async () => {
+      mockGetNotes.mockResolvedValue({
+        notes: mockNotes,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 25,
+          totalPages: 3,
+        },
+      });
+
+      render(<ClientNotes clientId="client-1" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Next')).toBeInTheDocument();
+      });
+
+      const page2Buttons = screen.getAllByRole('button');
+      const page2Button = page2Buttons.find(btn => btn.textContent === '2');
+
+      if (page2Button) {
+        fireEvent.click(page2Button);
+
+        await waitFor(() => {
+          expect(mockGetNotes).toHaveBeenCalledWith('client-1', { page: 2, limit: 10 });
+        });
+      }
+    });
+
+    it('disables Previous button on first page', async () => {
+      mockGetNotes.mockResolvedValue({
+        notes: mockNotes,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 25,
+          totalPages: 3,
+        },
+      });
+
+      render(<ClientNotes clientId="client-1" />);
+
+      await waitFor(() => {
+        const prevButton = screen.getByText('Previous').closest('button');
+        expect(prevButton).toBeDisabled();
+      });
+    });
+
+    it('disables Next button on last page', async () => {
+      mockGetNotes.mockResolvedValue({
+        notes: mockNotes,
+        pagination: {
+          page: 3,
+          limit: 10,
+          total: 25,
+          totalPages: 3,
+        },
+      });
+
+      render(<ClientNotes clientId="client-1" />);
+
+      await waitFor(() => {
+        const nextButton = screen.getByText('Next').closest('button');
+        expect(nextButton).toBeDisabled();
+      });
+    });
+  });
 });

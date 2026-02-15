@@ -480,4 +480,5 @@ describe('BulkAssignmentModal', () => {
       });
     });
   });
+
 });

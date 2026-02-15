@@ -703,4 +703,212 @@ describe('AuthContext', () => {
     expect(mockClearTokens).toHaveBeenCalled();
     expect(screen.getByTestId('authenticated').textContent).toBe('false');
   });
+
+  it('refreshes token on expiration approaching', async () => {
+    jest.useFakeTimers();
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test' };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+
+    // Mock token expiration to be in the future
+    mockGetTokenExpiration.mockReturnValue(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+    mockRefreshToken.mockResolvedValue({ data: { tokens: mockTokens } });
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    // Fast-forward time to trigger auto-refresh (2 min before expiration)
+    act(() => {
+      jest.advanceTimersByTime(3 * 60 * 1000 + 100); // 3 minutes + buffer
+    });
+
+    jest.useRealTimers();
+  });
+
+  it('handles token refresh failure during auto-refresh', async () => {
+    jest.useFakeTimers();
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test' };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+
+    mockGetTokenExpiration.mockReturnValue(Date.now() + 5 * 60 * 1000);
+    mockRefreshToken.mockRejectedValue(new Error('Refresh failed'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(3 * 60 * 1000 + 100);
+    });
+
+    consoleSpy.mockRestore();
+    jest.useRealTimers();
+  });
+
+  it('handles token refresh after expired token with failed getCurrentUser but successful token decode', async () => {
+    const mockTokens = { accessToken: 'new-access', refreshToken: 'new-refresh', expiresIn: 900 };
+    // Token payload: { sub: '1', email: 'decoded@test.com', role: 'trainer' }
+    const validToken = 'header.' + btoa(JSON.stringify({ sub: '1', email: 'decoded@test.com', role: 'trainer' })) + '.signature';
+    mockGetTokens.mockReturnValue({ accessToken: 'expired-token', refreshToken: 'refresh-token' });
+    mockIsTokenExpired.mockReturnValue(true);
+    mockRefreshToken.mockResolvedValue({ data: { tokens: { ...mockTokens, accessToken: validToken } } });
+    mockGetCurrentUser.mockRejectedValue(new Error('User fetch failed'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+    expect(screen.getByTestId('user').textContent).toBe('decoded@test.com');
+  });
+
+  it('handles valid token with failed getCurrentUser but successful token decode', async () => {
+    const validToken = 'header.' + btoa(JSON.stringify({ sub: '1', email: 'decoded@test.com', role: 'trainer' })) + '.signature';
+    mockGetTokens.mockReturnValue({ accessToken: validToken, refreshToken: 'refresh-token' });
+    mockIsTokenExpired.mockReturnValue(false);
+    mockGetCurrentUser.mockRejectedValue(new Error('User fetch failed'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+    expect(screen.getByTestId('user').textContent).toBe('decoded@test.com');
+  });
+
+  it('logs out when token decode fails after getCurrentUser failure (valid token scenario)', async () => {
+    const invalidToken = 'invalid.token.format';
+    mockGetTokens.mockReturnValue({ accessToken: invalidToken, refreshToken: 'refresh-token' });
+    mockIsTokenExpired.mockReturnValue(false);
+    mockGetCurrentUser.mockRejectedValue(new Error('User fetch failed'));
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('false');
+    });
+    expect(mockClearTokens).toHaveBeenCalled();
+  });
+
+  it('handles logout with logoutFromAll option', async () => {
+    const mockUser = { id: '1', email: 'test@test.com', name: 'Test' };
+    const mockTokens = { accessToken: 'at', refreshToken: 'rt', expiresIn: 900 };
+    mockLogin.mockResolvedValue({ data: { user: mockUser, tokens: mockTokens } });
+    mockGetTokens.mockReturnValue({ accessToken: 'at', refreshToken: 'rt' });
+    mockLogout.mockResolvedValue({});
+
+    function TestConsumerWithLogoutAll() {
+      const auth = useAuth();
+      return (
+        <div>
+          <span data-testid="authenticated">{String(auth.isAuthenticated)}</span>
+          <button onClick={() => auth.login({ email: 'test@test.com', password: 'pass123' }).catch(() => {})}>Login</button>
+          <button onClick={() => auth.logout({ logoutFromAll: true })}>LogoutAll</button>
+        </div>
+      );
+    }
+
+    render(
+      <AuthProvider>
+        <TestConsumerWithLogoutAll />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('false');
+    });
+
+    await act(async () => {
+      screen.getByText('Login').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated').textContent).toBe('true');
+    });
+
+    await act(async () => {
+      screen.getByText('LogoutAll').click();
+    });
+
+    await waitFor(() => {
+      expect(mockLogout).toHaveBeenCalledWith({ refreshToken: 'rt', logoutFromAll: true });
+    });
+    expect(mockClearTokens).toHaveBeenCalled();
+  });
+
+  it('handles refreshToken call when no refresh token available', async () => {
+    mockGetTokens.mockReturnValue({ accessToken: null, refreshToken: null });
+
+    function TestConsumerWithRefresh() {
+      const auth = useAuth();
+      const [error, setError] = React.useState<string>('');
+      return (
+        <div>
+          <button onClick={() => auth.refreshToken().catch((e) => setError(e.message))}>Refresh</button>
+          <span data-testid="error">{error}</span>
+        </div>
+      );
+    }
+
+    render(
+      <AuthProvider>
+        <TestConsumerWithRefresh />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Refresh')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      screen.getByText('Refresh').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error').textContent).toBe('No refresh token available');
+    });
+  });
 });

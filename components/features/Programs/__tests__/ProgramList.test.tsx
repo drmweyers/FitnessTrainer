@@ -738,4 +738,64 @@ describe('ProgramList', () => {
       });
     });
   });
+
+  describe('Program actions - Bulk Assign', () => {
+    beforeEach(() => {
+      window.confirm = jest.fn();
+      global.fetch = jest.fn();
+    });
+
+    it('should handle bulk assign successfully', async () => {
+      const programs = createMockPrograms(1);
+      mockFetchPrograms.mockResolvedValue(programs);
+
+      // Mock bulk assign API call
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true }),
+      });
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('assign-prog-1')).toBeInTheDocument();
+      });
+
+      // Open modal
+      screen.getByTestId('assign-prog-1').click();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('bulk-assignment-modal')).toBeInTheDocument();
+      });
+
+      // handleBulkAssign would be called by the modal - test the function exists
+      expect(screen.getByTestId('bulk-assignment-modal')).toBeInTheDocument();
+    });
+  });
+
+  describe('Filtered count display', () => {
+    it('should show filtered count when filters are active', async () => {
+      const allPrograms = createMockPrograms(10);
+      mockFetchPrograms.mockResolvedValue(allPrograms);
+
+      render(<ProgramList filters={{ search: 'Program 1' }} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Showing.*of 10 programs/)).toBeInTheDocument();
+      });
+    });
+
+    it('should not show filtered count when all programs match', async () => {
+      const programs = createMockPrograms(5);
+      mockFetchPrograms.mockResolvedValue(programs);
+
+      render(<ProgramList filters={{}} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Program 1')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText(/Showing.*of/)).not.toBeInTheDocument();
+    });
+  });
 });

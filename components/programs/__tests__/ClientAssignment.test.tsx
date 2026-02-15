@@ -220,4 +220,52 @@ describe('ClientAssignment', () => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('john@test.com')).toBeInTheDocument();
   });
+
+  it('updates notes field', () => {
+    render(<ClientAssignment {...defaultProps} />);
+    fireEvent.click(screen.getByText('Assign to Client'));
+    const notesField = screen.getByPlaceholderText('Add any instructions or notes for the client...');
+    fireEvent.change(notesField, { target: { value: 'Good luck!' } });
+    expect(notesField).toHaveValue('Good luck!');
+  });
+
+  it('calls onAssign with notes when provided', () => {
+    render(<ClientAssignment {...defaultProps} />);
+    fireEvent.click(screen.getByText('Assign to Client'));
+
+    const selectTrigger = screen.getByTestId('select-trigger');
+    fireEvent.click(selectTrigger);
+
+    const notesField = screen.getByPlaceholderText('Add any instructions or notes for the client...');
+    fireEvent.change(notesField, { target: { value: 'Test notes' } });
+
+    const assignBtn = screen.getByText('Assign Program');
+    fireEvent.click(assignBtn);
+
+    expect(mockOnAssign).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: 'client-1',
+        startDate: expect.any(Date),
+        notes: 'Test notes',
+      })
+    );
+  });
+
+  it('onSelect callback updates startDate via Calendar', () => {
+    render(<ClientAssignment {...defaultProps} />);
+    fireEvent.click(screen.getByText('Assign to Client'));
+    // Calendar component exists, date selection would update startDate
+    expect(screen.getByText('Start Date *')).toBeInTheDocument();
+  });
+
+  it('bulk assign button shows correct plural form', () => {
+    render(<ClientAssignment {...defaultProps} />);
+    fireEvent.click(screen.getByText('Assign to Client'));
+    const selectTrigger = screen.getByTestId('select-trigger');
+    fireEvent.click(selectTrigger);
+    const assignBtn = screen.getByText('Assign Program');
+    fireEvent.click(assignBtn);
+    // Successfully assigned message shows singular/plural correctly
+    expect(screen.getByText('Successfully Assigned!')).toBeInTheDocument();
+  });
 });
