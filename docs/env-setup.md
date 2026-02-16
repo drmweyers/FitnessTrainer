@@ -12,40 +12,21 @@
 | `UPSTASH_REDIS_REST_URL` | SET | Redis cache URL |
 | `UPSTASH_REDIS_REST_TOKEN` | SET | Redis auth token |
 | `CORS_ORIGIN` | SET | Allowed CORS origins |
+| `MAILGUN_API_KEY` | SET | Mailgun email API key (shared with FitnessMealPlanner) |
+| `MAILGUN_DOMAIN` | SET | Mailgun sending domain (`evofitmeals.com`) |
+| `EMAIL_FROM` | SET | Email from address |
+| `NEXT_PUBLIC_APP_URL` | SET | App URL for email links |
 
-## Optional - Photo Uploads (Cloudinary)
+## Email (Mailgun) - CONFIGURED
 
-Required for profile photos and progress photo uploads. Without these, photo features gracefully degrade (uploads fail with a user-friendly message).
+Uses the same Mailgun account as FitnessMealPlanner (evofitmeals.com domain).
+No SDK needed - uses `fetch` to Mailgun HTTP API directly.
 
-1. Create a free account at https://cloudinary.com
-2. Go to Dashboard to find your credentials
-3. Set the variables:
+**Integration:** `lib/services/email.ts` - Functions: sendPasswordResetEmail, sendWelcomeEmail, sendVerificationEmail, sendClientInvitationEmail.
 
-```bash
-printf 'YOUR_CLOUD_NAME' | npx vercel env add CLOUDINARY_CLOUD_NAME production
-printf 'YOUR_API_KEY' | npx vercel env add CLOUDINARY_API_KEY production
-printf 'YOUR_API_SECRET' | npx vercel env add CLOUDINARY_API_SECRET production
-```
+## Photo Uploads - DEFERRED (Post-MVP)
 
-**Integration:** `lib/services/cloudinary.ts` - used by profile photo upload and progress photos.
-
-## Optional - Email (Mailgun)
-
-Required for password reset emails, welcome emails, email verification, and client invitations. Without these, email features fail silently.
-
-1. Log into your Mailgun account at https://app.mailgun.com
-2. Get your API key from Settings > API Keys
-3. Use your verified domain (or sandbox domain for testing)
-4. Set the variables:
-
-```bash
-printf 'YOUR_MAILGUN_API_KEY' | npx vercel env add MAILGUN_API_KEY production
-printf 'mg.yourdomain.com' | npx vercel env add MAILGUN_DOMAIN production
-printf 'EvoFit <noreply@yourdomain.com>' | npx vercel env add EMAIL_FROM production
-printf 'https://evofittrainer-six.vercel.app' | npx vercel env add NEXT_PUBLIC_APP_URL production
-```
-
-**Integration:** `lib/services/email.ts` - Mailgun HTTP API (no SDK, uses `fetch`) with functions: sendPasswordResetEmail, sendWelcomeEmail, sendVerificationEmail, sendClientInvitationEmail.
+Photo uploads (profile photos, progress photos) are stubbed out and return "coming soon" (HTTP 501). This avoids ongoing costs from cloud storage services. Will be implemented post-launch with a free-tier solution.
 
 ## Checking Current Vars
 

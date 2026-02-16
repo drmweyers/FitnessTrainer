@@ -96,7 +96,7 @@ tests/e2e/              # Playwright E2E tests
 | Issue | Action Needed |
 |-------|--------------|
 | TypeScript build errors | `ignoreBuildErrors: true` (temporary) |
-| Cloudinary env vars | Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` for photo uploads |
+| Photo uploads | Deferred post-MVP (routes return 501 "coming soon") |
 
 ---
 
@@ -117,7 +117,6 @@ printf 'value' | npx vercel env add NAME production  # Set new
 | `DATABASE_URL` | Yes |
 | `MAILGUN_API_KEY` / `MAILGUN_DOMAIN` | Yes |
 | `EMAIL_FROM` / `NEXT_PUBLIC_APP_URL` | Yes |
-| `CLOUDINARY_*` | No |
 
 ### Local Development
 ```env

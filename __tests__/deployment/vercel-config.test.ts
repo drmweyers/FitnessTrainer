@@ -113,8 +113,8 @@ describe('Vercel Deployment Configuration', () => {
       expect(nextConfig.output).not.toBe('standalone');
     });
 
-    it('should have Cloudinary in image domains', () => {
-      expect(nextConfig.images.domains).toContain('res.cloudinary.com');
+    it('should have exercise GIF source in image domains', () => {
+      expect(nextConfig.images.domains).toContain('raw.githubusercontent.com');
     });
 
     it('should have production Vercel domain in image domains', () => {

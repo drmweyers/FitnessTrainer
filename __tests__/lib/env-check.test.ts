@@ -69,7 +69,7 @@ describe('Environment Check Utility', () => {
       process.env.JWT_SECRET = 'test-secret';
       process.env.JWT_EXPIRES_IN = '15m';
       process.env.REFRESH_TOKEN_EXPIRES_IN = '7d';
-      process.env.CLOUDINARY_CLOUD_NAME = 'test-cloud';
+      process.env.MAILGUN_API_KEY = 'test-key';
       process.env.UPSTASH_REDIS_REST_URL = 'https://redis.example.com';
 
       const report = checkEnvironment();
@@ -83,7 +83,7 @@ describe('Environment Check Utility', () => {
       expect(infraVars.length).toBeGreaterThan(0);
 
       expect(requiredVars.find((r) => r.name === 'DATABASE_URL')?.present).toBe(true);
-      expect(optionalVars.find((r) => r.name === 'CLOUDINARY_CLOUD_NAME')?.present).toBe(true);
+      expect(optionalVars.find((r) => r.name === 'MAILGUN_API_KEY')?.present).toBe(true);
       expect(infraVars.find((r) => r.name === 'UPSTASH_REDIS_REST_URL')?.present).toBe(true);
     });
 
@@ -172,14 +172,14 @@ describe('Environment Check Utility', () => {
       process.env.JWT_SECRET = 'test-secret';
       process.env.JWT_EXPIRES_IN = '15m';
       process.env.REFRESH_TOKEN_EXPIRES_IN = '7d';
-      process.env.CLOUDINARY_CLOUD_NAME = 'test-cloud';
+      process.env.MAILGUN_API_KEY = 'test-key';
       process.env.UPSTASH_REDIS_REST_URL = 'https://redis.example.com';
 
       const summary = getEnvironmentSummary();
 
       expect(summary.required.DATABASE_URL).toBe(true);
       expect(summary.required.JWT_SECRET).toBe(true);
-      expect(summary.optional.CLOUDINARY_CLOUD_NAME).toBe(true);
+      expect(summary.optional.MAILGUN_API_KEY).toBe(true);
       expect(summary.infrastructure.UPSTASH_REDIS_REST_URL).toBe(true);
     });
 
@@ -217,12 +217,12 @@ describe('Environment Check Utility', () => {
       process.env.JWT_EXPIRES_IN = '15m';
       process.env.REFRESH_TOKEN_EXPIRES_IN = '7d';
 
-      delete process.env.CLOUDINARY_CLOUD_NAME;
+      delete process.env.MAILGUN_API_KEY;
       delete process.env.UPSTASH_REDIS_REST_URL;
 
       const summary = getEnvironmentSummary();
 
-      expect(summary.optional.CLOUDINARY_CLOUD_NAME).toBe(false);
+      expect(summary.optional.MAILGUN_API_KEY).toBe(false);
       expect(summary.infrastructure.UPSTASH_REDIS_REST_URL).toBe(false);
     });
   });

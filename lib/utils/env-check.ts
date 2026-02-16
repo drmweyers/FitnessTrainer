@@ -33,9 +33,6 @@ const REQUIRED_VARS = [
  * Optional environment variables (app works without these, but features may be limited)
  */
 const OPTIONAL_VARS = [
-  'CLOUDINARY_CLOUD_NAME',
-  'CLOUDINARY_API_KEY',
-  'CLOUDINARY_API_SECRET',
   'MAILGUN_API_KEY',
   'MAILGUN_DOMAIN',
   'EMAIL_FROM',
