@@ -11,6 +11,8 @@ import {
   XCircle,
   AlertTriangle,
 } from 'lucide-react'
+import { FeatureFlagManager } from '@/components/admin/FeatureFlagManager'
+import { ActivityLog } from '@/components/admin/ActivityLog'
 
 interface HealthData {
   status: 'healthy' | 'degraded' | 'error'
@@ -247,6 +249,16 @@ export default function AdminSystemHealthPage() {
                 </div>
               </dl>
             </div>
+          </div>
+
+          {/* Feature Flags */}
+          <div className="mt-8">
+            <FeatureFlagManager />
+          </div>
+
+          {/* Activity Log */}
+          <div className="mt-8">
+            <ActivityLog />
           </div>
         </>
       )}
