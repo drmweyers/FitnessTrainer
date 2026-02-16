@@ -12,6 +12,7 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/analytics/training-load/me
  * Returns weekly training load history for the authenticated user
+ * Supports role-aware access: trainers can view client data with clientId param
  */
 export async function GET(request: NextRequest) {
   const authResult = await authenticate(request)
@@ -20,9 +21,31 @@ export async function GET(request: NextRequest) {
 
   try {
     const userId = req.user!.id
+    const userRole = req.user!.role
     const { searchParams } = new URL(request.url)
+    const clientId = searchParams.get('clientId')
     const weeks = parseInt(searchParams.get('weeks') || '12', 10)
     const startDateParam = searchParams.get('startDate')
+
+    // Determine target userId (role-aware)
+    let targetUserId = userId
+
+    if (userRole === 'trainer' && clientId) {
+      // Validate trainer owns this client
+      const trainerClient = await prisma.trainerClient.findFirst({
+        where: { trainerId: userId, clientId },
+      })
+
+      if (!trainerClient) {
+        return NextResponse.json(
+          { success: false, error: 'Access denied to client data' },
+          { status: 403 }
+        )
+      }
+
+      targetUserId = clientId
+    }
+    // Clients cannot use clientId param - always use own userId
 
     let startDate: Date
     if (startDateParam) {
@@ -34,7 +57,7 @@ export async function GET(request: NextRequest) {
 
     const trainingLoads = await prisma.trainingLoad.findMany({
       where: {
-        userId,
+        userId: targetUserId,
         weekStartDate: { gte: startDate },
       },
       orderBy: { weekStartDate: 'asc' },

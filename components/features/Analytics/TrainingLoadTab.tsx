@@ -28,12 +28,16 @@ ChartJS.register(
   Legend
 );
 
-export default function TrainingLoadTab() {
+interface TrainingLoadTabProps {
+  clientId?: string | null;
+}
+
+export default function TrainingLoadTab({ clientId }: TrainingLoadTabProps) {
   const [weekCount, setWeekCount] = React.useState(12);
 
   const { data: trainingLoad, isLoading } = useQuery<TrainingLoad[]>({
-    queryKey: ['training-load', weekCount],
-    queryFn: () => analyticsApi.getTrainingLoad(weekCount),
+    queryKey: ['training-load', weekCount, clientId],
+    queryFn: () => analyticsApi.getTrainingLoad(weekCount, clientId || undefined),
   });
 
   if (isLoading) {

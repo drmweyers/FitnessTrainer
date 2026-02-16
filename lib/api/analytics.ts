@@ -41,10 +41,11 @@ class AnalyticsApiService {
   }
 
   // Body Measurements
-  async getBodyMeasurements(timeRange?: string): Promise<BodyMeasurement[]> {
+  async getBodyMeasurements(timeRange?: string, clientId?: string): Promise<BodyMeasurement[]> {
     const params = new URLSearchParams();
     if (timeRange) params.append('timeRange', timeRange);
-    
+    if (clientId) params.append('clientId', clientId);
+
     return this.request<BodyMeasurement[]>(
       `/analytics/measurements/me${params.toString() ? '?' + params.toString() : ''}`
     );
@@ -71,10 +72,11 @@ class AnalyticsApiService {
   }
 
   // Performance Metrics
-  async getPerformanceMetrics(exerciseId?: string): Promise<PerformanceMetric[]> {
+  async getPerformanceMetrics(exerciseId?: string, clientId?: string): Promise<PerformanceMetric[]> {
     const params = new URLSearchParams();
     if (exerciseId) params.append('exerciseId', exerciseId);
-    
+    if (clientId) params.append('clientId', clientId);
+
     return this.request<PerformanceMetric[]>(
       `/analytics/performance/me${params.toString() ? '?' + params.toString() : ''}`
     );
@@ -94,8 +96,12 @@ class AnalyticsApiService {
   }
 
   // Training Load
-  async getTrainingLoad(weekCount: number = 12): Promise<TrainingLoad[]> {
-    return this.request<TrainingLoad[]>(`/analytics/training-load/me?weeks=${weekCount}`);
+  async getTrainingLoad(weekCount: number = 12, clientId?: string): Promise<TrainingLoad[]> {
+    const params = new URLSearchParams();
+    params.append('weeks', weekCount.toString());
+    if (clientId) params.append('clientId', clientId);
+
+    return this.request<TrainingLoad[]>(`/analytics/training-load/me?${params.toString()}`);
   }
 
   async calculateWeeklyLoad(weekStartDate: string): Promise<TrainingLoad> {

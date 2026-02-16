@@ -214,4 +214,140 @@ describe('GET /api/analytics/performance/me', () => {
     expect(body.success).toBe(false);
     expect(body.error).toBe('Failed to fetch performance metrics');
   });
+
+  describe('trainer role-aware access', () => {
+    const trainerUser = { id: 'trainer-1', email: 'trainer@test.com', role: 'trainer' };
+    const clientId = 'client-2';
+
+    it('trainer with clientId returns that client\'s data', async () => {
+      mockAuth(trainerUser);
+
+      (mockPrisma.trainerClient.findFirst as jest.Mock).mockResolvedValue({
+        trainerId: trainerUser.id,
+        clientId,
+      });
+
+      const mockMetrics = [
+        {
+          id: 'pm-1',
+          userId: clientId,
+          metricType: 'one_rm',
+          value: 150,
+          unit: 'kg',
+          recordedAt: new Date('2024-06-01'),
+          exercise: { id: 'ex-1', name: 'Squat' },
+        },
+      ];
+      (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+
+      const req = createMockRequest('/api/analytics/performance/me', {
+        searchParams: { clientId },
+      });
+      const res = await GET(req);
+      const { status, body } = await parseJsonResponse(res);
+
+      expect(status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data).toHaveLength(1);
+      expect(body.data[0].userId).toBe(clientId);
+
+      expect(mockPrisma.trainerClient.findFirst).toHaveBeenCalledWith({
+        where: { trainerId: trainerUser.id, clientId },
+      });
+      expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: clientId },
+        })
+      );
+    });
+
+    it('trainer with invalid clientId returns 403', async () => {
+      mockAuth(trainerUser);
+
+      (mockPrisma.trainerClient.findFirst as jest.Mock).mockResolvedValue(null);
+
+      const req = createMockRequest('/api/analytics/performance/me', {
+        searchParams: { clientId: 'invalid-client-id' },
+      });
+      const res = await GET(req);
+      const { status, body } = await parseJsonResponse(res);
+
+      expect(status).toBe(403);
+      expect(body.success).toBe(false);
+      expect(body.error).toBe('Access denied to client data');
+
+      expect(mockPrisma.trainerClient.findFirst).toHaveBeenCalledWith({
+        where: { trainerId: trainerUser.id, clientId: 'invalid-client-id' },
+      });
+      expect(mockPrisma.performanceMetric.findMany).not.toHaveBeenCalled();
+    });
+
+    it('trainer without clientId returns own data (backward compatible)', async () => {
+      mockAuth(trainerUser);
+
+      const mockMetrics = [
+        {
+          id: 'pm-2',
+          userId: trainerUser.id,
+          metricType: 'volume',
+          value: 5000,
+          unit: 'kg',
+          recordedAt: new Date('2024-06-01'),
+          exercise: { id: 'ex-2', name: 'Deadlift' },
+        },
+      ];
+      (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+
+      const req = createMockRequest('/api/analytics/performance/me');
+      const res = await GET(req);
+      const { status, body } = await parseJsonResponse(res);
+
+      expect(status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data).toHaveLength(1);
+      expect(body.data[0].userId).toBe(trainerUser.id);
+
+      expect(mockPrisma.trainerClient.findFirst).not.toHaveBeenCalled();
+      expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: trainerUser.id },
+        })
+      );
+    });
+
+    it('client user ignores clientId param (always uses own userId)', async () => {
+      mockAuth(clientUser);
+
+      const mockMetrics = [
+        {
+          id: 'pm-3',
+          userId: clientUser.id,
+          metricType: 'one_rm',
+          value: 80,
+          unit: 'kg',
+          recordedAt: new Date('2024-06-01'),
+          exercise: { id: 'ex-3', name: 'Bench Press' },
+        },
+      ];
+      (mockPrisma.performanceMetric.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+
+      const req = createMockRequest('/api/analytics/performance/me', {
+        searchParams: { clientId: 'other-client-id' },
+      });
+      const res = await GET(req);
+      const { status, body } = await parseJsonResponse(res);
+
+      expect(status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(body.data).toHaveLength(1);
+      expect(body.data[0].userId).toBe(clientUser.id);
+
+      expect(mockPrisma.trainerClient.findFirst).not.toHaveBeenCalled();
+      expect(mockPrisma.performanceMetric.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: clientUser.id },
+        })
+      );
+    });
+  });
 });

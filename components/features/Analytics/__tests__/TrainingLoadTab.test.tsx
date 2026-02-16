@@ -166,7 +166,7 @@ describe('TrainingLoadTab', () => {
     fireEvent.click(screen.getByText('8 Weeks'));
 
     await waitFor(() => {
-      expect(analyticsApi.getTrainingLoad).toHaveBeenCalledWith(8);
+      expect(analyticsApi.getTrainingLoad).toHaveBeenCalledWith(8, undefined);
     });
   });
 

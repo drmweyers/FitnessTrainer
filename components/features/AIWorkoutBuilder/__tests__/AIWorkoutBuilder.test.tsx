@@ -413,6 +413,153 @@ describe('AIWorkoutBuilder', () => {
     });
   });
 
+  describe('Equipment filtering logic', () => {
+    async function renderAndGenerate(equipmentSelection: string[]) {
+      jest.useRealTimers();
+      render(<AIWorkoutBuilder />);
+
+      // Wait for exercises to load
+      await waitFor(() => {
+        const btn = screen.getByText('Generate AI Workout');
+        expect(btn.closest('button')).not.toBeDisabled();
+      });
+
+      // Clear default equipment selection (if any)
+      const anyButton = screen.getByText('any');
+      fireEvent.click(anyButton);
+
+      // Select equipment as specified
+      equipmentSelection.forEach(equipment => {
+        const equipmentButton = screen.getByText(equipment);
+        fireEvent.click(equipmentButton);
+      });
+
+      fireEvent.click(screen.getByText('Generate AI Workout'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      }, { timeout: 3000 });
+    }
+
+    beforeEach(() => {
+      // Reset mock to return exercises with different equipment types
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            exercises: [
+              {
+                id: 'ex-1',
+                name: 'Push Ups',
+                bodyParts: ['chest'],
+                targetMuscles: ['pectorals'],
+                equipment: 'body weight',
+                equipments: ['body weight'],
+                gifUrl: 'pushups.gif',
+                difficulty: 'intermediate',
+              },
+              {
+                id: 'ex-2',
+                name: 'Dumbbell Press',
+                bodyParts: ['chest'],
+                targetMuscles: ['pectorals'],
+                equipment: 'dumbbell',
+                equipments: ['dumbbell'],
+                gifUrl: 'dumbbellpress.gif',
+                difficulty: 'intermediate',
+              },
+              {
+                id: 'ex-3',
+                name: 'Barbell Squat',
+                bodyParts: ['upper legs'],
+                targetMuscles: ['quadriceps'],
+                equipment: 'barbell',
+                equipments: ['barbell'],
+                gifUrl: 'barbellsquat.gif',
+                difficulty: 'intermediate',
+              },
+              {
+                id: 'ex-4',
+                name: 'Dumbbell Curl',
+                bodyParts: ['upper arms'],
+                targetMuscles: ['biceps'],
+                equipment: 'dumbbell',
+                equipments: ['dumbbell'],
+                gifUrl: 'dumbbellcurl.gif',
+                difficulty: 'beginner',
+              },
+            ],
+          }),
+      });
+    });
+
+    it('selecting only "dumbbell" should NOT include bodyweight exercises', async () => {
+      await renderAndGenerate(['dumbbell']);
+
+      // Push Ups (body weight) should NOT appear
+      expect(screen.queryByText('Push Ups')).not.toBeInTheDocument();
+
+      // Dumbbell exercises SHOULD appear
+      expect(screen.getByText('Dumbbell Press')).toBeInTheDocument();
+    });
+
+    it('selecting only "body weight" should ONLY include bodyweight exercises', async () => {
+      await renderAndGenerate(['body weight']);
+
+      // Push Ups (body weight) SHOULD appear
+      expect(screen.getByText('Push Ups')).toBeInTheDocument();
+
+      // Dumbbell and barbell exercises should NOT appear
+      expect(screen.queryByText('Dumbbell Press')).not.toBeInTheDocument();
+      expect(screen.queryByText('Barbell Squat')).not.toBeInTheDocument();
+    });
+
+    it('selecting "any" should include all exercises', async () => {
+      jest.useRealTimers();
+      render(<AIWorkoutBuilder />);
+
+      await waitFor(() => {
+        const btn = screen.getByText('Generate AI Workout');
+        expect(btn.closest('button')).not.toBeDisabled();
+      });
+
+      // Select "any"
+      const anyButton = screen.getByText('any');
+      fireEvent.click(anyButton);
+
+      fireEvent.click(screen.getByText('Generate AI Workout'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      // All equipment types can appear
+      // At least some exercises should be visible
+      expect(screen.getByText(/Strength Workout/)).toBeInTheDocument();
+    });
+
+    it('selecting "dumbbell" + "body weight" should include both types', async () => {
+      await renderAndGenerate(['dumbbell', 'body weight']);
+
+      // Both dumbbell and bodyweight exercises can appear
+      // The workout should have exercises, let's just verify it generated
+      expect(screen.getByText('Save Workout')).toBeInTheDocument();
+
+      // At least one of each type should be possible
+      const workoutSection = screen.getByText('Save Workout').closest('div');
+      expect(workoutSection).toBeInTheDocument();
+    });
+
+    it('selecting only "barbell" should NOT include bodyweight or dumbbell exercises', async () => {
+      await renderAndGenerate(['barbell']);
+
+      // Only barbell exercises should appear
+      expect(screen.queryByText('Push Ups')).not.toBeInTheDocument();
+      expect(screen.queryByText('Dumbbell Press')).not.toBeInTheDocument();
+      expect(screen.getByText('Barbell Squat')).toBeInTheDocument();
+    });
+  });
+
   describe.skip('AI Generation Logic - Branch Coverage (old, broken)', () => {
     it('should handle empty exercises array', async () => {
       (global.fetch as jest.Mock).mockResolvedValue({

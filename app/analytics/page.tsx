@@ -13,6 +13,7 @@ import PerformanceTab from '@/components/features/Analytics/PerformanceTab';
 import TrainingLoadTab from '@/components/features/Analytics/TrainingLoadTab';
 import GoalsTab from '@/components/features/Analytics/GoalsTab';
 import ReportModal from '@/components/features/Analytics/ReportModal';
+import ClientSelector from '@/components/features/Analytics/ClientSelector';
 import { useToast, ToastContainer } from '@/components/shared/Toast';
 
 export default function AnalyticsPage() {
@@ -25,12 +26,13 @@ export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '3m' | '6m' | '1y'>('3m');
   const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos' | 'performance' | 'training-load' | 'goals'>('overview');
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
-  // Load measurements when user changes
+  // Load measurements when user or selectedClientId changes
   const loadMeasurements = async () => {
     try {
       setIsLoading(true);
-      const data = await analyticsApi.getBodyMeasurements();
+      const data = await analyticsApi.getBodyMeasurements(undefined, selectedClientId || undefined);
       setMeasurements(data);
     } catch (error) {
       console.error('Failed to load measurements:', error);
@@ -44,7 +46,7 @@ export default function AnalyticsPage() {
     if (user?.id) {
       loadMeasurements();
     }
-  }, [user?.id]);
+  }, [user?.id, selectedClientId]);
 
   // Redirect to login if not authenticated
   if (!authLoading && !isAuthenticated) {
@@ -196,9 +198,15 @@ export default function AnalyticsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Progress Analytics</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {user?.role === 'trainer' && selectedClientId
+                  ? 'Client Analytics'
+                  : user?.role === 'trainer'
+                  ? 'My Analytics'
+                  : 'Progress Analytics'}
+              </h1>
               <p className="mt-1 text-sm text-gray-500">
-                Track your body measurements and monitor your progress over time
+                Track {user?.role === 'trainer' && selectedClientId ? 'client' : 'your'} body measurements and monitor progress over time
               </p>
             </div>
             <div className="flex space-x-2">
@@ -249,6 +257,14 @@ export default function AnalyticsPage() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Client Selector for Trainers */}
+        {user?.role === 'trainer' && (
+          <ClientSelector
+            selectedClientId={selectedClientId}
+            onClientChange={setSelectedClientId}
+          />
+        )}
+
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -415,11 +431,11 @@ export default function AnalyticsPage() {
             )}
 
             {activeView === 'performance' && (
-              <PerformanceTab />
+              <PerformanceTab clientId={selectedClientId} />
             )}
 
             {activeView === 'training-load' && (
-              <TrainingLoadTab />
+              <TrainingLoadTab clientId={selectedClientId} />
             )}
 
             {activeView === 'goals' && (

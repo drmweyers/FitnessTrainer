@@ -12,6 +12,7 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/analytics/performance/me
  * Query performance metrics with filters
+ * Supports role-aware access: trainers can view client data with clientId param
  */
 export async function GET(request: NextRequest) {
   const authResult = await authenticate(request)
@@ -20,13 +21,35 @@ export async function GET(request: NextRequest) {
 
   try {
     const userId = req.user!.id
+    const userRole = req.user!.role
     const { searchParams } = new URL(request.url)
+    const clientId = searchParams.get('clientId')
     const exerciseId = searchParams.get('exerciseId')
     const metricType = searchParams.get('metricType')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
 
-    const where: Record<string, unknown> = { userId }
+    // Determine target userId (role-aware)
+    let targetUserId = userId
+
+    if (userRole === 'trainer' && clientId) {
+      // Validate trainer owns this client
+      const trainerClient = await prisma.trainerClient.findFirst({
+        where: { trainerId: userId, clientId },
+      })
+
+      if (!trainerClient) {
+        return NextResponse.json(
+          { success: false, error: 'Access denied to client data' },
+          { status: 403 }
+        )
+      }
+
+      targetUserId = clientId
+    }
+    // Clients cannot use clientId param - always use own userId
+
+    const where: Record<string, unknown> = { userId: targetUserId }
 
     if (exerciseId) {
       where.exerciseId = exerciseId

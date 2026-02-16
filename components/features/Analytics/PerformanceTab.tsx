@@ -35,14 +35,18 @@ interface PersonalBest {
   date: string;
 }
 
-export default function PerformanceTab() {
+interface PerformanceTabProps {
+  clientId?: string | null;
+}
+
+export default function PerformanceTab({ clientId }: PerformanceTabProps) {
   const { data: metrics, isLoading: metricsLoading } = useQuery<PerformanceMetric[]>({
-    queryKey: ['performance-metrics'],
-    queryFn: () => analyticsApi.getPerformanceMetrics(),
+    queryKey: ['performance-metrics', clientId],
+    queryFn: () => analyticsApi.getPerformanceMetrics(undefined, clientId || undefined),
   });
 
   const { data: personalBests, isLoading: bestsLoading } = useQuery<PersonalBest[]>({
-    queryKey: ['personal-bests'],
+    queryKey: ['personal-bests', clientId],
     queryFn: () => analyticsApi.getPersonalBests(),
   });
 

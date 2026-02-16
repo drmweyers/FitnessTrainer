@@ -87,7 +87,6 @@ export default function AIWorkoutBuilder() {
     // Filter by equipment availability
     if (prefs.equipmentAvailable.length > 0 && !prefs.equipmentAvailable.includes('any')) {
       filtered = filtered.filter(ex =>
-        ex.equipment === 'body weight' ||
         prefs.equipmentAvailable.includes(ex.equipment || '')
       )
     }
