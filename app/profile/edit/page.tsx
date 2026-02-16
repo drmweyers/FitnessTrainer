@@ -62,6 +62,13 @@ export default function ProfileEditPage() {
 
   const [whatsappNumber, setWhatsappNumber] = useState('');
 
+  // Emergency contact state
+  const [emergencyContact, setEmergencyContact] = useState({
+    name: '',
+    phone: '',
+    relationship: '',
+  });
+
   const [form, setForm] = useState({
     bio: '',
     dateOfBirth: '',
@@ -391,6 +398,51 @@ export default function ProfileEditPage() {
               <p className="text-xs text-gray-500 mt-1 ml-6">
                 Public profiles can be viewed by trainers and other users.
               </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Emergency Contact */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Emergency Contact</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-600 mb-4">
+              Provide emergency contact information in case of accidents or medical emergencies during training.
+            </p>
+
+            <div>
+              <Label htmlFor="emergencyName">Contact Name</Label>
+              <Input
+                id="emergencyName"
+                value={emergencyContact.name}
+                onChange={e => setEmergencyContact(ec => ({ ...ec, name: e.target.value }))}
+                placeholder="Full name"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="emergencyPhone">Phone Number</Label>
+                <Input
+                  id="emergencyPhone"
+                  type="tel"
+                  value={emergencyContact.phone}
+                  onChange={e => setEmergencyContact(ec => ({ ...ec, phone: e.target.value }))}
+                  placeholder="+1 (555) 000-0000"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="emergencyRelationship">Relationship</Label>
+                <Input
+                  id="emergencyRelationship"
+                  value={emergencyContact.relationship}
+                  onChange={e => setEmergencyContact(ec => ({ ...ec, relationship: e.target.value }))}
+                  placeholder="e.g., Spouse, Parent, Friend"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

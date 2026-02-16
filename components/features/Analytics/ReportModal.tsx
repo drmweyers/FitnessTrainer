@@ -88,6 +88,74 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+  const downloadCSV = () => {
+    if (!report) return;
+
+    const csvRows: string[] = [];
+
+    // Header
+    csvRows.push('EvoFit Trainer - Progress Report');
+    csvRows.push(`Period,${report.period.startDate} to ${report.period.endDate}`);
+    csvRows.push(`Generated,${new Date(report.generatedAt).toLocaleString()}`);
+    csvRows.push('');
+
+    // Summary
+    csvRows.push('WORKOUT SUMMARY');
+    csvRows.push('Metric,Value');
+    csvRows.push(`Total Workouts,${report.summary.totalWorkouts}`);
+    csvRows.push(`Completed Workouts,${report.summary.completedWorkouts}`);
+    csvRows.push(`Completion Rate,${report.summary.completionRate}%`);
+    csvRows.push(`Total Duration (minutes),${report.summary.totalDurationMinutes}`);
+    csvRows.push(`Total Volume (kg),${report.summary.totalVolume}`);
+    csvRows.push(`Average RPE,${report.summary.averageRpe}`);
+    csvRows.push('');
+
+    // Measurements
+    if (report.measurements.length > 0) {
+      csvRows.push('BODY MEASUREMENTS');
+      csvRows.push('Date,Weight (kg),Body Fat (%),Muscle Mass (kg)');
+      report.measurements.forEach(m => {
+        csvRows.push(`${m.date},${m.weight || ''},${m.bodyFat || ''},${m.muscleMass || ''}`);
+      });
+      csvRows.push('');
+    }
+
+    // Goals
+    if (report.goals.length > 0) {
+      csvRows.push('ACTIVE GOALS');
+      csvRows.push('Type,Specific,Target,Target Date,Progress (%)');
+      report.goals.forEach(g => {
+        csvRows.push(
+          `${g.type},${g.specific || ''},${g.target || ''},${g.targetDate || ''},${g.latestProgress?.percentage || ''}`
+        );
+      });
+      csvRows.push('');
+    }
+
+    // Workouts
+    if (report.workouts.length > 0) {
+      csvRows.push('WORKOUT HISTORY');
+      csvRows.push('Date,Status,Duration (min),Volume (kg),Sets,Completed Sets');
+      report.workouts.forEach(w => {
+        csvRows.push(
+          `${w.date},${w.status},${w.duration || ''},${w.volume || ''},${w.sets || ''},${w.completedSets || ''}`
+        );
+      });
+    }
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `evofittrainer-report-${report.period.startDate}-to-${report.period.endDate}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
@@ -238,13 +306,21 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
               )}
 
               {/* Actions */}
-              <div className="flex space-x-3 pt-2">
-                <Button variant="outline" onClick={() => setReport(null)} className="flex-1">
-                  Generate Another
+              <div className="flex flex-col space-y-2 pt-2">
+                <Button onClick={downloadCSV} variant="outline" className="w-full">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Download as CSV
                 </Button>
-                <Button onClick={() => { onClose(); setReport(null); }} className="flex-1">
-                  Close
-                </Button>
+                <div className="flex space-x-3">
+                  <Button variant="outline" onClick={() => setReport(null)} className="flex-1">
+                    Generate Another
+                  </Button>
+                  <Button onClick={() => { onClose(); setReport(null); }} className="flex-1">
+                    Close
+                  </Button>
+                </div>
               </div>
             </div>
           )}
