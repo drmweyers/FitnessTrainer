@@ -7,6 +7,8 @@ jest.mock('lucide-react', () => ({
   CheckCircle: () => <span data-testid="icon-check" />,
   Clock: () => <span data-testid="icon-clock" />,
   ChevronRight: () => <span data-testid="icon-chevron" />,
+  ChevronLeft: () => <span data-testid="icon-chevron-left" />,
+  ChevronRight: () => <span data-testid="icon-chevron-right" />,
 }));
 
 import WorkoutHistory from '../WorkoutHistory';
@@ -68,7 +70,8 @@ describe('WorkoutHistory', () => {
   it('should display Completed badge', () => {
     render(<WorkoutHistory workouts={mockWorkouts} />);
     const badges = screen.getAllByText('Completed');
-    expect(badges.length).toBe(3); // First 3 shown
+    // Calendar legend also shows "Completed", so expect 4 total (3 workouts + 1 legend)
+    expect(badges.length).toBe(4);
   });
 
   it('should display View Details button for each workout', () => {

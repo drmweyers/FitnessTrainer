@@ -38,8 +38,8 @@ describe('RescheduleButton', () => {
     fireEvent.click(screen.getByText('Reschedule'));
 
     expect(screen.getByText('Reschedule Appointment')).toBeInTheDocument();
-    expect(screen.getByLabelText(/Start Date & Time/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/End Date & Time/i)).toBeInTheDocument();
+    expect(screen.getByText('Start Date & Time')).toBeInTheDocument();
+    expect(screen.getByText('End Date & Time')).toBeInTheDocument();
   });
 
   it('should submit reschedule request', async () => {

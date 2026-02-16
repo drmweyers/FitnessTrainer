@@ -55,7 +55,9 @@ describe('WorkoutCalendar', () => {
   it('should render legend', () => {
     render(<WorkoutCalendar completedDates={mockCompletedDates} />);
     expect(screen.getByText('Completed')).toBeInTheDocument();
-    expect(screen.getByText('Today')).toBeInTheDocument();
+    // "Today" appears in both legend and button, use getAllByText
+    const todayElements = screen.getAllByText('Today');
+    expect(todayElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it('should navigate to previous month when left arrow is clicked', () => {
@@ -78,7 +80,7 @@ describe('WorkoutCalendar', () => {
     fireEvent.click(nextButton);
     expect(screen.getByText('March 2026')).toBeInTheDocument();
 
-    const todayButton = screen.getByText('Today');
+    const todayButton = screen.getByRole('button', { name: 'Today' });
     fireEvent.click(todayButton);
     expect(screen.getByText('February 2026')).toBeInTheDocument();
   });

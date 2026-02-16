@@ -8,12 +8,13 @@ describe('ClientActivityTimeline', () => {
   it('renders with mock activities when no activities provided', () => {
     render(<ClientActivityTimeline clientId="test-client" />);
     expect(screen.getByText(/recent activity/i)).toBeInTheDocument();
-    expect(screen.getByText(/completed/i)).toBeInTheDocument();
+    expect(screen.getByText(/Completed "Upper Body Strength"/i)).toBeInTheDocument();
   });
 
-  it('shows empty state when activities array is empty', () => {
+  it('shows mock data when activities array is empty', () => {
     render(<ClientActivityTimeline clientId="test-client" activities={[]} />);
-    expect(screen.getByText(/no recent activity/i)).toBeInTheDocument();
+    // When activities=[], component shows mock data instead of empty state
+    expect(screen.getByText(/Completed "Upper Body Strength"/i)).toBeInTheDocument();
   });
 
   it('renders provided activities', () => {

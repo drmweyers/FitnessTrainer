@@ -28,17 +28,26 @@ describe('FeatureFlagManager', () => {
       expect(screen.getByText('WhatsApp Messaging')).toBeInTheDocument();
     });
 
-    const toggles = screen.getAllByRole('button').filter(
-      btn => btn.classList.contains('bg-blue-600') || btn.classList.contains('bg-gray-200')
-    );
+    // Find toggle buttons - they have the rounded toggle switch styling
+    const allButtons = screen.getAllByRole('button');
 
-    const firstToggle = toggles[0];
-    const initialClass = firstToggle.className;
+    // The toggle buttons have the bg-blue-600 or bg-gray-200 classes
+    // But we need to test that clicking causes a change in localStorage
+    const initialFlags = JSON.parse(localStorage.getItem('feature_flags') || '[]');
+    const whatsappFlagIndex = initialFlags.findIndex((f: any) => f.id === 'whatsapp_messaging');
+    const initialEnabled = initialFlags[whatsappFlagIndex]?.enabled;
 
-    fireEvent.click(firstToggle);
+    // Find the toggle switch for WhatsApp (it's in the row with "WhatsApp Messaging")
+    const whatsappRow = screen.getByText('WhatsApp Messaging').closest('tr');
+    const toggleButton = whatsappRow!.querySelector('button[class*="bg-"]');
 
+    fireEvent.click(toggleButton!);
+
+    // After toggle, localStorage should be updated
     await waitFor(() => {
-      expect(firstToggle.className).not.toBe(initialClass);
+      const updatedFlags = JSON.parse(localStorage.getItem('feature_flags') || '[]');
+      const updatedEnabled = updatedFlags[whatsappFlagIndex]?.enabled;
+      expect(updatedEnabled).toBe(!initialEnabled);
     });
   });
 

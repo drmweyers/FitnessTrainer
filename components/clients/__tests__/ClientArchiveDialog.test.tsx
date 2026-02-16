@@ -29,7 +29,7 @@ describe('ClientArchiveDialog', () => {
     );
 
     fireEvent.click(screen.getByText('Archive'));
-    expect(screen.getByText(/archive client/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /archive client/i })).toBeInTheDocument();
     expect(screen.getByText(/john doe/i)).toBeInTheDocument();
   });
 

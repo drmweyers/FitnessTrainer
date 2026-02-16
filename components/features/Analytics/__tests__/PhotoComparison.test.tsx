@@ -237,7 +237,7 @@ describe('PhotoComparison', () => {
   describe('edge cases', () => {
     it('renders with no photos', () => {
       render(<PhotoComparison photos={[]} onClose={mockOnClose} />);
-      expect(screen.getByText('Progress Photo Comparison')).toBeInTheDocument();
+      expect(screen.getByText('No Progress Photos')).toBeInTheDocument();
     });
 
     it('renders without onClose callback', () => {
