@@ -245,7 +245,7 @@ export class TestHelpers {
     // Wait for animations to complete
     await page.waitForFunction(() => {
       const elements = document.querySelectorAll('*');
-      for (let element of elements) {
+      for (const element of elements) {
         const computedStyle = window.getComputedStyle(element);
         if (computedStyle.animationPlayState === 'running' || 
             computedStyle.transitionProperty !== 'none') {

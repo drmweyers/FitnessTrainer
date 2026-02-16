@@ -60,7 +60,7 @@ function determineDifficulty(exercise: RawExerciseData): DifficultyLevel {
 /**
  * Import exercises from JSON file
  */
-async function importExercises(): Promise<void {
+async function importExercises(): Promise<void> {
   console.log('🚀 Starting exercise import...');
 
   try {

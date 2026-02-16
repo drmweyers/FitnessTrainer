@@ -4,45 +4,76 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 
 // Mock framer-motion to avoid animation issues in tests
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: React.forwardRef(({ children, ...props }: any, ref: any) => (
-      <div ref={ref} {...props}>{children}</div>
-    )),
-    h1: React.forwardRef(({ children, ...props }: any, ref: any) => (
-      <h1 ref={ref} {...props}>{children}</h1>
-    )),
-    h2: React.forwardRef(({ children, ...props }: any, ref: any) => (
-      <h2 ref={ref} {...props}>{children}</h2>
-    )),
-    p: React.forwardRef(({ children, ...props }: any, ref: any) => (
-      <p ref={ref} {...props}>{children}</p>
-    )),
-    ul: React.forwardRef(({ children, ...props }: any, ref: any) => (
-      <ul ref={ref} {...props}>{children}</ul>
-    )),
-    li: React.forwardRef(({ children, ...props }: any, ref: any) => (
-      <li ref={ref} {...props}>{children}</li>
-    )),
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
+jest.mock('framer-motion', () => {
+  const MotionDiv = React.forwardRef(({ children, ...props }: any, ref: any) => (
+    <div ref={ref} {...props}>{children}</div>
+  ));
+  MotionDiv.displayName = 'motion.div';
+
+  const MotionH1 = React.forwardRef(({ children, ...props }: any, ref: any) => (
+    <h1 ref={ref} {...props}>{children}</h1>
+  ));
+  MotionH1.displayName = 'motion.h1';
+
+  const MotionH2 = React.forwardRef(({ children, ...props }: any, ref: any) => (
+    <h2 ref={ref} {...props}>{children}</h2>
+  ));
+  MotionH2.displayName = 'motion.h2';
+
+  const MotionP = React.forwardRef(({ children, ...props }: any, ref: any) => (
+    <p ref={ref} {...props}>{children}</p>
+  ));
+  MotionP.displayName = 'motion.p';
+
+  const MotionUl = React.forwardRef(({ children, ...props }: any, ref: any) => (
+    <ul ref={ref} {...props}>{children}</ul>
+  ));
+  MotionUl.displayName = 'motion.ul';
+
+  const MotionLi = React.forwardRef(({ children, ...props }: any, ref: any) => (
+    <li ref={ref} {...props}>{children}</li>
+  ));
+  MotionLi.displayName = 'motion.li';
+
+  const AnimatePresence = ({ children }: any) => <>{children}</>;
+  AnimatePresence.displayName = 'AnimatePresence';
+
+  return {
+    motion: {
+      div: MotionDiv,
+      h1: MotionH1,
+      h2: MotionH2,
+      p: MotionP,
+      ul: MotionUl,
+      li: MotionLi,
+    },
+    AnimatePresence,
+  };
+});
 
 // Mock next/image
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ src, alt, ...props }: any) => (
+jest.mock('next/image', () => {
+  const MockImage = ({ src, alt, ...props }: any) => (
     <img src={src} alt={alt} {...props} />
-  ),
-}));
+  );
+  MockImage.displayName = 'Image';
+  return {
+    __esModule: true,
+    default: MockImage,
+  };
+});
 
 // Mock next/link
-jest.mock('next/link', () => ({
-  __esModule: true,
-  default: ({ children, href, ...props }: any) => (
+jest.mock('next/link', () => {
+  const MockLink = ({ children, href, ...props }: any) => (
     <a href={href} {...props}>{children}</a>
-  ),
-}));
+  );
+  MockLink.displayName = 'Link';
+  return {
+    __esModule: true,
+    default: MockLink,
+  };
+});
 
 import HomePage from '../page';
 

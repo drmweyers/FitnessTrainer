@@ -65,12 +65,12 @@ export class AnalyticsController {
         userId = requestedUserId!;
       }
 
-      let whereClause: any = { userId };
+      const whereClause: any = { userId };
 
       // Add time range filter if provided
       if (timeRange) {
         const endDate = new Date();
-        let startDate = new Date();
+        const startDate = new Date();
         
         switch (timeRange) {
           case '7d':
@@ -254,7 +254,7 @@ export class AnalyticsController {
         userId = requestedUserId as string;
       }
 
-      let whereClause: any = { userId };
+      const whereClause: any = { userId };
       if (exerciseId) {
         whereClause.exerciseId = exerciseId as string;
       }
@@ -516,7 +516,7 @@ export class AnalyticsController {
         userId = requestedUserId!;
       }
 
-      let whereClause: any = { userId };
+      const whereClause: any = { userId };
       if (unreadOnly === 'true') {
         whereClause.isRead = false;
       }

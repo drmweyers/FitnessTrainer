@@ -43,5 +43,4 @@ async function install(options) {
   }
 }
 
-// eslint-disable-next-line unicorn/prefer-module
 module.exports = { install };

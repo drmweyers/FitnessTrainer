@@ -469,7 +469,7 @@ export const workoutService = {
     }
 
     // Calculate total volume if updating
-    let updateData = { ...data };
+    const updateData = { ...data };
     if (data.endTime && !existingLog.startTime) {
       updateData.startTime = new Date();
     }
@@ -558,7 +558,7 @@ export const workoutService = {
 
     // Date range calculation
     const now = new Date();
-    let dateRange = { start: startDate, end: endDate };
+    const dateRange = { start: startDate, end: endDate };
     
     if (!startDate || !endDate) {
       switch (period) {

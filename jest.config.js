@@ -64,7 +64,8 @@ const customJestConfig = {
     '/dist/',
     '/out/',
     '/\\.auto-claude/',
-    '/\\.worktrees/',
+    // Skip .worktrees/ ONLY if we're in the main project (not running from within a worktree)
+    ...(process.cwd().includes('.worktrees') ? [] : ['/\\.worktrees/']),
     '/tests/e2e/',
   ],
 
@@ -72,7 +73,8 @@ const customJestConfig = {
 
   modulePathIgnorePatterns: [
     '/\\.auto-claude/',
-    '/\\.worktrees/',
+    // Skip .worktrees/ ONLY if we're in the main project (not running from within a worktree)
+    ...(process.cwd().includes('.worktrees') ? [] : ['/\\.worktrees/']),
   ],
 
   transformIgnorePatterns: [

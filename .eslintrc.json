@@ -6,6 +6,8 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-debugger": "error",
     "prefer-const": "error",
-    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "react/no-unescaped-entities": "warn",
+    "react/display-name": "warn"
   }
 }

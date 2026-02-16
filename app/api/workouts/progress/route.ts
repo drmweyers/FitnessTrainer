@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     // Date range calculation
     const now = new Date();
     let startDate = startDateParam ? new Date(startDateParam) : undefined;
-    let endDate = endDateParam ? new Date(endDateParam) : now;
+    const endDate = endDateParam ? new Date(endDateParam) : now;
 
     if (!startDate) {
       switch (period) {

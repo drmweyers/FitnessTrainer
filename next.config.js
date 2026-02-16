@@ -18,9 +18,7 @@ const nextConfig = {
   eslint: {
     // Only run ESLint during builds in the specified directories
     dirs: ['app', 'components', 'lib', 'hooks', 'types', 'services', 'contexts', 'config', 'state'],
-    // Temporarily ignore ESLint errors during builds for deployment
-    // TODO: Fix ESLint warnings and re-enable
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 
   // Image optimization

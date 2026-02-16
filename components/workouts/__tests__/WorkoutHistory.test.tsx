@@ -17,18 +17,34 @@ jest.mock('@/hooks/useWorkouts', () => ({
 
 // Mock next/link
 jest.mock('next/link', () => {
-  return ({ children, href }: any) => (
+  const MockLink = ({ children, href }: any) => (
     <a href={href}>{children}</a>
   );
+  MockLink.displayName = 'Link';
+  return MockLink;
 });
 
 // Mock lucide-react
-jest.mock('lucide-react', () => ({
-  Calendar: () => <span data-testid="calendar-icon" />,
-  Clock: () => <span data-testid="clock-icon" />,
-  Target: () => <span data-testid="target-icon" />,
-  TrendingUp: () => <span data-testid="trending-icon" />,
-}));
+jest.mock('lucide-react', () => {
+  const Calendar = () => <span data-testid="calendar-icon" />;
+  Calendar.displayName = 'Calendar';
+
+  const Clock = () => <span data-testid="clock-icon" />;
+  Clock.displayName = 'Clock';
+
+  const Target = () => <span data-testid="target-icon" />;
+  Target.displayName = 'Target';
+
+  const TrendingUp = () => <span data-testid="trending-icon" />;
+  TrendingUp.displayName = 'TrendingUp';
+
+  return {
+    Calendar,
+    Clock,
+    Target,
+    TrendingUp,
+  };
+});
 
 import { useWorkouts } from '@/hooks/useWorkouts';
 const mockUseWorkouts = useWorkouts as jest.Mock;

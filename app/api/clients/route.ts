@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists
-    let clientUser = await prisma.user.findUnique({ where: { email } });
+    const clientUser = await prisma.user.findUnique({ where: { email } });
 
     if (!clientUser) {
       return NextResponse.json(

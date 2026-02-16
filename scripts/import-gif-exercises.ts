@@ -143,7 +143,7 @@ async function importGifExercises() {
   // Import exercises
   console.log('💾 Importing exercises to database...');
   let createdCount = 0;
-  let updatedCount = 0;
+  const updatedCount = 0;
   let errorCount = 0;
 
   for (const jsonExercise of jsonExercises) {
