@@ -14,8 +14,8 @@ test.describe('06 - Workout Tracking', () => {
     });
     await waitForPageReady(page);
 
-    // Should see workout-related content
-    await expect(page.locator('text=/workout/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Should see "Workouts" heading
+    await expect(page.locator('h1:has-text("Workouts")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'workouts-hub.png');
   });

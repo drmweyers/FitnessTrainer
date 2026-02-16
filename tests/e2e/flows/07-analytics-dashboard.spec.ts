@@ -11,8 +11,8 @@ test.describe('07 - Analytics Dashboard', () => {
     });
     await waitForPageReady(page);
 
-    // Should see analytics-related content
-    await expect(page.locator('text=/analytics|progress|overview/i').first()).toBeVisible({
+    // Should see "Progress Analytics" heading
+    await expect(page.locator('h1:has-text("Progress Analytics")')).toBeVisible({
       timeout: TIMEOUTS.element,
     });
 

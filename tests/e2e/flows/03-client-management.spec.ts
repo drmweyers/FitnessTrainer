@@ -14,8 +14,8 @@ test.describe('03 - Client Management', () => {
     });
     await waitForPageReady(page);
 
-    // Should see page heading
-    await expect(page.locator('text=/clients/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Should see client page heading - can be "All Clients" or "Client Management"
+    await expect(page.locator('h1').filter({ hasText: /Clients/i })).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'client-list.png');
   });

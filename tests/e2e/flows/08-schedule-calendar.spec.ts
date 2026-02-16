@@ -14,8 +14,8 @@ test.describe('08 - Schedule & Calendar', () => {
     });
     await waitForPageReady(page);
 
-    // Should see schedule/calendar content
-    await expect(page.locator('text=/schedule|calendar|appointments/i').first()).toBeVisible({
+    // Should see "Schedule" heading in main content (not sidebar)
+    await expect(page.locator('main h1:has-text("Schedule"), .p-6 h1:has-text("Schedule")')).toBeVisible({
       timeout: TIMEOUTS.element,
     });
 

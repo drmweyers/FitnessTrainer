@@ -14,8 +14,8 @@ test.describe('05 - Program Builder', () => {
     });
     await waitForPageReady(page);
 
-    // Should see programs-related heading
-    await expect(page.locator('text=/program/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Should see "Training Programs" heading
+    await expect(page.locator('h1:has-text("Training Programs")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'programs-list.png');
   });

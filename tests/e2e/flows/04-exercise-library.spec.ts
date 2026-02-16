@@ -14,8 +14,8 @@ test.describe('04 - Exercise Library', () => {
     });
     await waitForPageReady(page);
 
-    // Should see exercise-related heading
-    await expect(page.locator('text=/exercise/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Should see "Exercise Library" heading
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'exercise-library.png');
   });
@@ -117,7 +117,7 @@ test.describe('04 - Exercise Library', () => {
       timeout: TIMEOUTS.pageLoad,
     });
 
-    // Public exercises page should load
-    await expect(page.locator('text=/exercise/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Public exercises page should load with "Exercise Library" heading
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });

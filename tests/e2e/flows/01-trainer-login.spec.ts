@@ -11,9 +11,10 @@ test.describe('01 - Trainer Login Flow', () => {
     await expect(page.locator('input#password, input[name="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
 
-    // Verify branding
-    await expect(page.locator('text=EvoFit')).toBeVisible();
-    await expect(page.locator('text=/sign in/i')).toBeVisible();
+    // Verify branding - page should have EvoFit branding and sign in heading
+    const branding = page.locator('span', { hasText: 'EvoFit' }).or(page.locator('text=/EvoFit/i'));
+    await expect(branding.first()).toBeVisible();
+    await expect(page.locator('h2', { hasText: /sign in/i })).toBeVisible();
   });
 
   test('should show validation errors for empty form', async ({ page }) => {
@@ -63,8 +64,8 @@ test.describe('01 - Trainer Login Flow', () => {
   test('should navigate to register page from login', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle' });
 
-    // Click create account / register link
-    const registerLink = page.locator('a[href*="register"]');
+    // Click create account / register link - actual text is "create a new account"
+    const registerLink = page.locator('a[href*="register"]:has-text("create a new account")');
     await expect(registerLink).toBeVisible();
     await registerLink.click();
 

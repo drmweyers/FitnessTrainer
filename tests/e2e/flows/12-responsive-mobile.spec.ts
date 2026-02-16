@@ -11,8 +11,8 @@ test.describe('12 - Responsive / Mobile', () => {
   test('should render home page on mobile', async ({ page }) => {
     await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
 
-    // Should still show main content
-    await expect(page.locator('text=/EvoFit/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Logo and main heading should be visible (EvoFit text in logo has hidden sm:inline)
+    await expect(page.locator('h1:has-text("Transform Your")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     // CTA buttons should be visible
     await expect(page.locator('text=/Sign In|Get Started/i').first()).toBeVisible();
