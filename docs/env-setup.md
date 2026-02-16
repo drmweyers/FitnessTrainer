@@ -29,24 +29,23 @@ printf 'YOUR_API_SECRET' | npx vercel env add CLOUDINARY_API_SECRET production
 
 **Integration:** `lib/services/cloudinary.ts` - used by profile photo upload and progress photos.
 
-## Optional - Email (Resend)
+## Optional - Email (Mailgun)
 
-Required for password reset emails, welcome emails, and email verification. Without these, email features fail silently.
+Required for password reset emails, welcome emails, email verification, and client invitations. Without these, email features fail silently.
 
-1. Create a free account at https://resend.com
-2. Add and verify your domain (or use the sandbox domain for testing)
-3. Create an API key
+1. Log into your Mailgun account at https://app.mailgun.com
+2. Get your API key from Settings > API Keys
+3. Use your verified domain (or sandbox domain for testing)
 4. Set the variables:
 
 ```bash
-printf 'YOUR_RESEND_KEY' | npx vercel env add RESEND_API_KEY production
-printf 'noreply@yourdomain.com' | npx vercel env add EMAIL_FROM production
+printf 'YOUR_MAILGUN_API_KEY' | npx vercel env add MAILGUN_API_KEY production
+printf 'mg.yourdomain.com' | npx vercel env add MAILGUN_DOMAIN production
+printf 'EvoFit <noreply@yourdomain.com>' | npx vercel env add EMAIL_FROM production
 printf 'https://evofittrainer-six.vercel.app' | npx vercel env add NEXT_PUBLIC_APP_URL production
 ```
 
-**Integration:** `lib/services/email.ts` - Resend SDK v6.9.1 with functions: sendPasswordResetEmail, sendWelcomeEmail, sendVerificationEmail.
-
-**Note:** FitnessMealPlanner uses Mailgun, but EvoFitTrainer has Resend fully integrated. No need to switch.
+**Integration:** `lib/services/email.ts` - Mailgun HTTP API (no SDK, uses `fetch`) with functions: sendPasswordResetEmail, sendWelcomeEmail, sendVerificationEmail, sendClientInvitationEmail.
 
 ## Checking Current Vars
 

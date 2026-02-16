@@ -2,31 +2,23 @@ import {
   sendPasswordResetEmail,
   sendWelcomeEmail,
   sendVerificationEmail,
+  sendClientInvitationEmail,
 } from '@/lib/services/email';
 
-const mockSend = jest.fn();
+// Mock global fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
-jest.mock('resend', () => {
-  return {
-    Resend: jest.fn().mockImplementation(() => {
-      return {
-        emails: {
-          send: mockSend,
-        },
-      };
-    }),
-  };
-});
-
-describe('Email Service', () => {
+describe('Email Service (Mailgun)', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
     process.env = { ...originalEnv };
-    process.env.RESEND_API_KEY = 'test-api-key';
-    process.env.EMAIL_FROM = 'test@example.com';
+    process.env.MAILGUN_API_KEY = 'test-mailgun-key';
+    process.env.MAILGUN_DOMAIN = 'mg.evofit.io';
+    process.env.EMAIL_FROM = 'EvoFit <noreply@evofit.io>';
     process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000';
-    mockSend.mockReset();
+    mockFetch.mockReset();
   });
 
   afterEach(() => {
@@ -35,9 +27,9 @@ describe('Email Service', () => {
 
   describe('sendPasswordResetEmail', () => {
     it('should send password reset email successfully', async () => {
-      mockSend.mockResolvedValue({
-        data: { id: 'email-123' },
-        error: null,
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<msg-123@mg.evofit.io>' }),
       });
 
       const result = await sendPasswordResetEmail(
@@ -48,14 +40,25 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: true,
-        id: 'email-123',
+        id: '<msg-123@mg.evofit.io>',
       });
+
+      // Verify fetch was called with correct Mailgun URL
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.mailgun.net/v3/mg.evofit.io/messages',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            Authorization: expect.stringMatching(/^Basic /),
+          }),
+        })
+      );
     });
 
     it('should send password reset email without name', async () => {
-      mockSend.mockResolvedValue({
-        data: { id: 'email-456' },
-        error: null,
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<msg-456@mg.evofit.io>' }),
       });
 
       const result = await sendPasswordResetEmail(
@@ -65,14 +68,15 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: true,
-        id: 'email-456',
+        id: '<msg-456@mg.evofit.io>',
       });
     });
 
-    it('should handle Resend API error', async () => {
-      mockSend.mockResolvedValue({
-        data: null,
-        error: { message: 'API rate limit exceeded' },
+    it('should handle Mailgun API error', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 401,
+        text: async () => 'Unauthorized',
       });
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -84,14 +88,14 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'API rate limit exceeded',
+        error: 'Mailgun error: 401',
       });
 
       consoleErrorSpy.mockRestore();
     });
 
     it('should handle exception during send', async () => {
-      mockSend.mockRejectedValue(new Error('Network error'));
+      mockFetch.mockRejectedValue(new Error('Network error'));
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
@@ -111,37 +115,38 @@ describe('Email Service', () => {
 
   describe('sendWelcomeEmail', () => {
     it('should send welcome email successfully with name', async () => {
-      mockSend.mockResolvedValue({
-        data: { id: 'welcome-123' },
-        error: null,
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<welcome-123@mg.evofit.io>' }),
       });
 
       const result = await sendWelcomeEmail('newuser@example.com', 'Jane Smith');
 
       expect(result).toEqual({
         success: true,
-        id: 'welcome-123',
+        id: '<welcome-123@mg.evofit.io>',
       });
     });
 
     it('should send welcome email without name', async () => {
-      mockSend.mockResolvedValue({
-        data: { id: 'welcome-456' },
-        error: null,
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<welcome-456@mg.evofit.io>' }),
       });
 
       const result = await sendWelcomeEmail('newuser@example.com');
 
       expect(result).toEqual({
         success: true,
-        id: 'welcome-456',
+        id: '<welcome-456@mg.evofit.io>',
       });
     });
 
     it('should handle error when sending welcome email', async () => {
-      mockSend.mockResolvedValue({
-        data: null,
-        error: { message: 'Invalid recipient' },
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: async () => 'Bad Request',
       });
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -150,14 +155,14 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'Invalid recipient',
+        error: 'Mailgun error: 400',
       });
 
       consoleErrorSpy.mockRestore();
     });
 
     it('should handle exception during send', async () => {
-      mockSend.mockRejectedValue(new Error('Timeout'));
+      mockFetch.mockRejectedValue(new Error('Timeout'));
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
@@ -174,9 +179,9 @@ describe('Email Service', () => {
 
   describe('sendVerificationEmail', () => {
     it('should send verification email successfully with name', async () => {
-      mockSend.mockResolvedValue({
-        data: { id: 'verify-123' },
-        error: null,
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<verify-123@mg.evofit.io>' }),
       });
 
       const result = await sendVerificationEmail(
@@ -187,14 +192,14 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: true,
-        id: 'verify-123',
+        id: '<verify-123@mg.evofit.io>',
       });
     });
 
     it('should send verification email without name', async () => {
-      mockSend.mockResolvedValue({
-        data: { id: 'verify-456' },
-        error: null,
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<verify-456@mg.evofit.io>' }),
       });
 
       const result = await sendVerificationEmail(
@@ -204,14 +209,15 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: true,
-        id: 'verify-456',
+        id: '<verify-456@mg.evofit.io>',
       });
     });
 
     it('should handle error when sending verification email', async () => {
-      mockSend.mockResolvedValue({
-        data: null,
-        error: { message: 'Unauthorized' },
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 403,
+        text: async () => 'Forbidden',
       });
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -223,14 +229,14 @@ describe('Email Service', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'Unauthorized',
+        error: 'Mailgun error: 403',
       });
 
       consoleErrorSpy.mockRestore();
     });
 
     it('should handle exception during send', async () => {
-      mockSend.mockRejectedValue(new Error('Service unavailable'));
+      mockFetch.mockRejectedValue(new Error('Service unavailable'));
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
@@ -241,6 +247,111 @@ describe('Email Service', () => {
         error: 'Failed to send email',
       });
 
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('sendClientInvitationEmail', () => {
+    it('should send invitation email with custom message', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<invite-123@mg.evofit.io>' }),
+      });
+
+      const result = await sendClientInvitationEmail(
+        'newclient@example.com',
+        'Coach Sarah',
+        'http://localhost:3000/invite/abc-123',
+        "Let's start your fitness journey!"
+      );
+
+      expect(result).toEqual({
+        success: true,
+        id: '<invite-123@mg.evofit.io>',
+      });
+
+      // Verify the body includes the trainer name in the subject
+      const callArgs = mockFetch.mock.calls[0];
+      const body = callArgs[1].body as URLSearchParams;
+      expect(body.get('subject')).toBe('Coach Sarah invited you to join EvoFit!');
+      expect(body.get('to')).toBe('newclient@example.com');
+    });
+
+    it('should send invitation email without custom message', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: '<invite-456@mg.evofit.io>' }),
+      });
+
+      const result = await sendClientInvitationEmail(
+        'client@example.com',
+        'Coach Mike',
+        'http://localhost:3000/invite/def-456'
+      );
+
+      expect(result).toEqual({
+        success: true,
+        id: '<invite-456@mg.evofit.io>',
+      });
+    });
+
+    it('should handle error when sending invitation email', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: async () => 'Internal Server Error',
+      });
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await sendClientInvitationEmail(
+        'client@example.com',
+        'Coach',
+        'http://localhost:3000/invite/xyz'
+      );
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Mailgun error: 500',
+      });
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('missing configuration', () => {
+    it('should return error when MAILGUN_API_KEY is missing', async () => {
+      delete process.env.MAILGUN_API_KEY;
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await sendPasswordResetEmail(
+        'user@example.com',
+        'token'
+      );
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Email service not configured',
+      });
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('should return error when MAILGUN_DOMAIN is missing', async () => {
+      delete process.env.MAILGUN_DOMAIN;
+
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await sendWelcomeEmail('user@example.com');
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Email service not configured',
+      });
+
+      expect(mockFetch).not.toHaveBeenCalled();
       consoleErrorSpy.mockRestore();
     });
   });

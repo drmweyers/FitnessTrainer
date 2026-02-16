@@ -95,11 +95,8 @@ tests/e2e/              # Playwright E2E tests
 
 | Issue | Action Needed |
 |-------|--------------|
-| **No production DATABASE_URL** | Need Neon/Supabase/Railway PostgreSQL → add to Vercel env |
 | TypeScript build errors | `ignoreBuildErrors: true` (temporary) |
-| Cloudinary env vars | Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` |
-| Resend env var | Set `RESEND_API_KEY` for email |
-| `.env.production` corrupted | Use `vercel env ls` as source of truth |
+| Cloudinary env vars | Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` for photo uploads |
 
 ---
 
@@ -116,10 +113,11 @@ printf 'value' | npx vercel env add NAME production  # Set new
 | `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Yes |
 | `JWT_ACCESS_EXPIRE` / `JWT_REFRESH_EXPIRE` | Yes |
 | `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Yes |
-| `CORS_ORIGIN` / `NODE_ENV` | Yes |
-| `DATABASE_URL` | **NO** (critical) |
+| `CORS_ORIGIN` | Yes |
+| `DATABASE_URL` | Yes |
+| `MAILGUN_API_KEY` / `MAILGUN_DOMAIN` | Yes |
+| `EMAIL_FROM` / `NEXT_PUBLIC_APP_URL` | Yes |
 | `CLOUDINARY_*` | No |
-| `RESEND_API_KEY` | No |
 
 ### Local Development
 ```env

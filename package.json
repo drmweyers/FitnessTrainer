@@ -73,7 +73,6 @@
     "react-hot-toast": "^2.6.0",
     "recharts": "^2.13.3",
     "recoil": "^0.7.7",
-    "resend": "^6.9.1",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4",
     "typescript": "^5.6.3",
