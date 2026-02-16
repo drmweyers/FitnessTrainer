@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Filter,
 } from 'lucide-react'
+import { BulkUserOperations } from '@/components/admin/BulkUserOperations'
 
 interface UserListItem {
   id: string
@@ -39,6 +40,7 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [roleFilter, setRoleFilter] = useState(searchParams.get('role') || '')
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '')
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
 
   const fetchUsers = useCallback(async (page = 1) => {
     try {
@@ -82,6 +84,29 @@ export default function AdminUsersPage() {
       month: 'short',
       day: 'numeric',
     })
+  }
+
+  const toggleUserSelection = (userId: string) => {
+    const newSelection = new Set(selectedUsers)
+    if (newSelection.has(userId)) {
+      newSelection.delete(userId)
+    } else {
+      newSelection.add(userId)
+    }
+    setSelectedUsers(newSelection)
+  }
+
+  const toggleAllUsers = () => {
+    if (selectedUsers.size === users.length) {
+      setSelectedUsers(new Set())
+    } else {
+      setSelectedUsers(new Set(users.map(u => u.id)))
+    }
+  }
+
+  const handleOperationComplete = () => {
+    setSelectedUsers(new Set())
+    fetchUsers()
   }
 
   return (
@@ -145,6 +170,14 @@ export default function AdminUsersPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="w-12 px-6 py-3">
+                  <input
+                    type="checkbox"
+                    checked={users.length > 0 && selectedUsers.size === users.length}
+                    onChange={toggleAllUsers}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -174,10 +207,23 @@ export default function AdminUsersPage() {
                 users.map((user) => (
                   <tr
                     key={user.id}
-                    onClick={() => router.push(`/admin/users/${user.id}`)}
-                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(user.id)}
+                        onChange={(e) => {
+                          e.stopPropagation()
+                          toggleUserSelection(user.id)
+                        }}
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
+                    <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => router.push(`/admin/users/${user.id}`)}
+                    >
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600 shrink-0">
                           {user.name.charAt(0).toUpperCase()}
@@ -247,6 +293,13 @@ export default function AdminUsersPage() {
           </div>
         )}
       </div>
+
+      {/* Bulk Operations */}
+      <BulkUserOperations
+        selectedUsers={selectedUsers}
+        users={users}
+        onOperationComplete={handleOperationComplete}
+      />
     </div>
   )
 }
