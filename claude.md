@@ -95,7 +95,7 @@ tests/e2e/              # Playwright E2E tests
 
 | Issue | Action Needed |
 |-------|--------------|
-| TypeScript build errors | `ignoreBuildErrors: true` (temporary) |
+| TypeScript build errors | RESOLVED (ignoreBuildErrors: false) |
 | Photo uploads | Deferred post-MVP (routes return 501 "coming soon") |
 
 ---

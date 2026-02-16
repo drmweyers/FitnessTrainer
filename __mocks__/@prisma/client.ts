@@ -1,7 +1,7 @@
 // Global Prisma mock for unit tests
 // All Prisma methods return jest.fn() by default
 
-const mockPrismaClient = {
+const mockPrismaClient: any = {
   user: {
     findUnique: jest.fn(),
     findFirst: jest.fn(),

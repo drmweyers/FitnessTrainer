@@ -1,7 +1,7 @@
 // Manual mock for lib/db/prisma
 // Must mirror __mocks__/@prisma/client.ts for all models
 
-const mockPrismaClient = {
+const mockPrismaClient: any = {
   user: {
     findUnique: jest.fn(),
     findFirst: jest.fn(),
