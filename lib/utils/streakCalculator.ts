@@ -45,7 +45,7 @@ export function calculateWorkoutStreaks(completionDates: string[]): StreakData {
   const latestDate = uniqueDates[0];
   if (latestDate === today || latestDate === yesterday) {
     currentStreak = 1;
-    let expectedDate = new Date(latestDate);
+    const expectedDate = new Date(latestDate);
 
     // Count consecutive days going backward
     for (let i = 1; i < uniqueDates.length; i++) {
@@ -63,7 +63,7 @@ export function calculateWorkoutStreaks(completionDates: string[]): StreakData {
   // Calculate best streak by checking all consecutive sequences
   for (let i = 0; i < uniqueDates.length; i++) {
     tempStreak = 1;
-    let checkDate = new Date(uniqueDates[i]);
+    const checkDate = new Date(uniqueDates[i]);
 
     for (let j = i + 1; j < uniqueDates.length; j++) {
       checkDate.setDate(checkDate.getDate() - 1);
