@@ -6,6 +6,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 jest.mock('lucide-react', () => ({
   Search: () => <span data-testid="icon-search" />,
   X: () => <span data-testid="icon-x" />,
+  Clock: () => <span data-testid="icon-clock" />,
+  TrendingUp: () => <span data-testid="icon-trending-up" />,
 }));
 
 import { ExerciseSearch } from '../ExerciseSearch';
@@ -17,6 +19,7 @@ describe('ExerciseSearch', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
   });
 
   it('should render the search input', () => {
@@ -73,5 +76,33 @@ describe('ExerciseSearch', () => {
     const clearBtn = screen.getByTestId('icon-x').closest('button')!;
     fireEvent.click(clearBtn);
     expect(input).toHaveValue('');
+  });
+
+  it('should show dropdown with popular searches when focused and empty', () => {
+    render(<ExerciseSearch {...defaultProps} />);
+    const input = screen.getByPlaceholderText('Search exercises...');
+    fireEvent.focus(input);
+    expect(screen.getByText('Popular Searches')).toBeInTheDocument();
+    expect(screen.getByText('Bench Press')).toBeInTheDocument();
+  });
+
+  it('should save search to localStorage when Enter is pressed', () => {
+    render(<ExerciseSearch {...defaultProps} />);
+    const input = screen.getByPlaceholderText('Search exercises...');
+    fireEvent.change(input, { target: { value: 'deadlift' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    const stored = JSON.parse(localStorage.getItem('exercise_recent_searches') || '[]');
+    expect(stored).toContain('deadlift');
+  });
+
+  it('should load and display recent searches from localStorage', () => {
+    localStorage.setItem('exercise_recent_searches', JSON.stringify(['squat', 'bench press']));
+    render(<ExerciseSearch {...defaultProps} />);
+    const input = screen.getByPlaceholderText('Search exercises...');
+    fireEvent.focus(input);
+
+    expect(screen.getByText('Recent Searches')).toBeInTheDocument();
+    expect(screen.getByText('squat')).toBeInTheDocument();
   });
 });

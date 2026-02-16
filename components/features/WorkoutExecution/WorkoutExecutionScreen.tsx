@@ -21,7 +21,9 @@ import {
   ChevronRight,
   AlertCircle,
   Volume2,
-  VolumeX
+  VolumeX,
+  TrendingDown,
+  Infinity
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
@@ -262,6 +264,33 @@ const WorkoutExecutionScreen: React.FC<WorkoutExecutionScreenProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Helper to check if a set is AMRAP
+  const isAMRAPSet = (setIndex: number): boolean => {
+    // In a real app, this would check the exercise configuration
+    // For now, we'll check if the set has specific AMRAP markers
+    // This would come from the workout template/program configuration
+    return false; // Placeholder - would check exercise.configurations[setIndex].setType === 'amrap'
+  };
+
+  // Helper to check if a set underperformed (completed reps < prescribed reps)
+  const isFailedSet = (set: WorkoutLogSet, setIndex: number): boolean => {
+    // This would compare actual reps to prescribed reps from the program
+    // For now, we'll use a simple heuristic: if RPE is 10 and reps are lower than previous sets
+    if (!set.completed || !set.reps) return false;
+
+    // Check if there's a previous set to compare against
+    if (setIndex > 0) {
+      const previousSet = currentExercise.sets[setIndex - 1];
+      if (previousSet.completed && previousSet.reps > 0) {
+        // If this set has significantly fewer reps (more than 2 less) than previous set at same/higher weight
+        const repsDrop = previousSet.reps - set.reps;
+        const sameOrMoreWeight = (set.weight || 0) >= (previousSet.weight || 0);
+        return repsDrop > 2 && sameOrMoreWeight;
+      }
+    }
+    return false;
+  };
+
   const progress = getWorkoutProgress();
   const progressPercentage = (progress.completed / progress.total) * 100;
   const restTimeRemaining = getRestTimeRemaining();
@@ -339,11 +368,17 @@ const WorkoutExecutionScreen: React.FC<WorkoutExecutionScreenProps> = ({
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     {currentExercise.exerciseName}
                   </h2>
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <span>Set {session.currentSetIndex + 1} of {currentExercise.sets.length}</span>
                     {currentExercise.supersetGroup && (
-                      <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
+                      <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
                         Superset {currentExercise.supersetGroup}
+                      </span>
+                    )}
+                    {isAMRAPSet(session.currentSetIndex) && (
+                      <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium flex items-center">
+                        <Infinity size={14} className="mr-1" />
+                        AMRAP
                       </span>
                     )}
                   </div>
@@ -384,13 +419,22 @@ const WorkoutExecutionScreen: React.FC<WorkoutExecutionScreenProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Reps</label>
+                <div className={isAMRAPSet(session.currentSetIndex) ? 'md:col-span-2' : ''}>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {isAMRAPSet(session.currentSetIndex) ? (
+                      <span className="flex items-center">
+                        Reps <Infinity size={14} className="ml-1 text-orange-600" />
+                        <span className="ml-1 text-orange-600">(AMRAP)</span>
+                      </span>
+                    ) : (
+                      'Reps'
+                    )}
+                  </label>
                   <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => updateCurrentSet({ 
+                      onClick={() => updateCurrentSet({
                         reps: Math.max(0, currentSet.reps - 1)
                       })}
                     >
@@ -400,7 +444,7 @@ const WorkoutExecutionScreen: React.FC<WorkoutExecutionScreenProps> = ({
                       type="number"
                       value={currentSet.reps || ''}
                       onChange={(e) => updateCurrentSet({ reps: parseInt(e.target.value) || 0 })}
-                      className="w-20 text-center"
+                      className={`w-20 text-center ${isAMRAPSet(session.currentSetIndex) ? 'ring-2 ring-orange-300 font-bold text-lg' : ''}`}
                       placeholder="0"
                     />
                     <Button
@@ -535,27 +579,40 @@ const WorkoutExecutionScreen: React.FC<WorkoutExecutionScreenProps> = ({
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Previous Sets</h3>
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {currentExercise.sets.map((set, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-center justify-between p-2 rounded-lg ${
-                      index === session.currentSetIndex
-                        ? 'bg-blue-50 border border-blue-200'
-                        : set.completed
-                        ? 'bg-green-50 border border-green-200'
-                        : 'bg-gray-50 border border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium">Set {index + 1}</span>
-                      {set.completed && <CheckCircle className="h-4 w-4 text-green-600" />}
+                {currentExercise.sets.map((set, index) => {
+                  const isFailed = isFailedSet(set, index);
+                  const isAMRAP = isAMRAPSet(index);
+
+                  return (
+                    <div
+                      key={index}
+                      className={`flex items-center justify-between p-2 rounded-lg border ${
+                        index === session.currentSetIndex
+                          ? 'bg-blue-50 border-blue-200'
+                          : isFailed
+                          ? 'bg-orange-50 border-orange-300 border-l-4'
+                          : set.completed
+                          ? 'bg-green-50 border-green-200'
+                          : 'bg-gray-50 border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium">Set {index + 1}</span>
+                        {isAMRAP && <Infinity size={14} className="text-orange-600" />}
+                        {set.completed && !isFailed && <CheckCircle className="h-4 w-4 text-green-600" />}
+                        {isFailed && (
+                          <span title="Underperformed vs previous set">
+                            <TrendingDown className="h-4 w-4 text-orange-600" />
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {set.weight || 0}lbs × {set.reps || 0}
+                        {set.rpe && ` @${set.rpe}`}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {set.weight || 0}lbs × {set.reps || 0}
-                      {set.rpe && ` @${set.rpe}`}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
