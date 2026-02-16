@@ -152,6 +152,11 @@ export function ExerciseCard({
                       <Dumbbell size={14} className="mr-1" />
                       {exercise.equipments.join(', ')}
                     </div>
+                    {exercise.usageCount !== undefined && exercise.usageCount > 0 && (
+                      <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                        {exercise.usageCount} {exercise.usageCount === 1 ? 'program' : 'programs'}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center space-x-2 mt-2">
                     {exercise.bodyParts.slice(0, 3).map((bodyPart) => (
@@ -312,10 +317,17 @@ export function ExerciseCard({
             )}
           </div>
 
-          {/* Equipment */}
-          <div className="flex items-center text-sm text-gray-600 mb-3">
-            <Dumbbell size={14} className="mr-2 text-gray-400" />
-            <span className="truncate capitalize">{exercise.equipments.join(', ')}</span>
+          {/* Equipment & Usage */}
+          <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+            <div className="flex items-center flex-1 truncate">
+              <Dumbbell size={14} className="mr-2 text-gray-400" />
+              <span className="truncate capitalize">{exercise.equipments.join(', ')}</span>
+            </div>
+            {exercise.usageCount !== undefined && exercise.usageCount > 0 && (
+              <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium whitespace-nowrap">
+                Used in {exercise.usageCount} {exercise.usageCount === 1 ? 'program' : 'programs'}
+              </span>
+            )}
           </div>
 
           {/* Body Parts Tags */}
