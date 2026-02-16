@@ -51,6 +51,8 @@ test-results/
 playwright-report/
 screenshots/
 coverage/
+coverage-api/
+coverage_output.txt
 
 # Browser verification & test screenshots (root level)
 /*.png
