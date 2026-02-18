@@ -48,7 +48,7 @@ export default function AIWorkoutBuilder() {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
         const params = new URLSearchParams({
           page: '1',
-          limit: '100',
+          limit: '2000',
           sortBy: 'name',
           sortOrder: 'asc'
         })

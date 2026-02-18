@@ -60,6 +60,18 @@ describe('AIWorkoutBuilder', () => {
     jest.useRealTimers();
   });
 
+  it('fetches exercises with a limit of 2000 to load full dataset', async () => {
+    jest.useRealTimers();
+    render(<AIWorkoutBuilder />);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
+
+    const fetchCall = (global.fetch as jest.Mock).mock.calls[0][0];
+    expect(fetchCall).toContain('limit=2000');
+  });
+
   it('renders the component title', () => {
     render(<AIWorkoutBuilder />);
     expect(screen.getByText('AI Workout Generator')).toBeInTheDocument();

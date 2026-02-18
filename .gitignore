@@ -45,6 +45,7 @@ prisma/migrations/dev/
 
 # Exercise Database (Large files - exclude entire folder)
 exerciseDB/
+data/
 
 # Test artifacts
 test-results/

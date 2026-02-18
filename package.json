@@ -21,7 +21,8 @@
     "cleanup:production": "tsx scripts/cleanup-production.ts",
     "cleanup:production:dry-run": "tsx scripts/cleanup-production.ts --dry-run",
     "seed:analytics": "tsx scripts/seed-analytics.ts",
-    "seed:analytics:dry-run": "tsx scripts/seed-analytics.ts --dry-run"
+    "seed:analytics:dry-run": "tsx scripts/seed-analytics.ts --dry-run",
+    "seed:exercises": "tsx scripts/seed-exercises.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",

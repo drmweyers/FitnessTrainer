@@ -35,6 +35,7 @@ const mockPrismaClient: any = {
     update: jest.fn(),
     delete: jest.fn(),
     count: jest.fn(),
+    upsert: jest.fn(),
   },
   exerciseFavorite: {
     findUnique: jest.fn(),
