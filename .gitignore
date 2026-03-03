@@ -50,7 +50,7 @@ data/
 # Test artifacts
 test-results/
 playwright-report/
-screenshots/
+/screenshots/
 coverage/
 coverage-api/
 coverage_output.txt
@@ -80,3 +80,4 @@ nul
 !.claude/settings.json
 .vercel
 .env*.local
+.playwright-cli/
