@@ -79,15 +79,16 @@ tests/e2e/              # Playwright E2E tests
 | 001 | User Profiles | ~95% |
 | 002 | Authentication | 100% |
 | 003 | Client Management | ~95% |
-| 004 | Exercise Library | ~90% |
+| 004 | Exercise Library | ~90% (1,344 exercises seeded) |
 | 005 | Program Builder | ~95% |
 | 006 | Workout Tracking | ~95% |
 | 007 | Progress Analytics | ~95% |
 | 008 | Messaging | 0% |
 | 009 | Scheduling & Calendar | ~80% |
-| 010 | Payments | 0% |
-| 011 | Mobile | 0% |
+| 010 | Payments | 0% (post-MVP) |
+| 011 | Mobile | 0% (post-MVP) |
 | 012 | Admin Dashboard | ~75% |
+| 013 | Marketing & Documentation | 100% (landing page, docs v2.0, skills) |
 
 ---
 
@@ -158,9 +159,29 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 |----------|------|
 | PRD | `docs/prd.md` |
 | Architecture | `docs/architecture.md` |
-| Business Logic | `docs/businesslogic.md` |
+| Business Logic | `docs/businesslogic.md` (v2.0 - March 2026) |
 | Epics | `docs/epics/*.md` (12 files) |
 | Stories | `docs/stories/*.md` (108 files) |
+
+---
+
+## Marketing & Documentation
+
+| Resource | Path | Purpose |
+|----------|------|---------|
+| Landing Page | `app/page.tsx` | Production homepage with "pay once" copy |
+| Business Logic v2.0 | `docs/businesslogic.md` | Comprehensive feature documentation |
+| Marketing Analysis | `docs/marketing/evofit-marketing-business-logic.md` | Deep-dive feature inventory |
+| Screenshot Inventory | `docs/marketing/screenshot-inventory.md` | All app pages for screenshot capture |
+| Screenshots | `docs/marketing/screenshots/` | Production app screenshots (pending capture) |
+
+### Marketing Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `evofit-landing-page` | Update landing page with marketing copy |
+| `evofit-help-generator` | Generate help files and FAQs from businesslogic.md |
+| `evofit-screenshot-capture` | Automated screenshot capture via Playwright |
 
 ---
 

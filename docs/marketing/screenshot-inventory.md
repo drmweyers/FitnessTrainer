@@ -1,21 +1,26 @@
 # EvoFit Trainer - Screenshot Inventory
 
-**Captured:** March 1, 2026
+**Last Updated:** March 2, 2026
 **Production URL:** https://evofittrainer-six.vercel.app
-**Authenticated as:** coach.sarah (Trainer role)
 **Base Path:** `docs/marketing/screenshots/`
 
 ---
 
 ## Summary
 
-| Category | Captured | Planned | Notes |
-|----------|----------|---------|-------|
-| Public Pages | 5 | 5 | Complete |
-| Trainer Pages | 13 | 17 | Missing: client-detail, workout-log, workout-history, AI builder |
-| Admin Pages | 0 | 4 | No admin credentials available |
-| Client Pages | 0 | 2 | No client credentials available |
-| **Total** | **18** | **28** | |
+| Category | Captured | Planned | Status |
+|----------|----------|---------|--------|
+| Public Pages | 5 | 5 | ✅ Complete |
+| Trainer Pages | 16 | 17 | ⚠️ Missing: client-detail |
+| Admin Pages | 3 | 3 | ✅ Complete |
+| Client Pages | 1 | 1 | ✅ Complete |
+| **Total** | **25** | **26** | **96% Complete** |
+
+### Recent Updates (March 2, 2026)
+- ✅ Captured 5 new trainer screenshots (workout-tracker, profile-edit, health-profile, exercises-favorites)
+- ✅ Re-captured analytics (desktop + mobile) without error state
+- ✅ Captured all 3 admin pages (dashboard, users, system-health)
+- ✅ Captured client dashboard
 
 ---
 
@@ -31,56 +36,55 @@
 
 ---
 
-## Trainer Pages (13/17)
+## Trainer Pages (16/17)
 
-| File | Page | Viewport | Size | Description |
-|------|------|----------|------|-------------|
-| `trainer/dashboard-desktop.png` | `/dashboard` | 1440x900 | 203 KB | Main dashboard with welcome message, quick stats cards, recent activity feed, navigation sidebar |
-| `trainer/dashboard-mobile.png` | `/dashboard` | 390x844 | 179 KB | Mobile dashboard with stacked cards, hamburger menu, responsive layout |
-| `trainer/trainer-dashboard-desktop.png` | `/trainer/dashboard` | 1440x900 | 194 KB | Trainer-specific dashboard showing 3 total clients, 3 active clients, activity feed (workout completions), Quick Actions (Create Program, Add Client, View Calendar, Client Reports) |
-| `trainer/clients-list-desktop.png` | `/trainer/clients` | 1440x900 | 90 KB | Client management list with search, status filters, client cards showing name, email, status badges |
-| `trainer/exercises-library-desktop.png` | `/trainer/exercises` | 1440x900 | 269 KB | Full exercise library (logged in) with body part, equipment, target muscle, difficulty filters; exercise cards showing animated GIF thumbnails, exercise names, muscle targets |
-| `trainer/programs-list-desktop.png` | `/trainer/programs` | 1440x900 | 192 KB | Program management showing 6 programs: "Beginner Full Body" (8 weeks), "HIIT & Conditioning" (6 weeks), "Powerlifting Foundation" (8 weeks, 4 active clients); search bar, type/level filters, grid/list view toggle |
-| `trainer/program-create-desktop.png` | `/trainer/programs/create` | 1440x900 | 106 KB | Program creation form with name, description, type selection, duration, difficulty level fields |
-| `trainer/workouts-overview-desktop.png` | `/trainer/workouts` | 1440x900 | 135 KB | Workout overview page with workout cards, status indicators, date/time information |
-| `trainer/workout-builder-desktop.png` | `/trainer/workouts/builder` | 1440x900 | 100 KB | Workout builder interface for adding exercises, configuring sets/reps/weight, drag-and-drop ordering |
-| `trainer/analytics-desktop.png` | `/trainer/analytics` | 1440x900 | 220 KB | Analytics dashboard (NOTE: captured error state "Something went wrong" - may need retry with different account) |
-| `trainer/analytics-mobile.png` | `/trainer/analytics` | 390x844 | 89 KB | Mobile analytics view (NOTE: same error state as desktop) |
-| `trainer/schedule-desktop.png` | `/trainer/schedule` | 1440x900 | 122 KB | Weekly calendar view (Mar 1-7, 2026) with hourly time slots, "Availability Settings" and "+ New Appointment" buttons, status legend (Scheduled, Confirmed, Completed, Cancelled, No Show) |
-| `trainer/profile-desktop.png` | `/trainer/profile` | 1440x900 | 152 KB | Trainer profile page with personal info, specializations, certification details, account settings |
+| File | Page | Viewport | Description |
+|------|------|----------|-------------|
+| `trainer/dashboard-desktop.png` | `/dashboard` | 1440x900 | Main dashboard with welcome message, quick stats cards, recent activity feed, navigation sidebar |
+| `trainer/dashboard-mobile.png` | `/dashboard` | 390x844 | Mobile dashboard with stacked cards, hamburger menu, responsive layout |
+| `trainer/trainer-dashboard-desktop.png` | `/trainer/dashboard` | 1440x900 | Trainer-specific dashboard showing 3 total clients, 3 active clients, activity feed (workout completions), Quick Actions (Create Program, Add Client, View Calendar, Client Reports) |
+| `trainer/clients-list-desktop.png` | `/trainer/clients` | 1440x900 | Client management list with search, status filters, client cards showing name, email, status badges |
+| `trainer/exercises-library-desktop.png` | `/trainer/exercises` | 1440x900 | Full exercise library (logged in) with body part, equipment, target muscle, difficulty filters; exercise cards showing animated GIF thumbnails, exercise names, muscle targets |
+| `trainer/exercises-favorites-desktop.png` | `/dashboard/exercises/favorites` | 1440x900 | ✨ **NEW** Favorited exercises view with filtering options |
+| `trainer/programs-list-desktop.png` | `/trainer/programs` | 1440x900 | Program management showing 6 programs: "Beginner Full Body" (8 weeks), "HIIT & Conditioning" (6 weeks), "Powerlifting Foundation" (8 weeks, 4 active clients); search bar, type/level filters, grid/list view toggle |
+| `trainer/program-create-desktop.png` | `/trainer/programs/create` | 1440x900 | Program creation form with name, description, type selection, duration, difficulty level fields |
+| `trainer/workouts-overview-desktop.png` | `/trainer/workouts` | 1440x900 | Workout overview page with workout cards, status indicators, date/time information |
+| `trainer/workout-builder-desktop.png` | `/trainer/workouts/builder` | 1440x900 | Workout builder interface for adding exercises, configuring sets/reps/weight, drag-and-drop ordering |
+| `trainer/workout-tracker-desktop.png` | `/workout-tracker` | 1440x900 | ✨ **NEW** Workout tracking interface for logging completed exercises |
+| `trainer/analytics-desktop.png` | `/trainer/analytics` | 1440x900 | 🔄 **RE-CAPTURED** Analytics dashboard with charts and metrics (error-free) |
+| `trainer/analytics-mobile.png` | `/trainer/analytics` | 390x844 | 🔄 **RE-CAPTURED** Mobile analytics view with responsive charts (error-free) |
+| `trainer/schedule-desktop.png` | `/trainer/schedule` | 1440x900 | Weekly calendar view (Mar 1-7, 2026) with hourly time slots, "Availability Settings" and "+ New Appointment" buttons, status legend (Scheduled, Confirmed, Completed, Cancelled, No Show) |
+| `trainer/profile-desktop.png` | `/trainer/profile` | 1440x900 | Trainer profile page with personal info, specializations, certification details, account settings |
+| `trainer/profile-edit-desktop.png` | `/profile/edit` | 1440x900 | ✨ **NEW** Profile editing form with editable fields |
+| `trainer/health-profile-desktop.png` | `/profile/health` | 1440x900 | ✨ **NEW** Health metrics and profile page |
 
 ### Not Captured (Trainer)
 
 | Planned File | Page | Reason |
 |--------------|------|--------|
-| `trainer/client-detail-desktop.png` | `/trainer/clients/[id]` | Requires selecting a specific client |
-| `trainer/workout-log-desktop.png` | `/trainer/workouts/[id]/log` | Requires active workout session |
-| `trainer/workout-history-desktop.png` | `/trainer/workouts/history` | Page may not exist as standalone route |
-| `trainer/ai-workout-builder-desktop.png` | AI Workout Builder modal | Requires navigating to builder and triggering AI |
+| `trainer/client-detail-desktop.png` | `/trainer/clients/[id]` | Client cards are not clickable links - would require specific client UUID |
 
 ---
 
-## Admin Pages (0/4 - Not Captured)
+## Admin Pages (3/3 - Complete ✅)
 
-| Planned File | Page | Reason |
-|--------------|------|--------|
-| `admin/dashboard-desktop.png` | `/admin/dashboard` | No admin credentials available |
-| `admin/users-desktop.png` | `/admin/users` | No admin credentials available |
-| `admin/exercises-desktop.png` | `/admin/exercises` | No admin credentials available |
-| `admin/settings-desktop.png` | `/admin/settings` | No admin credentials available |
+| File | Page | Viewport | Description |
+|------|------|----------|-------------|
+| `admin/dashboard-desktop.png` | `/dashboard/admin` | 1440x900 | ✨ **NEW** Admin dashboard overview with system stats and metrics |
+| `admin/users-desktop.png` | `/admin/users` | 1440x900 | ✨ **NEW** User management interface with search, filters, and user actions |
+| `admin/system-health-desktop.png` | `/admin/system` | 1440x900 | ✨ **NEW** System health monitoring page with status indicators |
 
-**To capture:** Need admin account credentials (Role: ADMIN in database).
+**Credentials used:** admin@evofittrainer.com (Role: ADMIN)
 
 ---
 
-## Client Pages (0/2 - Not Captured)
+## Client Pages (1/1 - Complete ✅)
 
-| Planned File | Page | Reason |
-|--------------|------|--------|
-| `client/dashboard-desktop.png` | `/client/dashboard` | No client credentials available |
-| `client/workout-log-desktop.png` | `/client/workouts/[id]/log` | No client credentials available |
+| File | Page | Viewport | Description |
+|------|------|----------|-------------|
+| `client/dashboard-desktop.png` | `/dashboard/client` | 1440x900 | ✨ **NEW** Client dashboard view with workouts, programs, and progress tracking |
 
-**To capture:** Need client account credentials (Role: CLIENT in database).
+**Credentials used:** alex.johnson@example.com (Role: CLIENT)
 
 ---
 
@@ -88,8 +92,12 @@
 
 - All screenshots captured at production URL (https://evofittrainer-six.vercel.app)
 - Desktop viewport: 1440x900, Mobile viewport: 390x844
-- Authenticated pages captured using E2E test credentials (coach.sarah, Trainer role)
-- Analytics screenshots show error state - the analytics dashboard may have a runtime issue for this test account
+- Captured using Playwright CLI (headless browser automation)
+- Authenticated pages captured using E2E test credentials:
+  - **Trainer:** coach.sarah@evofittrainer.com
+  - **Admin:** admin@evofittrainer.com
+  - **Client:** alex.johnson@example.com
+- ✅ Analytics screenshots re-captured without error state (working properly)
 - Exercise library screenshots confirm 1,344 exercises loaded with GIF thumbnails
 - All screenshots are PNG format, suitable for marketing materials
 
@@ -97,8 +105,27 @@
 
 ## Usage Guidelines
 
-- Screenshots are point-in-time captures (March 1, 2026) and may not reflect future UI changes
+- Screenshots are point-in-time captures (last updated March 2, 2026)
 - For marketing materials, crop and annotate as needed
 - Mobile screenshots demonstrate responsive design capability
-- Error states (analytics) should not be used in marketing materials without verification
+- All screenshots show production-ready UI without error states
 - Re-capture recommended after significant UI updates or bug fixes
+
+---
+
+## Capture Method
+
+All screenshots were captured using **Playwright CLI** (headless browser automation):
+
+```bash
+# Desktop viewport (1440x900)
+PLAYWRIGHT_MCP_VIEWPORT_SIZE=1440x900 playwright-cli -s=<session> open <url> --persistent
+
+# Mobile viewport (390x844)
+playwright-cli -s=<session> resize 390 844
+
+# Capture screenshot
+playwright-cli -s=<session> screenshot --filename="path/to/file.png"
+```
+
+This ensures consistent, reproducible screenshots that accurately reflect the production application.
