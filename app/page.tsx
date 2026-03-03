@@ -319,13 +319,14 @@ export default function HomePage() {
               </div>
               <motion.div
                 variants={fadeInUp}
-                className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 flex items-center justify-center"
+                className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200"
               >
-                {/* Screenshot reference: screenshots/trainer/exercises-library-desktop.png */}
-                <div className="text-center">
-                  <Dumbbell className="h-32 w-32 text-blue-600 mx-auto mb-4" />
-                  <p className="text-sm text-gray-500">Exercise Library Interface</p>
-                </div>
+                <img
+                  src="/screenshots/exercises.png"
+                  alt="EvoFit Exercise Library showing 1,344 exercises with GIF demonstrations, body part filters, equipment filters, and search"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
               </motion.div>
             </motion.div>
 
@@ -339,13 +340,14 @@ export default function HomePage() {
             >
               <motion.div
                 variants={fadeInUp}
-                className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 flex items-center justify-center lg:order-1"
+                className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200 lg:order-1"
               >
-                {/* Screenshot reference: screenshots/trainer/program-create-desktop.png */}
-                <div className="text-center">
-                  <ClipboardList className="h-32 w-32 text-green-600 mx-auto mb-4" />
-                  <p className="text-sm text-gray-500">Program Builder Interface</p>
-                </div>
+                <img
+                  src="/screenshots/programs.png"
+                  alt="EvoFit Program Builder showing multi-week training programs with 8 program types, difficulty levels, and client assignments"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
               </motion.div>
               <div className="lg:order-2">
                 <motion.h3
@@ -431,13 +433,14 @@ export default function HomePage() {
               </div>
               <motion.div
                 variants={fadeInUp}
-                className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-8 flex items-center justify-center"
+                className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200"
               >
-                {/* Screenshot reference: screenshots/trainer/analytics-desktop.png */}
-                <div className="text-center">
-                  <BarChart3 className="h-32 w-32 text-indigo-600 mx-auto mb-4" />
-                  <p className="text-sm text-gray-500">Analytics Dashboard</p>
-                </div>
+                <img
+                  src="/screenshots/analytics.png"
+                  alt="EvoFit Analytics Dashboard with ACWR training load monitoring, performance metrics, body composition charts, and AI-powered insights"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
               </motion.div>
             </motion.div>
 
@@ -451,13 +454,14 @@ export default function HomePage() {
             >
               <motion.div
                 variants={fadeInUp}
-                className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 flex items-center justify-center lg:order-1"
+                className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200 lg:order-1"
               >
-                {/* Screenshot reference: screenshots/trainer/clients-list-desktop.png */}
-                <div className="text-center">
-                  <Users className="h-32 w-32 text-purple-600 mx-auto mb-4" />
-                  <p className="text-sm text-gray-500">Client Management</p>
-                </div>
+                <img
+                  src="/screenshots/clients.png"
+                  alt="EvoFit Client Management showing client roster with status tracking, search filters, and professional client cards"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
               </motion.div>
               <div className="lg:order-2">
                 <motion.h3
@@ -492,6 +496,111 @@ export default function HomePage() {
                   <motion.li variants={fadeInUp} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                     <span className="text-gray-700">Medical history and injury tracking for safe programming</span>
+                  </motion.li>
+                </motion.ul>
+              </div>
+            </motion.div>
+            {/* Workout Tracking Spotlight */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-100px' }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+            >
+              <div>
+                <motion.h3
+                  variants={fadeInUp}
+                  className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+                >
+                  Every Rep Logged. Every PR Celebrated.
+                </motion.h3>
+                <motion.p
+                  variants={fadeInUp}
+                  className="text-lg text-gray-600 mb-6"
+                >
+                  Real-time workout tracking that captures everything — planned vs actual reps, weight, RPE, rest times, and session feedback. The system automatically detects personal bests, calculates adherence scores, and works offline so your clients can train anywhere.
+                </motion.p>
+                <motion.ul variants={staggerContainer} className="space-y-3">
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Automatic personal best detection during every session</span>
+                  </motion.li>
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Built-in rest timer with actual rest time recording</span>
+                  </motion.li>
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Adherence scoring shows how closely clients follow programs</span>
+                  </motion.li>
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Offline workout logging with automatic sync</span>
+                  </motion.li>
+                </motion.ul>
+              </div>
+              <motion.div
+                variants={fadeInUp}
+                className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200"
+              >
+                <img
+                  src="/screenshots/workout-tracker.png"
+                  alt="EvoFit Workout Tracker showing real-time session logging with sets, reps, weight tracking, and rest timer"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* Scheduling Spotlight */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-100px' }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+            >
+              <motion.div
+                variants={fadeInUp}
+                className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200 lg:order-1"
+              >
+                <img
+                  src="/screenshots/schedule.png"
+                  alt="EvoFit Schedule showing weekly calendar view with appointment types, availability settings, and session status indicators"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
+              </motion.div>
+              <div className="lg:order-2">
+                <motion.h3
+                  variants={fadeInUp}
+                  className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+                >
+                  One Calendar. Every Session Type.
+                </motion.h3>
+                <motion.p
+                  variants={fadeInUp}
+                  className="text-lg text-gray-600 mb-6"
+                >
+                  Manage your entire training schedule from one calendar. Set your availability by day and time, support 5 different session types, and track every appointment from booking through completion — including no-shows and cancellation reasons for business intelligence.
+                </motion.p>
+                <motion.ul variants={staggerContainer} className="space-y-3">
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">5 appointment types: 1:1, group, assessment, consultation, online</span>
+                  </motion.li>
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Configurable weekly availability with location per slot</span>
+                  </motion.li>
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">Online session support with meeting links built in</span>
+                  </motion.li>
+                  <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">No-show and cancellation tracking for revenue protection</span>
                   </motion.li>
                 </motion.ul>
               </div>
@@ -543,47 +652,30 @@ export default function HomePage() {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 lg:p-12">
-                <div className="space-y-6">
-                  {/* Stats preview */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white rounded-xl p-5 shadow-sm">
-                      <p className="text-sm text-gray-500 mb-1">
-                        Exercises
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">1,344</p>
-                      <p className="text-xs text-purple-600 mt-1">
-                        All included
-                      </p>
-                    </div>
-                    <div className="bg-white rounded-xl p-5 shadow-sm">
-                      <p className="text-sm text-gray-500 mb-1">
-                        Program Types
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">8</p>
-                      <p className="text-xs text-green-600 mt-1">
-                        Full flexibility
-                      </p>
-                    </div>
-                    <div className="bg-white rounded-xl p-5 shadow-sm">
-                      <p className="text-sm text-gray-500 mb-1">
-                        Set Types
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">7</p>
-                      <p className="text-xs text-blue-600 mt-1">
-                        Elite programming
-                      </p>
-                    </div>
-                    <div className="bg-white rounded-xl p-5 shadow-sm">
-                      <p className="text-sm text-gray-500 mb-1">
-                        Target Muscles
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">26</p>
-                      <p className="text-xs text-orange-600 mt-1">
-                        Complete mapping
-                      </p>
-                    </div>
-                  </div>
+              <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
+                <img
+                  src="/screenshots/dashboard.png"
+                  alt="EvoFit Trainer Dashboard showing client stats, active programs, recent activity, and quick actions"
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
+              </div>
+              <div className="grid grid-cols-4 gap-3 mt-6">
+                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
+                  <p className="text-2xl font-bold text-gray-900">1,344</p>
+                  <p className="text-xs text-gray-500">Exercises</p>
+                </div>
+                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
+                  <p className="text-2xl font-bold text-gray-900">8</p>
+                  <p className="text-xs text-gray-500">Program Types</p>
+                </div>
+                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
+                  <p className="text-2xl font-bold text-gray-900">7</p>
+                  <p className="text-xs text-gray-500">Set Types</p>
+                </div>
+                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
+                  <p className="text-2xl font-bold text-gray-900">26</p>
+                  <p className="text-xs text-gray-500">Muscles</p>
                 </div>
               </div>
             </motion.div>
