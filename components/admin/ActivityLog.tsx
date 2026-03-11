@@ -1,82 +1,38 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, User, Calendar, FileText, Settings } from 'lucide-react';
+import { Activity, User, Calendar, FileText, Settings, AlertCircle } from 'lucide-react';
 
 interface ActivityLogEntry {
   id: string;
   userId: string;
   userName: string;
-  userRole: string;
+  userRole?: string;
   action: string;
   resource: string;
   timestamp: string;
   details?: string;
 }
 
-// Mock data - in production, this would come from an API endpoint
-const MOCK_ACTIVITIES: ActivityLogEntry[] = [
-  {
-    id: '1',
-    userId: 'user-1',
-    userName: 'John Trainer',
-    userRole: 'trainer',
-    action: 'created',
-    resource: 'appointment',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-    details: 'Created appointment with Sarah Client',
-  },
-  {
-    id: '2',
-    userId: 'user-2',
-    userName: 'Sarah Client',
-    userRole: 'client',
-    action: 'completed',
-    resource: 'workout',
-    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-    details: 'Completed "Upper Body Strength"',
-  },
-  {
-    id: '3',
-    userId: 'user-3',
-    userName: 'Admin User',
-    userRole: 'admin',
-    action: 'updated',
-    resource: 'user',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    details: 'Updated profile settings for John Trainer',
-  },
-  {
-    id: '4',
-    userId: 'user-1',
-    userName: 'John Trainer',
-    userRole: 'trainer',
-    action: 'created',
-    resource: 'program',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-    details: 'Created program "Beginner Strength Training"',
-  },
-  {
-    id: '5',
-    userId: 'user-2',
-    userName: 'Sarah Client',
-    userRole: 'client',
-    action: 'logged_in',
-    resource: 'auth',
-    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-  },
-];
-
 export function ActivityLog() {
   const [activities, setActivities] = useState<ActivityLogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setActivities(MOCK_ACTIVITIES);
-      setIsLoading(false);
-    }, 500);
+    async function fetchActivities() {
+      try {
+        const response = await fetch('/api/admin/activity?limit=20');
+        if (!response.ok) throw new Error('Failed to fetch activity log');
+        const data = await response.json();
+        setActivities(data.data?.activities || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load activity');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchActivities();
   }, []);
 
   const getActionColor = (action: string) => {
@@ -144,6 +100,11 @@ export function ActivityLog() {
               ))}
             </div>
           </div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500 flex flex-col items-center gap-2">
+            <AlertCircle size={24} />
+            <p>{error}</p>
+          </div>
         ) : activities.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             No recent activity
@@ -166,14 +127,16 @@ export function ActivityLog() {
                       <span className="text-sm font-medium text-gray-900">
                         {activity.userName}
                       </span>
-                      <span className={`
-                        inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                        ${activity.userRole === 'admin' ? 'bg-red-100 text-red-700' :
-                          activity.userRole === 'trainer' ? 'bg-blue-100 text-blue-700' :
-                          'bg-green-100 text-green-700'}
-                      `}>
-                        {activity.userRole}
-                      </span>
+                      {activity.userRole && (
+                        <span className={`
+                          inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                          ${activity.userRole === 'admin' ? 'bg-red-100 text-red-700' :
+                            activity.userRole === 'trainer' ? 'bg-blue-100 text-blue-700' :
+                            'bg-green-100 text-green-700'}
+                        `}>
+                          {activity.userRole}
+                        </span>
+                      )}
                       <span className={`
                         text-xs font-medium px-2 py-0.5 rounded-full
                         ${getActionColor(activity.action)}
