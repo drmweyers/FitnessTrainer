@@ -8,6 +8,7 @@ import Footer from './Footer';
 import OfflineIndicator from '@/components/shared/OfflineIndicator';
 import InstallPrompt from '@/components/shared/InstallPrompt';
 import UpdateAvailable from '@/components/shared/UpdateAvailable';
+import SyncStatus from '@/components/shared/SyncStatus';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -65,10 +66,11 @@ export default function AppLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* PWA: Offline indicator, install prompt, update toast */}
+      {/* PWA: Offline indicator, install prompt, update toast, sync status */}
       <OfflineIndicator />
       <InstallPrompt />
       <UpdateAvailable />
+      <SyncStatus />
 
       {/* Navigation */}
       <MainNavigation
