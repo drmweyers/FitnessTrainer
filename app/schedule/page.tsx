@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
+import { CalendarExport } from '@/components/schedule/CalendarExport';
 import {
   Calendar,
   Plus,
@@ -224,6 +225,7 @@ export default function SchedulePage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <CalendarExport />
             {user?.role === 'trainer' && (
               <a
                 href="/schedule/availability"
