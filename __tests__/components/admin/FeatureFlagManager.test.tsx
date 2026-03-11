@@ -9,9 +9,16 @@ import { FeatureFlagManager } from '@/components/admin/FeatureFlagManager';
 describe('FeatureFlagManager', () => {
   beforeEach(() => {
     localStorage.clear();
+    global.fetch = jest.fn();
   });
 
-  it('should render with default flags', async () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should render with default flags when API fails', async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+
     render(<FeatureFlagManager />);
 
     await waitFor(() => {
@@ -21,38 +28,61 @@ describe('FeatureFlagManager', () => {
     });
   });
 
-  it('should toggle flag on/off', async () => {
+  it('should load flags from API on mount', async () => {
+    const apiFlags = [
+      { id: 'custom_flag', name: 'Custom Flag', description: 'API flag', enabled: true },
+    ];
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: { flags: apiFlags } }),
+    });
+
+    render(<FeatureFlagManager />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Custom Flag')).toBeInTheDocument();
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith('/api/admin/feature-flags');
+  });
+
+  it('should toggle flag on/off and call API', async () => {
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('API unavailable'));
+
     render(<FeatureFlagManager />);
 
     await waitFor(() => {
       expect(screen.getByText('WhatsApp Messaging')).toBeInTheDocument();
     });
 
-    // Find toggle buttons - they have the rounded toggle switch styling
-    const allButtons = screen.getAllByRole('button');
+    // Reset fetch mock for the toggle call
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
 
-    // The toggle buttons have the bg-blue-600 or bg-gray-200 classes
-    // But we need to test that clicking causes a change in localStorage
-    const initialFlags = JSON.parse(localStorage.getItem('feature_flags') || '[]');
-    const whatsappFlagIndex = initialFlags.findIndex((f: any) => f.id === 'whatsapp_messaging');
-    const initialEnabled = initialFlags[whatsappFlagIndex]?.enabled;
-
-    // Find the toggle switch for WhatsApp (it's in the row with "WhatsApp Messaging")
     const whatsappRow = screen.getByText('WhatsApp Messaging').closest('tr');
     const toggleButton = whatsappRow!.querySelector('button[class*="bg-"]');
 
     fireEvent.click(toggleButton!);
 
-    // After toggle, localStorage should be updated
     await waitFor(() => {
       const updatedFlags = JSON.parse(localStorage.getItem('feature_flags') || '[]');
-      const updatedEnabled = updatedFlags[whatsappFlagIndex]?.enabled;
-      expect(updatedEnabled).toBe(!initialEnabled);
+      const whatsappFlag = updatedFlags.find((f: any) => f.id === 'whatsapp_messaging');
+      expect(whatsappFlag?.enabled).toBe(false);
     });
+
+    // Should have called PUT to API
+    expect(global.fetch).toHaveBeenCalledWith('/api/admin/feature-flags', expect.objectContaining({
+      method: 'PUT',
+    }));
   });
 
   it('should open add flag dialog', async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new Error('API unavailable'));
+
     render(<FeatureFlagManager />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Feature Flags')).toBeInTheDocument();
+    });
 
     const addButton = screen.getByText('Add Flag');
     fireEvent.click(addButton);
@@ -61,8 +91,16 @@ describe('FeatureFlagManager', () => {
     expect(screen.getByPlaceholderText(/Advanced Analytics/i)).toBeInTheDocument();
   });
 
-  it('should add new flag', async () => {
+  it('should add new flag and save to API', async () => {
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('API unavailable'));
+
     render(<FeatureFlagManager />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Feature Flags')).toBeInTheDocument();
+    });
+
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
 
     fireEvent.click(screen.getByText('Add Flag'));
 
@@ -81,6 +119,8 @@ describe('FeatureFlagManager', () => {
   });
 
   it('should persist flags to localStorage', async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new Error('API unavailable'));
+
     render(<FeatureFlagManager />);
 
     await waitFor(() => {
@@ -88,6 +128,26 @@ describe('FeatureFlagManager', () => {
       expect(stored).toBeTruthy();
       const flags = JSON.parse(stored!);
       expect(flags.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('should delete flag and save to API', async () => {
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('API unavailable'));
+
+    render(<FeatureFlagManager />);
+
+    await waitFor(() => {
+      expect(screen.getByText('WhatsApp Messaging')).toBeInTheDocument();
+    });
+
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+
+    // Click the first delete button
+    const deleteButtons = screen.getAllByTitle('Delete flag');
+    fireEvent.click(deleteButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.queryByText('WhatsApp Messaging')).not.toBeInTheDocument();
     });
   });
 });

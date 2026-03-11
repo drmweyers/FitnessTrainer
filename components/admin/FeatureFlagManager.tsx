@@ -31,20 +31,49 @@ const DEFAULT_FLAGS: FeatureFlag[] = [
   },
 ];
 
+async function saveToApi(flags: FeatureFlag[]) {
+  try {
+    await fetch('/api/admin/feature-flags', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ flags }),
+    });
+  } catch {
+    // Silently fail API save - localStorage is the fallback
+  }
+}
+
 export function FeatureFlagManager() {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newFlag, setNewFlag] = useState({ name: '', description: '' });
 
   useEffect(() => {
-    // Load from localStorage
-    const stored = localStorage.getItem('feature_flags');
-    if (stored) {
-      setFlags(JSON.parse(stored));
-    } else {
-      setFlags(DEFAULT_FLAGS);
-      localStorage.setItem('feature_flags', JSON.stringify(DEFAULT_FLAGS));
+    async function loadFlags() {
+      try {
+        const response = await fetch('/api/admin/feature-flags');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data?.flags) {
+            setFlags(data.data.flags);
+            localStorage.setItem('feature_flags', JSON.stringify(data.data.flags));
+            return;
+          }
+        }
+      } catch {
+        // Fallback to localStorage
+      }
+
+      // Fallback: load from localStorage or defaults
+      const stored = localStorage.getItem('feature_flags');
+      if (stored) {
+        setFlags(JSON.parse(stored));
+      } else {
+        setFlags(DEFAULT_FLAGS);
+        localStorage.setItem('feature_flags', JSON.stringify(DEFAULT_FLAGS));
+      }
     }
+    loadFlags();
   }, []);
 
   const toggleFlag = (id: string) => {
@@ -53,6 +82,7 @@ export function FeatureFlagManager() {
     );
     setFlags(updated);
     localStorage.setItem('feature_flags', JSON.stringify(updated));
+    saveToApi(updated);
   };
 
   const addFlag = () => {
@@ -68,6 +98,7 @@ export function FeatureFlagManager() {
     const updated = [...flags, flag];
     setFlags(updated);
     localStorage.setItem('feature_flags', JSON.stringify(updated));
+    saveToApi(updated);
     setNewFlag({ name: '', description: '' });
     setShowAddDialog(false);
   };
@@ -76,6 +107,7 @@ export function FeatureFlagManager() {
     const updated = flags.filter((flag) => flag.id !== id);
     setFlags(updated);
     localStorage.setItem('feature_flags', JSON.stringify(updated));
+    saveToApi(updated);
   };
 
   return (
