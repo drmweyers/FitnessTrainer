@@ -3,6 +3,8 @@ import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
 import { prisma } from '@/lib/db/prisma'
 import { calculateProgression } from '@/lib/services/progressionService'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   const authResult = await authenticate(request)
   if (authResult instanceof NextResponse) return authResult
