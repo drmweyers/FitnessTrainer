@@ -41,11 +41,15 @@ export function BulkUserOperations({
     setShowConfirmDialog(false);
 
     try {
-      // In production, this would call the API endpoint
-      // For now, just simulate the operation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log(`${pendingOperation} operation for users:`, Array.from(selectedUsers));
+      const response = await fetch('/api/admin/users/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userIds: Array.from(selectedUsers),
+          action: pendingOperation,
+        }),
+      });
+      if (!response.ok) throw new Error('Bulk operation failed');
 
       onOperationComplete?.();
     } catch (error) {
