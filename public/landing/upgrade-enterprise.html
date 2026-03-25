@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upgrade to Enterprise — EvoFit Trainer</title>
+  <link rel="stylesheet" href="/landing/css/funnel.css">
+</head>
+<body>
+  <div class="funnel-page">
+    <div class="funnel-card">
+
+      <p class="funnel-eyebrow">One more thing…</p>
+      <h1 class="funnel-headline">Want zero limits?</h1>
+      <p class="funnel-subheadline">Enterprise removes every cap. Unlimited clients, unlimited programs, full white-label — your brand, your business, no ceiling.</p>
+
+      <div class="price-block">
+        <span class="price-amount">$349</span>
+        <span class="price-period">one-time — lifetime access</span>
+        <br>
+        <span class="price-delta" id="priceDelta">Just $100 more</span>
+      </div>
+
+      <hr class="divider">
+
+      <h2 class="funnel-section-title">Everything in Professional, plus:</h2>
+      <ul class="feature-list">
+        <li><strong>Unlimited clients</strong> — scale without thinking about caps</li>
+        <li><strong>Unlimited programs</strong> — create as many as you need, forever</li>
+        <li><strong>Full exercise library</strong> — all 1,344 exercises with GIF demonstrations</li>
+        <li><strong>White-label</strong> — fully branded as YOUR app for clients</li>
+        <li><strong>API access</strong> — integrate with your existing tools &amp; workflows</li>
+        <li><strong>ACWR monitoring</strong> — same Acute:Chronic Workload Ratio used by pro sports teams</li>
+        <li><strong>Client management</strong> with 5 status states &amp; professional email invitations</li>
+        <li><strong>Offline workout tracking</strong> — never miss a rep</li>
+        <li><strong>Priority support</strong> — direct line when you need help</li>
+      </ul>
+
+      <button class="btn-primary" onclick="EvoFitFunnel.selectTier('enterprise'); EvoFitFunnel.goTo('upgrade-saas.html');">
+        Yes — Upgrade to Enterprise ($349)
+      </button>
+
+      <button class="btn-decline" onclick="EvoFitFunnel.goTo('upgrade-saas.html');">
+        No thanks, I'll keep my current selection
+      </button>
+
+      <div class="trust-badges">
+        <span class="trust-badge"><span class="icon">🛡️</span> 14-Day Money-Back Guarantee</span>
+        <span class="trust-badge"><span class="icon">🔒</span> Secure Checkout</span>
+        <span class="trust-badge"><span class="icon">💪</span> Built for Personal Trainers</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/landing/js/funnel.js"></script>
+  <script>
+    // Dynamic price delta based on current tier
+    document.addEventListener('DOMContentLoaded', function () {
+      var sel = EvoFitFunnel.getSelection();
+      var delta = 349 - sel.tierPrice;
+      var el = document.getElementById('priceDelta');
+      if (el && delta > 0) {
+        el.textContent = 'Just $' + delta + ' more than ' + sel.tierName;
+      }
+    });
+  </script>
+</body>
+</html>
