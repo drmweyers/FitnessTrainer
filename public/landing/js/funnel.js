@@ -14,6 +14,14 @@
 
   var SAAS = { name: 'AI Workout Engine', price: 29, period: '/mo' };
 
+  /* ── Stripe Price IDs ── */
+  var PRICE_IDS = {
+    starter:      'price_1TEwpaGo4HHYDfDVyvecwfMc',
+    professional: 'price_1TEwpcGo4HHYDfDVqNAFCnDt',
+    enterprise:   'price_1TEwpeGo4HHYDfDVe7M1XZTD',
+    saas:         'price_1TEwpdGo4HHYDfDVmtIVLSQo'
+  };
+
   /* ── Public API ── */
 
   /** Select a base tier and persist it. */
@@ -47,12 +55,55 @@
     };
   }
 
-  /** Redirect to checkout with query params. */
-  function goToCheckout() {
+  /** Redirect to Stripe Checkout via the backend API. */
+  function goToStripeCheckout() {
     var sel = getSelection();
-    var url = '/checkout?tier=' + encodeURIComponent(sel.tier) +
-              '&saas=' + (sel.saas ? '1' : '0');
-    window.location.href = url;
+    var priceId = PRICE_IDS[sel.tier];
+
+    if (!priceId) {
+      console.error('[funnel] No price ID for tier:', sel.tier);
+      return;
+    }
+
+    var payload = {
+      priceId: priceId,
+      tier: sel.tier
+    };
+
+    if (sel.saas) {
+      payload.saas = true;
+      payload.saasPriceId = PRICE_IDS.saas;
+    }
+
+    // Disable buttons while loading
+    var buttons = document.querySelectorAll('.btn-primary, .btn-decline');
+    buttons.forEach(function (btn) { btn.disabled = true; });
+
+    fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data.success && data.data && data.data.url) {
+        window.location.href = data.data.url;
+      } else {
+        console.error('[funnel] Checkout error:', data.error);
+        alert('Something went wrong creating your checkout session. Please try again.');
+        buttons.forEach(function (btn) { btn.disabled = false; });
+      }
+    })
+    .catch(function (err) {
+      console.error('[funnel] Checkout fetch error:', err);
+      alert('Unable to connect to checkout. Please check your connection and try again.');
+      buttons.forEach(function (btn) { btn.disabled = false; });
+    });
+  }
+
+  /** Legacy: Redirect to checkout with query params (deprecated — use goToStripeCheckout). */
+  function goToCheckout() {
+    goToStripeCheckout();
   }
 
   /** Navigate to next funnel page. */
@@ -66,8 +117,10 @@
     addSaas: addSaas,
     getSelection: getSelection,
     goToCheckout: goToCheckout,
+    goToStripeCheckout: goToStripeCheckout,
     goTo: goTo,
     TIERS: TIERS,
-    SAAS: SAAS
+    SAAS: SAAS,
+    PRICE_IDS: PRICE_IDS
   };
 })();
