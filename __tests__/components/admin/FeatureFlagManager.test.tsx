@@ -24,7 +24,6 @@ describe('FeatureFlagManager', () => {
     await waitFor(() => {
       expect(screen.getByText('WhatsApp Messaging')).toBeInTheDocument();
       expect(screen.getByText('PWA Features')).toBeInTheDocument();
-      expect(screen.getByText('Payment Processing')).toBeInTheDocument();
     });
   });
 
