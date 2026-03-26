@@ -69,6 +69,32 @@
           "type": "image/svg+xml"
         }
       ]
+    },
+    {
+      "name": "Log Progress",
+      "short_name": "Progress",
+      "description": "View your progress and analytics",
+      "url": "/analytics",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Quick Workout",
+      "short_name": "Quick",
+      "description": "Start tracking a workout now",
+      "url": "/workout-tracker",
+      "icons": [
+        {
+          "src": "/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
     }
   ],
   "categories": ["fitness", "health"]
