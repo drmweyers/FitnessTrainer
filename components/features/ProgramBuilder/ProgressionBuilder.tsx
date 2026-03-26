@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  TrendingUp, 
-  Plus, 
+import {
+  TrendingUp,
+  Plus,
   Minus,
   Target,
   Calculator,
@@ -11,11 +11,16 @@ import {
   AlertTriangle,
   BarChart3,
   Settings,
-  CheckCircle
+  CheckCircle,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { ProgramWeekData, WorkoutExerciseData, ExerciseConfigurationData } from '@/types/program';
+import ProgressionChart, { ProgressionChartExercise } from './ProgressionChart';
+import DeloadConfig, { DeloadConfigData } from './DeloadConfig';
+import PercentageCalculator from './PercentageCalculator';
 
 interface ProgressionBuilderProps {
   weeks: ProgramWeekData[];
@@ -115,6 +120,16 @@ const ProgressionBuilder: React.FC<ProgressionBuilderProps> = ({
   const [selectedExercises, setSelectedExercises] = useState<Set<string>>(new Set());
   const [progressionConfigs, setProgressionConfigs] = useState<ProgressionConfig[]>([]);
   const [activeConfig, setActiveConfig] = useState<ProgressionConfig | null>(null);
+
+  // New panel state for integrated features
+  const [deloadConfig, setDeloadConfig] = useState<DeloadConfigData>({
+    enabled: false,
+    frequencyWeeks: 4,
+    intensityReduction: 40,
+    volumeReduction: 50,
+  });
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calculatorTarget, setCalculatorTarget] = useState<string | null>(null);
 
   const toggleExerciseSelection = (exerciseId: string) => {
     setSelectedExercises(prev => {
@@ -527,6 +542,65 @@ const ProgressionBuilder: React.FC<ProgressionBuilderProps> = ({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Progression Chart — shows projected weights for all configured exercises */}
+      {progressionConfigs.length > 0 && (
+        <div className="border rounded-lg p-4 bg-white" data-testid="progression-chart-section">
+          <ProgressionChart
+            exercises={progressionConfigs
+              .filter(c => c.progressionType === 'linear' && c.weightIncrement !== undefined)
+              .map((c): ProgressionChartExercise => ({
+                name: c.exerciseName,
+                startWeight: 0,
+                weeklyIncrease: c.weightIncrement ?? 5,
+              }))}
+            weeks={weeks.length}
+          />
+        </div>
+      )}
+
+      {/* Deload Week Configuration */}
+      <div className="border rounded-lg p-4 bg-white" data-testid="deload-config-section">
+        <h3 className="text-base font-semibold text-gray-800 mb-4">Deload Week Configuration</h3>
+        <DeloadConfig
+          onConfigChange={setDeloadConfig}
+          initialConfig={deloadConfig}
+        />
+      </div>
+
+      {/* Percentage-Based Calculator (collapsible) */}
+      <div className="border rounded-lg bg-white" data-testid="percentage-calculator-section">
+        <button
+          type="button"
+          onClick={() => setShowCalculator(v => !v)}
+          className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors rounded-lg"
+        >
+          <div className="flex items-center gap-2">
+            <Calculator size={18} className="text-blue-600" />
+            <span className="text-base font-semibold text-gray-800">Percentage-Based Increase Calculator</span>
+          </div>
+          {showCalculator ? <ChevronUp size={18} className="text-gray-500" /> : <ChevronDown size={18} className="text-gray-500" />}
+        </button>
+        {showCalculator && (
+          <div className="p-4 border-t">
+            <PercentageCalculator
+              currentWeight={100}
+              onApply={(weeklyIncrease) => {
+                if (calculatorTarget) {
+                  setProgressionConfigs(configs =>
+                    configs.map(c =>
+                      c.exerciseId === calculatorTarget
+                        ? { ...c, progressionType: 'linear', weightIncrement: weeklyIncrease }
+                        : c
+                    )
+                  );
+                }
+                setShowCalculator(false);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Progressive Overload Benefits */}
