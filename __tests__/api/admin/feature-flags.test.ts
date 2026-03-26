@@ -64,7 +64,7 @@ describe('Feature Flags API', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.source).toBe('default');
-      expect(data.data.flags).toHaveLength(3);
+      expect(data.data.flags).toHaveLength(2);
       expect(data.data.flags[0].id).toBe('whatsapp_messaging');
     });
 
@@ -91,7 +91,7 @@ describe('Feature Flags API', () => {
 
       expect(response.status).toBe(200);
       expect(data.data.source).toBe('default');
-      expect(data.data.flags).toHaveLength(3);
+      expect(data.data.flags).toHaveLength(2);
     });
 
     it('returns 403 for non-admin user', async () => {

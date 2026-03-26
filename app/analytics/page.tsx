@@ -8,7 +8,7 @@ import MeasurementTracker from '@/components/features/Analytics/MeasurementTrack
 import ProgressChart from '@/components/features/Analytics/ProgressChart';
 import MultiLineChart from '@/components/features/Analytics/MultiLineChart';
 import BodyCompositionChart from '@/components/features/Analytics/BodyCompositionChart';
-import PhotoGallery from '@/components/features/Analytics/PhotoGallery';
+
 import PerformanceTab from '@/components/features/Analytics/PerformanceTab';
 import TrainingLoadTab from '@/components/features/Analytics/TrainingLoadTab';
 import GoalsTab from '@/components/features/Analytics/GoalsTab';
@@ -24,7 +24,7 @@ export default function AnalyticsPage() {
   const [selectedMeasurement, setSelectedMeasurement] = useState<BodyMeasurement | null>(null);
   const { success, error: showError, toasts, removeToast } = useToast();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '3m' | '6m' | '1y'>('3m');
-  const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'photos' | 'performance' | 'training-load' | 'goals'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'charts' | 'history' | 'performance' | 'training-load' | 'goals'>('overview');
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
@@ -235,7 +235,6 @@ export default function AnalyticsPage() {
                 { key: 'goals', label: 'Goals', icon: '🎯' },
                 { key: 'charts', label: 'Charts & Trends', icon: '📈' },
                 { key: 'history', label: 'History', icon: '📋' },
-                { key: 'photos', label: 'Photos', icon: '📷' },
               ].map(tab => (
                 <button
                   key={tab.key}
@@ -440,69 +439,6 @@ export default function AnalyticsPage() {
 
             {activeView === 'goals' && (
               <GoalsTab />
-            )}
-
-            {activeView === 'photos' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg shadow p-6">
-                  <div className="mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900">Progress Photos</h2>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Visual documentation of your fitness journey
-                    </p>
-                  </div>
-                  
-                  <PhotoGallery
-                    photos={measurements
-                      .filter(m => m.photos && m.photos.length > 0)
-                      .flatMap(m => 
-                        (m.photos || []).map((photoUrl, index) => ({
-                          id: `${m.id}-photo-${index}`,
-                          url: photoUrl,
-                          date: m.measurementDate,
-                          angle: 'front' as const, // Default, in real app this would be stored
-                          isPublic: false,
-                          measurements: {
-                            weight: m.weight || undefined,
-                            bodyFat: m.bodyFatPercentage || undefined,
-                            muscleMass: m.muscleMass || undefined,
-                          },
-                          notes: m.notes || undefined,
-                        }))
-                      )}
-                    canEdit={true}
-                    onPrivacyToggle={(photoId, isPublic) => {
-                      console.log('Toggle privacy:', photoId, isPublic);
-                      // In real app, this would update the backend
-                    }}
-                    onShare={(photoIds) => {
-                      console.log('Share photos:', photoIds);
-                      success('Share Link Created', 'Your photos have been shared successfully');
-                    }}
-                    onDelete={(photoId) => {
-                      console.log('Delete photo:', photoId);
-                      // In real app, this would delete from backend
-                      success('Photo Deleted', 'Your photo has been deleted successfully');
-                    }}
-                  />
-                  
-                  {measurements.every(m => !m.photos || m.photos.length === 0) && (
-                    <div className="text-center py-12">
-                      <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No progress photos yet</h3>
-                      <p className="text-gray-500 mb-4">Add photos when recording measurements to track visual progress</p>
-                      <button
-                        onClick={openNewMeasurementTracker}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-                      >
-                        Record Measurement with Photos
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
             )}
 
             {activeView === 'history' && (
