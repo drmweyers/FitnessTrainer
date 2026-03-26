@@ -59,9 +59,8 @@ jest.mock('lucide-react', () => ({
   ArrowRight: (props: any) => <svg data-testid="icon-arrow" {...props} />,
   Calendar: (props: any) => <svg data-testid="icon-calendar" {...props} />,
   Sparkles: (props: any) => <svg data-testid="icon-sparkles" {...props} />,
-  DollarSign: (props: any) => <svg data-testid="icon-dollar" {...props} />,
-  Infinity: (props: any) => <svg data-testid="icon-infinity" {...props} />,
-  Shield: (props: any) => <svg data-testid="icon-shield" {...props} />,
+
+
 }))
 
 import HomePage from '../page'
@@ -81,13 +80,7 @@ describe('HomePage', () => {
 
     it('renders the hero description', () => {
       expect(
-        screen.getByText(/The all-in-one fitness coaching platform\. Pay once, use forever\./i)
-      ).toBeInTheDocument()
-    })
-
-    it('renders the competitor comparison text', () => {
-      expect(
-        screen.getByText(/While others charge \$50-200\/month/i)
+        screen.getByText(/The all-in-one fitness coaching platform for personal trainers/i)
       ).toBeInTheDocument()
     })
 
@@ -97,8 +90,8 @@ describe('HomePage', () => {
       expect(logos[0]).toHaveAttribute('src', '/logo.svg')
     })
 
-    it('renders Get Lifetime Access CTA linking to register', () => {
-      const ctaButtons = screen.getAllByText(/Get Lifetime Access/i)
+    it('renders Get Started Free CTA linking to register', () => {
+      const ctaButtons = screen.getAllByText(/Get Started Free/i)
       expect(ctaButtons.length).toBeGreaterThanOrEqual(1)
       const link = ctaButtons[0].closest('a')
       expect(link).toHaveAttribute('href', '/auth/register')
@@ -193,10 +186,6 @@ describe('HomePage', () => {
     })
 
     it('renders all benefit items', () => {
-      // "Pay once, own forever" appears in benefits and footer; use exact match for benefits item
-      expect(
-        screen.getByText('Pay once, own forever — no monthly fees')
-      ).toBeInTheDocument()
       expect(
         screen.getByText(/1,344 exercises with animated demonstrations/i)
       ).toBeInTheDocument()
@@ -241,7 +230,7 @@ describe('HomePage', () => {
 
     it('renders the social proof description', () => {
       expect(
-        screen.getByText(/Trusted by trainers who refuse to rent/i)
+        screen.getByText(/Trusted by trainers who demand professional-grade tools/i)
       ).toBeInTheDocument()
     })
 
@@ -263,52 +252,6 @@ describe('HomePage', () => {
     it('renders stat labels', () => {
       expect(screen.getAllByText('Exercises Included').length).toBeGreaterThanOrEqual(1)
       expect(screen.getAllByText('Target Muscles').length).toBeGreaterThanOrEqual(1)
-    })
-  })
-
-  describe('Pricing Section', () => {
-    it('renders the pricing heading', () => {
-      const headings = screen.getAllByText('Stop Renting. Start Owning.')
-      expect(headings.length).toBeGreaterThanOrEqual(1)
-    })
-
-    it('renders the pricing card', () => {
-      expect(screen.getByText('Lifetime License')).toBeInTheDocument()
-      expect(screen.getByText('$299')).toBeInTheDocument()
-      expect(screen.getByText('one-time payment')).toBeInTheDocument()
-    })
-
-    it('renders the savings callout', () => {
-      expect(screen.getByText(/Save \$3,267 over 3 years/i)).toBeInTheDocument()
-    })
-
-    it('renders the Launch Special badge', () => {
-      expect(screen.getByText('Launch Special')).toBeInTheDocument()
-    })
-
-    it('renders pricing feature list', () => {
-      expect(screen.getByText(/All 1,344 exercises with GIF demonstrations/i)).toBeInTheDocument()
-      expect(screen.getByText(/Unlimited programs and clients/i)).toBeInTheDocument()
-      expect(screen.getByText(/ACWR analytics and AI insights/i)).toBeInTheDocument()
-      expect(screen.getByText(/Scheduling and calendar management/i)).toBeInTheDocument()
-      expect(screen.getByText(/Offline workout tracking/i)).toBeInTheDocument()
-      expect(screen.getByText(/Lifetime updates and support/i)).toBeInTheDocument()
-    })
-
-    it('renders money-back guarantee', () => {
-      expect(screen.getByText(/30-day money-back guarantee/i)).toBeInTheDocument()
-    })
-
-    it('renders the pricing CTA button', () => {
-      // "Get Lifetime Access -- $299" appears in both pricing and CTA sections
-      const ctaButtons = screen.getAllByText(/Get Lifetime Access — \$299/i)
-      expect(ctaButtons.length).toBeGreaterThanOrEqual(1)
-      const link = ctaButtons[0].closest('a')
-      expect(link).toHaveAttribute('href', '/auth/register')
-    })
-
-    it('renders crossed-out monthly price', () => {
-      expect(screen.getByText('$99/mo')).toBeInTheDocument()
     })
   })
 
@@ -350,21 +293,20 @@ describe('HomePage', () => {
 
   describe('CTA Section', () => {
     it('renders the final CTA heading', () => {
-      // "Stop Renting. Start Owning." appears in both pricing and CTA
-      const headings = screen.getAllByText('Stop Renting. Start Owning.')
-      expect(headings.length).toBeGreaterThanOrEqual(2)
+      expect(
+        screen.getByText('Ready to Level Up Your Coaching?')
+      ).toBeInTheDocument()
     })
 
     it('renders the final CTA description', () => {
       expect(
-        screen.getByText(/While competitors charge you every month, EvoFit gives you lifetime access\. One payment\. All features\. Forever yours\./i)
+        screen.getByText(/Join trainers who use EvoFit to build better programs/i)
       ).toBeInTheDocument()
     })
 
     it('renders CTA buttons', () => {
-      // "Get Lifetime Access -- $299" appears in both pricing and CTA
-      const ctaButtons = screen.getAllByText(/Get Lifetime Access/i)
-      expect(ctaButtons.length).toBeGreaterThanOrEqual(2) // hero + pricing + CTA
+      const ctaButtons = screen.getAllByText(/Get Started/i)
+      expect(ctaButtons.length).toBeGreaterThanOrEqual(2)
 
       expect(screen.getByText('Sign In to Dashboard')).toBeInTheDocument()
     })
@@ -396,9 +338,8 @@ describe('HomePage', () => {
     })
 
     it('renders account links in footer', () => {
-      // "Get Lifetime Access" appears in hero, pricing, CTA, and footer
-      const lifetimeAccessLinks = screen.getAllByText(/Get Lifetime Access/i)
-      expect(lifetimeAccessLinks.length).toBeGreaterThanOrEqual(3)
+      const getStartedLinks = screen.getAllByText(/Get Started/i)
+      expect(getStartedLinks.length).toBeGreaterThanOrEqual(2)
 
       // "Sign In" appears in footer
       expect(screen.getByText('Sign In')).toBeInTheDocument()
@@ -414,7 +355,7 @@ describe('HomePage', () => {
 
     it('renders footer description', () => {
       expect(
-        screen.getByText(/The professional fitness platform for personal trainers/i)
+        screen.getByText(/Build programs, track progress, grow your business/i)
       ).toBeInTheDocument()
     })
   })
