@@ -10,7 +10,8 @@ import {
   Trash2,
   ArrowLeft,
   SortAsc,
-  SortDesc
+  SortDesc,
+  Download,
 } from 'lucide-react'
 
 import { ExerciseCard } from '@/components/features/ExerciseLibrary/ExerciseCard'
@@ -265,12 +266,23 @@ export default function FavoritesPage() {
                 </button>
 
                 {favoriteExercises.length > 0 && (
-                  <button
-                    onClick={handleClearAllFavorites}
-                    className="px-4 py-2 text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg transition-colors"
-                  >
-                    Clear All
-                  </button>
+                  <>
+                    <a
+                      href="/api/exercises/favorites/export?format=csv"
+                      download
+                      className="flex items-center px-4 py-2 text-blue-600 hover:text-blue-700 border border-blue-200 hover:border-blue-300 rounded-lg transition-colors"
+                      aria-label="Export favorites as CSV"
+                    >
+                      <Download size={16} className="mr-2" />
+                      Export
+                    </a>
+                    <button
+                      onClick={handleClearAllFavorites}
+                      className="px-4 py-2 text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg transition-colors"
+                    >
+                      Clear All
+                    </button>
+                  </>
                 )}
               </div>
             </div>
