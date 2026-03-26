@@ -7,7 +7,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ProgressPhotosGallery from '@/components/features/Profile/ProgressPhotosGallery';
+
 
 interface ProfileData {
   id: string;
@@ -175,7 +175,8 @@ export default function ProfilePage() {
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
                 {[
                   { label: 'Basic Info', done: profile.profileCompletion.basicInfo },
-                  { label: 'Photo', done: profile.profileCompletion.profilePhoto },
+
+
                   { label: 'Health', done: profile.profileCompletion.healthInfo },
                   { label: 'Goals', done: profile.profileCompletion.goalsSet },
                   { label: 'Measurements', done: profile.profileCompletion.measurements },
@@ -281,8 +282,6 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
-        {/* Progress Photos */}
-        <ProgressPhotosGallery />
       </div>
     </DashboardLayout>
   );

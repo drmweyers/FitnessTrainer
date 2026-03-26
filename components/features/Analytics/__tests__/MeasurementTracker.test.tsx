@@ -13,15 +13,6 @@ jest.mock('next/image', () => ({
   default: (props: any) => <img {...props} />,
 }));
 
-// Mock PhotoUpload component
-jest.mock('../PhotoUpload', () => ({
-  __esModule: true,
-  default: ({ onUpload, maxFiles }: any) => (
-    <div data-testid="photo-upload">
-      <span>Photo Upload (max {maxFiles})</span>
-    </div>
-  ),
-}));
 
 describe('MeasurementTracker', () => {
   const mockOnSave = jest.fn().mockResolvedValue(undefined);
@@ -61,7 +52,6 @@ describe('MeasurementTracker', () => {
     render(<MeasurementTracker {...defaultProps} />);
     expect(screen.getByText('Basic Info')).toBeInTheDocument();
     expect(screen.getByText('Body Measurements')).toBeInTheDocument();
-    expect(screen.getByText('Progress Photos')).toBeInTheDocument();
   });
 
   it('shows basic info fields by default', () => {
@@ -81,12 +71,6 @@ describe('MeasurementTracker', () => {
     expect(screen.getByText('Hips (cm)')).toBeInTheDocument();
     expect(screen.getByText('Biceps (cm)')).toBeInTheDocument();
     expect(screen.getByText('Thighs (cm)')).toBeInTheDocument();
-  });
-
-  it('switches to photos tab', () => {
-    render(<MeasurementTracker {...defaultProps} />);
-    fireEvent.click(screen.getByText('Progress Photos'));
-    expect(screen.getByTestId('photo-upload')).toBeInTheDocument();
   });
 
   it('shows measurement field placeholders', () => {
@@ -291,13 +275,6 @@ describe('MeasurementTracker', () => {
       fireEvent.click(closeButton);
       expect(mockOnCancel).toHaveBeenCalled();
     }
-  });
-
-  it('shows photos tab content', () => {
-    render(<MeasurementTracker {...defaultProps} />);
-    fireEvent.click(screen.getByText('Progress Photos'));
-    expect(screen.getByText('Progress Photos (Optional)')).toBeInTheDocument();
-    expect(screen.getByText(/Take photos in good lighting/)).toBeInTheDocument();
   });
 
   it('clears empty body measurement value to undefined', () => {
