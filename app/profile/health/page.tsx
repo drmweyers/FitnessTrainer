@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
+import PARQuestionnaire, { PARQResponses } from '@/components/features/Profile/PARQuestionnaire';
 
 const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
@@ -19,6 +20,7 @@ export default function HealthPage() {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [parQResponses, setParQResponses] = useState<PARQResponses>({});
 
   const [form, setForm] = useState({
     bloodType: '',
@@ -53,6 +55,9 @@ export default function HealthPage() {
               allergies: (h.allergies || []).join('\n'),
               injuries: h.injuries ? JSON.stringify(h.injuries, null, 2) : '',
             });
+            if (h.lifestyle?.parQ) {
+              setParQResponses(h.lifestyle.parQ);
+            }
           }
         })
         .catch(err => console.error('Failed to load health data:', err))
@@ -95,6 +100,7 @@ export default function HealthPage() {
           medications: toArray(form.medications),
           allergies: toArray(form.allergies),
           injuries,
+          parQResponses: Object.keys(parQResponses).length > 0 ? parQResponses : undefined,
         }),
       });
 
@@ -217,6 +223,18 @@ export default function HealthPage() {
                 List injuries one per line, or provide details as needed
               </p>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">PAR-Q Physical Activity Readiness</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600 mb-4">
+              Please answer the following questions to help your trainer design a safe programme for you.
+            </p>
+            <PARQuestionnaire responses={parQResponses} onChange={setParQResponses} />
           </CardContent>
         </Card>
 
