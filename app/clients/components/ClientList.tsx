@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import ClientListItem from './ClientListItem'
 import FilterBar from './FilterBar'
 import ClientModal from './ClientModal'
+import BulkActionsToolbar from '@/components/features/Clients/BulkActionsToolbar'
 import { Client } from '../api/clientsApi'
 import { clientsApi, ApiError } from '@/lib/api/clients'
 import { ClientStatus } from '@/types/client'
@@ -75,6 +76,7 @@ export default function ClientList({ initialFilter = 'all' }: ClientListProps) {
   const [error, setError] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | undefined>()
+  const [selectedClientIds, setSelectedClientIds] = useState<string[]>([])
 
   const fetchClients = useCallback(async () => {
     try {
@@ -123,6 +125,41 @@ export default function ClientList({ initialFilter = 'all' }: ClientListProps) {
     setSelectedClient(undefined)
   }
 
+  const toggleClientSelection = (clientId: string) => {
+    setSelectedClientIds((prev) =>
+      prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
+    )
+  }
+
+  const handleBulkUpdateStatus = async (status: string) => {
+    if (selectedClientIds.length === 0) return
+    try {
+      await fetch('/api/clients/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update-status', clientIds: selectedClientIds, value: status }),
+      })
+      setSelectedClientIds([])
+      fetchClients()
+    } catch (err) {
+      console.error('Bulk status update failed:', err)
+    }
+  }
+
+  const handleBulkAssignTag = async (tag: string) => {
+    if (selectedClientIds.length === 0) return
+    try {
+      await fetch('/api/clients/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'assign-tags', clientIds: selectedClientIds, value: tag }),
+      })
+      setSelectedClientIds([])
+    } catch (err) {
+      console.error('Bulk tag assignment failed:', err)
+    }
+  }
+
   if (error) {
     return (
       <div className="bg-red-50 p-4 rounded-md">
@@ -157,13 +194,20 @@ export default function ClientList({ initialFilter = 'all' }: ClientListProps) {
 
   return (
     <div className="space-y-6">
-      <FilterBar 
+      <FilterBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         filter={filter}
         onFilterChange={setFilter}
       />
-      
+
+      <BulkActionsToolbar
+        selectedCount={selectedClientIds.length}
+        onUpdateStatus={handleBulkUpdateStatus}
+        onAssignTag={handleBulkAssignTag}
+        onClearSelection={() => setSelectedClientIds([])}
+      />
+
       {filteredClients.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No clients found
@@ -171,16 +215,26 @@ export default function ClientList({ initialFilter = 'all' }: ClientListProps) {
       ) : (
         <div className="space-y-4">
           {filteredClients.map(client => (
-            <ClientListItem 
-              key={client.id}
-              client={client}
-              onEdit={() => handleEditClient(client)}
-            />
+            <div key={client.id} className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={selectedClientIds.includes(client.id)}
+                onChange={() => toggleClientSelection(client.id)}
+                aria-label={`Select ${client.name}`}
+                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+              />
+              <div className="flex-1">
+                <ClientListItem
+                  client={client}
+                  onEdit={() => handleEditClient(client)}
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}
 
-      <ClientModal 
+      <ClientModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSuccess={fetchClients}

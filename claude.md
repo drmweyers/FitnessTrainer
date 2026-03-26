@@ -7,6 +7,12 @@
 
 ---
 
+## BCI Claude Code Standard
+This project follows BCCS v1.0.0. All tasks use: Brainstorm → Plan → TDD → Spec Review → Quality Review → Verify → Finish.
+See: `~/Claude/second-brain/resources/BCI-CLAUDE-CODE-STANDARD.md`
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
