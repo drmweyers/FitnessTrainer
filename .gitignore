@@ -81,3 +81,4 @@ nul
 .vercel
 .env*.local
 .playwright-cli/
+.worktrees/
