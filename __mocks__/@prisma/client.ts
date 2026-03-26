@@ -196,6 +196,13 @@ const mockPrismaClient: any = {
     updateMany: jest.fn(),
     count: jest.fn(),
   },
+  clientProfile: {
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    upsert: jest.fn(),
+  },
   clientTag: {
     findFirst: jest.fn(),
     findMany: jest.fn(),

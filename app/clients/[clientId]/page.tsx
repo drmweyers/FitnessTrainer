@@ -16,15 +16,17 @@ import { ClientProfile } from '@/components/clients/ClientProfile';
 import { ClientWorkouts } from '@/components/clients/ClientWorkouts';
 import { ClientPrograms } from '@/components/clients/ClientPrograms';
 import { ClientProgress } from '@/components/clients/ClientProgress';
+import ClientProfileEditor from '@/components/features/Clients/ClientProfileEditor';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MessageSquare, Dumbbell, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Calendar, MessageSquare, Dumbbell, TrendingUp, ArrowLeft, Edit } from 'lucide-react';
 
 export default function ClientProfilePage() {
   const params = useParams();
   const clientId = String(params.clientId);
   const [activeTab, setActiveTab] = useState<'overview' | 'workouts' | 'programs' | 'progress'>('overview');
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const { client, loading, error } = useClient(clientId);
 
@@ -96,6 +98,10 @@ export default function ClientProfilePage() {
           </div>
 
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsEditingProfile((prev) => !prev)}>
+              <Edit className="h-4 w-4 mr-2" />
+              {isEditingProfile ? 'Cancel Edit' : 'Edit Profile'}
+            </Button>
             <Button variant="outline">
               <MessageSquare className="h-4 w-4 mr-2" />
               Message
@@ -156,8 +162,28 @@ export default function ClientProfilePage() {
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Sidebar - Client Profile */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-4">
             <ClientProfile client={client} />
+
+            {isEditingProfile && (
+              <Card>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-4">Edit Profile</h3>
+                  <ClientProfileEditor
+                    clientId={clientId}
+                    initialData={{
+                      emergencyContactName: (client?.clientProfile?.emergencyContact as any)?.name ?? '',
+                      emergencyContactPhone: (client?.clientProfile?.emergencyContact as any)?.phone ?? '',
+                      goals: (client?.clientProfile?.goals as any)?.primaryGoal ?? '',
+                      limitations: (client?.clientProfile?.injuries as any)?.description ?? '',
+                      notes: '',
+                    }}
+                    onSave={() => setIsEditingProfile(false)}
+                    onCancel={() => setIsEditingProfile(false)}
+                  />
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Main Content Area */}
