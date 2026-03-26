@@ -14,9 +14,6 @@ import {
   ArrowRight,
   Calendar,
   Sparkles,
-  DollarSign,
-  Infinity,
-  Shield,
 } from 'lucide-react'
 
 const features = [
@@ -79,7 +76,6 @@ const features = [
 ]
 
 const benefits = [
-  'Pay once, own forever — no monthly fees',
   '1,344 exercises with animated demonstrations',
   'Build and assign programs in minutes',
   'ACWR training load monitoring (pro-level analytics)',
@@ -145,14 +141,7 @@ export default function HomePage() {
               variants={fadeInUp}
               className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-6"
             >
-              The all-in-one fitness coaching platform. Pay once, use forever. No monthly fees. No per-client charges. Just powerful tools that are yours for life.
-            </motion.p>
-
-            <motion.p
-              variants={fadeInUp}
-              className="text-base md:text-lg text-blue-200 max-w-2xl mx-auto mb-10"
-            >
-              While others charge $50-200/month, EvoFit is yours with a single payment.
+              The all-in-one fitness coaching platform for personal trainers. Build programs, track workouts, and grow your business with powerful tools built for professionals.
             </motion.p>
 
             <motion.div
@@ -163,7 +152,7 @@ export default function HomePage() {
                 href="/auth/register"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-white text-blue-700 rounded-xl hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
               >
-                Get Lifetime Access
+                Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <button
@@ -703,7 +692,7 @@ export default function HomePage() {
               variants={fadeInUp}
               className="text-lg text-gray-600 max-w-3xl mx-auto mb-12"
             >
-              Trusted by trainers who refuse to rent their business software. Pay once, use forever, and keep every dollar you earn without monthly fees eating into your profits.
+              Trusted by trainers who demand professional-grade tools. Everything you need to run a world-class coaching business.
             </motion.p>
             <motion.div
               variants={staggerContainer}
@@ -726,106 +715,6 @@ export default function HomePage() {
                 <div className="text-sm text-gray-600">Target Muscles</div>
               </motion.div>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-20 md:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerContainer}
-            className="text-center mb-16"
-          >
-            <motion.h2
-              variants={fadeInUp}
-              className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-            >
-              Stop Renting. Start Owning.
-            </motion.h2>
-            <motion.p
-              variants={fadeInUp}
-              className="text-lg text-gray-600 max-w-2xl mx-auto"
-            >
-              While competitors charge you every month forever, EvoFit gives you lifetime access with one payment.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
-            className="max-w-lg mx-auto"
-          >
-            <div className="bg-white rounded-3xl shadow-xl border-2 border-blue-200 p-8 md:p-12 relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full text-sm font-semibold shadow-lg">
-                Launch Special
-              </div>
-
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Lifetime License</h3>
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <span className="text-gray-400 line-through text-xl">$99/mo</span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-bold text-gray-900">$299</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500">one-time payment</p>
-              </div>
-
-              <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-xl">
-                <div className="flex items-center justify-center gap-2 text-green-800 font-semibold">
-                  <DollarSign className="h-5 w-5" />
-                  <span>Save $3,267 over 3 years</span>
-                </div>
-                <p className="text-sm text-green-700 text-center mt-2">
-                  That's less than 2 months of what competitors charge
-                </p>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">All 1,344 exercises with GIF demonstrations</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Unlimited programs and clients</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">ACWR analytics and AI insights</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Scheduling and calendar management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Offline workout tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Infinity className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 font-semibold">Lifetime updates and support</span>
-                </li>
-              </ul>
-
-              <Link
-                href="/auth/register"
-                className="block w-full text-center px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl"
-              >
-                Get Lifetime Access — $299
-              </Link>
-
-              <div className="flex items-center justify-center gap-2 mt-6 text-sm text-gray-500">
-                <Shield className="h-4 w-4" />
-                <span>30-day money-back guarantee</span>
-              </div>
-            </div>
           </motion.div>
         </div>
       </section>
@@ -970,13 +859,13 @@ export default function HomePage() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-6"
             >
-              Stop Renting. Start Owning.
+              Ready to Level Up Your Coaching?
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               className="text-lg text-blue-100 mb-10 max-w-2xl mx-auto"
             >
-              While competitors charge you every month, EvoFit gives you lifetime access. One payment. All features. Forever yours.
+              Join trainers who use EvoFit to build better programs, track client progress, and grow their business.
             </motion.p>
             <motion.div
               variants={fadeInUp}
@@ -986,7 +875,7 @@ export default function HomePage() {
                 href="/auth/register"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-white text-blue-700 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
               >
-                Get Lifetime Access — $299
+                Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link
@@ -1019,7 +908,7 @@ export default function HomePage() {
               </div>
               <p className="text-sm leading-relaxed max-w-md">
                 The professional fitness platform for personal trainers and
-                their clients. Pay once, own forever. No monthly fees.
+                their clients. Build programs, track progress, grow your business.
               </p>
             </div>
 
@@ -1069,7 +958,7 @@ export default function HomePage() {
                     href="/auth/register"
                     className="hover:text-white transition-colors"
                   >
-                    Get Lifetime Access
+                    Get Started
                   </Link>
                 </li>
                 <li>
