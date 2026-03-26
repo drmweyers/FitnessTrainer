@@ -1,0 +1,45 @@
+{
+  "name": "EvoFit Trainer",
+  "tagline": "Own Your Coaching Platform. Forever.",
+  "description": "A comprehensive fitness coaching platform that empowers personal trainers to manage clients, build workout programs, track progress, and grow their business — all without recurring subscription fees. Built as a direct alternative to platforms like Everfit, TrueCoach, and TrainHeroic that charge $50-200/month, EvoFit Trainer offers a one-time $299 lifetime license with the same professional-grade features.",
+  "status": "live",
+  "liveUrl": "https://evofittrainer-six.vercel.app",
+  "imagePath": "/images/projects/evofit-dashboard.png",
+  "imageAlt": "EvoFit Trainer dashboard showing client management, workout tracking, and analytics for fitness professionals",
+  "layout": "right",
+  "features": [
+    "1,344-exercise library with GIF demonstrations and smart filtering by body part, equipment, and target muscle",
+    "AI-powered workout builder that generates personalized programs from the full exercise database",
+    "Real-time client management with progress tracking, body metrics, and workout history",
+    "Drag-and-drop program builder with progressive overload tracking and workout templates",
+    "Interactive analytics dashboard with strength progression charts and training volume insights",
+    "Integrated scheduling system with session booking, calendar views, and availability management"
+  ],
+  "technologies": [
+    "Next.js 14",
+    "React 18",
+    "TypeScript",
+    "PostgreSQL",
+    "Prisma ORM",
+    "Redis",
+    "Tailwind CSS",
+    "Framer Motion",
+    "JWT Auth",
+    "Vercel"
+  ],
+  "metrics": [
+    {
+      "number": "1,344",
+      "label": "Exercises with GIF Demos"
+    },
+    {
+      "number": "4,594+",
+      "label": "Automated Tests Passing"
+    },
+    {
+      "number": "$3,267",
+      "label": "Saved vs 3-Year Subscription"
+    }
+  ],
+  "studentQuote": "Finally, a platform that doesn't nickel-and-dime trainers every month. I paid once and I own it forever — the exercise library alone with 1,344 demos is worth the price."
+}
