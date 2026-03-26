@@ -42,7 +42,13 @@ export async function PUT(request: NextRequest) {
       medications,
       allergies,
       injuries,
+      parQResponses,
     } = body
+
+    // PAR-Q responses are stored inside the lifestyle JSON field under a "parQ" key
+    const lifestyleValue = parQResponses !== undefined
+      ? { parQ: parQResponses }
+      : undefined
 
     const health = await prisma.userHealth.upsert({
       where: { userId },
@@ -53,6 +59,7 @@ export async function PUT(request: NextRequest) {
         medications: medications ?? [],
         allergies: allergies ?? [],
         injuries: injuries ?? null,
+        ...(lifestyleValue !== undefined && { lifestyle: lifestyleValue }),
       },
       update: {
         ...(bloodType !== undefined && { bloodType }),
@@ -60,6 +67,7 @@ export async function PUT(request: NextRequest) {
         ...(medications !== undefined && { medications }),
         ...(allergies !== undefined && { allergies }),
         ...(injuries !== undefined && { injuries }),
+        ...(lifestyleValue !== undefined && { lifestyle: lifestyleValue }),
       },
     })
 

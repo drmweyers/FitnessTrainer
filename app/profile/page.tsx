@@ -7,6 +7,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import CertExpirationAlert, { ExpiringCertification } from '@/components/features/Profile/CertExpirationAlert';
 
 
 interface ProfileData {
@@ -46,6 +47,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expiringCerts, setExpiringCerts] = useState<ExpiringCertification[]>([]);
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !user)) {
@@ -55,12 +57,12 @@ export default function ProfilePage() {
 
     if (!isLoading && user) {
       const token = localStorage.getItem('accessToken');
-      fetch('/api/profiles/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      })
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
+
+      fetch('/api/profiles/me', { headers })
         .then(res => res.json())
         .then(result => {
           if (result.success) {
@@ -71,6 +73,18 @@ export default function ProfilePage() {
         })
         .catch(() => setError('Failed to load profile'))
         .finally(() => setIsDataLoading(false));
+
+      // Load expiring certifications for trainers
+      if (user.role === 'trainer') {
+        fetch('/api/profiles/certifications/expiring', { headers })
+          .then(res => res.json())
+          .then(result => {
+            if (result.success) setExpiringCerts(result.data);
+          })
+          .catch(() => {
+            // Non-critical — silently ignore cert expiry fetch errors
+          });
+      }
     }
   }, [isLoading, isAuthenticated, user, router]);
 
@@ -132,6 +146,11 @@ export default function ProfilePage() {
       }
     >
       <div className="space-y-6 max-w-4xl">
+        {/* Certification Expiration Alerts (trainers only) */}
+        {user?.role === 'trainer' && expiringCerts.length > 0 && (
+          <CertExpirationAlert certifications={expiringCerts} />
+        )}
+
         {/* Profile Header */}
         <Card>
           <CardContent className="pt-6">
