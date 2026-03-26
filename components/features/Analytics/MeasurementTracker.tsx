@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { BodyMeasurement, MeasurementSession, MEASUREMENT_TYPES } from '@/types/analytics';
-import PhotoUpload from './PhotoUpload';
+
 
 interface MeasurementTrackerProps {
   onSave: (measurement: BodyMeasurement) => Promise<void>;
@@ -49,7 +49,7 @@ export default function MeasurementTracker({
 
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState<'basic' | 'measurements' | 'photos'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'measurements'>('basic');
 
   if (!isOpen) return null;
 
@@ -138,7 +138,8 @@ export default function MeasurementTracker({
               {[
                 { key: 'basic', label: 'Basic Info' },
                 { key: 'measurements', label: 'Body Measurements' },
-                { key: 'photos', label: 'Progress Photos' },
+
+
               ].map(tab => (
                 <button
                   key={tab.key}
@@ -279,43 +280,8 @@ export default function MeasurementTracker({
               </div>
             )}
 
-            {/* Progress Photos Tab */}
-            {activeTab === 'photos' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Progress Photos (Optional)
-                  </label>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Take photos in good lighting, wearing minimal clothing for the best progress tracking.
-                  </p>
-                  
-                  <PhotoUpload
-                    onUpload={(files) => {
-                      // Convert files to base64 for preview
-                      files.forEach(file => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setFormData(prev => ({
-                            ...prev,
-                            photos: [...(prev.photos || []), reader.result as string]
-                          }));
-                        };
-                        reader.readAsDataURL(file);
-                      });
-                    }}
-                    maxFiles={4}
-                    existingPhotos={formData.photos || []}
-                    onRemove={(photoUrl) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        photos: prev.photos?.filter(p => p !== photoUrl)
-                      }));
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+
+
           </div>
 
           {/* Footer */}

@@ -23,12 +23,8 @@ const DEFAULT_FLAGS: FeatureFlag[] = [
     description: 'Progressive Web App features (offline mode, install prompt)',
     enabled: true,
   },
-  {
-    id: 'payment_processing',
-    name: 'Payment Processing',
-    description: 'Enable payment and subscription features',
-    enabled: false,
-  },
+
+
 ];
 
 async function saveToApi(flags: FeatureFlag[]) {
