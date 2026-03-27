@@ -5,13 +5,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
-import { prisma } from '@/lib/db/prisma';
 import webpush from 'web-push';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
 
-// Configure VAPID details (keys stored in env vars)
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@evofittrainer.com';
@@ -29,17 +27,24 @@ const sendSchema = z.object({
   badge: z.string().optional(),
 });
 
-/**
- * POST /api/notifications/send
- * Sends a Web Push notification to a specific user.
- * Requires admin or trainer role.
- */
+async function getRedisClient() {
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
+    const { Redis } = await import('@upstash/redis');
+    return new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const authResult = await authenticate(request);
   if (authResult instanceof NextResponse) return authResult;
   const req = authResult as AuthenticatedRequest;
 
-  // Only admins and trainers can send notifications
   if (req.user?.role !== 'admin' && req.user?.role !== 'trainer') {
     return NextResponse.json(
       { success: false, error: 'Forbidden: admin or trainer role required' },
@@ -53,31 +58,24 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid notification data',
-          details: result.error.errors,
-        },
+        { success: false, error: 'Invalid notification data', details: result.error.errors },
         { status: 400 }
       );
     }
 
     const { userId, title, body: notifBody, url, icon, badge } = result.data;
 
-    // Fetch the user's push subscription
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, pushSubscription: true },
-    });
+    const redis = await getRedisClient();
+    const subJson = redis ? await redis.get<string>(`evofit:push-sub:${userId}`) : null;
 
-    if (!user?.pushSubscription) {
+    if (!subJson) {
       return NextResponse.json(
         { success: false, error: 'No subscription found for this user' },
         { status: 404 }
       );
     }
 
-    const subscription = JSON.parse(user.pushSubscription);
+    const subscription = typeof subJson === 'string' ? JSON.parse(subJson) : subJson;
 
     const payload = JSON.stringify({
       title,
@@ -89,18 +87,9 @@ export async function POST(request: NextRequest) {
 
     await webpush.sendNotification(subscription, payload);
 
-    return NextResponse.json(
-      { success: true, message: 'Notification sent successfully' },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, message: 'Notification sent successfully' });
   } catch (error) {
     console.error('[notifications/send] Error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to send push notification',
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to send push notification' }, { status: 500 });
   }
 }

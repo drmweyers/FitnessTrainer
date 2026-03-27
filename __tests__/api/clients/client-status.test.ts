@@ -1,10 +1,10 @@
 /**
- * Tests for app/api/clients/[id]/status/route.ts
- * PATCH /api/clients/[id]/status
+ * Tests for app/api/clients/[clientId]/status/route.ts
+ * PATCH /api/clients/[clientId]/status
  */
 
 import { NextResponse } from 'next/server';
-import { PATCH } from '@/app/api/clients/[id]/status/route';
+import { PATCH } from '@/app/api/clients/[clientId]/status/route';
 import { prisma } from '@/lib/db/prisma';
 import { createMockRequest, mockTrainerUser, mockAdminUser, mockClientUser } from '@/tests/helpers/test-utils';
 
@@ -26,7 +26,7 @@ function mockAuthFailure() {
   );
 }
 
-describe('PATCH /api/clients/[id]/status', () => {
+describe('PATCH /api/clients/[clientId]/status', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -38,7 +38,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
 
     expect(response.status).toBe(401);
   });
@@ -50,7 +50,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
     const body = await response.json();
 
     expect(response.status).toBe(403);
@@ -65,7 +65,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'invalid-status' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
     const body = await response.json();
 
     expect(response.status).toBe(400);
@@ -80,7 +80,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: {},
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
     const body = await response.json();
 
     expect(response.status).toBe(400);
@@ -95,7 +95,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
     const body = await response.json();
 
     expect(response.status).toBe(404);
@@ -127,7 +127,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -161,7 +161,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'archived' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -197,7 +197,7 @@ describe('PATCH /api/clients/[id]/status', () => {
         method: 'PATCH',
         body: { status },
       });
-      const response = await PATCH(request, { params: { id: 'client-1' } });
+      const response = await PATCH(request, { params: { clientId: 'client-1' } });
       const body = await response.json();
 
       expect(response.status).toBe(200);
@@ -228,7 +228,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
 
     expect(response.status).toBe(200);
   });
@@ -240,7 +240,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    await PATCH(request, { params: { id: 'client-1' } });
+    await PATCH(request, { params: { clientId: 'client-1' } });
 
     expect(mockedPrisma.trainerClient.findFirst).toHaveBeenCalledWith({
       where: {
@@ -259,7 +259,7 @@ describe('PATCH /api/clients/[id]/status', () => {
       method: 'PATCH',
       body: { status: 'active' },
     });
-    const response = await PATCH(request, { params: { id: 'client-1' } });
+    const response = await PATCH(request, { params: { clientId: 'client-1' } });
 
     expect(response.status).toBe(500);
     consoleErrorSpy.mockRestore();

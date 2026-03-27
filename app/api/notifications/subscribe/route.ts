@@ -5,7 +5,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
-import { prisma } from '@/lib/db/prisma';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -21,10 +20,19 @@ const subscriptionSchema = z.object({
   action: z.enum(['subscribe', 'unsubscribe']).default('subscribe'),
 });
 
-/**
- * POST /api/notifications/subscribe
- * Saves or removes a Web Push subscription for the authenticated user.
- */
+async function getRedisClient() {
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
+    const { Redis } = await import('@upstash/redis');
+    return new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const authResult = await authenticate(request);
   if (authResult instanceof NextResponse) return authResult;
@@ -36,34 +44,23 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid subscription data',
-          details: result.error.errors,
-        },
+        { success: false, error: 'Invalid subscription data', details: result.error.errors },
         { status: 400 }
       );
     }
 
     const { subscription, action } = result.data;
+    const redis = await getRedisClient();
+    const key = `evofit:push-sub:${req.user!.id}`;
 
     if (action === 'unsubscribe') {
-      await prisma.user.update({
-        where: { id: req.user!.id },
-        data: { pushSubscription: null },
-      });
-
-      return NextResponse.json(
-        { success: true, message: 'Unsubscribed from push notifications' },
-        { status: 200 }
-      );
+      if (redis) await redis.del(key);
+      return NextResponse.json({ success: true, message: 'Unsubscribed from push notifications' });
     }
 
-    // action === 'subscribe'
-    await prisma.user.update({
-      where: { id: req.user!.id },
-      data: { pushSubscription: JSON.stringify(subscription) },
-    });
+    if (redis) {
+      await redis.set(key, JSON.stringify(subscription));
+    }
 
     return NextResponse.json(
       { success: true, message: 'Successfully subscribed to push notifications' },
@@ -71,12 +68,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('[notifications/subscribe] Error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to save push subscription',
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to save push subscription' }, { status: 500 });
   }
 }

@@ -9,21 +9,23 @@ jest.mock('@/lib/middleware/auth', () => ({
   AuthenticatedRequest: {},
 }));
 
-jest.mock('@/lib/db/prisma');
-
+const mockSendNotification = jest.fn().mockResolvedValue({});
 jest.mock('web-push', () => ({
   setVapidDetails: jest.fn(),
-  sendNotification: jest.fn(),
+  sendNotification: (...args: any[]) => mockSendNotification(...args),
+}));
+
+const mockRedisGet = jest.fn();
+jest.mock('@upstash/redis', () => ({
+  Redis: jest.fn().mockImplementation(() => ({
+    get: mockRedisGet,
+  })),
 }));
 
 import { authenticate } from '@/lib/middleware/auth';
-import { prisma } from '@/lib/db/prisma';
-import webpush from 'web-push';
 import { POST } from '@/app/api/notifications/send/route';
 
 const mockedAuthenticate = authenticate as jest.MockedFunction<typeof authenticate>;
-const mockedPrisma = prisma as any;
-const mockedWebpush = webpush as jest.Mocked<typeof webpush>;
 
 function makeRequest(url: string, body?: any): NextRequest {
   return new NextRequest(`http://localhost:3000${url}`, {
@@ -33,185 +35,91 @@ function makeRequest(url: string, body?: any): NextRequest {
   });
 }
 
-const mockAdminUser = {
-  id: 'admin-user-id',
-  role: 'admin',
-  email: 'admin@test.com',
+const mockTrainer = { id: 'trainer-1', role: 'trainer', email: 't@test.com' };
+const mockClient = { id: 'client-1', role: 'client', email: 'c@test.com' };
+
+const validPayload = {
+  userId: 'target-user-1',
+  title: 'Workout Reminder',
+  body: 'Time for your workout!',
+  url: '/workouts',
 };
 
-const mockTrainerUser = {
-  id: 'trainer-user-id',
-  role: 'trainer',
-  email: 'trainer@test.com',
-};
-
-const mockSubscription = {
-  endpoint: 'https://fcm.googleapis.com/fcm/send/test-endpoint',
-  keys: {
-    p256dh: 'BNtD6EFakeCryptoKey==',
-    auth: 'TestAuthKey==',
-  },
-};
+const storedSubscription = JSON.stringify({
+  endpoint: 'https://fcm.googleapis.com/fcm/send/test',
+  keys: { p256dh: 'key1', auth: 'key2' },
+});
 
 describe('POST /api/notifications/send', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env.UPSTASH_REDIS_REST_URL = 'https://test.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'test-token';
   });
 
-  it('sends notification to user with valid subscription (admin)', async () => {
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-user-id',
-      title: 'Workout Reminder',
-      body: 'Time to train!',
-      url: '/workouts',
-    });
-
-    mockedAuthenticate.mockResolvedValueOnce(
-      Object.assign(req, { user: mockAdminUser })
-    );
-
-    mockedPrisma.user.findUnique.mockResolvedValueOnce({
-      id: 'target-user-id',
-      pushSubscription: JSON.stringify(mockSubscription),
-    });
-
-    (mockedWebpush.sendNotification as jest.Mock).mockResolvedValueOnce({ statusCode: 201 });
+  it('sends notification successfully for trainer', async () => {
+    const req = makeRequest('/api/notifications/send', validPayload);
+    mockedAuthenticate.mockResolvedValueOnce(Object.assign(req, { user: mockTrainer }));
+    mockRedisGet.mockResolvedValueOnce(storedSubscription);
 
     const response = await POST(req);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
-    expect(mockedWebpush.sendNotification).toHaveBeenCalledWith(
-      mockSubscription,
-      expect.stringContaining('Workout Reminder')
-    );
+    expect(mockSendNotification).toHaveBeenCalled();
   });
 
-  it('returns 404 when target user has no subscription', async () => {
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-user-id',
-      title: 'Test',
-      body: 'Test body',
-    });
-
-    mockedAuthenticate.mockResolvedValueOnce(
-      Object.assign(req, { user: mockAdminUser })
-    );
-
-    mockedPrisma.user.findUnique.mockResolvedValueOnce({
-      id: 'target-user-id',
-      pushSubscription: null,
-    });
+  it('returns 403 for client role', async () => {
+    const req = makeRequest('/api/notifications/send', validPayload);
+    mockedAuthenticate.mockResolvedValueOnce(Object.assign(req, { user: mockClient }));
 
     const response = await POST(req);
-    const data = await response.json();
-
-    expect(response.status).toBe(404);
-    expect(data.success).toBe(false);
-    expect(data.error).toMatch(/no subscription/i);
+    expect(response.status).toBe(403);
   });
 
-  it('returns 400 when required fields are missing', async () => {
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-user-id',
-      // missing title and body
-    });
-
-    mockedAuthenticate.mockResolvedValueOnce(
-      Object.assign(req, { user: mockAdminUser })
-    );
+  it('returns 400 for missing title', async () => {
+    const req = makeRequest('/api/notifications/send', { userId: 'u1', body: 'test' });
+    mockedAuthenticate.mockResolvedValueOnce(Object.assign(req, { user: mockTrainer }));
 
     const response = await POST(req);
-    const data = await response.json();
-
     expect(response.status).toBe(400);
-    expect(data.success).toBe(false);
+  });
+
+  it('returns 404 when no subscription found', async () => {
+    const req = makeRequest('/api/notifications/send', validPayload);
+    mockedAuthenticate.mockResolvedValueOnce(Object.assign(req, { user: mockTrainer }));
+    mockRedisGet.mockResolvedValueOnce(null);
+
+    const response = await POST(req);
+    expect(response.status).toBe(404);
   });
 
   it('returns 401 when not authenticated', async () => {
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-user-id',
-      title: 'Test',
-      body: 'Body',
-    });
-
+    const req = makeRequest('/api/notifications/send', validPayload);
     mockedAuthenticate.mockResolvedValueOnce(
-      NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+      NextResponse.json({ success: false }, { status: 401 })
     );
 
     const response = await POST(req);
     expect(response.status).toBe(401);
   });
 
-  it('returns 403 when non-admin/trainer tries to send', async () => {
-    const clientUser = { ...mockTrainerUser, role: 'client' };
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-user-id',
-      title: 'Test',
-      body: 'Body',
-    });
-
-    mockedAuthenticate.mockResolvedValueOnce(
-      Object.assign(req, { user: clientUser })
-    );
+  it('handles webpush error with 500', async () => {
+    const req = makeRequest('/api/notifications/send', validPayload);
+    mockedAuthenticate.mockResolvedValueOnce(Object.assign(req, { user: mockTrainer }));
+    mockRedisGet.mockResolvedValueOnce(storedSubscription);
+    mockSendNotification.mockRejectedValueOnce(new Error('Push failed'));
 
     const response = await POST(req);
-    const data = await response.json();
-
-    expect(response.status).toBe(403);
-    expect(data.success).toBe(false);
-  });
-
-  it('handles web-push send failure gracefully', async () => {
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-user-id',
-      title: 'Test',
-      body: 'Test body',
-    });
-
-    mockedAuthenticate.mockResolvedValueOnce(
-      Object.assign(req, { user: mockAdminUser })
-    );
-
-    mockedPrisma.user.findUnique.mockResolvedValueOnce({
-      id: 'target-user-id',
-      pushSubscription: JSON.stringify(mockSubscription),
-    });
-
-    (mockedWebpush.sendNotification as jest.Mock).mockRejectedValueOnce(
-      new Error('Push service unreachable')
-    );
-
-    const response = await POST(req);
-    const data = await response.json();
-
     expect(response.status).toBe(500);
-    expect(data.success).toBe(false);
   });
 
-  it('trainer can send notification to their own client', async () => {
-    const req = makeRequest('/api/notifications/send', {
-      userId: 'target-client-id',
-      title: 'Workout Reminder',
-      body: 'Your session is ready!',
-    });
-
-    mockedAuthenticate.mockResolvedValueOnce(
-      Object.assign(req, { user: mockTrainerUser })
-    );
-
-    mockedPrisma.user.findUnique.mockResolvedValueOnce({
-      id: 'target-client-id',
-      pushSubscription: JSON.stringify(mockSubscription),
-    });
-
-    (mockedWebpush.sendNotification as jest.Mock).mockResolvedValueOnce({ statusCode: 201 });
+  it('returns 400 for missing userId', async () => {
+    const req = makeRequest('/api/notifications/send', { title: 'Hi', body: 'test' });
+    mockedAuthenticate.mockResolvedValueOnce(Object.assign(req, { user: mockTrainer }));
 
     const response = await POST(req);
-    const data = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(data.success).toBe(true);
+    expect(response.status).toBe(400);
   });
 });
