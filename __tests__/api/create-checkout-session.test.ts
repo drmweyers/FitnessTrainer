@@ -40,6 +40,7 @@ function makeRequest(body: Record<string, unknown>, origin = 'http://localhost:3
 describe('POST /api/create-checkout-session', () => {
   beforeEach(() => {
     _mockRef.create.mockReset();
+    process.env.STRIPE_SECRET_KEY = 'sk_test_fake_key_for_testing';
   });
 
   it('creates a payment session for a one-time tier', async () => {
