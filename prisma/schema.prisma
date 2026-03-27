@@ -1219,8 +1219,8 @@ model Appointment {
 
 // Support Tickets
 model SupportTicket {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
   subject   String
   message   String
   status    String   @default("open")
@@ -1237,14 +1237,14 @@ model SupportTicket {
 
 // Content Reports
 model ContentReport {
-  id          String   @id @default(uuid())
-  reporterId  String   @map("reporter_id")
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reporterId  String   @map("reporter_id") @db.Uuid
   contentType String   @map("content_type")
   contentId   String   @map("content_id")
   reason      String
   notes       String?
   status      String   @default("pending")
-  resolvedBy  String?  @map("resolved_by")
+  resolvedBy  String?  @map("resolved_by") @db.Uuid
   resolvedAt  DateTime? @map("resolved_at")
   createdAt   DateTime @default(now()) @map("created_at")
 
