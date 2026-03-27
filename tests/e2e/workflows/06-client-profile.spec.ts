@@ -59,13 +59,13 @@ test.describe('06 - Client Profile & Onboarding', () => {
     await phoneField.clear();
     await phoneField.fill('+1-555-987-6543');
 
-    // Save
-    const saveButton = page.locator('button[type="submit"]:has-text(/save/i)');
+    // Save — button text is "Save Changes"
+    const saveButton = page.getByRole('button', { name: /save changes/i });
     await saveButton.click();
 
     await expect(
-      page.locator('text=/profile updated successfully/i')
-    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
+      page.getByText(/profile updated successfully/i)
+    ).toBeVisible({ timeout: 15000 });
   });
 
   // ---------- 4. Can set date of birth ----------
@@ -76,12 +76,12 @@ test.describe('06 - Client Profile & Onboarding', () => {
     await expect(dobInput).toBeVisible({ timeout: TIMEOUTS.element });
     await dobInput.fill('1990-06-15');
 
-    const saveButton = page.locator('button[type="submit"]:has-text(/save/i)');
+    const saveButton = page.getByRole('button', { name: /save changes/i });
     await saveButton.click();
 
     await expect(
-      page.locator('text=/profile updated successfully/i')
-    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
+      page.getByText(/profile updated successfully/i)
+    ).toBeVisible({ timeout: 15000 });
   });
 
   // ---------- 5. Can set gender ----------
@@ -92,12 +92,12 @@ test.describe('06 - Client Profile & Onboarding', () => {
     await expect(genderSelect).toBeVisible({ timeout: TIMEOUTS.element });
     await genderSelect.selectOption('male');
 
-    const saveButton = page.locator('button[type="submit"]:has-text(/save/i)');
+    const saveButton = page.getByRole('button', { name: /save changes/i });
     await saveButton.click();
 
     await expect(
-      page.locator('text=/profile updated successfully/i')
-    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
+      page.getByText(/profile updated successfully/i)
+    ).toBeVisible({ timeout: 15000 });
   });
 
   // ---------- 6. Health page loads with sections ----------
@@ -175,13 +175,13 @@ test.describe('06 - Client Profile & Onboarding', () => {
     await groups.nth(0).locator('button[aria-pressed]:has-text("No")').click();
     await groups.nth(1).locator('button[aria-pressed]:has-text("No")').click();
 
-    // Submit
-    const saveButton = page.locator('button[type="submit"]:has-text(/save health/i)');
+    // Submit — button text is "Save Health Info"
+    const saveButton = page.getByRole('button', { name: /save health info/i });
     await saveButton.click();
 
     await expect(
-      page.locator('text=/health information updated successfully/i')
-    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
+      page.getByText(/health information updated successfully/i)
+    ).toBeVisible({ timeout: 15000 });
   });
 
   // ---------- 11. Health info section shows medical conditions fields ----------
@@ -260,11 +260,12 @@ test.describe('06 - Client Profile & Onboarding', () => {
       }
     }
 
-    const saveButton = page.locator('button[type="submit"]:has-text(/save health/i)');
+    // Submit — button text is "Save Health Info"
+    const saveButton = page.getByRole('button', { name: /save health info/i });
     await saveButton.click();
     await expect(
-      page.locator('text=/health information updated successfully/i')
-    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
+      page.getByText(/health information updated successfully/i)
+    ).toBeVisible({ timeout: 15000 });
 
     // Return to profile summary
     await page.goto(PROFILE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
