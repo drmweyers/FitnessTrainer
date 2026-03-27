@@ -100,8 +100,14 @@ test.describe('03 - Password Reset', () => {
       .first();
 
     if (!(await passwordInput.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // Page may show an "invalid token" error before rendering the form — that is acceptable
-      test.skip();
+      // Page shows an "invalid token" / "expired" error instead of a form — that IS the
+      // correct production behaviour for a fake token. Assert that the page communicates
+      // this clearly rather than rendering nothing.
+      const bodyText = (await page.textContent('body')) ?? '';
+      const hasTokenError =
+        /invalid|expired|not found|token|error/i.test(bodyText) ||
+        (await page.locator('[role="alert"]').isVisible({ timeout: 3000 }).catch(() => false));
+      expect(hasTokenError).toBeTruthy();
       return;
     }
 
@@ -132,8 +138,13 @@ test.describe('03 - Password Reset', () => {
     const count = await passwordFields.count();
 
     if (count < 2) {
-      // No confirmation field rendered (possibly blocked by invalid token) — skip gracefully
-      test.skip();
+      // No confirmation field rendered — page is showing an invalid-token error, which is
+      // the correct production behaviour. Assert the page communicates the problem.
+      const bodyText = (await page.textContent('body')) ?? '';
+      const hasTokenError =
+        /invalid|expired|not found|token|error/i.test(bodyText) ||
+        (await page.locator('[role="alert"]').isVisible({ timeout: 3000 }).catch(() => false));
+      expect(hasTokenError).toBeTruthy();
       return;
     }
 
