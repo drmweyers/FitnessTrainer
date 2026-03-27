@@ -17,7 +17,7 @@ test.describe('07 - Client Invitation', () => {
   test.beforeEach(async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -45,11 +45,12 @@ test.describe('07 - Client Invitation', () => {
     const addBtn = page.locator('button', { hasText: /add client/i });
     await addBtn.first().click();
 
-    // ClientModal renders a fixed-position overlay div with the form inside
+    // ClientModal renders with an "Add New Client" heading (h2) inside a panel/overlay
     const modal = page
-      .locator('div.fixed')
+      .locator('h2')
       .filter({ hasText: /add new client/i })
-      .or(page.locator('[role="dialog"]'));
+      .or(page.locator('[role="dialog"]'))
+      .or(page.locator('h2').filter({ hasText: /add new client/i }));
 
     await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element });
     await takeScreenshot(page, '07-03-invite-modal-open.png');
@@ -61,7 +62,7 @@ test.describe('07 - Client Invitation', () => {
     await page.locator('button', { hasText: /add client/i }).first().click();
 
     // Wait for the modal to open
-    await page.locator('div.fixed').filter({ hasText: /add new client/i }).waitFor({
+    await page.locator('h2').filter({ hasText: /add new client/i }).waitFor({
       state: 'visible',
       timeout: TIMEOUTS.element,
     });
@@ -77,7 +78,7 @@ test.describe('07 - Client Invitation', () => {
 
     await page.locator('button', { hasText: /add client/i }).first().click();
 
-    await page.locator('div.fixed').filter({ hasText: /add new client/i }).waitFor({
+    await page.locator('h2').filter({ hasText: /add new client/i }).waitFor({
       state: 'visible',
       timeout: TIMEOUTS.element,
     });
@@ -98,7 +99,7 @@ test.describe('07 - Client Invitation', () => {
     // Success: modal disappears within the timeout
     // Failure: an error div is visible — we accept both as long as the app doesn't crash
     const modalClosed = await page
-      .locator('div.fixed')
+      .locator('h2')
       .filter({ hasText: /add new client/i })
       .waitFor({ state: 'hidden', timeout: TIMEOUTS.apiCall })
       .then(() => true)
@@ -119,7 +120,7 @@ test.describe('07 - Client Invitation', () => {
   test('submitting with empty email shows a validation error', async ({ page }) => {
     await page.locator('button', { hasText: /add client/i }).first().click();
 
-    await page.locator('div.fixed').filter({ hasText: /add new client/i }).waitFor({
+    await page.locator('h2').filter({ hasText: /add new client/i }).waitFor({
       state: 'visible',
       timeout: TIMEOUTS.element,
     });
@@ -144,7 +145,7 @@ test.describe('07 - Client Invitation', () => {
   test('submitting with invalid email format shows a validation error', async ({ page }) => {
     await page.locator('button', { hasText: /add client/i }).first().click();
 
-    await page.locator('div.fixed').filter({ hasText: /add new client/i }).waitFor({
+    await page.locator('h2').filter({ hasText: /add new client/i }).waitFor({
       state: 'visible',
       timeout: TIMEOUTS.element,
     });
@@ -173,7 +174,7 @@ test.describe('07 - Client Invitation', () => {
 
     await page.locator('button', { hasText: /add client/i }).first().click();
 
-    await page.locator('div.fixed').filter({ hasText: /add new client/i }).waitFor({
+    await page.locator('h2').filter({ hasText: /add new client/i }).waitFor({
       state: 'visible',
       timeout: TIMEOUTS.element,
     });
@@ -201,7 +202,7 @@ test.describe('07 - Client Invitation', () => {
 
     await page.locator('button', { hasText: /add client/i }).first().click();
 
-    await page.locator('div.fixed').filter({ hasText: /add new client/i }).waitFor({
+    await page.locator('h2').filter({ hasText: /add new client/i }).waitFor({
       state: 'visible',
       timeout: TIMEOUTS.element,
     });
@@ -224,7 +225,7 @@ test.describe('07 - Client Invitation', () => {
   test('clicking Cancel closes the modal without submitting', async ({ page }) => {
     await page.locator('button', { hasText: /add client/i }).first().click();
 
-    const modal = page.locator('div.fixed').filter({ hasText: /add new client/i });
+    const modal = page.locator('h2').filter({ hasText: /add new client/i });
     await modal.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
 
     // Fill some data to confirm it is discarded
