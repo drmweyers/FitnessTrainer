@@ -1,9 +1,65 @@
 /**
  * Suite 1: Registration Flows
  * Tests all user registration scenarios — trainer, client, validation, and post-register state.
+ *
+ * Register form fields (in order):
+ *   firstName (#firstName), lastName (#lastName), email (#email),
+ *   role buttons (type="button", text "Client" / "Trainer"),
+ *   password (#password), confirmPassword (#confirmPassword),
+ *   agreeToTerms checkbox (#agreeToTerms)
+ *
+ * Validation is custom JS (not native browser validity). Errors appear as red <p> text.
+ * The confirm-password input also has type="password", so always use input#password
+ * (not the generic type="password" locator which would be ambiguous).
  */
 import { test, expect } from '@playwright/test';
 import { ROUTES, API, TIMEOUTS } from '../helpers/constants';
+
+/** Fill the full registration form with sensible defaults. */
+async function fillRegisterForm(
+  page: import('@playwright/test').Page,
+  opts: {
+    email: string;
+    password?: string;
+    confirmPassword?: string;
+    firstName?: string;
+    lastName?: string;
+    role?: 'trainer' | 'client';
+    agreeToTerms?: boolean;
+  }
+) {
+  const {
+    email,
+    password = 'TestPass2026!',
+    confirmPassword = password,
+    firstName = 'QA',
+    lastName = 'Tester',
+    role = 'trainer',
+    agreeToTerms = true,
+  } = opts;
+
+  await page.locator('input#firstName').fill(firstName);
+  await page.locator('input#lastName').fill(lastName);
+  await page.locator('input#email').fill(email);
+
+  // Role buttons: type="button", text "Client" / "Trainer"
+  const roleLabel = role === 'trainer' ? 'Trainer' : 'Client';
+  const roleBtn = page.locator(`button:not([type="submit"]):has-text("${roleLabel}")`).first();
+  if (await roleBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await roleBtn.click();
+  }
+
+  // Use #password specifically — confirmPassword also has type=password
+  await page.locator('input#password').fill(password);
+  await page.locator('input#confirmPassword').fill(confirmPassword);
+
+  if (agreeToTerms) {
+    const termsCheckbox = page.locator('input#agreeToTerms');
+    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await termsCheckbox.check();
+    }
+  }
+}
 
 test.describe('01 - Registration Flows', () => {
   /**
@@ -14,21 +70,7 @@ test.describe('01 - Registration Flows', () => {
 
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    await page.locator('input#email, input[name="email"], input[type="email"]').fill(email);
-    await page.locator('input#password, input[name="password"], input[type="password"]').fill('TestPass2026!');
-
-    // Select trainer role
-    const roleSelect = page.locator('select[name="role"], [data-testid="role-select"]');
-    if (await roleSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await roleSelect.selectOption('trainer');
-    } else {
-      // Role may be radio buttons or buttons
-      const trainerOption = page.locator('label:has-text("Trainer"), button:has-text("Trainer"), [value="trainer"]');
-      if (await trainerOption.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-        await trainerOption.first().click();
-      }
-    }
-
+    await fillRegisterForm(page, { email, role: 'trainer' });
     await page.locator('button[type="submit"]').click();
 
     // Should redirect away from register after success
@@ -49,20 +91,7 @@ test.describe('01 - Registration Flows', () => {
 
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    await page.locator('input#email, input[name="email"], input[type="email"]').fill(email);
-    await page.locator('input#password, input[name="password"], input[type="password"]').fill('TestPass2026!');
-
-    // Select client role
-    const roleSelect = page.locator('select[name="role"], [data-testid="role-select"]');
-    if (await roleSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await roleSelect.selectOption('client');
-    } else {
-      const clientOption = page.locator('label:has-text("Client"), button:has-text("Client"), [value="client"]');
-      if (await clientOption.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-        await clientOption.first().click();
-      }
-    }
-
+    await fillRegisterForm(page, { email, role: 'client' });
     await page.locator('button[type="submit"]').click();
 
     await page.waitForURL((url) => !url.pathname.includes('/register'), {
@@ -99,23 +128,41 @@ test.describe('01 - Registration Flows', () => {
 
   /**
    * Empty email field should show a validation error.
+   * The form uses custom JS validation — errors appear as red <p> text.
    */
   test('should show error for empty email', async ({ page }) => {
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    await page.locator('input#password, input[name="password"], input[type="password"]').fill('TestPass2026!');
+    // Fill all required fields except email, then submit
+    await page.locator('input#firstName').fill('QA');
+    await page.locator('input#lastName').fill('Tester');
+    // Leave email empty
+    await page.locator('input#password').fill('TestPass2026!');
+    await page.locator('input#confirmPassword').fill('TestPass2026!');
+    const termsCheckbox = page.locator('input#agreeToTerms');
+    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await termsCheckbox.check();
+    }
+
     await page.locator('button[type="submit"]').click();
+    await page.waitForTimeout(1000);
 
     // Should remain on register page
     await expect(page).toHaveURL(/register/);
 
-    // Browser native validation or custom error should be present
-    const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
-    const isInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
-    const customError = page.locator('[data-testid="email-error"], .error, [role="alert"]');
-    const hasCustomError = await customError.isVisible({ timeout: 2000 }).catch(() => false);
+    // Custom error text for missing email
+    const hasCustomError = await page
+      .locator('text=/email is required/i')
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
 
-    expect(isInvalid || hasCustomError).toBeTruthy();
+    // Fallback: native browser validity
+    const emailInput = page.locator('input#email');
+    const isNativeInvalid = await emailInput
+      .evaluate((el: HTMLInputElement) => !el.validity.valid)
+      .catch(() => false);
+
+    expect(isNativeInvalid || hasCustomError).toBeTruthy();
   });
 
   /**
@@ -126,58 +173,100 @@ test.describe('01 - Registration Flows', () => {
 
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    await page.locator('input#email, input[name="email"], input[type="email"]').fill(email);
+    // Fill all fields except password
+    await page.locator('input#firstName').fill('QA');
+    await page.locator('input#lastName').fill('Tester');
+    await page.locator('input#email').fill(email);
+    // Leave password + confirmPassword empty
+    const termsCheckbox = page.locator('input#agreeToTerms');
+    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await termsCheckbox.check();
+    }
+
     await page.locator('button[type="submit"]').click();
+    await page.waitForTimeout(1000);
 
     // Should remain on register page
     await expect(page).toHaveURL(/register/);
 
-    const pwInput = page.locator('input#password, input[name="password"], input[type="password"]');
-    const isInvalid = await pwInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
-    const customError = page.locator('[data-testid="password-error"], .error, [role="alert"]');
-    const hasCustomError = await customError.isVisible({ timeout: 2000 }).catch(() => false);
+    // Custom error: "Password is required"
+    const hasCustomError = await page
+      .locator('text=/password is required/i')
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
 
-    expect(isInvalid || hasCustomError).toBeTruthy();
+    const pwInput = page.locator('input#password');
+    const isNativeInvalid = await pwInput
+      .evaluate((el: HTMLInputElement) => !el.validity.valid)
+      .catch(() => false);
+
+    expect(isNativeInvalid || hasCustomError).toBeTruthy();
   });
 
   /**
-   * Password shorter than 8 characters should be rejected.
+   * Password shorter than 8 characters should be rejected by custom validation.
    */
   test('should show error for password shorter than 8 characters', async ({ page }) => {
     const email = `test-short-pw-${Date.now()}@test.com`;
 
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    await page.locator('input#email, input[name="email"], input[type="email"]').fill(email);
-    await page.locator('input#password, input[name="password"], input[type="password"]').fill('abc12');
+    await page.locator('input#firstName').fill('QA');
+    await page.locator('input#lastName').fill('Tester');
+    await page.locator('input#email').fill(email);
+    await page.locator('input#password').fill('abc12');
+    await page.locator('input#confirmPassword').fill('abc12');
+    const termsCheckbox = page.locator('input#agreeToTerms');
+    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await termsCheckbox.check();
+    }
+
     await page.locator('button[type="submit"]').click();
+    await page.waitForTimeout(2000);
 
     // Page should not navigate away — still on register
-    await page.waitForTimeout(2000);
     const url = page.url();
-    const hasError = await page.locator('text=/password|too short|at least|minimum/i').isVisible({ timeout: 3000 }).catch(() => false);
+
+    // Error message: "Password must be at least 8 characters"
+    const hasError = await page
+      .locator('text=/password must be at least/i, text=/at least 8/i, text=/minimum/i, text=/too short/i')
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
 
     expect(url.includes('register') || hasError).toBeTruthy();
   });
 
   /**
-   * Invalid email format should be rejected by browser or custom validation.
+   * Invalid email format should be rejected by custom validation.
    */
   test('should show error for invalid email format', async ({ page }) => {
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    await page.locator('input#email, input[name="email"], input[type="email"]').fill('not-an-email');
-    await page.locator('input#password, input[name="password"], input[type="password"]').fill('TestPass2026!');
-    await page.locator('button[type="submit"]').click();
+    await page.locator('input#firstName').fill('QA');
+    await page.locator('input#lastName').fill('Tester');
+    await page.locator('input#email').fill('not-an-email');
+    await page.locator('input#password').fill('TestPass2026!');
+    await page.locator('input#confirmPassword').fill('TestPass2026!');
+    const termsCheckbox = page.locator('input#agreeToTerms');
+    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await termsCheckbox.check();
+    }
 
+    await page.locator('button[type="submit"]').click();
     await page.waitForTimeout(1500);
 
-    const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
-    const isInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
-    const customError = page.locator('[data-testid="email-error"], .error, [role="alert"]');
-    const hasCustomError = await customError.isVisible({ timeout: 2000 }).catch(() => false);
+    // Custom error: "Please enter a valid email address"
+    const hasCustomError = await page
+      .locator('text=/valid email/i, text=/invalid email/i, text=/enter a valid/i')
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
 
-    expect(isInvalid || hasCustomError).toBeTruthy();
+    const emailInput = page.locator('input#email');
+    const isNativeInvalid = await emailInput
+      .evaluate((el: HTMLInputElement) => !el.validity.valid)
+      .catch(() => false);
+
+    expect(isNativeInvalid || hasCustomError).toBeTruthy();
   });
 
   /**
@@ -204,12 +293,12 @@ test.describe('01 - Registration Flows', () => {
   });
 
   /**
-   * The register page should have a role selector (trainer / client).
+   * The register page should have a role selector (trainer / client buttons).
    */
   test('should display role selector on register page', async ({ page }) => {
     await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
 
-    // Accept select element, radio buttons, or role buttons
+    // The register page uses type="button" role-selection buttons
     const roleSelector =
       page.locator('select[name="role"]')
         .or(page.locator('[type="radio"][name="role"]'))

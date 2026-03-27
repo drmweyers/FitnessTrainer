@@ -4,6 +4,8 @@
  */
 
 // Dual-environment: localhost for dev, production for final verification
+// Production URL: https://evofittrainer-six.vercel.app
+// Note: trainer.evofit.io DNS points to a different project — use the Vercel URL for production E2E
 export const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 
 export const TEST_ACCOUNTS = {
