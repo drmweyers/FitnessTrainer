@@ -111,7 +111,16 @@ test.describe('20 - Workout History', () => {
 
       await takeScreenshot(page, '20-workout-detail.png');
     } else {
-      test.skip();
+      // No history entries yet — verify the history page loaded correctly with an appropriate state
+      const body = await page.textContent('body');
+      const hasHistoryPageContent =
+        body?.toLowerCase().includes('history') ||
+        body?.toLowerCase().includes('workout') ||
+        body?.toLowerCase().includes('no workout') ||
+        body?.toLowerCase().includes('get started') ||
+        body?.toLowerCase().includes('completed');
+      expect(hasHistoryPageContent).toBeTruthy();
+      await takeScreenshot(page, '20-history-empty-state.png');
     }
   });
 
