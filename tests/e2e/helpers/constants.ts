@@ -27,6 +27,12 @@ export const TEST_ACCOUNTS = {
     name: 'QA Client',
     role: 'client',
   },
+  client2: {
+    email: 'qa-client2@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Client 2',
+    role: 'client',
+  },
   // Legacy accounts (still in production DB)
   legacyTrainer: {
     email: 'coach.sarah@evofittrainer.com',
