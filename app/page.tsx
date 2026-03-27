@@ -719,6 +719,219 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="text-center mb-16"
+          >
+            <motion.h2
+              variants={fadeInUp}
+              className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+            >
+              Professional-Grade Plans for Every Stage
+            </motion.h2>
+            <motion.p
+              variants={fadeInUp}
+              className="text-lg text-gray-600 max-w-2xl mx-auto"
+            >
+              One-time ownership or monthly SaaS — tools that grow with your business.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto"
+          >
+            {/* Starter */}
+            <motion.div variants={fadeInUp} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
+                <div className="flex items-baseline justify-center gap-1 mb-1">
+                  <span className="text-4xl font-bold text-gray-900">$149</span>
+                </div>
+                <p className="text-sm text-gray-500">one-time payment</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">9 clients</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">500 workout programs</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Browse exercise library (1,344 exercises with GIFs)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Basic scheduling</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Offline workout tracking</span>
+                </li>
+              </ul>
+              <Link
+                href="/auth/register"
+                className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+              >
+                Get Started
+              </Link>
+            </motion.div>
+
+            {/* Professional */}
+            <motion.div variants={fadeInUp} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Professional</h3>
+                <div className="flex items-baseline justify-center gap-1 mb-1">
+                  <span className="text-4xl font-bold text-gray-900">$249</span>
+                </div>
+                <p className="text-sm text-gray-500">one-time payment</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">20 clients</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">1,500 workout programs</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Everything in Starter</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Custom branding</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Progress tracking & ACWR analytics</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">AI insights & client email invitations</span>
+                </li>
+              </ul>
+              <Link
+                href="/auth/register"
+                className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+              >
+                Go Professional
+              </Link>
+            </motion.div>
+
+            {/* SaaS — Most Popular */}
+            <motion.div variants={fadeInUp} className="bg-white rounded-2xl shadow-xl border-2 border-blue-600 p-8 flex flex-col relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full text-sm font-semibold shadow-lg">
+                ⭐ Most Popular
+              </div>
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">SaaS</h3>
+                <div className="flex items-baseline justify-center gap-1 mb-1">
+                  <span className="text-4xl font-bold text-gray-900">$29</span>
+                  <span className="text-lg text-gray-500">/month</span>
+                </div>
+                <p className="text-sm text-gray-500">cancel anytime</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">20 clients per trainer</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Custom AI workout generation engine</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Full AI-powered program creation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">All Professional features</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Unlimited program revisions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Priority support</span>
+                </li>
+              </ul>
+              <Link
+                href="/auth/register"
+                className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+              >
+                Start Generating
+              </Link>
+            </motion.div>
+
+            {/* Enterprise */}
+            <motion.div variants={fadeInUp} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                <div className="flex items-baseline justify-center gap-1 mb-1">
+                  <span className="text-4xl font-bold text-gray-900">$349</span>
+                </div>
+                <p className="text-sm text-gray-500">one-time payment</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Unlimited clients</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Full exercise library</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">White-label branding</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">API access</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Everything in Professional</span>
+                </li>
+              </ul>
+              <Link
+                href="/auth/register"
+                className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+              >
+                Contact Sales
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center text-sm text-gray-500 max-w-2xl mx-auto mt-10"
+          >
+            <strong>One-time plans</strong> include lifetime access to the exercise library and client management.{' '}
+            <strong>SaaS</strong> adds the full AI workout generation engine for custom program creation.
+          </motion.p>
+        </div>
+      </section>
+
       {/* Roles Section */}
       <section className="bg-white py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

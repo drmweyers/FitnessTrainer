@@ -110,7 +110,7 @@ async function handleUpdateStatus(
       trainerId,
       clientId: { in: clientIds },
     },
-    data: { status },
+    data: { status: status as any },
   });
 
   return NextResponse.json({

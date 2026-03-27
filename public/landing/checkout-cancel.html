@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout Cancelled — EvoFit Trainer</title>
+  <link rel="stylesheet" href="/landing/css/funnel.css">
+</head>
+<body>
+  <div class="funnel-page">
+    <div class="funnel-card">
+
+      <p class="funnel-eyebrow">No worries</p>
+      <h1 class="funnel-headline">Changed your mind?</h1>
+      <p class="funnel-subheadline">Your checkout was cancelled — no charges were made. Your selections are still saved if you'd like to pick up where you left off.</p>
+
+      <hr class="divider">
+
+      <div class="order-summary" id="orderSummary">
+        <div class="order-line">
+          <span>Your selection:</span>
+          <span id="tierName">—</span>
+        </div>
+        <div class="order-line" id="saasLine" style="display:none;">
+          <span>AI Workout Engine</span>
+          <span>$29/mo</span>
+        </div>
+      </div>
+
+      <a class="btn-primary" href="/landing/upgrade-saas.html" style="margin-top: 1.5rem;">
+        ← Return to Checkout
+      </a>
+
+      <a class="btn-decline" href="/" style="margin-top: 0.5rem; display: inline-block; text-decoration: none;">
+        Go to Homepage
+      </a>
+
+      <hr class="divider">
+
+      <div class="support-footer">
+        <p>Have questions before purchasing?<br>
+          📧 <a href="mailto:support@evofittrainer.com">support@evofittrainer.com</a><br>
+          We're happy to help.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/landing/js/funnel.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var sel = EvoFitFunnel.getSelection();
+      document.getElementById('tierName').textContent = sel.tierName + ' Plan ($' + sel.tierPrice + ')';
+      if (sel.saas) {
+        document.getElementById('saasLine').style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>

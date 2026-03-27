@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to EvoFit Trainer!</title>
+  <link rel="stylesheet" href="/landing/css/funnel.css">
+</head>
+<body>
+  <div class="funnel-page">
+    <div class="funnel-card">
+
+      <p class="funnel-eyebrow">You're in 🎉</p>
+      <h1 class="funnel-headline">Welcome to EvoFit Trainer!</h1>
+      <p class="funnel-subheadline">Your order is confirmed. Here's what you got:</p>
+
+      <!-- Order Summary (populated by JS) -->
+      <div class="order-summary" id="orderSummary">
+        <div class="order-line">
+          <span id="tierName">Loading…</span>
+          <span id="tierPrice">—</span>
+        </div>
+        <div class="order-line" id="saasLine" style="display:none;">
+          <span>AI Workout Engine</span>
+          <span>$29/mo</span>
+        </div>
+        <div class="order-line total">
+          <span>Total</span>
+          <span id="totalPrice">—</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <h2 class="funnel-section-title">Get started in 3 steps:</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Log in to your dashboard</h3>
+            <p>Check your email for login credentials. Your account is ready to go.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Invite your first client</h3>
+            <p>Use professional email invitations to onboard clients in seconds.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Create your first program</h3>
+            <p>Browse 1,344 exercises with GIF demos and build a custom workout plan.</p>
+          </div>
+        </div>
+      </div>
+
+      <a class="btn-primary" href="/dashboard" style="margin-top: 1.5rem;">
+        Go to My Dashboard →
+      </a>
+
+      <hr class="divider">
+
+      <!-- Cross-sell -->
+      <div class="cross-sell">
+        <h3>🥗 Also from EvoFit: Meal Plan Generator</h3>
+        <p>Pair your training programs with AI-generated nutrition plans. Macro-balanced meals customized to each client's goals, dietary restrictions, and calorie targets.</p>
+        <a href="https://evofit.io/meals" style="color: var(--success); font-weight: 600; font-size: 0.9rem; text-decoration: none;">Learn about EvoFit Meals →</a>
+      </div>
+
+      <div class="support-footer">
+        <p>Questions? We're here to help.<br>
+          📧 <a href="mailto:support@evofittrainer.com">support@evofittrainer.com</a><br>
+          💬 Live chat available in your dashboard
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/landing/js/funnel.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var sel = EvoFitFunnel.getSelection();
+
+      document.getElementById('tierName').textContent = sel.tierName + ' Plan';
+      document.getElementById('tierPrice').textContent = '$' + sel.tierPrice;
+
+      if (sel.saas) {
+        document.getElementById('saasLine').style.display = 'flex';
+      }
+
+      var totalParts = [];
+      totalParts.push('$' + sel.totalOneTime);
+      if (sel.totalMonthly > 0) {
+        totalParts.push('+ $' + sel.totalMonthly + '/mo');
+      }
+      document.getElementById('totalPrice').textContent = totalParts.join(' ');
+    });
+  </script>
+</body>
+</html>
