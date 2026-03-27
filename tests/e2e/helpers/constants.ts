@@ -3,22 +3,42 @@
  * Centralized configuration for all E2E tests
  */
 
-export const BASE_URL = 'https://evofittrainer-six.vercel.app';
+// Dual-environment: localhost for dev, production for final verification
+export const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 
 export const TEST_ACCOUNTS = {
   trainer: {
+    email: 'qa-trainer@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Trainer',
+    role: 'trainer',
+  },
+  admin: {
+    email: 'qa-admin@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Admin',
+    role: 'admin',
+  },
+  client: {
+    email: 'qa-client@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Client',
+    role: 'client',
+  },
+  // Legacy accounts (still in production DB)
+  legacyTrainer: {
     email: 'coach.sarah@evofittrainer.com',
     password: 'Demo1234!',
     name: 'Sarah Johnson',
     role: 'trainer',
   },
-  admin: {
+  legacyAdmin: {
     email: 'admin@evofittrainer.com',
     password: 'Demo1234!',
     name: 'Admin User',
     role: 'admin',
   },
-  client: {
+  legacyClient: {
     email: 'alex.johnson@example.com',
     password: 'Demo1234!',
     name: 'Alex Johnson',
@@ -27,29 +47,62 @@ export const TEST_ACCOUNTS = {
 } as const;
 
 export const ROUTES = {
+  // Public
   home: '/',
   login: '/auth/login',
   register: '/auth/register',
+  forgotPassword: '/auth/forgot-password',
+  resetPassword: '/auth/reset-password',
+
+  // Dashboards
   dashboard: '/dashboard',
   trainerDashboard: '/dashboard/trainer',
   clientDashboard: '/dashboard/client',
   adminDashboard: '/admin',
-  adminUsers: '/admin/users',
+
+  // Client Management
   clients: '/clients',
+  clientDetail: (id: string) => `/clients/${id}`,
+  clientPrograms: (id: string) => `/clients/${id}/programs`,
+  clientHistory: (id: string) => `/clients/${id}/history`,
+
+  // Exercises
   exercises: '/dashboard/exercises',
   exercisesPublic: '/exercises',
+  exerciseDetail: (id: string) => `/dashboard/exercises/${id}`,
+  exerciseFavorites: '/dashboard/exercises/favorites',
+  exerciseCollection: (id: string) => `/dashboard/exercises/collections/${id}`,
+
+  // Programs
   programs: '/programs',
   programsNew: '/programs/new',
+  programDetail: (id: string) => `/programs/${id}`,
+
+  // Workouts
   workouts: '/workouts',
+  workoutDetail: (id: string) => `/workouts/${id}`,
   workoutsHistory: '/workouts/history',
   workoutsBuilder: '/workouts/builder',
+  workoutsLog: '/workouts/log',
+  workoutsProgress: '/workouts/progress',
   workoutTracker: '/workout-tracker',
+
+  // Analytics
   analytics: '/analytics',
+
+  // Schedule
   schedule: '/schedule',
   scheduleAvailability: '/schedule/availability',
+
+  // Profile
   profile: '/profile',
   profileEdit: '/profile/edit',
   profileHealth: '/profile/health',
+
+  // Admin
+  adminUsers: '/admin/users',
+  adminUserDetail: (id: string) => `/admin/users/${id}`,
+  adminSystem: '/admin/system',
 } as const;
 
 export const TIMEOUTS = {
@@ -57,6 +110,54 @@ export const TIMEOUTS = {
   element: 10000,
   networkIdle: 15000,
   animation: 2000,
+  apiCall: 5000,
 } as const;
 
 export const SCREENSHOT_DIR = 'tests/e2e/screenshots';
+
+// API endpoints for test setup
+export const API = {
+  register: '/api/auth/register',
+  login: '/api/auth/login',
+  me: '/api/auth/me',
+  profileMe: '/api/profiles/me',
+  profileHealth: '/api/profiles/health',
+  clients: '/api/clients',
+  clientsBulk: '/api/clients/bulk',
+  exercises: '/api/exercises',
+  exerciseSearch: '/api/exercises/search',
+  exerciseFavorites: '/api/exercises/favorites',
+  exerciseFavoritesExport: '/api/exercises/favorites/export',
+  exerciseCollections: '/api/exercises/collections',
+  exerciseAlternatives: '/api/exercises/alternatives',
+  exerciseRecent: '/api/exercises/recent',
+  programs: '/api/programs',
+  programTemplates: '/api/programs/templates',
+  workouts: '/api/workouts',
+  workoutsActive: '/api/workouts/active',
+  workoutsHistory: '/api/workouts/history',
+  analyticsGoals: '/api/analytics/goals',
+  analyticsMeasurements: '/api/analytics/measurements',
+  analyticsPerformance: '/api/analytics/performance',
+  analyticsTrainingLoad: '/api/analytics/training-load',
+  analyticsReports: '/api/analytics/reports',
+  personalBests: '/api/analytics/personal-bests',
+  milestones: '/api/analytics/milestones',
+  scheduleAppointments: '/api/schedule/appointments',
+  scheduleAvailability: '/api/schedule/availability',
+  scheduleSlots: '/api/schedule/slots',
+  scheduleExportIcs: '/api/schedule/export/ics',
+  adminUsers: '/api/admin/users',
+  adminFeatureFlags: '/api/admin/feature-flags',
+  adminActivity: '/api/admin/activity',
+  adminDashboard: '/api/admin/dashboard',
+  systemHealth: '/api/admin/system/health',
+  supportTickets: '/api/support/tickets',
+  reports: '/api/reports',
+  notifications: '/api/notifications/subscribe',
+  notificationsSend: '/api/notifications/send',
+  progressionSuggestions: '/api/progression/suggestions',
+  dashboardStats: '/api/dashboard/stats',
+  certifications: '/api/profiles/certifications',
+  certificationsExpiring: '/api/profiles/certifications/expiring',
+} as const;

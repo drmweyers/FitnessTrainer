@@ -1,53 +1,40 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * @see https://playwright.dev/docs/test-configuration
+ * EvoFitTrainer Playwright Configuration
+ *
+ * Dual-environment support:
+ *   - Default: http://localhost:3000 (local dev)
+ *   - Production: E2E_BASE_URL=https://trainer.evofit.io npx playwright test
  */
 export default defineConfig({
-  testDir: './tests',
-  /* Run tests in files in parallel */
+  testDir: './tests/e2e',
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
     ['junit', { outputFile: 'test-results/results.xml' }],
     ['json', { outputFile: 'test-results/results.json' }],
   ],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  globalSetup: './tests/e2e/global-setup.ts',
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'https://trainer.evofit.io',
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
-    /* Take screenshot on failure */
     screenshot: 'only-on-failure',
-    /* Record video on failure */
     video: 'retain-on-failure',
-    /* Global timeout for all actions */
     actionTimeout: 30000,
   },
-
-  /* Output directory for test results */
   outputDir: 'test-results/e2e',
-
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-
-  /* Test timeout - increased for production environment */
   timeout: 90 * 1000,
   expect: {
-    /* Global expect timeout */
     timeout: 10000,
   },
 });
