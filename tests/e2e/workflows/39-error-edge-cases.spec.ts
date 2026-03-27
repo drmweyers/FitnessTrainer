@@ -356,7 +356,8 @@ test.describe('39 - Error Handling & Edge Cases', () => {
         name: longName,
         description: 'Long name test',
         durationWeeks: 4,
-        difficulty: 'beginner',
+        programType: 'general_fitness',
+        difficultyLevel: 'beginner',
       },
       headers: {
         'Content-Type': 'application/json',
@@ -484,13 +485,14 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     const programName = `Dedup Test ${Date.now()}`;
 
     // Simulate rapid duplicate POST requests (what double-click would do)
+    // Use valid field names from the API schema (programType + difficultyLevel)
     const requests = await Promise.all([
       page.request.post(`${BASE_URL}${API.programs}`, {
-        data: { name: programName, durationWeeks: 1, difficulty: 'beginner' },
+        data: { name: programName, durationWeeks: 1, programType: 'general_fitness', difficultyLevel: 'beginner' },
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       }),
       page.request.post(`${BASE_URL}${API.programs}`, {
-        data: { name: programName, durationWeeks: 1, difficulty: 'beginner' },
+        data: { name: programName, durationWeeks: 1, programType: 'general_fitness', difficultyLevel: 'beginner' },
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       }),
     ]);
