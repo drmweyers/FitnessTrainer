@@ -15,9 +15,8 @@ test.describe('40 - Form Validation', () => {
   test('registration: empty email field shows required error', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.register}`, { waitUntil: 'networkidle' });
 
-    // Fill password but leave email empty
-    await page.locator('input#password, input[name="password"], input[type="password"]')
-      .fill('TestPass2026!');
+    // Fill password (use #password to avoid matching confirmPassword) but leave email empty
+    await page.locator('input#password').fill('TestPass2026!');
     await page.locator('button[type="submit"]').click();
 
     // Should stay on register page
@@ -72,8 +71,7 @@ test.describe('40 - Form Validation', () => {
 
     await page.locator('input#email, input[name="email"], input[type="email"]')
       .fill(`short-pw-${Date.now()}@test.io`);
-    await page.locator('input#password, input[name="password"], input[type="password"]')
-      .fill('abc12'); // 5 chars
+    await page.locator('input#password').fill('abc12'); // 5 chars, use #id to avoid strict mode violation
     await page.locator('button[type="submit"]').click();
 
     await page.waitForTimeout(2000);
@@ -96,8 +94,7 @@ test.describe('40 - Form Validation', () => {
 
     await page.locator('input#email, input[name="email"], input[type="email"]')
       .fill(`mismatch-${Date.now()}@test.io`);
-    await page.locator('input#password, input[name="password"], input[type="password"]')
-      .fill('TestPass2026!');
+    await page.locator('input#password').fill('TestPass2026!'); // use #id to avoid strict mode violation
 
     // Look for password confirmation field
     const confirmInput = page.locator(
