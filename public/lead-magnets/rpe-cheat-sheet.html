@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RPE Cheat Sheet — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    /* ─── HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 18px 28px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .header-title span {
+      color: #F97316;
+    }
+
+    .header-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+    }
+
+    /* ─── INTRO BAR ─── */
+    .intro-bar {
+      background: #2563EB;
+      padding: 8px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .intro-bar p {
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.1px;
+    }
+
+    .intro-bar .rir-label {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ─── TABLE HEADER ─── */
+    .table-header {
+      display: grid;
+      grid-template-columns: 44px 90px 1fr 1fr 58px;
+      gap: 0;
+      background: #f1f5f9;
+      padding: 6px 28px;
+      border-bottom: 1.5px solid #e2e8f0;
+    }
+
+    .table-header span {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* ─── RPE ROWS ─── */
+    .rpe-rows {
+      flex: 1;
+      padding: 0 28px;
+    }
+
+    .rpe-row {
+      display: grid;
+      grid-template-columns: 44px 90px 1fr 1fr 58px;
+      gap: 0;
+      align-items: stretch;
+      border-bottom: 1px solid #f1f5f9;
+      min-height: 22.5mm;
+    }
+
+    .rpe-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Color zones */
+    .rpe-row.zone-recovery  { background: #f0fdf4; }
+    .rpe-row.zone-easy      { background: #f0fdf4; }
+    .rpe-row.zone-light     { background: #f7fee7; }
+    .rpe-row.zone-moderate  { background: #fefce8; }
+    .rpe-row.zone-hard      { background: #fff7ed; }
+    .rpe-row.zone-heavy     { background: #fff1f2; }
+    .rpe-row.zone-max       { background: #fef2f2; }
+
+    .rpe-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      padding: 8px 6px;
+      border-right: 2px solid transparent;
+    }
+
+    /* Number colors */
+    .zone-recovery  .rpe-num { color: #16a34a; border-right-color: #16a34a; }
+    .zone-easy      .rpe-num { color: #22c55e; border-right-color: #22c55e; }
+    .zone-light     .rpe-num { color: #84cc16; border-right-color: #84cc16; }
+    .zone-moderate  .rpe-num { color: #eab308; border-right-color: #eab308; }
+    .zone-hard      .rpe-num { color: #f97316; border-right-color: #f97316; }
+    .zone-heavy     .rpe-num { color: #ef4444; border-right-color: #ef4444; }
+    .zone-max       .rpe-num { color: #b91c1c; border-right-color: #b91c1c; }
+
+    .rpe-label-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8px 10px 8px 12px;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .rpe-zone-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0A0A0F;
+      line-height: 1.2;
+    }
+
+    .rpe-feel {
+      font-size: 9.5px;
+      color: #64748b;
+      margin-top: 2px;
+      font-style: italic;
+    }
+
+    .rpe-desc-col {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      font-size: 10px;
+      color: #374151;
+      line-height: 1.45;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .rpe-example-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8px 12px;
+      font-size: 10px;
+      color: #374151;
+      line-height: 1.45;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .rpe-example-col .ex-label {
+      font-weight: 600;
+      color: #0A0A0F;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+    }
+
+    .rpe-rir-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 6px;
+    }
+
+    .rir-badge {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .rir-text {
+      font-size: 8.5px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    /* RIR badge colors */
+    .zone-recovery  .rir-badge { color: #16a34a; }
+    .zone-easy      .rir-badge { color: #22c55e; }
+    .zone-light     .rir-badge { color: #84cc16; }
+    .zone-moderate  .rir-badge { color: #eab308; }
+    .zone-hard      .rir-badge { color: #f97316; }
+    .zone-heavy     .rir-badge { color: #ef4444; }
+    .zone-max       .rir-badge { color: #b91c1c; }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #0A0A0F;
+      padding: 10px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #fff;
+    }
+
+    .footer-url {
+      font-size: 9.5px;
+      color: #2563EB;
+      font-weight: 500;
+    }
+
+    .footer-cta {
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .footer-cta span {
+      display: block;
+      font-size: 8.5px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .footer-note {
+      font-size: 9px;
+      color: #475569;
+      max-width: 180px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* ─── PRO TIP BAR ─── */
+    .pro-tip {
+      background: #eff6ff;
+      border-left: 3px solid #2563EB;
+      margin: 0 28px 6px;
+      padding: 6px 12px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .pro-tip p {
+      font-size: 9.5px;
+      color: #1e40af;
+      line-height: 1.45;
+    }
+
+    .pro-tip strong {
+      font-weight: 700;
+    }
+
+    /* ─── ZONE LEGEND ─── */
+    .zone-legend {
+      display: flex;
+      gap: 6px;
+      padding: 4px 28px 4px;
+      align-items: center;
+    }
+
+    .zone-legend-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+
+    .zone-pill {
+      font-size: 8px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .pill-green  { background: #dcfce7; color: #16a34a; }
+    .pill-yellow { background: #fef9c3; color: #a16207; }
+    .pill-orange { background: #ffedd5; color: #c2410c; }
+    .pill-red    { background: #fee2e2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EVOFIT</div>
+        <div>
+          <div class="header-title">RPE <span>Cheat Sheet</span></div>
+          <div class="header-sub">Rate of Perceived Exertion — The trainer's intensity guide</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:11px;color:#fff;">FREE RESOURCE</div>
+        <div style="font-size:9.5px;color:#94a3b8;">evofittrainer-six.vercel.app</div>
+      </div>
+    </div>
+
+    <!-- INTRO BAR -->
+    <div class="intro-bar">
+      <p>RPE measures how hard an exercise feels on a scale of 1–10. Use it to prescribe intensity without a 1RM test. Pair with Reps In Reserve (RIR) for precision programming.</p>
+      <span class="rir-label">RIR = Reps left in the tank</span>
+    </div>
+
+    <!-- ZONE LEGEND -->
+    <div class="zone-legend">
+      <span class="zone-legend-label">Zones:</span>
+      <span class="zone-pill pill-green">1–4 Recovery / Easy</span>
+      <span class="zone-pill pill-yellow">5–6 Light / Moderate</span>
+      <span class="zone-pill pill-orange">7–8 Hard / Heavy</span>
+      <span class="zone-pill pill-red">9–10 Very Hard / Max</span>
+    </div>
+
+    <!-- TABLE HEADER -->
+    <div class="table-header">
+      <span>RPE</span>
+      <span>Zone</span>
+      <span>How It Feels</span>
+      <span>Example / Programming Use</span>
+      <span style="text-align:center;">RIR</span>
+    </div>
+
+    <!-- RPE ROWS -->
+    <div class="rpe-rows">
+
+      <div class="rpe-row zone-recovery">
+        <div class="rpe-num">1</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Rest</div>
+          <div class="rpe-feel">No effort at all</div>
+        </div>
+        <div class="rpe-desc-col">Complete rest. No physical exertion. Lying still or seated comfortably. Breathing is totally normal.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Use for:</div>
+          Rest intervals between max-effort sets. Not typically prescribed in programs.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">∞</div>
+          <div class="rir-text">unlimited reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-recovery">
+        <div class="rpe-num">2</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Very Light</div>
+          <div class="rpe-feel">Barely moving</div>
+        </div>
+        <div class="rpe-desc-col">Minimal effort. Slow walking pace. Could sustain this for hours. No real challenge to breathing or muscles.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Easy walk, mobility drills, warm-up foam rolling, gentle stretching.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">∞</div>
+          <div class="rir-text">unlimited reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-easy">
+        <div class="rpe-num">3</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Light</div>
+          <div class="rpe-feel">Easy, comfortable</div>
+        </div>
+        <div class="rpe-desc-col">Slight exertion. Can hold a full conversation. Breathing slightly elevated. Used for warm-up sets.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Warm-up sets at 40–50% 1RM. Light band work. Technique practice with empty bar.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">8+</div>
+          <div class="rir-text">many reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-easy">
+        <div class="rpe-num">4</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Somewhat Easy</div>
+          <div class="rpe-feel">Noticeable but easy</div>
+        </div>
+        <div class="rpe-desc-col">Starting to feel the work. Breathing picks up slightly. Still very comfortable — form is perfect, no real challenge.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Feeder sets at 55–65% 1RM. Deload week loads. Corrective work.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">6–7</div>
+          <div class="rir-text">many reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-light">
+        <div class="rpe-num">5</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Moderate</div>
+          <div class="rpe-feel">Comfortable effort</div>
+        </div>
+        <div class="rpe-desc-col">Effort is clear. Can still talk in sentences. Breathing is elevated but not laboured. Could maintain this for many more reps.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Hypertrophy warm-up sets. Conditioning circuits. 65–70% 1RM loads.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">5–6</div>
+          <div class="rir-text">several reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-moderate">
+        <div class="rpe-num">6</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Somewhat Hard</div>
+          <div class="rpe-feel">Challenging, manageable</div>
+        </div>
+        <div class="rpe-desc-col">Noticeably challenging. Short sentences only. Muscles working steadily. Form is still crisp. Endurance athletes often train here.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Hypertrophy working sets (early). Accessory lifts. 70–75% 1RM.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">4–5</div>
+          <div class="rir-text">a few reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-hard">
+        <div class="rpe-num">7</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Hard</div>
+          <div class="rpe-feel">Uncomfortable, doable</div>
+        </div>
+        <div class="rpe-desc-col">Genuinely hard. Single words only. Muscles burning noticeably. Starting to think about stopping — but you wouldn't. Standard hypertrophy zone.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Main hypertrophy sets. 3–4 reps before failure. ~75–80% 1RM.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">3–4</div>
+          <div class="rir-text">3–4 reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-hard">
+        <div class="rpe-num">8</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Very Hard</div>
+          <div class="rpe-feel">Heavy, demanding</div>
+        </div>
+        <div class="rpe-desc-col">Very hard. Can barely speak. Muscles significantly fatigued. Would struggle to add another rep without grinding hard. Strength training zone.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Strength top sets. 2 reps before failure. ~80–87.5% 1RM.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">2–3</div>
+          <div class="rir-text">2–3 reps left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-heavy">
+        <div class="rpe-num">9</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Near Max</div>
+          <div class="rpe-feel">Almost everything</div>
+        </div>
+        <div class="rpe-desc-col">Near maximal. Talking is impossible. Grinding hard. One rep left — maybe. Bar speed is slow. Requires full mental focus and bracing.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          Peaking sets. 1 rep before failure. ~87.5–95% 1RM. Competition prep.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">1</div>
+          <div class="rir-text">1 rep left</div>
+        </div>
+      </div>
+
+      <div class="rpe-row zone-max">
+        <div class="rpe-num">10</div>
+        <div class="rpe-label-col">
+          <div class="rpe-zone-name">Max Effort</div>
+          <div class="rpe-feel">Absolute limit</div>
+        </div>
+        <div class="rpe-desc-col">100% effort. True maximum. Could not have done another rep under any circumstances. Bar speed is extremely slow or grinding.</div>
+        <div class="rpe-example-col">
+          <div class="ex-label">Example:</div>
+          1RM attempts. Competition max-outs. True technical failure sets.
+        </div>
+        <div class="rpe-rir-col">
+          <div class="rir-badge">0</div>
+          <div class="rir-text">nothing left</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PRO TIP -->
+    <div class="pro-tip">
+      <p><strong>Pro Tip:</strong> New clients consistently over-estimate their RPE by 1–2 points. Calibrate in the first 2–3 sessions by asking "how many more reps could you have done?" If they say 5+ but rated it RPE 8, recalibrate. <strong>RPE is a skill — teach it early.</strong></p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-left">
+        <div class="footer-brand">EvoFit Trainer</div>
+        <div class="footer-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="footer-note">
+        EvoFit Trainer logs RPE automatically on every set and tracks training load over time.
+      </div>
+      <div class="footer-cta">
+        Start Free Today
+        <span>No credit card required</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
