@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercise Substitution Guide — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── SHARED HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 14px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 10px; }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-sub {
+      font-size: 9.5px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+
+    .header-right { text-align: right; }
+
+    .free-tag {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: #F97316;
+      letter-spacing: 0.5px;
+    }
+
+    .page-tag {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* ─── COVER PAGE ─── */
+    .cover-hero {
+      flex: 1;
+      background: linear-gradient(145deg, #0A0A0F 0%, #111827 55%, #0d1f1a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 36px 30px;
+      position: relative;
+    }
+
+    .cover-accent-bar {
+      width: 64px;
+      height: 5px;
+      background: linear-gradient(90deg, #F97316, #2563EB);
+      border-radius: 3px;
+      margin-bottom: 28px;
+    }
+
+    .cover-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #F97316;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 38px;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .cover-title .blue { color: #2563EB; }
+    .cover-title .orange { color: #F97316; }
+
+    .cover-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #94a3b8;
+      text-align: center;
+      max-width: 400px;
+      line-height: 1.55;
+      margin-bottom: 32px;
+    }
+
+    .cover-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+
+    .cover-pill {
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      color: #93c5fd;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+
+    .cover-pill.orange {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.35);
+      color: #fdba74;
+    }
+
+    .cover-pill.green {
+      background: rgba(22, 163, 74, 0.15);
+      border-color: rgba(22, 163, 74, 0.35);
+      color: #86efac;
+    }
+
+    .cover-stats {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+
+    .cover-stat {
+      padding: 14px 22px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .cover-stat:last-child { border-right: none; }
+
+    .cover-stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #F97316;
+      display: block;
+    }
+
+    .cover-stat-label {
+      font-size: 9.5px;
+      color: #64748b;
+      letter-spacing: 0.3px;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .cover-cta-strip {
+      background: linear-gradient(90deg, #F97316, #ea580c);
+      padding: 11px 28px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .cover-cta-strip p {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .cover-cta-strip p span {
+      color: #fef3c7;
+    }
+
+    .cover-deco {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid rgba(249, 115, 22, 0.12);
+    }
+
+    .cover-deco2 {
+      position: absolute;
+      bottom: 70px;
+      left: 18px;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      border: 2px solid rgba(37, 99, 235, 0.12);
+    }
+
+    .cover-footer {
+      background: #0A0A0F;
+      border-top: 1px solid #1e293b;
+      padding: 10px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cover-footer-text {
+      font-size: 9px;
+      color: #475569;
+    }
+
+    /* ─── SUBSTITUTION PAGES ─── */
+    .page-content {
+      padding: 12px 26px;
+      flex: 1;
+    }
+
+    .section-banner {
+      border-radius: 8px;
+      padding: 9px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-banner.blue { background: linear-gradient(90deg, #eff6ff, #f0f9ff); border-left: 4px solid #2563EB; }
+    .section-banner.orange { background: linear-gradient(90deg, #fff7ed, #fffbeb); border-left: 4px solid #F97316; }
+    .section-banner.green { background: linear-gradient(90deg, #f0fdf4, #ecfdf5); border-left: 4px solid #16a34a; }
+
+    .banner-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .banner-icon.blue { background: #2563EB; color: #fff; }
+    .banner-icon.orange { background: #F97316; color: #fff; }
+    .banner-icon.green { background: #16a34a; color: #fff; }
+
+    .banner-text .bt-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .section-banner.blue .bt-title { color: #1d4ed8; }
+    .section-banner.orange .bt-title { color: #c2410c; }
+    .section-banner.green .bt-title { color: #15803d; }
+
+    .banner-text .bt-sub {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 1px;
+    }
+
+    /* ─── SUBSTITUTION TABLE ─── */
+    .sub-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      font-size: 8.5px;
+    }
+
+    .sub-table thead tr {
+      background: #0A0A0F;
+    }
+
+    .sub-table thead th {
+      padding: 6px 8px;
+      text-align: left;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 8px;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+
+    .sub-table thead th:first-child {
+      border-radius: 6px 0 0 6px;
+      width: 18%;
+    }
+
+    .sub-table thead th:last-child {
+      border-radius: 0 6px 6px 0;
+    }
+
+    .sub-table tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .sub-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .sub-table tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .sub-table td {
+      padding: 7px 8px;
+      vertical-align: top;
+      line-height: 1.45;
+      color: #374151;
+    }
+
+    .exercise-original {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 9.5px;
+      color: #0A0A0F;
+    }
+
+    .alt-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .alt-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+
+    .alt-list li .alt-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .alt-dot.blue { background: #2563EB; }
+    .alt-dot.orange { background: #F97316; }
+    .alt-dot.green { background: #16a34a; }
+
+    .alt-name {
+      font-weight: 600;
+      color: #0A0A0F;
+    }
+
+    .diff-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .diff-badge.easy { background: #dcfce7; color: #15803d; }
+    .diff-badge.same { background: #dbeafe; color: #1d4ed8; }
+    .diff-badge.hard { background: #fce7f3; color: #9d174d; }
+
+    /* ─── EQUIPMENT-BASED GUIDE ─── */
+    .equip-section {
+      margin-bottom: 10px;
+    }
+
+    .equip-header {
+      border-radius: 7px;
+      padding: 8px 12px;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .equip-header.none { background: #fef2f2; border-left: 3px solid #dc2626; }
+    .equip-header.dumbs { background: #fff7ed; border-left: 3px solid #F97316; }
+    .equip-header.bands { background: #f0fdf4; border-left: 3px solid #16a34a; }
+
+    .equip-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .equip-icon.none { background: #dc2626; }
+    .equip-icon.dumbs { background: #F97316; }
+    .equip-icon.bands { background: #16a34a; }
+
+    .equip-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .equip-header.none .equip-title { color: #b91c1c; }
+    .equip-header.dumbs .equip-title { color: #c2410c; }
+    .equip-header.bands .equip-title { color: #15803d; }
+
+    .equip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+
+    .equip-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      padding: 8px 10px;
+    }
+
+    .equip-category {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 9.5px;
+      color: #0A0A0F;
+      margin-bottom: 5px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .equip-exercises {
+      list-style: none;
+      padding: 0;
+    }
+
+    .equip-exercises li {
+      font-size: 8px;
+      color: #374151;
+      line-height: 1.6;
+      padding-left: 8px;
+      position: relative;
+    }
+
+    .equip-exercises li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: #94a3b8;
+    }
+
+    /* ─── CTA ─── */
+    .cta-block {
+      background: linear-gradient(135deg, #0A0A0F, #0f1f3d);
+      border-radius: 10px;
+      padding: 15px 20px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      border: 1px solid rgba(37,99,235,0.3);
+      margin-top: 10px;
+    }
+
+    .cta-left { flex: 1; }
+
+    .cta-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      color: #F97316;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .cta-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+
+    .cta-desc {
+      font-size: 8px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .cta-url {
+      font-size: 8px;
+      color: #475569;
+      margin-top: 6px;
+    }
+
+    .cta-url span { color: #3b82f6; }
+
+    .cta-right {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .cta-plan {
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.35);
+      border-radius: 7px;
+      padding: 6px 14px;
+      text-align: center;
+    }
+
+    .cta-plan .plan-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 9px;
+      color: #93c5fd;
+      display: block;
+    }
+
+    .cta-plan .plan-price {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 15px;
+      color: #fff;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .cta-plan.featured {
+      background: #2563EB;
+      border-color: #2563EB;
+    }
+
+    .cta-plan.featured .plan-name { color: #bfdbfe; }
+
+    .cta-plan.saas {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.35);
+    }
+
+    .cta-plan.saas .plan-name { color: #fdba74; }
+    .cta-plan.saas .plan-price { font-size: 13px; }
+
+    /* shared footer */
+    .page-footer {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 7px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      color: #475569;
+    }
+
+    .footer-brand span { color: #2563EB; }
+
+    .footer-pg {
+      font-size: 9px;
+      color: #94a3b8;
+    }
+
+    .footer-url {
+      font-size: 9px;
+      color: #2563EB;
+    }
+
+    /* why-to-sub note under table */
+    .why-note {
+      background: #f8fafc;
+      border-left: 3px solid #e2e8f0;
+      padding: 4px 8px;
+      font-size: 8px;
+      color: #64748b;
+      margin-top: -8px;
+      margin-bottom: 10px;
+      border-radius: 0 4px 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 1 — COVER
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">EvoFit <span>Trainer</span></div>
+        <div class="header-sub">Professional Fitness Coaching Platform</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">FREE RESOURCE</div>
+      <div class="page-tag">Programming Reference</div>
+    </div>
+  </div>
+
+  <div class="cover-hero">
+    <div class="cover-deco"></div>
+    <div class="cover-deco2"></div>
+
+    <div class="cover-accent-bar"></div>
+
+    <div class="cover-eyebrow">Programming Reference · For Personal Trainers</div>
+
+    <div class="cover-title">
+      Exercise<br>
+      <span class="orange">Substitution</span> <span class="blue">Guide</span>
+    </div>
+
+    <div class="cover-subtitle">
+      When equipment is limited, injuries arise, or clients need variety — know exactly
+      which alternative exercise to swap in without losing training stimulus.
+    </div>
+
+    <div class="cover-pills">
+      <span class="cover-pill">Upper Body</span>
+      <span class="cover-pill orange">Lower Body</span>
+      <span class="cover-pill green">Equipment-Free Options</span>
+      <span class="cover-pill">Difficulty Rated</span>
+    </div>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <span class="cover-stat-value">7</span>
+        <span class="cover-stat-label">Primary Exercises</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-value">21+</span>
+        <span class="cover-stat-label">Alternatives Listed</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-value">3</span>
+        <span class="cover-stat-label">Equipment Scenarios</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-value">4</span>
+        <span class="cover-stat-label">Pages</span>
+      </div>
+    </div>
+
+    <div class="cover-cta-strip">
+      <p>Build programs with <span>1,344+ exercises</span> on EvoFit Trainer — Auto-suggest substitutions for every client</p>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-footer-text">© 2026 EvoFit Trainer · Free Resource · Share With Your Clients</div>
+    <div class="cover-footer-text">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 2 — UPPER BODY SUBSTITUTIONS
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">Upper Body <span>Substitutions</span></div>
+        <div class="header-sub">Chest · Back · Shoulders</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">SUBSTITUTION GUIDE</div>
+      <div class="page-tag">Page 2 of 4</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="section-banner blue">
+      <div class="banner-icon blue">▲</div>
+      <div class="banner-text">
+        <div class="bt-title">Upper Body — Push & Pull</div>
+        <div class="bt-sub">Use these swaps when equipment is unavailable, technique breaks down, or the client has upper body limitations</div>
+      </div>
+    </div>
+
+    <!-- BARBELL BENCH PRESS -->
+    <table class="sub-table">
+      <thead>
+        <tr>
+          <th>Primary Exercise</th>
+          <th>Alternative 1</th>
+          <th>Alternative 2</th>
+          <th>Alternative 3</th>
+          <th>Why Substitute</th>
+          <th>Difficulty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="exercise-original">Barbell Bench Press</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Chest · Triceps · Anterior Delt</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Dumbbell Press</span><br>Greater ROM, independent arm movement, easier shoulder positioning</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Push-Ups (weighted or elevated)</span><br>No equipment; add load via vest or deficit for progression</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Cable Chest Flyes</span><br>Constant tension, reduced shoulder impingement risk, good isolation</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Shoulder pain, no barbell access, beginner clients, rotator cuff history</td>
+          <td><span class="diff-badge easy">EASIER</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="exercise-original">Pull-Ups / Chin-Ups</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Lats · Biceps · Rear Delt</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot orange"></span><div><span class="alt-name">Lat Pulldown</span><br>Adjustable load, same movement pattern, ideal for beginners</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot orange"></span><div><span class="alt-name">Band-Assisted Pull-Up</span><br>Builds confidence on the bar, maintains full ROM</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot orange"></span><div><span class="alt-name">Inverted Row (TRX / Bar)</span><br>Horizontal pulling pattern, scales easily with body angle</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Insufficient strength, shoulder impingement, no pull-up bar access</td>
+          <td><span class="diff-badge easy">EASIER</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="exercise-original">Overhead Press (BB)</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Anterior Delt · Triceps · Upper Trap</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot green"></span><div><span class="alt-name">Landmine Press</span><br>Arc path reduces shoulder impingement; great for beginners</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot green"></span><div><span class="alt-name">Arnold Press (DB)</span><br>Adds rotational component, hits all three delt heads</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot green"></span><div><span class="alt-name">Pike Push-Ups</span><br>No equipment, trains same pattern, scales with elevation angle</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Overhead mobility restriction, shoulder impingement, no barbell access</td>
+          <td><span class="diff-badge same">SIMILAR</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="exercise-original">Barbell Row</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Lats · Rhomboids · Rear Delt · Biceps</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Seated Cable Row</span><br>Constant tension, lower back stress reduced, easy load management</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Single-Arm DB Row</span><br>Unilateral loading, addresses asymmetries, supports lower back</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">TRX / Ring Row</span><br>Bodyweight option, core activated, easily adjusted by angle</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Lower back pain, no barbell, hip hinge limitation, beginner clients</td>
+          <td><span class="diff-badge same">SIMILAR</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="why-note">
+      <strong>Trainer Tip:</strong> When substituting, preserve the primary muscle group target — not just the movement pattern. A horizontal push targets chest regardless of whether it's a barbell, dumbbell, or body-weight variation.
+    </div>
+
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:9px 14px;margin-top:4px;">
+      <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:10.5px;color:#0A0A0F;margin-bottom:5px;">Quick Reference: Difficulty Ratings</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span class="diff-badge easy">EASIER</span>
+          <span style="font-size:8px;color:#374151;">Lower skill/load demand — good for beginners or deload phases</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span class="diff-badge same">SIMILAR</span>
+          <span style="font-size:8px;color:#374151;">Same relative demand — direct swap without adjusting intensity</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span class="diff-badge hard">HARDER</span>
+          <span style="font-size:8px;color:#374151;">Increased demand — use as progression once original is mastered</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand"><span>EvoFit</span> Trainer</div>
+    <div class="footer-pg">Page 2 of 4 · Exercise Substitution Guide</div>
+    <div class="footer-url">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 3 — LOWER BODY SUBSTITUTIONS
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">Lower Body <span>Substitutions</span></div>
+        <div class="header-sub">Quads · Hamstrings · Glutes · Posterior Chain</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">SUBSTITUTION GUIDE</div>
+      <div class="page-tag">Page 3 of 4</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="section-banner orange">
+      <div class="banner-icon orange">▼</div>
+      <div class="banner-text">
+        <div class="bt-title">Lower Body — Squat, Hinge & Lunge Patterns</div>
+        <div class="bt-sub">Maintain lower body stimulus when primary exercises are unavailable or the client has knee, hip, or lower back restrictions</div>
+      </div>
+    </div>
+
+    <table class="sub-table">
+      <thead>
+        <tr>
+          <th>Primary Exercise</th>
+          <th>Alternative 1</th>
+          <th>Alternative 2</th>
+          <th>Alternative 3</th>
+          <th>Why Substitute</th>
+          <th>Difficulty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="exercise-original">Back Squat (BB)</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Quads · Glutes · Core · Hamstrings</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot orange"></span><div><span class="alt-name">Goblet Squat</span><br>Anterior load teaches upright torso; perfect for technique correction</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot orange"></span><div><span class="alt-name">Leg Press</span><br>Removes spinal loading; high quad activation; safe for back pain</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot orange"></span><div><span class="alt-name">Bulgarian Split Squat</span><br>Unilateral; greater glute activation; addresses L/R asymmetry</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Lower back pain, poor bar position tolerance, limited mobility, beginner</td>
+          <td><span class="diff-badge easy">EASIER</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="exercise-original">Conventional Deadlift</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Hamstrings · Glutes · Erectors · Traps</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot green"></span><div><span class="alt-name">Romanian Deadlift (RDL)</span><br>Removes floor pull; emphasises hamstring stretch under load</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot green"></span><div><span class="alt-name">Trap Bar Deadlift</span><br>Neutral grip; reduced spinal shear; easier to maintain form</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot green"></span><div><span class="alt-name">Hip Thrust (BB / DB)</span><br>Maximal glute activation; no spinal loading; knee-friendly</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Lower back injury, grip strength deficit, inability to hold neutral spine from floor</td>
+          <td><span class="diff-badge same">SIMILAR</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="exercise-original">Barbell Lunge</div>
+            <div style="font-size:7.5px;color:#64748b;margin-top:2px;">Primary: Quads · Glutes · Hip Flexors · Balance</div>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Step-Ups (DB / BB)</span><br>Removed balance challenge; greater glute emphasis; height adjustable</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Static Split Squat</span><br>Static base removes walking component; great for knee stability work</div></li>
+            </ul>
+          </td>
+          <td>
+            <ul class="alt-list">
+              <li><span class="alt-dot blue"></span><div><span class="alt-name">Reverse Lunge (DB)</span><br>Reduces anterior knee shear; preferred for clients with knee pain</div></li>
+            </ul>
+          </td>
+          <td style="font-size:8px;color:#374151;">Knee pain, balance deficit, no barbell, limited space, walking gait issues</td>
+          <td><span class="diff-badge same">SIMILAR</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="why-note">
+      <strong>Trainer Tip:</strong> Maintain the same weekly volume (sets × reps × load) when substituting. If using an easier variation, slightly increase sets or reps to preserve training stimulus.
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:10px 14px;margin-top:6px;">
+      <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:10.5px;color:#c2410c;margin-bottom:6px;">Injury-Specific Substitution Rules</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:8.5px;font-weight:700;color:#0A0A0F;margin-bottom:3px;">Lower Back Pain</div>
+          <div style="font-size:8px;color:#374151;line-height:1.5;">→ Replace conventional DL with RDL or hip thrust<br>→ Replace back squat with leg press or goblet squat<br>→ Avoid spinal compression movements</div>
+        </div>
+        <div>
+          <div style="font-size:8.5px;font-weight:700;color:#0A0A0F;margin-bottom:3px;">Knee Pain / Patellofemoral</div>
+          <div style="font-size:8px;color:#374151;line-height:1.5;">→ Replace lunges with reverse lunges or step-ups<br>→ Reduce squat depth or use leg press<br>→ Prioritise hip thrust for quad alternative</div>
+        </div>
+        <div>
+          <div style="font-size:8.5px;font-weight:700;color:#0A0A0F;margin-bottom:3px;">Shoulder Impingement</div>
+          <div style="font-size:8px;color:#374151;line-height:1.5;">→ Replace overhead press with landmine press<br>→ Replace barbell row with cable row<br>→ Use neutral grip where possible</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand"><span>EvoFit</span> Trainer</div>
+    <div class="footer-pg">Page 3 of 4 · Exercise Substitution Guide</div>
+    <div class="footer-url">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 4 — EQUIPMENT-BASED GUIDE + CTA
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">Equipment-Based <span>Guide</span></div>
+        <div class="header-sub">Program by What Your Client Has Available</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">SUBSTITUTION GUIDE</div>
+      <div class="page-tag">Page 4 of 4</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="section-banner green">
+      <div class="banner-icon green">⚙</div>
+      <div class="banner-text">
+        <div class="bt-title">Equipment-Based Full-Body Substitutions</div>
+        <div class="bt-sub">Use this section for home workouts, travel clients, or gym members with restricted equipment access</div>
+      </div>
+    </div>
+
+    <!-- NO EQUIPMENT -->
+    <div class="equip-section">
+      <div class="equip-header none">
+        <div class="equip-icon none">✕</div>
+        <div>
+          <div class="equip-title">No Equipment (Bodyweight Only)</div>
+          <div style="font-size:8px;color:#b91c1c;margin-top:1px;">Zero equipment required · Perfect for home workouts or travel</div>
+        </div>
+      </div>
+      <div class="equip-grid">
+        <div class="equip-card">
+          <div class="equip-category">Chest / Push</div>
+          <ul class="equip-exercises">
+            <li>Push-Ups (standard, wide, narrow)</li>
+            <li>Decline Push-Ups (feet elevated)</li>
+            <li>Archer Push-Ups (unilateral load)</li>
+            <li>Pike Push-Ups (shoulder focus)</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Back / Pull</div>
+          <ul class="equip-exercises">
+            <li>Doorframe Row</li>
+            <li>Inverted Row (table edge)</li>
+            <li>Superman Hold (posterior chain)</li>
+            <li>Scapular Wall Slides</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Legs / Lower Body</div>
+          <ul class="equip-exercises">
+            <li>Bodyweight Squat → Jump Squat</li>
+            <li>Reverse Lunge</li>
+            <li>Single-Leg Hip Thrust (floor)</li>
+            <li>Nordic Hamstring Curl</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Shoulders</div>
+          <ul class="equip-exercises">
+            <li>Pike Push-Ups (progression)</li>
+            <li>Handstand Hold (wall-supported)</li>
+            <li>Y/T/W Raises (prone)</li>
+            <li>Band Pull-Aparts (substitute)</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Core / Stability</div>
+          <ul class="equip-exercises">
+            <li>Plank → Side Plank</li>
+            <li>Dead Bug</li>
+            <li>Hollow Body Hold</li>
+            <li>Bird Dog</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Conditioning</div>
+          <ul class="equip-exercises">
+            <li>Burpees</li>
+            <li>Mountain Climbers</li>
+            <li>Jump Lunges</li>
+            <li>Bear Crawl</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- DUMBBELLS ONLY -->
+    <div class="equip-section">
+      <div class="equip-header dumbs">
+        <div class="equip-icon dumbs">◈</div>
+        <div>
+          <div class="equip-title">Dumbbells Only</div>
+          <div style="font-size:8px;color:#c2410c;margin-top:1px;">Home gym or limited gym setup · Covers all major movement patterns</div>
+        </div>
+      </div>
+      <div class="equip-grid">
+        <div class="equip-card">
+          <div class="equip-category">Push (Chest / Shoulders)</div>
+          <ul class="equip-exercises">
+            <li>DB Bench Press (floor or bench)</li>
+            <li>DB Shoulder Press</li>
+            <li>DB Chest Fly (floor)</li>
+            <li>Renegade Row (push + pull)</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Pull (Back / Biceps)</div>
+          <ul class="equip-exercises">
+            <li>Single-Arm DB Row</li>
+            <li>DB Bent-Over Row (bilateral)</li>
+            <li>DB Bicep Curl → Hammer Curl</li>
+            <li>DB Pullover (lat emphasis)</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Lower Body</div>
+          <ul class="equip-exercises">
+            <li>DB Goblet Squat</li>
+            <li>DB Romanian Deadlift</li>
+            <li>DB Bulgarian Split Squat</li>
+            <li>DB Hip Thrust (bench or floor)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESISTANCE BANDS ONLY -->
+    <div class="equip-section" style="margin-bottom:8px;">
+      <div class="equip-header bands">
+        <div class="equip-icon bands">~</div>
+        <div>
+          <div class="equip-title">Resistance Bands Only</div>
+          <div style="font-size:8px;color:#15803d;margin-top:1px;">Travel kit or rehab setting · Ascending resistance; excellent for activation work</div>
+        </div>
+      </div>
+      <div class="equip-grid">
+        <div class="equip-card">
+          <div class="equip-category">Push Pattern</div>
+          <ul class="equip-exercises">
+            <li>Banded Push-Up (increased resistance)</li>
+            <li>Band Chest Press (anchored)</li>
+            <li>Band Shoulder Press (standing)</li>
+            <li>Band Tricep Pushdown</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Pull Pattern</div>
+          <ul class="equip-exercises">
+            <li>Band Pull-Apart</li>
+            <li>Band Face Pull (anchored high)</li>
+            <li>Band Row (anchored low)</li>
+            <li>Band Lat Pulldown (anchored above)</li>
+          </ul>
+        </div>
+        <div class="equip-card">
+          <div class="equip-category">Lower Body / Glutes</div>
+          <ul class="equip-exercises">
+            <li>Banded Squat (loop above knees)</li>
+            <li>Banded Hip Thrust</li>
+            <li>Banded Clamshell</li>
+            <li>Banded Monster Walk</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-block">
+      <div class="cta-left">
+        <div class="cta-eyebrow">Build Client Programs With 1,344+ Exercises</div>
+        <div class="cta-title">EvoFit Trainer — Your Complete<br>Coaching Platform</div>
+        <div class="cta-desc">
+          Filter exercises by equipment, muscle group, and difficulty. Build substitution-ready programs, track client progress, and manage your entire roster from one platform. Pay once, own forever.
+        </div>
+        <div class="cta-url">evofittrainer-six.vercel.app — <span>Get Started Free</span></div>
+      </div>
+      <div class="cta-right">
+        <div class="cta-plan">
+          <span class="plan-name">STARTER</span>
+          <span class="plan-price">$199</span>
+        </div>
+        <div class="cta-plan featured">
+          <span class="plan-name">PROFESSIONAL</span>
+          <span class="plan-price">$299</span>
+        </div>
+        <div class="cta-plan">
+          <span class="plan-name">ENTERPRISE</span>
+          <span class="plan-price">$399</span>
+        </div>
+        <div class="cta-plan saas">
+          <span class="plan-name">SAAS / MONTHLY</span>
+          <span class="plan-price">$39.99<span style="font-size:9px;font-weight:600;">/mo</span></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand"><span>EvoFit</span> Trainer</div>
+    <div class="footer-pg">Page 4 of 4 · Exercise Substitution Guide</div>
+    <div class="footer-url">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+</body>
+</html>
