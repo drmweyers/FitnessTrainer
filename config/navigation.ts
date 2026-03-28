@@ -202,6 +202,20 @@ export const getUserMenuItems = () => [
   }
 ];
 
+// Public marketing navigation (shown to unauthenticated visitors)
+export const publicNavLinks = [
+  {
+    id: 'pricing',
+    label: 'Pricing',
+    href: '/pricing',
+  },
+  {
+    id: 'get-started',
+    label: 'Get Started',
+    href: '/get-started',
+  },
+];
+
 // Role display names and colors
 export const roleConfig = {
   admin: {

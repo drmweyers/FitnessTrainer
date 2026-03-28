@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, Bell } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getNavigationForRole } from '@/config/navigation';
+import { getNavigationForRole, publicNavLinks } from '@/config/navigation';
 import UserMenu from './UserMenu';
 import NavigationItem from './NavigationItem';
 import MobileMenu from './MobileMenu';
@@ -85,10 +85,20 @@ export default function MainNavigation({
             </Link>
           </div>
 
-          {/* Center section - Desktop navigation (optional for horizontal layout) */}
-          <nav className="hidden xl:flex items-center space-x-1">
-            {/* This could be used for horizontal navigation if desired */}
-          </nav>
+          {/* Center section - Public marketing nav for unauthenticated visitors */}
+          {!isAuthenticated && (
+            <nav className="hidden md:flex items-center space-x-1">
+              {publicNavLinks.map((link) => (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {/* Right section */}
           <div className="flex items-center gap-3">
@@ -119,7 +129,7 @@ export default function MainNavigation({
                   Sign In
                 </Link>
                 <Link
-                  href="/register"
+                  href="/get-started"
                   className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   Get Started
