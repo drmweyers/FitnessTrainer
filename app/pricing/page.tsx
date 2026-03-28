@@ -47,6 +47,7 @@ const tiers = [
     priceId: 'starter',
     cta: 'Get Started for $49',
     highlighted: false,
+    learnMoreHref: '/starter',
     features: [
       '1,344 exercises with animated GIF demonstrations',
       'Up to 5 active clients with 5-status lifecycle tracking',
@@ -71,6 +72,7 @@ const tiers = [
     cta: 'Upgrade to Professional — $149',
     highlighted: true,
     badge: 'Most Popular',
+    learnMoreHref: '/professional',
     features: [
       'Unlimited active clients (no roster cap, ever)',
       '8 program types: Strength, Hypertrophy, Powerlifting, Rehabilitation + more',
@@ -96,6 +98,7 @@ const tiers = [
     priceId: 'enterprise',
     cta: 'Get Enterprise Access — $299',
     highlighted: false,
+    learnMoreHref: '/enterprise',
     features: [
       'Everything in Professional included',
       'Admin dashboard: platform-wide user, session, and growth stats',
@@ -119,6 +122,7 @@ const tiers = [
     cta: 'Add AI Features — $49/mo',
     highlighted: false,
     isAddon: true,
+    learnMoreHref: '/special-offer',
     features: [
       'AI workout generator — full balanced workout in under 5 seconds from 1,344 exercises',
       'RPE-based progression suggestions: increase weight, add reps, maintain, or deload — per exercise',
@@ -553,6 +557,23 @@ export default function PricingPage() {
                     {tier.cta}
                     <ArrowRight className="h-4 w-4" />
                   </button>
+
+                  {tier.learnMoreHref && (
+                    <div className="mt-3 text-center">
+                      <Link
+                        href={tier.learnMoreHref}
+                        className={`text-xs font-medium hover:underline transition-colors ${
+                          tier.isAddon
+                            ? 'text-purple-500 hover:text-purple-400'
+                            : tier.highlighted
+                            ? 'text-blue-500 hover:text-blue-400'
+                            : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                      >
+                        Learn more &rarr;
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -896,6 +917,40 @@ export default function PricingPage() {
             <motion.p variants={fadeInUp} className="text-blue-300 text-sm mt-6">
               Professional tier · $149 one-time · 14-day money-back guarantee · Secure checkout via Stripe
             </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── 9. NOT SURE WHICH PLAN ───────────────────────────────────────── */}
+      <section className="py-12 md:py-16 bg-white border-t border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={staggerContainer}
+          >
+            <motion.h2
+              variants={fadeInUp}
+              className="text-2xl md:text-3xl font-bold text-gray-900 mb-3"
+            >
+              Not sure which plan is right for you?
+            </motion.h2>
+            <motion.p
+              variants={fadeInUp}
+              className="text-gray-600 mb-6 max-w-xl mx-auto"
+            >
+              Answer 3 quick questions and we&rsquo;ll recommend the best tier for your coaching business — no sign-up required.
+            </motion.p>
+            <motion.div variants={fadeInUp}>
+              <Link
+                href="/get-started"
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-md"
+              >
+                Find My Plan
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
