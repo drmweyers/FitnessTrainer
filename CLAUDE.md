@@ -5,6 +5,16 @@
 Skill: `~/.openclaw/workspace/skills/superpowers/SKILL.md`
 Flow: brainstorm → plan → TDD build → code review → finish. No exceptions.
 
+## 🧪 PHASE 5: VERIFY — POST-DEPLOY SIMULATION (MANDATORY)
+After every production deploy, run the FORGE User Simulation via **Bolt** (QA agent):
+```bash
+cd ~/.openclaw/workspace/FitnessTrainer
+npx tsx scripts/seed-demo-data.ts && npx playwright test tests/e2e/flows/ --reporter=list
+```
+Skill: `~/.openclaw/workspace/skills/evofit-user-simulation/SKILL.md`
+Agent: `.claude/agents/evofit-simulator.md`
+Training: `~/.openclaw/workspace/skills/evofit-user-simulation/docs/agent-training.md`
+
 ---
 
 ## Overview
