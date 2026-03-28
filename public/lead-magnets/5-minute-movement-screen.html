@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The 5-Minute Movement Screen — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── SHARED HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 14px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 10px; }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-sub {
+      font-size: 9.5px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+
+    .header-right { text-align: right; }
+
+    .free-tag {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: #F97316;
+      letter-spacing: 0.5px;
+    }
+
+    .page-tag {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* ─── COVER PAGE ─── */
+    .cover-hero {
+      flex: 1;
+      background: linear-gradient(145deg, #0A0A0F 0%, #111827 50%, #0f1f3d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 36px 30px;
+      position: relative;
+    }
+
+    .cover-accent-bar {
+      width: 64px;
+      height: 5px;
+      background: linear-gradient(90deg, #2563EB, #F97316);
+      border-radius: 3px;
+      margin-bottom: 28px;
+    }
+
+    .cover-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #F97316;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 38px;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .cover-title .blue { color: #2563EB; }
+    .cover-title .orange { color: #F97316; }
+
+    .cover-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: #94a3b8;
+      text-align: center;
+      max-width: 380px;
+      line-height: 1.55;
+      margin-bottom: 36px;
+    }
+
+    .cover-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .cover-pill {
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      color: #93c5fd;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+
+    .cover-pill.orange {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.35);
+      color: #fdba74;
+    }
+
+    .cover-stats {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .cover-stat {
+      padding: 16px 24px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .cover-stat:last-child { border-right: none; }
+
+    .cover-stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #2563EB;
+      display: block;
+    }
+
+    .cover-stat-label {
+      font-size: 9.5px;
+      color: #64748b;
+      letter-spacing: 0.3px;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .cover-cta-strip {
+      background: #2563EB;
+      padding: 11px 28px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .cover-cta-strip p {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .cover-cta-strip p span {
+      color: #fcd34d;
+    }
+
+    .cover-deco {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(37, 99, 235, 0.15);
+    }
+
+    .cover-deco2 {
+      position: absolute;
+      bottom: 60px;
+      left: 14px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid rgba(249, 115, 22, 0.12);
+    }
+
+    .cover-footer {
+      background: #0A0A0F;
+      border-top: 1px solid #1e293b;
+      padding: 10px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cover-footer-left {
+      font-size: 9px;
+      color: #475569;
+    }
+
+    .cover-footer-right {
+      font-size: 9px;
+      color: #475569;
+    }
+
+    .cover-footer-right span {
+      color: #2563EB;
+    }
+
+    /* ─── PAGE 2 — MOVEMENT TESTS ─── */
+    .client-bar {
+      background: #f8fafc;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding: 7px 26px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .client-field label {
+      font-size: 8px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .field-line {
+      border-bottom: 1.5px solid #cbd5e1;
+      height: 16px;
+      width: 100%;
+    }
+
+    .intro-band {
+      background: linear-gradient(90deg, #eff6ff, #f0f9ff);
+      border-left: 4px solid #2563EB;
+      padding: 8px 16px;
+      margin: 10px 26px 6px;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .intro-band p {
+      font-size: 9.5px;
+      color: #1e40af;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .tests-section {
+      padding: 0 26px;
+      flex: 1;
+    }
+
+    .test-card {
+      margin-bottom: 7px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .test-header {
+      display: flex;
+      align-items: center;
+      padding: 7px 12px;
+      gap: 10px;
+    }
+
+    .test-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .test-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      flex: 1;
+    }
+
+    .test-focus {
+      font-size: 8.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .test-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .test-col {
+      padding: 7px 10px;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .test-col:last-child { border-right: none; }
+
+    .test-col-label {
+      font-size: 7.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .test-col-label .icon {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .test-criteria {
+      font-size: 8.5px;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    .test-criteria li {
+      margin-bottom: 2px;
+      padding-left: 2px;
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 5px 10px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .check-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 8.5px;
+      color: #374151;
+    }
+
+    .checkbox {
+      width: 13px;
+      height: 13px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .checkbox.pass { border-color: #16a34a; }
+    .checkbox.fail { border-color: #dc2626; }
+
+    .notes-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 8px;
+      color: #94a3b8;
+    }
+
+    .notes-underline {
+      flex: 1;
+      border-bottom: 1px dashed #cbd5e1;
+      height: 14px;
+    }
+
+    /* Test color themes */
+    .t1 .test-header { background: #eff6ff; }
+    .t1 .test-num { background: #2563EB; }
+    .t1 .test-name { color: #1d4ed8; }
+    .t1 .test-focus { background: #dbeafe; color: #1d4ed8; }
+
+    .t2 .test-header { background: #f0fdf4; }
+    .t2 .test-num { background: #16a34a; }
+    .t2 .test-name { color: #15803d; }
+    .t2 .test-focus { background: #dcfce7; color: #15803d; }
+
+    .t3 .test-header { background: #f5f3ff; }
+    .t3 .test-num { background: #7c3aed; }
+    .t3 .test-name { color: #5b21b6; }
+    .t3 .test-focus { background: #ede9fe; color: #5b21b6; }
+
+    .t4 .test-header { background: #fff7ed; }
+    .t4 .test-num { background: #f97316; }
+    .t4 .test-name { color: #c2410c; }
+    .t4 .test-focus { background: #ffedd5; color: #c2410c; }
+
+    .t5 .test-header { background: #fef9c3; }
+    .t5 .test-num { background: #ca8a04; }
+    .t5 .test-name { color: #854d0e; }
+    .t5 .test-focus { background: #fef9c3; color: #854d0e; }
+
+    .t6 .test-header { background: #fce7f3; }
+    .t6 .test-num { background: #db2777; }
+    .t6 .test-name { color: #9d174d; }
+    .t6 .test-focus { background: #fce7f3; color: #9d174d; }
+
+    /* ─── PAGE 3 — RESULTS ─── */
+    .p3-content {
+      padding: 14px 26px;
+      flex: 1;
+    }
+
+    .p3-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: #0A0A0F;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .p3-section-title .title-bar {
+      width: 4px;
+      height: 18px;
+      background: linear-gradient(180deg, #2563EB, #F97316);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .score-card {
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid;
+    }
+
+    .score-card.green {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    .score-card.yellow {
+      background: #fefce8;
+      border-color: #fde047;
+    }
+
+    .score-card.red {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .score-range {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .score-card.green .score-range { color: #15803d; }
+    .score-card.yellow .score-range { color: #854d0e; }
+    .score-card.red .score-range { color: #b91c1c; }
+
+    .score-label {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .score-card.green .score-label { color: #15803d; }
+    .score-card.yellow .score-label { color: #854d0e; }
+    .score-card.red .score-label { color: #b91c1c; }
+
+    .score-desc {
+      font-size: 8.5px;
+      line-height: 1.5;
+      color: #374151;
+    }
+
+    .prog-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #0A0A0F;
+      margin-bottom: 8px;
+      margin-top: 12px;
+      padding-bottom: 4px;
+      border-bottom: 1.5px solid #e2e8f0;
+    }
+
+    .prog-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .prog-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .prog-card-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+    }
+
+    .prog-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: #2563EB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .prog-icon.orange { background: #f97316; }
+    .prog-icon.green { background: #16a34a; }
+    .prog-icon.purple { background: #7c3aed; }
+
+    .prog-card-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10.5px;
+      color: #0A0A0F;
+    }
+
+    .prog-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .prog-card ul li {
+      font-size: 8.5px;
+      color: #374151;
+      line-height: 1.55;
+      padding-left: 10px;
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .prog-card ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #2563EB;
+      font-size: 8px;
+    }
+
+    .reassessment-box {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    .reassessment-box .rb-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      color: #1d4ed8;
+      margin-bottom: 5px;
+    }
+
+    .reassessment-box .rb-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .rb-item {
+      text-align: center;
+      background: #fff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 6px 4px;
+    }
+
+    .rb-item .rb-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      color: #2563EB;
+      display: block;
+    }
+
+    .rb-item .rb-lbl {
+      font-size: 7.5px;
+      color: #3b82f6;
+      display: block;
+      margin-top: 1px;
+    }
+
+    /* ─── CTA ─── */
+    .cta-block {
+      background: linear-gradient(135deg, #0A0A0F, #0f1f3d);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      border: 1px solid rgba(37,99,235,0.3);
+    }
+
+    .cta-left { flex: 1; }
+
+    .cta-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      color: #F97316;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .cta-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 15px;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .cta-desc {
+      font-size: 8.5px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .cta-right {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .cta-plan {
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.35);
+      border-radius: 7px;
+      padding: 7px 14px;
+      text-align: center;
+    }
+
+    .cta-plan .plan-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 10px;
+      color: #93c5fd;
+      display: block;
+    }
+
+    .cta-plan .plan-price {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .cta-plan.featured {
+      background: #2563EB;
+      border-color: #2563EB;
+    }
+
+    .cta-plan.featured .plan-name { color: #bfdbfe; }
+
+    .cta-url {
+      text-align: center;
+      font-size: 8px;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    .cta-url span { color: #3b82f6; }
+
+    /* shared footer */
+    .page-footer {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 7px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      color: #475569;
+    }
+
+    .footer-brand span { color: #2563EB; }
+
+    .footer-pg {
+      font-size: 9px;
+      color: #94a3b8;
+    }
+
+    .footer-url {
+      font-size: 9px;
+      color: #2563EB;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 1 — COVER
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">EvoFit <span>Trainer</span></div>
+        <div class="header-sub">Professional Fitness Coaching Platform</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">FREE RESOURCE</div>
+      <div class="page-tag">Assessment Protocol</div>
+    </div>
+  </div>
+
+  <div class="cover-hero">
+    <div class="cover-deco"></div>
+    <div class="cover-deco2"></div>
+
+    <div class="cover-accent-bar"></div>
+
+    <div class="cover-eyebrow">Assessment Protocol · For Personal Trainers</div>
+
+    <div class="cover-title">
+      The <span class="blue">5-Minute</span><br>
+      Movement <span class="orange">Screen</span>
+    </div>
+
+    <div class="cover-subtitle">
+      Quick Assessment Protocol for Every New Client — Identify mobility restrictions,
+      movement compensations, and injury risk before the first session begins.
+    </div>
+
+    <div class="cover-pills">
+      <span class="cover-pill">6 Functional Tests</span>
+      <span class="cover-pill">Pass / Fail Criteria</span>
+      <span class="cover-pill orange">5 Minutes Total</span>
+      <span class="cover-pill">Programming Recommendations</span>
+    </div>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <span class="cover-stat-value">6</span>
+        <span class="cover-stat-label">Movement Tests</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-value">&lt;5</span>
+        <span class="cover-stat-label">Minutes to Complete</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-value">3</span>
+        <span class="cover-stat-label">Result Tiers</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-value">100%</span>
+        <span class="cover-stat-label">Client Ready</span>
+      </div>
+    </div>
+
+    <div class="cover-cta-strip">
+      <p>Used by elite trainers on <span>EvoFit Trainer</span> — Track, program, and re-assess with one platform</p>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-footer-left">© 2026 EvoFit Trainer · Free Resource · Share With Your Clients</div>
+    <div class="cover-footer-right">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 2 — 6 MOVEMENT TESTS
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">The <span>5-Minute</span> Movement Screen</div>
+        <div class="header-sub">6 Functional Assessment Tests</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">ASSESSMENT SHEET</div>
+      <div class="page-tag">Page 2 of 3</div>
+    </div>
+  </div>
+
+  <div class="client-bar">
+    <div class="client-field">
+      <label>Client Name</label>
+      <div class="field-line"></div>
+    </div>
+    <div class="client-field">
+      <label>Assessment Date</label>
+      <div class="field-line"></div>
+    </div>
+    <div class="client-field">
+      <label>Trainer / Coach</label>
+      <div class="field-line"></div>
+    </div>
+    <div class="client-field">
+      <label>Re-Assessment Date</label>
+      <div class="field-line"></div>
+    </div>
+  </div>
+
+  <div class="intro-band">
+    <p><strong>Instructions:</strong> Perform each test in order. Grade each movement as PASS or FAIL. Note any compensations, pain reports, or asymmetries. Complete all 6 tests before programming. Time: approximately 4–5 minutes total.</p>
+  </div>
+
+  <div class="tests-section">
+
+    <!-- TEST 1: OVERHEAD SQUAT -->
+    <div class="test-card t1">
+      <div class="test-header">
+        <div class="test-num">1</div>
+        <div class="test-name">Overhead Squat</div>
+        <div class="test-focus">Ankle · Hip · Thoracic Mobility</div>
+      </div>
+      <div class="test-body">
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#16a34a">✓</span>
+            PASS CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Hips descend to or below parallel</li>
+            <li>Knees track over toes (no collapse)</li>
+            <li>Torso stays upright (&lt;45° forward lean)</li>
+            <li>Arms remain overhead throughout</li>
+            <li>Heels maintain floor contact</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#dc2626">✗</span>
+            FAIL CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Heels lift off floor</li>
+            <li>Knees cave inward (valgus)</li>
+            <li>Excessive forward torso lean</li>
+            <li>Arms fall forward significantly</li>
+            <li>Unable to reach parallel depth</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#f97316">⚡</span>
+            MODIFICATION / NOTE
+          </div>
+          <div class="test-criteria">
+            <li>Elevate heels 1–2 inches to screen ankle mobility separately</li>
+            <li>If arms fall: assess thoracic rotation</li>
+            <li>Knee valgus: assess hip abductor strength</li>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="check-group">
+          <div class="checkbox pass"></div>
+          <span>PASS</span>
+        </div>
+        <div class="check-group">
+          <div class="checkbox fail"></div>
+          <span>FAIL</span>
+        </div>
+        <div class="notes-line">
+          <span>Notes:</span>
+          <div class="notes-underline"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 2: SINGLE-LEG BALANCE -->
+    <div class="test-card t2">
+      <div class="test-header">
+        <div class="test-num">2</div>
+        <div class="test-name">Single-Leg Balance</div>
+        <div class="test-focus">Proprioception · Ankle Stability</div>
+      </div>
+      <div class="test-body">
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#16a34a">✓</span>
+            PASS CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Eyes open: 30s each side without touching down</li>
+            <li>Eyes closed: 15s each side stable</li>
+            <li>Minimal trunk sway</li>
+            <li>No notable L/R asymmetry</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#dc2626">✗</span>
+            FAIL CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Unable to hold 30s eyes open</li>
+            <li>Repeated toe-touches or hops</li>
+            <li>Significant side-to-side difference (&gt;5s)</li>
+            <li>Excessive arm-windmilling to stabilise</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#f97316">⚡</span>
+            MODIFICATION / NOTE
+          </div>
+          <div class="test-criteria">
+            <li>Start with hands on hips to remove arm compensation</li>
+            <li>Asymmetry &gt;5s: screen for previous ankle/knee injury</li>
+            <li>Progress: narrow stance → eyes closed</li>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="check-group">
+          <div class="checkbox pass"></div>
+          <span>PASS</span>
+        </div>
+        <div class="check-group">
+          <div class="checkbox fail"></div>
+          <span>FAIL</span>
+        </div>
+        <div class="notes-line">
+          <span>Notes:</span>
+          <div class="notes-underline"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 3: HIP HINGE -->
+    <div class="test-card t3">
+      <div class="test-header">
+        <div class="test-num">3</div>
+        <div class="test-name">Hip Hinge (Toe Touch)</div>
+        <div class="test-focus">Hamstring Length · Posterior Chain</div>
+      </div>
+      <div class="test-body">
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#16a34a">✓</span>
+            PASS CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Fingertips reach floor or within 3 inches</li>
+            <li>Spine maintains natural S-curve</li>
+            <li>Hips drive back, not down</li>
+            <li>Knees soft (not locked out)</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#dc2626">✗</span>
+            FAIL CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Excessive spinal rounding (thoracic kyphosis)</li>
+            <li>Cannot reach past mid-shin</li>
+            <li>Knee hyperextension or extreme knee bend</li>
+            <li>Pain or pulling in lower back</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#f97316">⚡</span>
+            MODIFICATION / NOTE
+          </div>
+          <div class="test-criteria">
+            <li>Place dowel rod along spine: contact at head, thoracic, sacrum</li>
+            <li>Can't hinge without rounding: regress to box hip hinge</li>
+            <li>Tight hamstrings: prioritise Romanian DL with light load</li>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="check-group">
+          <div class="checkbox pass"></div>
+          <span>PASS</span>
+        </div>
+        <div class="check-group">
+          <div class="checkbox fail"></div>
+          <span>FAIL</span>
+        </div>
+        <div class="notes-line">
+          <span>Notes:</span>
+          <div class="notes-underline"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 4: PUSH-UP HOLD / PLANK -->
+    <div class="test-card t4">
+      <div class="test-header">
+        <div class="test-num">4</div>
+        <div class="test-name">Push-Up Plank Hold</div>
+        <div class="test-focus">Shoulder Stability · Core Control</div>
+      </div>
+      <div class="test-body">
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#16a34a">✓</span>
+            PASS CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Hold push-up position 10s stable</li>
+            <li>Body in straight line (ankle-shoulder)</li>
+            <li>Scapulae flat, no winging</li>
+            <li>Hips level — no sag or piking</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#dc2626">✗</span>
+            FAIL CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Scapular winging visible</li>
+            <li>Hips drop or hike within 10s</li>
+            <li>Unable to maintain without trembling/collapse</li>
+            <li>Shoulder pain or clicking</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#f97316">⚡</span>
+            MODIFICATION / NOTE
+          </div>
+          <div class="test-criteria">
+            <li>Regress to knees if unable to hold toes</li>
+            <li>Winging: address serratus anterior before heavy pressing</li>
+            <li>Hip sag: prioritise anterior core work in Phase 1</li>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="check-group">
+          <div class="checkbox pass"></div>
+          <span>PASS</span>
+        </div>
+        <div class="check-group">
+          <div class="checkbox fail"></div>
+          <span>FAIL</span>
+        </div>
+        <div class="notes-line">
+          <span>Notes:</span>
+          <div class="notes-underline"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 5: ACTIVE STRAIGHT LEG RAISE -->
+    <div class="test-card t5">
+      <div class="test-header">
+        <div class="test-num">5</div>
+        <div class="test-name">Active Straight Leg Raise</div>
+        <div class="test-focus">Hip Flexion · Hamstring Length</div>
+      </div>
+      <div class="test-body">
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#16a34a">✓</span>
+            PASS CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Raise leg to 90° hip flexion (vertical)</li>
+            <li>Pelvis stays flat/neutral on floor</li>
+            <li>Down leg stays fully extended</li>
+            <li>No spinal rotation or lower back lift</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#dc2626">✗</span>
+            FAIL CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Leg stops below 70° without compensation</li>
+            <li>Pelvis tilts or rotates during raise</li>
+            <li>Opposite leg bends or externally rotates</li>
+            <li>Lower back lifts from floor</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#f97316">⚡</span>
+            MODIFICATION / NOTE
+          </div>
+          <div class="test-criteria">
+            <li>Place hand under lumbar to monitor spine position</li>
+            <li>Below 70°: focus on passive hamstring stretching before RDLs</li>
+            <li>Asymmetry: note L/R separately — flag for follow-up</li>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="check-group">
+          <div class="checkbox pass"></div>
+          <span>PASS  (Left)</span>
+        </div>
+        <div class="check-group">
+          <div class="checkbox fail"></div>
+          <span>FAIL  (Left)</span>
+        </div>
+        <div class="notes-line">
+          <span>Right:</span>
+          <div class="notes-underline"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 6: SHOULDER MOBILITY -->
+    <div class="test-card t6">
+      <div class="test-header">
+        <div class="test-num">6</div>
+        <div class="test-name">Shoulder Mobility (Apley Scratch)</div>
+        <div class="test-focus">Internal / External Rotation · Lat Tightness</div>
+      </div>
+      <div class="test-body">
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#16a34a">✓</span>
+            PASS CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Both hands touch or come within 2 inches</li>
+            <li>Hands: one reaching over shoulder, one behind lower back</li>
+            <li>No pain, clicking, or impingement symptoms</li>
+            <li>Symmetrical range both sides</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#dc2626">✗</span>
+            FAIL CRITERIA
+          </div>
+          <div class="test-criteria">
+            <li>Hands more than 4 inches apart</li>
+            <li>Pain or sharp discomfort at end range</li>
+            <li>Significant L/R asymmetry (&gt;2 inches difference)</li>
+            <li>Thoracic rotation compensation to reach</li>
+          </div>
+        </div>
+        <div class="test-col">
+          <div class="test-col-label">
+            <span class="icon" style="background:#f97316">⚡</span>
+            MODIFICATION / NOTE
+          </div>
+          <div class="test-criteria">
+            <li>Asymmetry or pain: defer overhead pressing; assess rotator cuff</li>
+            <li>Tight lats: add doorway stretching before vertical pull work</li>
+            <li>Both sides: test and record measurement each side</li>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="check-group">
+          <div class="checkbox pass"></div>
+          <span>PASS  (Left)</span>
+        </div>
+        <div class="check-group">
+          <div class="checkbox fail"></div>
+          <span>FAIL  (Left)</span>
+        </div>
+        <div class="notes-line">
+          <span>Right:</span>
+          <div class="notes-underline"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand"><span>EvoFit</span> Trainer</div>
+    <div class="footer-pg">Page 2 of 3 · 5-Minute Movement Screen</div>
+    <div class="footer-url">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE 3 — RESULTS + PROGRAMMING + CTA
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-badge">EVOFIT</span>
+      <div>
+        <div class="header-title">What to Do With <span>Your Results</span></div>
+        <div class="header-sub">Programming Recommendations by Score</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="free-tag">PROGRAMMING GUIDE</div>
+      <div class="page-tag">Page 3 of 3</div>
+    </div>
+  </div>
+
+  <div class="p3-content">
+
+    <div class="p3-section-title">
+      <div class="title-bar"></div>
+      Step 1 — Tally Your Score
+    </div>
+
+    <div style="font-size:9px;color:#475569;margin-bottom:10px;font-style:italic;">
+      Count the number of PASS results from Page 2. Each test = 1 point. Maximum score: 6/6.
+    </div>
+
+    <div class="score-grid">
+      <div class="score-card green">
+        <span class="score-range">5–6 / 6</span>
+        <span class="score-label">Ready to Train</span>
+        <span class="score-desc">Excellent movement quality. Client is cleared for progressive loading. Address any single failing test with targeted accessory work. Prioritise strength and conditioning goals.</span>
+      </div>
+      <div class="score-card yellow">
+        <span class="score-range">3–4 / 6</span>
+        <span class="score-label">Foundation Phase</span>
+        <span class="score-desc">Notable mobility or stability restrictions present. Begin with a 2–4 week corrective phase focusing on failing tests before introducing significant external load.</span>
+      </div>
+      <div class="score-card red">
+        <span class="score-range">0–2 / 6</span>
+        <span class="score-label">Corrective First</span>
+        <span class="score-desc">Multiple significant restrictions. Implement a dedicated corrective program (4–6 weeks). Consider physiotherapy referral if pain was reported on any test. Re-screen before loading.</span>
+      </div>
+    </div>
+
+    <div class="p3-section-title">Step 2 — Programming Recommendations</div>
+
+    <div class="prog-grid">
+      <div class="prog-card">
+        <div class="prog-card-header">
+          <div class="prog-icon">▲</div>
+          <div class="prog-card-title">Overhead Squat FAIL</div>
+        </div>
+        <ul>
+          <li>Add ankle mobility drills (90–90 stretches, wall ankle mobs) daily</li>
+          <li>Begin goblet squat progression with heel elevation</li>
+          <li>Include thoracic extension over foam roller</li>
+          <li>Defer barbell back squat until screen passes</li>
+        </ul>
+      </div>
+      <div class="prog-card">
+        <div class="prog-card-header">
+          <div class="prog-icon green">◈</div>
+          <div class="prog-card-title">Single-Leg Balance FAIL</div>
+        </div>
+        <ul>
+          <li>Daily single-leg standing practice (2×30s each side)</li>
+          <li>Add BOSU balance work and single-leg RDL with light load</li>
+          <li>Avoid bilateral lower body loading as primary stimulus</li>
+          <li>Screen for previous ankle sprains or knee injuries</li>
+        </ul>
+      </div>
+      <div class="prog-card">
+        <div class="prog-card-header">
+          <div class="prog-icon purple">↓</div>
+          <div class="prog-card-title">Hip Hinge FAIL</div>
+        </div>
+        <ul>
+          <li>Teach hip hinge pattern using wall or box as tactile cue</li>
+          <li>Begin Romanian DL with light dumbbells (focus on form)</li>
+          <li>Add hamstring flexibility work: lying stretch, PNF</li>
+          <li>Hold deadlift variations until hinge pattern grooves correctly</li>
+        </ul>
+      </div>
+      <div class="prog-card">
+        <div class="prog-card-header">
+          <div class="prog-icon orange">■</div>
+          <div class="prog-card-title">Push-Up Plank FAIL</div>
+        </div>
+        <ul>
+          <li>Prioritise anterior core: dead bugs, hollow holds, ab wheel</li>
+          <li>Address scapular winging with serratus wall slides</li>
+          <li>Regress pressing to incline push-up until plank is stable</li>
+          <li>Include band pull-aparts to improve shoulder stability</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="reassessment-box">
+      <div class="rb-title">Re-Assessment Schedule</div>
+      <div class="rb-grid">
+        <div class="rb-item">
+          <span class="rb-val">2 wk</span>
+          <span class="rb-lbl">Corrective Phase Check</span>
+        </div>
+        <div class="rb-item">
+          <span class="rb-val">4 wk</span>
+          <span class="rb-lbl">Formal Re-Screen</span>
+        </div>
+        <div class="rb-item">
+          <span class="rb-val">8 wk</span>
+          <span class="rb-lbl">Progress Review</span>
+        </div>
+        <div class="rb-item">
+          <span class="rb-val">12 wk</span>
+          <span class="rb-lbl">Full Re-Assessment</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-block">
+      <div class="cta-left">
+        <div class="cta-eyebrow">Track Every Assessment in One Place</div>
+        <div class="cta-title">Run EvoFit Trainer for Your<br>Entire Client Roster</div>
+        <div class="cta-desc">
+          Store movement screen results, auto-generate corrective programs, track re-assessments,
+          and manage unlimited clients — all from one platform. Pay once, own forever.
+        </div>
+        <div class="cta-url" style="margin-top:8px;">evofittrainer-six.vercel.app — <span>Start Free Today</span></div>
+      </div>
+      <div class="cta-right">
+        <div class="cta-plan">
+          <span class="plan-name">STARTER</span>
+          <span class="plan-price">$199</span>
+        </div>
+        <div class="cta-plan featured">
+          <span class="plan-name">PROFESSIONAL</span>
+          <span class="plan-price">$299</span>
+        </div>
+        <div class="cta-plan">
+          <span class="plan-name">ENTERPRISE</span>
+          <span class="plan-price">$399</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-brand"><span>EvoFit</span> Trainer</div>
+    <div class="footer-pg">Page 3 of 3 · 5-Minute Movement Screen</div>
+    <div class="footer-url">evofittrainer-six.vercel.app</div>
+  </div>
+
+</div>
+
+</body>
+</html>
