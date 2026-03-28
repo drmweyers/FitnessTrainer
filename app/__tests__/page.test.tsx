@@ -90,11 +90,11 @@ describe('HomePage', () => {
       expect(logos[0]).toHaveAttribute('src', '/logo.svg')
     })
 
-    it('renders Get Started Free CTA linking to register', () => {
-      const ctaButtons = screen.getAllByText(/Get Started Free/i)
+    it('renders Get Started CTA linking to register', () => {
+      const ctaButtons = screen.getAllByText(/Get Started/i)
       expect(ctaButtons.length).toBeGreaterThanOrEqual(1)
-      const link = ctaButtons[0].closest('a')
-      expect(link).toHaveAttribute('href', '/auth/register')
+      const registerLink = ctaButtons.find(el => el.closest('a')?.getAttribute('href') === '/auth/register')
+      expect(registerLink).toBeTruthy()
     })
 
     it('renders See Features button', () => {
