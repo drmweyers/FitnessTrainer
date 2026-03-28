@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Onboarding Checklist — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 15px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .header-text {}
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-sub {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .header-right .free-tag {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: #F97316;
+      letter-spacing: 0.5px;
+    }
+
+    .header-right .client-info {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* ─── CLIENT INFO BAR ─── */
+    .client-bar {
+      background: #f8fafc;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding: 8px 26px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .client-field {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .client-field label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .client-field .field-line {
+      border-bottom: 1.5px solid #cbd5e1;
+      height: 18px;
+      width: 100%;
+    }
+
+    /* ─── SECTION ─── */
+    .section {
+      padding: 0 26px;
+      margin-top: 10px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .section-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .section-timing {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* Color themes per section */
+    .sec-1 .section-header { background: #eff6ff; }
+    .sec-1 .section-num { background: #2563EB; }
+    .sec-1 .section-title { color: #1d4ed8; }
+    .sec-1 .section-timing { background: #dbeafe; color: #1d4ed8; }
+
+    .sec-2 .section-header { background: #f5f3ff; }
+    .sec-2 .section-num { background: #7c3aed; }
+    .sec-2 .section-title { color: #5b21b6; }
+    .sec-2 .section-timing { background: #ede9fe; color: #5b21b6; }
+
+    .sec-3 .section-header { background: #f0fdf4; }
+    .sec-3 .section-num { background: #16a34a; }
+    .sec-3 .section-title { color: #15803d; }
+    .sec-3 .section-timing { background: #dcfce7; color: #15803d; }
+
+    .sec-4 .section-header { background: #fff7ed; }
+    .sec-4 .section-num { background: #f97316; }
+    .sec-4 .section-title { color: #c2410c; }
+    .sec-4 .section-timing { background: #ffedd5; color: #c2410c; }
+
+    .sec-5 .section-header { background: #fef9c3; }
+    .sec-5 .section-num { background: #ca8a04; }
+    .sec-5 .section-title { color: #854d0e; }
+    .sec-5 .section-timing { background: #fef9c3; color: #854d0e; }
+
+    .sec-6 .section-header { background: #fce7f3; }
+    .sec-6 .section-num { background: #db2777; }
+    .sec-6 .section-title { color: #9d174d; }
+    .sec-6 .section-timing { background: #fce7f3; color: #9d174d; }
+
+    .sec-7 .section-header { background: #f0fdf4; }
+    .sec-7 .section-num { background: #0f766e; }
+    .sec-7 .section-title { color: #0f766e; }
+    .sec-7 .section-timing { background: #ccfbf1; color: #0f766e; }
+
+    /* ─── CHECKLIST ITEMS ─── */
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .check-item:last-child { border-bottom: none; }
+
+    .check-item:hover { background: #f8fafc; }
+
+    .checkbox {
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      background: #fff;
+    }
+
+    .check-content {
+      flex: 1;
+    }
+
+    .check-main {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #0A0A0F;
+      line-height: 1.3;
+    }
+
+    .check-sub {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 1.5px;
+      line-height: 1.4;
+    }
+
+    .check-note {
+      font-size: 8.5px;
+      color: #94a3b8;
+      font-style: italic;
+      margin-top: 1px;
+    }
+
+    .check-tag {
+      font-size: 8px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .tag-required { background: #fee2e2; color: #dc2626; }
+    .tag-optional { background: #f1f5f9; color: #64748b; }
+    .tag-digital  { background: #dbeafe; color: #1d4ed8; }
+    .tag-verbal   { background: #f5f3ff; color: #6d28d9; }
+
+    /* ─── NOTES BOX ─── */
+    .notes-box {
+      margin: 8px 26px 0;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      min-height: 28px;
+    }
+
+    .notes-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .notes-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .notes-line {
+      border-bottom: 1px solid #e2e8f0;
+      height: 14px;
+    }
+
+    /* ─── 2-COL LAYOUT ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 16px;
+      padding: 0 26px;
+      margin-top: 10px;
+    }
+
+    /* ─── MEASUREMENTS TABLE ─── */
+    .measurements-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 0 8px;
+    }
+
+    .meas-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meas-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .meas-line-group {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .meas-line {
+      border-bottom: 1.5px solid #cbd5e1;
+      flex: 1;
+      height: 16px;
+    }
+
+    .meas-unit {
+      font-size: 8.5px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      margin-top: auto;
+      background: #0A0A0F;
+      padding: 9px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #fff;
+    }
+
+    .footer-url {
+      font-size: 9.5px;
+      color: #2563EB;
+      margin-top: 1px;
+    }
+
+    .footer-cta {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 5px 14px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .footer-cta span {
+      display: block;
+      font-size: 8px;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+
+    .footer-tip {
+      font-size: 9px;
+      color: #475569;
+      max-width: 200px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ─── PAGE 2 HEADER ─── */
+    .page2-header {
+      background: #0A0A0F;
+      padding: 11px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .p2h-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .p2h-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .p2h-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .p2h-page {
+      font-size: 9.5px;
+      color: #64748b;
+    }
+
+    /* ─── GOAL SETTING SECTION ─── */
+    .goal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 8px;
+    }
+
+    .goal-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .goal-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .goal-sub {
+      font-size: 8.5px;
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .goal-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .goal-line {
+      border-bottom: 1.5px solid #cbd5e1;
+      height: 14px;
+    }
+
+    /* ─── MOVEMENT SCREEN TABLE ─── */
+    .screen-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .screen-table th {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+      padding: 4px 6px;
+      border-bottom: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .screen-table td {
+      padding: 5px 6px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 9.5px;
+    }
+
+    .screen-table tr:last-child td { border-bottom: none; }
+
+    .screen-name { font-weight: 600; color: #0A0A0F; }
+    .screen-look { color: #374151; font-size: 9px; }
+    .screen-pass { color: #16a34a; font-weight: 600; }
+    .screen-fail { color: #dc2626; font-weight: 600; }
+
+    .radio-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 9px;
+    }
+
+    .radio-circle {
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    /* ─── PROGRAM SETUP ─── */
+    .program-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px 10px;
+      padding: 0 8px;
+    }
+
+    .prog-field {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .prog-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .prog-line {
+      border-bottom: 1.5px solid #cbd5e1;
+      height: 16px;
+    }
+
+    /* ─── FIRST WORKOUT SECTION ─── */
+    .workout-checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 10px;
+    }
+
+    /* ─── SUCCESS BAR ─── */
+    .success-bar {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 9px 14px;
+      margin: 8px 26px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .success-icon {
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .success-text {}
+
+    .success-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #1d4ed8;
+      margin-bottom: 3px;
+    }
+
+    .success-body {
+      font-size: 9.5px;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    .success-body strong { color: #1d4ed8; font-weight: 700; }
+
+    /* ─── PAR-Q SECTION ─── */
+    .parq-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .parq-table th {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 4px 6px;
+      background: #f8fafc;
+      border-bottom: 1.5px solid #e2e8f0;
+      text-align: left;
+    }
+
+    .parq-table td {
+      font-size: 9.5px;
+      padding: 5px 6px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .parq-table tr:last-child td { border-bottom: none; }
+
+    .parq-question { color: #374151; font-size: 9px; }
+    .parq-flag { font-size: 8px; font-weight: 700; background: #fee2e2; color: #dc2626; padding: 1px 5px; border-radius: 3px; }
+
+    .parq-radio {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .parq-opt {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 9px;
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 1 -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EVOFIT</div>
+        <div class="header-text">
+          <div class="header-title">Client <span>Onboarding</span> Checklist</div>
+          <div class="header-sub">First session guide for personal trainers — print, laminate, and use every time</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="free-tag">FREE RESOURCE</div>
+        <div class="client-info">evofittrainer-six.vercel.app</div>
+      </div>
+    </div>
+
+    <!-- CLIENT INFO BAR -->
+    <div class="client-bar">
+      <div class="client-field">
+        <label>Client Name</label>
+        <div class="field-line"></div>
+      </div>
+      <div class="client-field">
+        <label>Session Date</label>
+        <div class="field-line"></div>
+      </div>
+      <div class="client-field">
+        <label>Trainer Name</label>
+        <div class="field-line"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: PRE-SESSION PREP -->
+    <div class="section sec-1">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">Pre-Session Prep</div>
+        <div class="section-timing">Before they arrive</div>
+      </div>
+      <div class="checklist">
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">PAR-Q form sent and received</div>
+            <div class="check-sub">Physical Activity Readiness Questionnaire completed before the session — never skip this</div>
+          </div>
+          <span class="check-tag tag-required">Required</span>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Health history intake form completed</div>
+            <div class="check-sub">Injuries, surgeries, medications, medical conditions, family history</div>
+          </div>
+          <span class="check-tag tag-required">Required</span>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Liability waiver signed</div>
+            <div class="check-sub">Have your legal document signed before any physical activity begins</div>
+          </div>
+          <span class="check-tag tag-required">Required</span>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Client profile created in EvoFit Trainer</div>
+            <div class="check-sub">Set up name, contact details, goals, and starting notes in the app</div>
+          </div>
+          <span class="check-tag tag-digital">Digital</span>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Equipment and space prepared</div>
+            <div class="check-sub">Confirm you have what you need for the planned assessment — weights, mat, measuring tape</div>
+          </div>
+          <span class="check-tag tag-optional">Optional</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: PAR-Q REVIEW -->
+    <div class="section sec-2" style="margin-top:8px;">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">PAR-Q Review</div>
+        <div class="section-timing">5 min at session start</div>
+      </div>
+      <table class="parq-table">
+        <thead>
+          <tr>
+            <th style="width:50%;">Question (confirm verbally)</th>
+            <th style="width:20%;">Response</th>
+            <th>If YES — action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="parq-question">Has a doctor ever said you have a heart condition?</td>
+            <td>
+              <div class="parq-radio">
+                <div class="parq-opt"><div class="radio-circle"></div> Yes</div>
+                <div class="parq-opt"><div class="radio-circle"></div> No</div>
+              </div>
+            </td>
+            <td><span class="parq-flag">GP Clearance</span></td>
+          </tr>
+          <tr>
+            <td class="parq-question">Do you feel pain in your chest during physical activity?</td>
+            <td>
+              <div class="parq-radio">
+                <div class="parq-opt"><div class="radio-circle"></div> Yes</div>
+                <div class="parq-opt"><div class="radio-circle"></div> No</div>
+              </div>
+            </td>
+            <td><span class="parq-flag">Stop — GP Clearance</span></td>
+          </tr>
+          <tr>
+            <td class="parq-question">Do you ever feel faint, dizzy, or lose balance with exertion?</td>
+            <td>
+              <div class="parq-radio">
+                <div class="parq-opt"><div class="radio-circle"></div> Yes</div>
+                <div class="parq-opt"><div class="radio-circle"></div> No</div>
+              </div>
+            </td>
+            <td><span class="parq-flag">GP Clearance</span></td>
+          </tr>
+          <tr>
+            <td class="parq-question">Do you have a bone, joint, or muscle problem?</td>
+            <td>
+              <div class="parq-radio">
+                <div class="parq-opt"><div class="radio-circle"></div> Yes</div>
+                <div class="parq-opt"><div class="radio-circle"></div> No</div>
+              </div>
+            </td>
+            <td>Modify exercises accordingly</td>
+          </tr>
+          <tr>
+            <td class="parq-question">Are you currently on any prescribed medications?</td>
+            <td>
+              <div class="parq-radio">
+                <div class="parq-opt"><div class="radio-circle"></div> Yes</div>
+                <div class="parq-opt"><div class="radio-circle"></div> No</div>
+              </div>
+            </td>
+            <td>Note: BP meds affect HR response</td>
+          </tr>
+          <tr>
+            <td class="parq-question">Are you pregnant or have you given birth in the last 6 months?</td>
+            <td>
+              <div class="parq-radio">
+                <div class="parq-opt"><div class="radio-circle"></div> Yes</div>
+                <div class="parq-opt"><div class="radio-circle"></div> No</div>
+              </div>
+            </td>
+            <td>Specialist pre/postnatal protocols</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 3: MOVEMENT SCREEN -->
+    <div class="section sec-3" style="margin-top:8px;">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">5-Minute Movement Screen</div>
+        <div class="section-timing">5 min</div>
+      </div>
+      <table class="screen-table">
+        <thead>
+          <tr>
+            <th style="width:22%;">Assessment</th>
+            <th style="width:38%;">What to look for</th>
+            <th style="width:25%;">Result</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="screen-name">Overhead Squat</td>
+            <td class="screen-look">Knee tracking, heel rise, forward lean, arm position</td>
+            <td>
+              <div class="radio-group">
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-pass">Pass</span></div>
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-fail">Fail</span></div>
+              </div>
+            </td>
+            <td style="border-bottom:1px solid #e2e8f0; width:80px;"><div style="border-bottom:1px solid #cbd5e1; height:20px;"></div></td>
+          </tr>
+          <tr>
+            <td class="screen-name">Hip Hinge (RDL)</td>
+            <td class="screen-look">Neutral spine, hamstring tension, no rounding</td>
+            <td>
+              <div class="radio-group">
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-pass">Pass</span></div>
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-fail">Fail</span></div>
+              </div>
+            </td>
+            <td><div style="border-bottom:1px solid #cbd5e1; height:20px;"></div></td>
+          </tr>
+          <tr>
+            <td class="screen-name">Push-Up</td>
+            <td class="screen-look">Core bracing, shoulder stability, full range</td>
+            <td>
+              <div class="radio-group">
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-pass">Pass</span></div>
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-fail">Fail</span></div>
+              </div>
+            </td>
+            <td><div style="border-bottom:1px solid #cbd5e1; height:20px;"></div></td>
+          </tr>
+          <tr>
+            <td class="screen-name">Bodyweight Row</td>
+            <td class="screen-look">Scapular retraction, no neck strain, full pull</td>
+            <td>
+              <div class="radio-group">
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-pass">Pass</span></div>
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-fail">Fail</span></div>
+              </div>
+            </td>
+            <td><div style="border-bottom:1px solid #cbd5e1; height:20px;"></div></td>
+          </tr>
+          <tr>
+            <td class="screen-name">Single-Leg Balance</td>
+            <td class="screen-look">Hip drop, ankle wobble, 10s hold each leg</td>
+            <td>
+              <div class="radio-group">
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-pass">Pass</span></div>
+                <div class="radio-option"><div class="radio-circle"></div><span class="screen-fail">Fail</span></div>
+              </div>
+            </td>
+            <td><div style="border-bottom:1px solid #cbd5e1; height:20px;"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FOOTER PAGE 1 -->
+    <div class="footer">
+      <div>
+        <div class="footer-brand">EvoFit Trainer</div>
+        <div class="footer-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="footer-tip">Store this entire checklist digitally per client in EvoFit Trainer — never lose a session note again.</div>
+      <div class="footer-cta">
+        Free Account
+        <span>No credit card · 3 clients free</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 2 -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page">
+
+    <!-- HEADER PAGE 2 -->
+    <div class="page2-header">
+      <div class="p2h-left">
+        <span class="p2h-badge">EVOFIT</span>
+        <span class="p2h-title">Client Onboarding Checklist</span>
+      </div>
+      <span class="p2h-page">Page 2 of 2</span>
+    </div>
+
+    <!-- CLIENT NAME ROW -->
+    <div style="background:#f8fafc; border-bottom:1.5px solid #e2e8f0; padding:6px 26px; display:flex; align-items:center; gap:20px;">
+      <div style="font-size:8.5px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Client:</div>
+      <div style="flex:1; border-bottom:1.5px solid #cbd5e1; height:16px;"></div>
+      <div style="font-size:8.5px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px; margin-left:20px;">Date:</div>
+      <div style="flex:0.5; border-bottom:1.5px solid #cbd5e1; height:16px;"></div>
+    </div>
+
+    <!-- SECTIONS 4 + 5 in 2 col -->
+    <div class="two-col">
+
+      <!-- SECTION 4: GOAL SETTING -->
+      <div class="sec-4">
+        <div class="section-header" style="margin-top:8px;">
+          <div class="section-num">4</div>
+          <div class="section-title">Goal Setting</div>
+          <div class="section-timing">10 min</div>
+        </div>
+        <div class="goal-grid">
+          <div class="goal-item">
+            <div class="goal-label">Primary Goal</div>
+            <div class="goal-sub">What do they want most?</div>
+            <div class="goal-lines">
+              <div class="goal-line"></div>
+              <div class="goal-line"></div>
+            </div>
+          </div>
+          <div class="goal-item">
+            <div class="goal-label">Timeline</div>
+            <div class="goal-sub">By when?</div>
+            <div class="goal-lines">
+              <div class="goal-line"></div>
+              <div class="goal-line"></div>
+            </div>
+          </div>
+          <div class="goal-item" style="margin-top:6px;">
+            <div class="goal-label">Previous Training Experience</div>
+            <div class="goal-lines">
+              <div class="goal-line"></div>
+              <div class="goal-line"></div>
+            </div>
+          </div>
+          <div class="goal-item" style="margin-top:6px;">
+            <div class="goal-label">Availability (days/week)</div>
+            <div class="goal-lines">
+              <div class="goal-line"></div>
+              <div class="goal-line"></div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 8px; margin-top:8px;">
+          <div class="checklist">
+            <div class="check-item">
+              <div class="checkbox"></div>
+              <div class="check-content">
+                <div class="check-main">SMART goal written</div>
+                <div class="check-sub">Specific, Measurable, Achievable, Relevant, Time-bound</div>
+              </div>
+            </div>
+            <div class="check-item">
+              <div class="checkbox"></div>
+              <div class="check-content">
+                <div class="check-main">Motivation discussed</div>
+                <div class="check-sub">The "why" behind the goal — deeper than aesthetics</div>
+              </div>
+            </div>
+            <div class="check-item">
+              <div class="checkbox"></div>
+              <div class="check-content">
+                <div class="check-main">Barriers identified</div>
+                <div class="check-sub">Schedule, injury history, past failures — address upfront</div>
+              </div>
+            </div>
+            <div class="check-item">
+              <div class="checkbox"></div>
+              <div class="check-content">
+                <div class="check-main">Expectations aligned</div>
+                <div class="check-sub">Realistic outcomes and timeframes agreed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 5: BASELINE MEASUREMENTS -->
+      <div class="sec-5">
+        <div class="section-header" style="margin-top:8px;">
+          <div class="section-num">5</div>
+          <div class="section-title">Baseline Measurements</div>
+          <div class="section-timing">10 min</div>
+        </div>
+        <div class="measurements-grid">
+          <div class="meas-item">
+            <div class="meas-label">Height</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">cm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Body Weight</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">kg</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Resting HR</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">bpm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Blood Pressure</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">mmHg</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Waist Circumference</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">cm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Hip Circumference</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">cm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Chest</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">cm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Upper Arm (L / R)</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">cm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Thigh (L / R)</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">cm</span>
+            </div>
+          </div>
+          <div class="meas-item">
+            <div class="meas-label">Body Fat % (if tested)</div>
+            <div class="meas-line-group">
+              <div class="meas-line"></div>
+              <span class="meas-unit">%</span>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 8px; margin-top:6px;">
+          <div class="checklist">
+            <div class="check-item">
+              <div class="checkbox"></div>
+              <div class="check-content">
+                <div class="check-main">Photos taken (front, side, back)</div>
+                <div class="check-sub">Progress photos with written consent — store securely</div>
+              </div>
+              <span class="check-tag tag-optional">Optional</span>
+            </div>
+            <div class="check-item">
+              <div class="checkbox"></div>
+              <div class="check-content">
+                <div class="check-main">Measurements logged in EvoFit Trainer</div>
+                <div class="check-sub">Baseline saved — app tracks changes at each reassessment</div>
+              </div>
+              <span class="check-tag tag-digital">Digital</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: PROGRAM SETUP -->
+    <div class="section sec-6" style="margin-top:10px;">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-title">Program Setup</div>
+        <div class="section-timing">In EvoFit Trainer</div>
+      </div>
+      <div class="program-grid">
+        <div class="prog-field">
+          <div class="prog-label">Program Type</div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-field">
+          <div class="prog-label">Training Days/Week</div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-field">
+          <div class="prog-label">Session Length</div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-field">
+          <div class="prog-label">Start Date</div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-field">
+          <div class="prog-label">Phase / Mesocycle</div>
+          <div class="prog-line"></div>
+        </div>
+        <div class="prog-field">
+          <div class="prog-label">Review Date (4–6 wks)</div>
+          <div class="prog-line"></div>
+        </div>
+      </div>
+      <div style="padding:0 8px; margin-top:6px;">
+        <div class="checklist" style="display:grid; grid-template-columns:1fr 1fr; gap:0 10px;">
+          <div class="check-item">
+            <div class="checkbox"></div>
+            <div class="check-content">
+              <div class="check-main">Program built in EvoFit Trainer</div>
+              <div class="check-sub">All exercises, sets, reps, RPE entered</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="checkbox"></div>
+            <div class="check-content">
+              <div class="check-main">Program assigned to client</div>
+              <div class="check-sub">Client receives it in the app</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="checkbox"></div>
+            <div class="check-content">
+              <div class="check-main">Exercise modifications noted</div>
+              <div class="check-sub">Substitutions for failed screens</div>
+            </div>
+          </div>
+          <div class="check-item">
+            <div class="checkbox"></div>
+            <div class="check-content">
+              <div class="check-main">Client shown how to log workouts</div>
+              <div class="check-sub">App walkthrough completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 7: FIRST WORKOUT -->
+    <div class="section sec-7" style="margin-top:8px;">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div class="section-title">First Workout Guidelines</div>
+        <div class="section-timing">The session itself</div>
+      </div>
+      <div class="checklist" style="display:grid; grid-template-columns:1fr 1fr; gap:0 10px;">
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Start at RPE 6–7 maximum</div>
+            <div class="check-sub">Never test limits in session one — build trust first</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Teach RPE scale</div>
+            <div class="check-sub">Explain what RPE 7 feels like — confirm understanding</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Technique coaching on every set</div>
+            <div class="check-sub">Cue movement patterns — don't just count reps</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Log everything in EvoFit Trainer</div>
+            <div class="check-sub">Weight, reps, RPE — starts the progression baseline</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">End-of-session check-in</div>
+            <div class="check-sub">How do they feel? Energy levels, any pain or discomfort?</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="checkbox"></div>
+          <div class="check-content">
+            <div class="check-main">Next session scheduled</div>
+            <div class="check-sub">Don't let them leave without a confirmed next date</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES BOX -->
+    <div class="notes-box">
+      <div class="notes-label">Session Notes</div>
+      <div class="notes-lines">
+        <div class="notes-line"></div>
+        <div class="notes-line"></div>
+        <div class="notes-line"></div>
+      </div>
+    </div>
+
+    <!-- SUCCESS BAR -->
+    <div class="success-bar">
+      <div class="success-icon">⭐</div>
+      <div class="success-text">
+        <div class="success-title">Use EvoFit Trainer to go paperless</div>
+        <div class="success-body">
+          <strong>PAR-Q, goals, measurements, movement screen results, and program</strong> — all stored digitally per client. Track progress over time, see when baselines need reassessing, and never lose a session note again. <strong>Free for your first 3 clients.</strong> evofittrainer-six.vercel.app
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER PAGE 2 -->
+    <div class="footer">
+      <div>
+        <div class="footer-brand">EvoFit Trainer</div>
+        <div class="footer-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="footer-tip">Print this checklist. Laminate it. Use it for every new client — then log everything in EvoFit Trainer.</div>
+      <div class="footer-cta">
+        Start Free Today
+        <span>No credit card required</span>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
