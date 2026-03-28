@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Progressive Overload Playbook — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    /* ─── SHARED PAGE STRUCTURE ─── */
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      page-break-after: always;
+      position: relative;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 14px 28px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 17px;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-tag {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 500;
+      background: rgba(255,255,255,0.08);
+      padding: 3px 9px;
+      border-radius: 4px;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #0A0A0F;
+      padding: 9px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
+    .footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #fff;
+    }
+
+    .footer-brand span { color: #F97316; }
+
+    .footer-url { font-size: 10px; color: #94a3b8; }
+    .footer-pg { font-size: 10px; color: #64748b; }
+
+    /* ════════════════════════════════
+       PAGE 1 — COVER
+    ════════════════════════════════ */
+    .cover-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(155deg, #0A0A0F 0%, #0f172a 55%, #1a2f1a 100%);
+      padding: 36px 40px;
+    }
+
+    .cover-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      color: #F97316;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .cover-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 40px;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      max-width: 480px;
+      margin-bottom: 10px;
+    }
+
+    .cover-headline em {
+      font-style: normal;
+      color: #F97316;
+    }
+
+    .cover-sub {
+      font-size: 16px;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.5;
+      max-width: 400px;
+      margin-bottom: 32px;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 4px;
+      background: #2563EB;
+      border-radius: 2px;
+      margin-bottom: 32px;
+    }
+
+    /* 6 method pills */
+    .methods-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      max-width: 440px;
+      margin-bottom: 32px;
+    }
+
+    .method-pill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .method-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: #2563EB;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .method-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .cover-promise {
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.35);
+      border-radius: 10px;
+      padding: 14px 24px;
+      text-align: center;
+      max-width: 420px;
+    }
+
+    .cover-promise p {
+      font-size: 12px;
+      color: #93c5fd;
+      line-height: 1.6;
+    }
+
+    .cover-promise strong { color: #fff; font-weight: 600; }
+
+    /* ════════════════════════════════
+       PAGES 2 & 3 — METHODS
+    ════════════════════════════════ */
+    .methods-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 28px;
+      gap: 11px;
+      overflow: hidden;
+    }
+
+    /* Method card */
+    .method-card {
+      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      display: flex;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .method-num-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 14px 10px 14px 14px;
+      background: #0A0A0F;
+      width: 56px;
+      flex-shrink: 0;
+    }
+
+    .method-big-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 32px;
+      color: #2563EB;
+      line-height: 1;
+    }
+
+    .method-content {
+      flex: 1;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .method-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .method-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #0A0A0F;
+    }
+
+    .method-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .badge-obvious { background: #f1f5f9; color: #64748b; }
+    .badge-volume { background: rgba(37,99,235,0.1); color: #2563EB; }
+    .badge-intensity { background: rgba(249,115,22,0.1); color: #F97316; }
+    .badge-density { background: rgba(139,92,246,0.1); color: #7c3aed; }
+    .badge-frequency { background: rgba(22,163,74,0.1); color: #16a34a; }
+    .badge-tension { background: rgba(220,38,38,0.1); color: #dc2626; }
+
+    .method-desc {
+      font-size: 11px;
+      color: #374151;
+      line-height: 1.55;
+    }
+
+    /* Rule row inside method card */
+    .method-rules {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .rule-chip {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 10px;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .rule-chip strong {
+      color: #0A0A0F;
+      font-weight: 700;
+    }
+
+    /* Progress chain diagram */
+    .progress-chain {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 3px;
+    }
+
+    .chain-step {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 4px 9px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #0A0A0F;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .chain-arrow {
+      font-size: 12px;
+      color: #2563EB;
+      padding: 0 4px;
+      font-weight: 700;
+    }
+
+    .chain-step.chain-highlight {
+      background: #2563EB;
+      color: #fff;
+      border-color: #2563EB;
+    }
+
+    /* Sidebar stat */
+    .method-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 10px;
+      background: #f8fafc;
+      border-left: 1.5px solid #e2e8f0;
+      min-width: 70px;
+      flex-shrink: 0;
+    }
+
+    .stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      color: #2563EB;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 8.5px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    /* ════════════════════════════════
+       PAGE 4 — DECISION MATRIX + CTA
+    ════════════════════════════════ */
+    .page4-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 28px;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #0A0A0F;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 15px;
+      background: #2563EB;
+      border-radius: 2px;
+    }
+
+    /* Decision matrix table */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5px;
+    }
+
+    .matrix-table thead th {
+      background: #0A0A0F;
+      color: #fff;
+      padding: 7px 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      text-align: left;
+    }
+
+    .matrix-table thead th:first-child { border-radius: 7px 0 0 0; }
+    .matrix-table thead th:last-child { border-radius: 0 7px 0 0; }
+
+    .matrix-table tbody tr:nth-child(even) { background: #f8fafc; }
+
+    .matrix-table tbody td {
+      padding: 6px 10px;
+      color: #374151;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 10px;
+      vertical-align: top;
+    }
+
+    .matrix-table tbody td:first-child {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #0A0A0F;
+      white-space: nowrap;
+    }
+
+    .dot-yes {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      background: #2563EB;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 8px;
+      font-weight: 700;
+    }
+
+    .dot-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      background: #F97316;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 8px;
+      font-weight: 700;
+    }
+
+    /* RPE rules block */
+    .rpe-block {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+    }
+
+    .rpe-block-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #0A0A0F;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rpe-chip {
+      background: #2563EB;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .rpe-rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 16px;
+    }
+
+    .rpe-rule {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 4px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .rpe-range {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #2563EB;
+      flex-shrink: 0;
+      width: 52px;
+    }
+
+    .rpe-action {
+      font-size: 10px;
+      color: #374151;
+      line-height: 1.4;
+    }
+
+    .rpe-action strong {
+      color: #0A0A0F;
+      font-weight: 700;
+    }
+
+    /* CTA box */
+    .cta-box {
+      background: #0A0A0F;
+      border-radius: 12px;
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .cta-text {
+      flex: 1;
+    }
+
+    .cta-text h3 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      margin-bottom: 5px;
+      line-height: 1.2;
+    }
+
+    .cta-text h3 span { color: #F97316; }
+
+    .cta-text p {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .cta-right {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+      align-items: flex-end;
+    }
+
+    .cta-feature {
+      font-size: 10px;
+      color: #bfdbfe;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cta-feature::before {
+      content: '✓';
+      color: #2563EB;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .cta-btn {
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 8px 18px;
+      border-radius: 7px;
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    .cta-price-note {
+      font-size: 9.5px;
+      color: #64748b;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       PAGE 1 — COVER
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Progressive Overload <span>Playbook</span></div>
+      </div>
+      <div class="header-tag">Free Resource</div>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-eyebrow">Lead Magnet #11</div>
+
+      <div class="cover-headline">
+        6 Methods <em>Beyond</em><br>"Add More Weight"
+      </div>
+      <div class="cover-sub">
+        The complete trainer's guide to progressive overload — with practical rules, rep-range chains, and an RPE-based progression system you can apply this week.
+      </div>
+      <div class="cover-divider"></div>
+
+      <div class="methods-preview">
+        <div class="method-pill">
+          <div class="method-num">1</div>
+          <div class="method-name">Increase Weight</div>
+        </div>
+        <div class="method-pill">
+          <div class="method-num">2</div>
+          <div class="method-name">Increase Reps</div>
+        </div>
+        <div class="method-pill">
+          <div class="method-num">3</div>
+          <div class="method-name">Increase Sets</div>
+        </div>
+        <div class="method-pill">
+          <div class="method-num">4</div>
+          <div class="method-name">Increase Tempo</div>
+        </div>
+        <div class="method-pill">
+          <div class="method-num">5</div>
+          <div class="method-name">Decrease Rest</div>
+        </div>
+        <div class="method-pill">
+          <div class="method-num">6</div>
+          <div class="method-name">Increase Frequency</div>
+        </div>
+      </div>
+
+      <div class="cover-promise">
+        <p>Includes the <strong>RPE-based progression rules</strong> from EvoFit's built-in progression engine — the same system that automatically suggests overload for your clients based on real performance data.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io</div>
+      <div class="footer-pg">1 / 4</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE 2 — METHODS 1–3
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Progressive Overload <span>Playbook</span></div>
+      </div>
+      <div class="header-tag">Methods 1 – 3</div>
+    </div>
+
+    <div class="methods-body">
+
+      <!-- Method 1 -->
+      <div class="method-card">
+        <div class="method-num-col">
+          <div class="method-big-num">1</div>
+        </div>
+        <div class="method-content">
+          <div class="method-header">
+            <div class="method-title">Increase Weight</div>
+            <div class="method-badge badge-obvious">The Obvious One</div>
+          </div>
+          <div class="method-desc">
+            The foundation of all progressive overload. Adding load is the clearest signal to force adaptation — but increment size matters as much as the act itself. Too much, too soon leads to breakdown rather than adaptation.
+          </div>
+          <div class="method-rules">
+            <div class="rule-chip"><strong>Upper body:</strong> +2.5–5 lbs per session when hitting top of rep range</div>
+            <div class="rule-chip"><strong>Lower body:</strong> +5–10 lbs per session</div>
+            <div class="rule-chip"><strong>Rule:</strong> Never add weight if form degraded last set</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="stat-num">5lb</div>
+          <div class="stat-label">avg upper<br>increment</div>
+        </div>
+      </div>
+
+      <!-- Method 2 -->
+      <div class="method-card">
+        <div class="method-num-col">
+          <div class="method-big-num">2</div>
+        </div>
+        <div class="method-content">
+          <div class="method-header">
+            <div class="method-title">Increase Reps</div>
+            <div class="method-badge badge-volume">Volume Ladder</div>
+          </div>
+          <div class="method-desc">
+            Hit the top of the rep range across all sets before progressing weight. This two-step model (reps first, then weight) prevents premature loading and builds a real strength base at each weight.
+          </div>
+          <div class="method-rules">
+            <div class="rule-chip"><strong>Protocol:</strong> Must complete ALL sets at top of range first</div>
+            <div class="rule-chip"><strong>Then:</strong> Add weight, reset reps to bottom of range</div>
+          </div>
+          <div class="progress-chain">
+            <div class="chain-step">3×8 @ 100lb</div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">3×9</div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">3×10</div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step chain-highlight">3×8 @ 105lb</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">rep range<br>width</div>
+        </div>
+      </div>
+
+      <!-- Method 3 -->
+      <div class="method-card">
+        <div class="method-num-col">
+          <div class="method-big-num">3</div>
+        </div>
+        <div class="method-content">
+          <div class="method-header">
+            <div class="method-title">Increase Sets</div>
+            <div class="method-badge badge-volume">Volume Accumulation</div>
+          </div>
+          <div class="method-desc">
+            Adding sets is the cleanest way to increase weekly volume per muscle group without touching load or reps. Use it to bridge plateau periods and to build volume tolerance before a loading phase. Diminishing returns kick in hard above 20+ sets per muscle group per week.
+          </div>
+          <div class="method-rules">
+            <div class="rule-chip"><strong>Rate:</strong> +1 set per exercise every 2–3 weeks</div>
+            <div class="rule-chip"><strong>Ceiling:</strong> 20 sets/muscle group/week maximum</div>
+            <div class="rule-chip"><strong>Deload when:</strong> performance drops despite equal or more sets</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="stat-num">20</div>
+          <div class="stat-label">sets/muscle<br>per week max</div>
+        </div>
+      </div>
+
+      <!-- Trainer tip callout -->
+      <div style="background: rgba(37,99,235,0.06); border: 1.5px solid rgba(37,99,235,0.2); border-radius: 9px; padding: 10px 14px; display: flex; align-items: flex-start; gap: 10px;">
+        <div style="font-size: 18px; flex-shrink: 0; margin-top: 1px;">💡</div>
+        <div>
+          <div style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 11px; color: #1e40af; margin-bottom: 3px;">Trainer Tip: Methods 1–3 are your load and volume levers</div>
+          <div style="font-size: 10px; color: #374151; line-height: 1.5;">Beginners respond to all three simultaneously. Intermediate and advanced clients need to periodize them — cycling through volume accumulation phases (sets + reps), then intensity phases (weight). Never try to progress all three in the same block.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io</div>
+      <div class="footer-pg">2 / 4</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE 3 — METHODS 4–6
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Progressive Overload <span>Playbook</span></div>
+      </div>
+      <div class="header-tag">Methods 4 – 6</div>
+    </div>
+
+    <div class="methods-body">
+
+      <!-- Method 4 -->
+      <div class="method-card">
+        <div class="method-num-col">
+          <div class="method-big-num">4</div>
+        </div>
+        <div class="method-content">
+          <div class="method-header">
+            <div class="method-title">Increase Tempo</div>
+            <div class="method-badge badge-tension">Time Under Tension</div>
+          </div>
+          <div class="method-desc">
+            Slowing down the eccentric (lowering) phase dramatically increases time under tension — one of the key drivers of hypertrophy — without adding a single pound. A paused squat at 100lb creates more stimulus than a fast squat at 110lb for most clients.
+          </div>
+          <div class="method-rules">
+            <div class="rule-chip"><strong>Slow eccentrics:</strong> 3–4 second lowering phase</div>
+            <div class="rule-chip"><strong>Paused reps:</strong> 1–2s pause at bottom of ROM</div>
+            <div class="rule-chip"><strong>1.5 reps:</strong> full ROM + half ROM = one rep</div>
+            <div class="rule-chip"><strong>Notation:</strong> 3-1-1-0 (eccentric-pause-concentric-top)</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="stat-num">3s</div>
+          <div class="stat-label">eccentric<br>target</div>
+        </div>
+      </div>
+
+      <!-- Method 5 -->
+      <div class="method-card">
+        <div class="method-num-col">
+          <div class="method-big-num">5</div>
+        </div>
+        <div class="method-content">
+          <div class="method-header">
+            <div class="method-title">Decrease Rest Periods</div>
+            <div class="method-badge badge-density">Metabolic Density</div>
+          </div>
+          <div class="method-desc">
+            Reducing rest time is a form of progressive overload — same work, less time = higher density = greater metabolic and cardiovascular demand. Best used during hypertrophy phases, not strength or peak phases where full recovery is needed for maximum force output.
+          </div>
+          <div class="method-rules">
+            <div class="rule-chip"><strong>Rate:</strong> Reduce rest by 15 seconds every 2 weeks</div>
+            <div class="rule-chip"><strong>Floor:</strong> Never below 45s for compound movements</div>
+            <div class="rule-chip"><strong>Avoid:</strong> strength and peak phases (need full rest)</div>
+          </div>
+          <div class="progress-chain">
+            <div class="chain-step">90s rest</div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">75s rest</div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">60s rest</div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step chain-highlight">Add load → reset to 90s</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="stat-num">15s</div>
+          <div class="stat-label">reduce<br>every 2 wks</div>
+        </div>
+      </div>
+
+      <!-- Method 6 -->
+      <div class="method-card">
+        <div class="method-num-col">
+          <div class="method-big-num">6</div>
+        </div>
+        <div class="method-content">
+          <div class="method-header">
+            <div class="method-title">Increase Frequency</div>
+            <div class="method-badge badge-frequency">Weekly Volume</div>
+          </div>
+          <div class="method-desc">
+            Training a muscle 2–3× per week delivers higher total weekly volume than 1× per week — without making any single session longer. This is the most underused overload tool for intermediate clients who have plateaued on a traditional body-part split.
+          </div>
+          <div class="method-rules">
+            <div class="rule-chip"><strong>Move from:</strong> 1× per week per muscle group</div>
+            <div class="rule-chip"><strong>Move to:</strong> 2–3× per week</div>
+            <div class="rule-chip"><strong>Distribute:</strong> spread sets across sessions, not stacked</div>
+            <div class="rule-chip"><strong>Recovery window:</strong> minimum 48h between sessions for same muscle</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="stat-num">2–3×</div>
+          <div class="stat-label">per muscle<br>per week</div>
+        </div>
+      </div>
+
+      <!-- Trainer tip callout -->
+      <div style="background: rgba(249,115,22,0.06); border: 1.5px solid rgba(249,115,22,0.2); border-radius: 9px; padding: 10px 14px; display: flex; align-items: flex-start; gap: 10px;">
+        <div style="font-size: 18px; flex-shrink: 0; margin-top: 1px;">⚡</div>
+        <div>
+          <div style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 11px; color: #c2410c; margin-bottom: 3px;">Trainer Tip: Methods 4–6 are your quality and frequency levers</div>
+          <div style="font-size: 10px; color: #374151; line-height: 1.5;">These methods are your "secret weapons" when clients plateau. When weight stops going up, slow the tempo. When sessions feel stale, split the frequency. When conditioning is the goal, compress the rest. Each one provides a distinct training stimulus that weight alone cannot.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io</div>
+      <div class="footer-pg">3 / 4</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE 4 — DECISION MATRIX + RPE RULES + CTA
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Progressive Overload <span>Playbook</span></div>
+      </div>
+      <div class="header-tag">Decision Matrix</div>
+    </div>
+
+    <div class="page4-body">
+
+      <div class="section-title">When to Use Each Method</div>
+
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Goal: Strength</th>
+            <th>Goal: Hypertrophy</th>
+            <th>Goal: Endurance</th>
+            <th>Beginner</th>
+            <th>Intermediate</th>
+            <th>Advanced</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1 · Increase Weight</td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td>—</td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>2 · Increase Reps</td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>3 · Increase Sets</td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td>Caution</td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>4 · Increase Tempo</td>
+            <td>—</td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>5 · Decrease Rest</td>
+            <td>—</td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td>—</td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+          </tr>
+          <tr>
+            <td>6 · Increase Frequency</td>
+            <td><span class="dot-yes">✓</span></td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-yes">✓</span></td>
+            <td>—</td>
+            <td><span class="dot-primary">★</span></td>
+            <td><span class="dot-primary">★</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="font-size: 9.5px; color: #64748b; display: flex; gap: 14px; align-items: center;">
+        <span><span class="dot-primary" style="display:inline-flex;width:13px;height:13px;font-size:8px;">★</span> Best fit</span>
+        <span><span class="dot-yes" style="display:inline-flex;width:13px;height:13px;font-size:8px;">✓</span> Works well</span>
+        <span style="color:#94a3b8;">— Not recommended</span>
+        <span style="color:#94a3b8;">Caution = monitor recovery carefully</span>
+      </div>
+
+      <!-- RPE rules -->
+      <div class="section-title">RPE-Based Progression Rules</div>
+      <div class="rpe-block">
+        <div class="rpe-block-title">
+          Auto-Progression Logic
+          <span class="rpe-chip">From EvoFit's Progression Engine</span>
+        </div>
+        <div class="rpe-rules-grid">
+          <div class="rpe-rule">
+            <div class="rpe-range">RPE ≤6</div>
+            <div class="rpe-action"><strong>Too easy.</strong> Increase weight next session. Client has significant reserve — don't wait.</div>
+          </div>
+          <div class="rpe-rule">
+            <div class="rpe-range">RPE 7</div>
+            <div class="rpe-action"><strong>On track.</strong> Continue current load. Target for hypertrophy work sets.</div>
+          </div>
+          <div class="rpe-rule">
+            <div class="rpe-range">RPE 8</div>
+            <div class="rpe-action"><strong>Working range.</strong> Hold load, focus on rep quality. Consider adding a set.</div>
+          </div>
+          <div class="rpe-rule">
+            <div class="rpe-range">RPE 9</div>
+            <div class="rpe-action"><strong>Near max.</strong> Reduce volume or load. Ensure adequate recovery before next session.</div>
+          </div>
+          <div class="rpe-rule">
+            <div class="rpe-range">RPE 10</div>
+            <div class="rpe-action"><strong>True max.</strong> Deload required. Not appropriate for hypertrophy training blocks.</div>
+          </div>
+          <div class="rpe-rule">
+            <div class="rpe-range">Decline</div>
+            <div class="rpe-action"><strong>Same weight, higher RPE than last session.</strong> Flag for recovery review. Sleep, nutrition, or overtraining.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-box">
+        <div class="cta-text">
+          <h3>Track all 6 methods automatically.<br><span>EvoFit's progression engine does the math.</span></h3>
+          <p>EvoFit Trainer auto-suggests which progression method to use next based on each client's RPE history, set completion, and training age — so you're coaching smarter, not harder.</p>
+        </div>
+        <div class="cta-right">
+          <div class="cta-feature">RPE-based auto-suggestions</div>
+          <div class="cta-feature">All 6 overload methods tracked</div>
+          <div class="cta-feature">Per-client progression history</div>
+          <div class="cta-feature">No monthly subscription</div>
+          <div class="cta-btn">trainer.evofit.io/pricing</div>
+          <div class="cta-price-note">Starter $199 · Pro $299 · Enterprise $399</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io/pricing</div>
+      <div class="footer-pg">4 / 4</div>
+    </div>
+  </div>
+
+</body>
+</html>
