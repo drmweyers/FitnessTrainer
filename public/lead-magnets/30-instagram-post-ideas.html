@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>30 Instagram Post Ideas for Personal Trainers — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: avoid; }
+
+    /* ─── HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 13px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 9px; }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #ffffff;
+    }
+
+    .header-title span { color: #F97316; }
+    .header-meta { font-size: 9.5px; color: #94a3b8; }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #f1f5f9;
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer p { font-size: 9px; color: #94a3b8; }
+    .footer strong { color: #2563EB; }
+
+    /* ─── COVER ─── */
+    .cover-body {
+      flex: 1;
+      background: linear-gradient(150deg, #0A0A0F 0%, #1a1a2e 40%, #0A0A0F 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 35%, rgba(249,115,22,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cover-ig-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #F97316, #ef4444, #ec4899);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 18px;
+      position: relative;
+    }
+
+    .cover-badge {
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.4);
+      color: #fb923c;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .cover-number {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 80px;
+      color: #F97316;
+      line-height: 0.9;
+      position: relative;
+    }
+
+    .cover-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      position: relative;
+    }
+
+    .cover-headline em { color: #F97316; font-style: normal; }
+
+    .cover-sub {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: #93c5fd;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .cover-divider {
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, #F97316, #2563EB);
+      border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+
+    .cover-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.65;
+      max-width: 360px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .cover-sections {
+      display: flex;
+      gap: 12px;
+      position: relative;
+    }
+
+    .cover-section-pill {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+
+    .cover-section-icon { font-size: 18px; margin-bottom: 4px; }
+
+    .cover-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+
+    .cover-section-posts {
+      font-size: 9px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .cover-url {
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 18px;
+      position: relative;
+    }
+
+    .cover-url strong { color: #F97316; }
+
+    /* ─── CONTENT PAGES ─── */
+    .section-hero {
+      padding: 14px 24px 12px;
+      flex-shrink: 0;
+    }
+
+    .section-hero.educational { background: linear-gradient(90deg, #1e3a8a, #1d4ed8); }
+    .section-hero.engagement   { background: linear-gradient(90deg, #14532d, #15803d); }
+    .section-hero.promotional  { background: linear-gradient(90deg, #7c2d12, #c2410c); }
+
+    .section-eyebrow {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 2px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+
+    .section-title em { color: #F97316; font-style: normal; }
+
+    .section-desc {
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* ─── POST GRID ─── */
+    .posts-grid {
+      flex: 1;
+      padding: 10px 24px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      overflow: hidden;
+    }
+
+    .post-card {
+      display: grid;
+      grid-template-columns: 30px 62px 1fr;
+      gap: 0;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 7px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .post-num-col {
+      background: #0A0A0F;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .post-type-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 6px;
+      gap: 3px;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .post-type-col.reel      { background: #fff7ed; }
+    .post-type-col.carousel  { background: #eff6ff; }
+    .post-type-col.story     { background: #f0fdf4; }
+    .post-type-col.static    { background: #faf5ff; }
+
+    .type-icon { font-size: 16px; }
+
+    .type-label {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 8.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      text-align: center;
+    }
+
+    .post-type-col.reel .type-label     { color: #ea580c; }
+    .post-type-col.carousel .type-label { color: #1d4ed8; }
+    .post-type-col.story .type-label    { color: #15803d; }
+    .post-type-col.static .type-label   { color: #7c3aed; }
+
+    .post-body {
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .post-hook {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11.5px;
+      color: #0A0A0F;
+      line-height: 1.25;
+    }
+
+    .post-desc {
+      font-size: 9.5px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    .post-hashtags {
+      font-size: 9px;
+      color: #2563EB;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    /* ─── CTA FOOTER ─── */
+    .cta-strip {
+      background: linear-gradient(90deg, #2563EB, #1d4ed8);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .cta-strip-text {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .cta-strip-text em { color: #F97316; font-style: normal; }
+
+    .cta-strip-sub {
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.75);
+      margin-top: 1px;
+    }
+
+    .cta-strip-url {
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    /* ─── LAST PAGE FULL CTA ─── */
+    .full-cta-box {
+      background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+      border-radius: 10px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .full-cta-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .full-cta-headline em { color: #F97316; font-style: normal; }
+
+    .full-cta-sub {
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+    }
+
+    .full-cta-btn {
+      display: block;
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 7px;
+      text-decoration: none;
+      text-align: center;
+      margin-bottom: 4px;
+      white-space: nowrap;
+    }
+
+    .full-cta-note { font-size: 9px; color: rgba(255,255,255,0.6); text-align: center; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 1: COVER
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">30 Instagram Post Ideas for <span>Personal Trainers</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-ig-icon">📱</div>
+    <div class="cover-badge">Free Resource — EvoFit Trainer</div>
+    <div class="cover-number">30</div>
+    <div class="cover-headline">Instagram Post <em>Ideas</em><br/>for Personal Trainers</div>
+    <div class="cover-sub">Done-For-You Hooks · Format · Hashtags</div>
+    <div class="cover-divider"></div>
+    <div class="cover-desc">Stop staring at a blank screen wondering what to post. These 30 battle-tested Instagram post ideas cover every content pillar — from educational carousels that build authority, to engagement posts that grow your audience, to promotional content that converts followers into clients.</div>
+
+    <div class="cover-sections">
+      <div class="cover-section-pill">
+        <div class="cover-section-icon">📚</div>
+        <div class="cover-section-title">Educational</div>
+        <div class="cover-section-posts">Posts 1–10</div>
+      </div>
+      <div class="cover-section-pill">
+        <div class="cover-section-icon">💬</div>
+        <div class="cover-section-title">Engagement</div>
+        <div class="cover-section-posts">Posts 11–20</div>
+      </div>
+      <div class="cover-section-pill">
+        <div class="cover-section-icon">🎯</div>
+        <div class="cover-section-title">Promotional</div>
+        <div class="cover-section-posts">Posts 21–30</div>
+      </div>
+    </div>
+
+    <div class="cover-url">Free resource from <strong>trainer.evofit.io</strong></div>
+  </div>
+
+  <div class="footer">
+    <p>EvoFit Trainer — Professional Training Software for Personal Trainers</p>
+    <p>© 2026 EvoFit · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 2: POSTS 1–10 (EDUCATIONAL)
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">30 Instagram Post Ideas for <span>Personal Trainers</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="section-hero educational">
+    <div class="section-eyebrow">Posts 1–10 · Content Pillar</div>
+    <div class="section-title"><em>Educational</em> Content</div>
+    <div class="section-desc">Build authority, earn trust, and attract followers who see you as the expert before they ever buy.</div>
+  </div>
+
+  <div class="posts-grid">
+
+    <div class="post-card">
+      <div class="post-num-col">1</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Stop doing THIS in your bench press (5 form fixes)"</div>
+        <div class="post-desc">Slide 1: hook image showing common mistake. Slides 2–6: each fix with cue + why it matters. Slide 7: CTA.</div>
+        <div class="post-hashtags">#benchpress #formcheck #strengthtraining #personaltrainer #liftingtips</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">2</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"The #1 myth about soreness that's killing your progress"</div>
+        <div class="post-desc">30–45 sec. Bust "no pain no gain" myth. Explain DOMS vs productive training stress. End with your training philosophy.</div>
+        <div class="post-hashtags">#fitnessmyths #musclesoreness #DOMS #fitnesscoach #gymtips</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">3</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Squat vs. Leg Press — which one is actually better?"</div>
+        <div class="post-desc">Slide-by-slide comparison: biomechanics, muscle recruitment, use cases. Position: "both, here's how to program them."</div>
+        <div class="post-hashtags">#squat #legpress #legday #trainingscience #personaltrainer</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">4</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"3 exercises you're probably doing wrong (and how to fix them)"</div>
+        <div class="post-desc">Show wrong form vs right form for 3 moves. Keep under 60 sec. Fast-paced, text overlay on screen.</div>
+        <div class="post-hashtags">#formcheck #gym #personaltrainer #exercisetips #workouttips</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">5</div>
+      <div class="post-type-col static">
+        <span class="type-icon">🖼️</span>
+        <span class="type-label">Static</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"RPE 7 vs RPE 9 — what's actually the difference?"</div>
+        <div class="post-desc">Simple graphic comparing RPE levels. Caption explains why training at RPE 7–8 drives better long-term results than always going to failure.</div>
+        <div class="post-hashtags">#RPE #trainingload #progressiveoverload #strengthcoach #periodization</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">6</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"7 signs you need a deload week (and how to do it right)"</div>
+        <div class="post-desc">One sign per slide. Final slide: deload protocol (cut volume 40–50%, keep intensity). Shows expertise in periodization.</div>
+        <div class="post-hashtags">#deload #recovery #periodization #strengthtraining #personaltrainer</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">7</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Cable row vs barbell row — which builds more back?"</div>
+        <div class="post-desc">Side-by-side comparison. Mention stretch position, load, and use case for each. End: "do both — here's when."</div>
+        <div class="post-hashtags">#backday #pullday #backworkout #exercisescience #musclebuilding</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">8</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Progressive overload explained in 6 slides (beginner-friendly)"</div>
+        <div class="post-desc">What it is → why it matters → 6 ways to apply it → common mistakes → tracking method. Highly shareable education piece.</div>
+        <div class="post-hashtags">#progressiveoverload #fitnesseducation #beginnerlifting #gym #gainz</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">9</div>
+      <div class="post-type-col static">
+        <span class="type-icon">🖼️</span>
+        <span class="type-label">Static</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"The 4 movement patterns every program needs"</div>
+        <div class="post-desc">Clean graphic: Push / Pull / Hinge / Squat with 2 examples each. "If your program is missing any of these, DM me" as CTA.</div>
+        <div class="post-hashtags">#movementpatterns #programdesign #functionaltraining #strengthcoach #fitness</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">10</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Why your clients plateau after 3 months (and how to fix it)"</div>
+        <div class="post-desc">Explains adaptation, periodization, and variation. Positions you as the solution. Great for attracting new clients who've hit walls.</div>
+        <div class="post-hashtags">#plateau #musclebuilding #fitnesscoach #programdesign #personaltrainer</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cta-strip">
+    <div>
+      <div class="cta-strip-text">Manage all your clients in one place — <em>trainer.evofit.io</em></div>
+      <div class="cta-strip-sub">Program Builder · Client Tracking · Progress Analytics · Schedule</div>
+    </div>
+    <a class="cta-strip-url" href="https://trainer.evofit.io">Get Started</a>
+  </div>
+
+  <div class="footer">
+    <p>Page 2 of 4 · Posts 1–10 — Educational · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 3: POSTS 11–20 (ENGAGEMENT)
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">30 Instagram Post Ideas for <span>Personal Trainers</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="section-hero engagement">
+    <div class="section-eyebrow">Posts 11–20 · Content Pillar</div>
+    <div class="section-title"><em>Engagement</em> Content</div>
+    <div class="section-desc">Drive comments, shares, and saves. Build a community that shows up every week — not just passive scrollers.</div>
+  </div>
+
+  <div class="posts-grid">
+
+    <div class="post-card">
+      <div class="post-num-col">11</div>
+      <div class="post-type-col story">
+        <span class="type-icon">📖</span>
+        <span class="type-label">Story</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Poll: Do you track your sets and reps? Yes / No"</div>
+        <div class="post-desc">Follow up: DM the "No" voters your free template. Builds conversation, surfaces warm leads, shows investment in their results.</div>
+        <div class="post-hashtags">#igstory #poll #fitnesscoach #personaltrainer #workoutroutine</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">12</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Day in the life of a personal trainer (6am–8pm)"</div>
+        <div class="post-desc">Time-lapse of your actual day: early sessions, programming time, client check-ins. Humanizes your brand. Shows work ethic.</div>
+        <div class="post-hashtags">#dayinthelife #personaltrainerlife #fitnessbusiness #coachlife #gymlife</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">13</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"My client [Name] added 40lbs to her deadlift in 8 weeks — here's exactly how"</div>
+        <div class="post-desc">Before/after progress data (with permission). Programming breakdown. Client quote. One of the highest-converting content types for leads.</div>
+        <div class="post-hashtags">#clienttransformation #progresspics #deadlift #personaltrainer #resultscoach</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">14</div>
+      <div class="post-type-col story">
+        <span class="type-icon">📖</span>
+        <span class="type-label">Story</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Q&A: Ask me anything about training — I'll answer all today"</div>
+        <div class="post-desc">Use the Question sticker. Respond to each in Stories. Screenshot best Q&As for a carousel later. Drives DMs and discovery.</div>
+        <div class="post-hashtags">#QandA #askmeAnything #fitnesscoach #personaltrainer #gymquestions</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">15</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Expectation vs Reality: Training with a personal trainer"</div>
+        <div class="post-desc">Funny/relatable format showing what people think PT is vs what it actually looks like. Drives shares + comments. Tag a friend CTA.</div>
+        <div class="post-hashtags">#expectationvsreality #personaltrainerhumor #gymhumor #fitnesscoach #relateable</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">16</div>
+      <div class="post-type-col static">
+        <span class="type-icon">🖼️</span>
+        <span class="type-label">Static</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Controversial take: Most beginners should NOT train to failure"</div>
+        <div class="post-desc">State your take boldly. Back it up with 2–3 reasons in the caption. Ask followers to share their opinion in comments. Debate = reach.</div>
+        <div class="post-hashtags">#hottake #trainingphilosophy #beginnertraining #fitnesscoach #strengthtraining</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">17</div>
+      <div class="post-type-col story">
+        <span class="type-icon">📖</span>
+        <span class="type-label">Story</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"This week's client win 🔥 [photo/video with permission]"</div>
+        <div class="post-desc">Weekly series. Short caption on what they achieved. Tag them (with permission). Creates social proof + keeps your audience invested.</div>
+        <div class="post-hashtags">#clientwin #personaltrainer #progress #motivation #fitnesscoach</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">18</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"My training journey: where I started vs where I am now"</div>
+        <div class="post-desc">Personal story format. Your own before/during/after. Share struggles, turning points, key lessons. Builds deep connection and trust.</div>
+        <div class="post-hashtags">#myjourney #personaltrainer #fitnessmotivation #trainerstory #authentic</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">19</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Rate my client's squat 1–10 👇"</div>
+        <div class="post-desc">Share a clip (with client permission) of a training milestone or improved form. Ask audience to rate and drop tips. Massive comment bait.</div>
+        <div class="post-hashtags">#squatcheck #formcheck #personaltrainer #squatdepth #clientprogress</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">20</div>
+      <div class="post-type-col story">
+        <span class="type-icon">📖</span>
+        <span class="type-label">Story</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"This or That: Barbell squat vs Leg press — which do you prefer?"</div>
+        <div class="post-desc">Swipe-up poll with image for each option. DM voters a 3-tip follow-up on whichever they chose. Great for warm list-building.</div>
+        <div class="post-hashtags">#thisorthat #squatday #legpress #igpoll #fitnesscoach</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cta-strip">
+    <div>
+      <div class="cta-strip-text">Manage all your clients in one place — <em>trainer.evofit.io</em></div>
+      <div class="cta-strip-sub">Program Builder · Client Tracking · Progress Analytics · Schedule</div>
+    </div>
+    <a class="cta-strip-url" href="https://trainer.evofit.io">Get Started</a>
+  </div>
+
+  <div class="footer">
+    <p>Page 3 of 4 · Posts 11–20 — Engagement · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 4: POSTS 21–30 (PROMOTIONAL) + CTA
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">30 Instagram Post Ideas for <span>Personal Trainers</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="section-hero promotional">
+    <div class="section-eyebrow">Posts 21–30 · Content Pillar</div>
+    <div class="section-title"><em>Promotional</em> Content</div>
+    <div class="section-desc">Convert warm followers into paying clients. Done right, promotional posts feel valuable — not pushy.</div>
+  </div>
+
+  <div class="posts-grid">
+
+    <div class="post-card">
+      <div class="post-num-col">21</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Free 7-day workout challenge starts Monday — comment CHALLENGE to join"</div>
+        <div class="post-desc">Low-barrier CTA. Creates an email/DM list. Drive comments to beat algorithm. Deliver via Stories or DM sequence.</div>
+        <div class="post-hashtags">#workoutchallenge #freeworkout #fitnesscoach #fitnesschallenge #personaltrainer</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">22</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"What my online clients get every week (full breakdown)"</div>
+        <div class="post-desc">Transparency post: weekly check-in, custom program updates, form feedback, messaging support. Shows value before they buy.</div>
+        <div class="post-hashtags">#onlinecoaching #onlinept #onlinepersonaltrainer #coachingservices #fitnesscoach</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">23</div>
+      <div class="post-type-col static">
+        <span class="type-icon">🖼️</span>
+        <span class="type-label">Static</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"⭐⭐⭐⭐⭐ [Client Name] after 12 weeks of online coaching"</div>
+        <div class="post-desc">Screenshot or styled graphic of client testimonial. Add 1–2 specific results. DM CTA for people who want similar results.</div>
+        <div class="post-hashtags">#testimonial #clientresults #personaltrainer #onlinecoaching #fitnessgoals</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">24</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Behind the scenes: how I build a client's 12-week program"</div>
+        <div class="post-desc">Screen-record your program builder workflow. Show assessment → exercise selection → progressive overload plan. Builds credibility + desire.</div>
+        <div class="post-hashtags">#behindthescenes #programdesign #personaltrainer #onlinecoach #fitnessprogram</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">25</div>
+      <div class="post-type-col story">
+        <span class="type-icon">📖</span>
+        <span class="type-label">Story</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"I have 2 spots left for online coaching this month — swipe up to apply"</div>
+        <div class="post-desc">Scarcity-based Story. Link to intake form or DM. Repeat for 3 days. Always works better with a deadline or limited spots framing.</div>
+        <div class="post-hashtags">#onlinecoaching #personaltrainer #limitedspots #applytocoach #fitnesscoach</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">26</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"The difference between my clients and people who train alone for years"</div>
+        <div class="post-desc">Side-by-side comparison of outcomes, structure, accountability, and rate of progress. Closes with "Which would you rather be?"</div>
+        <div class="post-hashtags">#personaltrainer #coachingmatters #accountability #resultscoach #onlinept</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">27</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"What I wish I knew before I hired my first coach"</div>
+        <div class="post-desc">Story-led Reel about YOUR experience as a client first. Lessons learned. Naturally leads into why you do what you do. Soft promo.</div>
+        <div class="post-hashtags">#mycoachingjourney #personaltrainer #coachingworks #fitnesslife #strengthcoach</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">28</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"Here's what's included in my [Tier] coaching package (no fluff)"</div>
+        <div class="post-desc">Slide-by-slide package breakdown. Be specific: weekly touchpoints, turnaround times, what clients get. Transparent sells better than vague.</div>
+        <div class="post-hashtags">#coachingpackage #onlinecoaching #personaltrainer #coachingprogram #fitnessbusiness</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">29</div>
+      <div class="post-type-col reel">
+        <span class="type-icon">🎬</span>
+        <span class="type-label">Reel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"3 reasons people fail to get results without a coach"</div>
+        <div class="post-desc">Accountability, programming knowledge, and objective feedback. Each point builds the case for working with you. End: "DM me RESULTS."</div>
+        <div class="post-hashtags">#whyyouneedacoach #personaltrainer #gymresults #fitnesscoach #accountability</div>
+      </div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-num-col">30</div>
+      <div class="post-type-col carousel">
+        <span class="type-icon">🎠</span>
+        <span class="type-label">Carousel</span>
+      </div>
+      <div class="post-body">
+        <div class="post-hook">"How I took [Client] from gym-shy to setting a PR in 10 weeks"</div>
+        <div class="post-desc">Full story arc: where they started, roadblocks faced, milestones hit, final result. Strong narrative = strong conversion. CTA at end.</div>
+        <div class="post-hashtags">#clientstory #personalrecord #personaltrainer #transformationstory #coachingworks</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="full-cta-box">
+    <div>
+      <div class="full-cta-headline">Manage all your clients in one place — <em>trainer.evofit.io</em></div>
+      <div class="full-cta-sub">While you're growing on Instagram, EvoFit Trainer handles the backend: program builder, client progress tracking, session scheduling, iCal export, and messaging. One-time purchase — no subscriptions.</div>
+    </div>
+    <div>
+      <a class="full-cta-btn" href="https://trainer.evofit.io/pricing">trainer.evofit.io/pricing</a>
+      <div class="full-cta-note">Starter $199 · Pro $299 · Enterprise $399</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Page 4 of 4 · Posts 21–30 — Promotional · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+</body>
+</html>
