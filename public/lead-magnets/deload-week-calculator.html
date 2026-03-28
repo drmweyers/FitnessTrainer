@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Deload Week Calculator — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: avoid; }
+
+    /* ─── HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 10px; }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-sub {
+      font-size: 10.5px;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    /* ─── HERO BAND ─── */
+    .hero-band {
+      background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+      padding: 22px 28px 20px;
+      flex-shrink: 0;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 6px;
+    }
+
+    .hero-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .hero-headline em {
+      color: #F97316;
+      font-style: normal;
+    }
+
+    .hero-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.5;
+      max-width: 420px;
+    }
+
+    /* ─── CONTENT AREA ─── */
+    .content {
+      flex: 1;
+      padding: 18px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    /* ─── SECTION HEADING ─── */
+    .section-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #2563EB;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #0A0A0F;
+      margin-bottom: 8px;
+    }
+
+    /* ─── WHAT IS A DELOAD ─── */
+    .what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .what-box {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .what-box-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #2563EB;
+      margin-bottom: 5px;
+    }
+
+    .what-box p {
+      font-size: 10.5px;
+      color: #475569;
+      line-height: 1.55;
+    }
+
+    /* ─── DELOAD TIMING ─── */
+    .timing-rule {
+      background: linear-gradient(90deg, #eff6ff 0%, #f0f9ff 100%);
+      border-left: 4px solid #2563EB;
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .timing-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      min-width: 52px;
+      text-align: center;
+      padding: 6px 8px;
+      border-radius: 6px;
+      line-height: 1;
+    }
+
+    .timing-badge span {
+      display: block;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .timing-text strong {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0A0A0F;
+    }
+
+    .timing-text p {
+      font-size: 10.5px;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1.45;
+    }
+
+    /* ─── WARNING SIGNS ─── */
+    .warning-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .warning-card {
+      background: #fff7ed;
+      border: 1.5px solid #fed7aa;
+      border-radius: 8px;
+      padding: 10px 10px 8px;
+      text-align: center;
+    }
+
+    .warning-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .warning-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10.5px;
+      color: #9a3412;
+      margin-bottom: 3px;
+      line-height: 1.2;
+    }
+
+    .warning-desc {
+      font-size: 9.5px;
+      color: #c2410c;
+      line-height: 1.4;
+    }
+
+    /* ─── DELOAD TABLE ─── */
+    .table-wrap {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1.5px solid #e2e8f0;
+    }
+
+    .table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table-wrap thead tr {
+      background: #0A0A0F;
+    }
+
+    .table-wrap thead th {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .table-wrap thead th:first-child {
+      border-radius: 0;
+    }
+
+    .table-wrap tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table-wrap tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .table-wrap tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .table-wrap tbody td {
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #334155;
+      vertical-align: middle;
+    }
+
+    .table-wrap tbody td:first-child {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0A0A0F;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .pill-blue { background: #dbeafe; color: #1e40af; }
+    .pill-orange { background: #ffedd5; color: #9a3412; }
+    .pill-purple { background: #ede9fe; color: #5b21b6; }
+
+    .freq-badge {
+      background: #0A0A0F;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #f1f5f9;
+      padding: 8px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-left { font-size: 9.5px; color: #64748b; }
+    .footer-right { font-size: 9.5px; color: #94a3b8; }
+    .footer-right strong { color: #2563EB; }
+
+    /* ─── PAGE 2 ─── */
+    .p2-hero {
+      background: linear-gradient(135deg, #0A0A0F 0%, #1e293b 100%);
+      padding: 24px 28px 22px;
+      flex-shrink: 0;
+    }
+
+    .p2-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      color: #F97316;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 6px;
+    }
+
+    .p2-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #ffffff;
+      line-height: 1.15;
+      letter-spacing: -0.4px;
+      margin-bottom: 8px;
+    }
+
+    .p2-title em { color: #F97316; font-style: normal; }
+
+    .p2-sub {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+    }
+
+    /* ─── FEATURE GRID ─── */
+    .feature-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #0A0A0F;
+      margin-bottom: 12px;
+    }
+
+    .feature-section-title span { color: #2563EB; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .feature-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      background: #eff6ff;
+      color: #2563EB;
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .feature-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0A0A0F;
+      margin-bottom: 3px;
+    }
+
+    .feature-desc {
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    /* ─── PROCESS STEPS ─── */
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .step {
+      padding: 12px 12px 10px;
+      border-right: 1px solid #e2e8f0;
+      text-align: center;
+    }
+
+    .step:last-child { border-right: none; }
+
+    .step-num {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 6px;
+    }
+
+    .step-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #0A0A0F;
+      margin-bottom: 3px;
+    }
+
+    .step-desc {
+      font-size: 9.5px;
+      color: #64748b;
+      line-height: 1.45;
+    }
+
+    /* ─── CTA BOX ─── */
+    .cta-box {
+      background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+      border-radius: 10px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .cta-left {}
+
+    .cta-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: #ffffff;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .cta-headline em { color: #F97316; font-style: normal; }
+
+    .cta-sub {
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.4;
+    }
+
+    .pricing-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .price-pill {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      padding: 5px 10px;
+      text-align: center;
+    }
+
+    .price-tier {
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .price-amount {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    .price-model {
+      font-size: 8.5px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .cta-right { flex-shrink: 0; text-align: center; }
+
+    .cta-url {
+      display: block;
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 16px;
+      border-radius: 7px;
+      text-decoration: none;
+      margin-bottom: 5px;
+      letter-spacing: -0.2px;
+    }
+
+    .cta-note {
+      font-size: 9px;
+      color: rgba(255,255,255,0.65);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 1: What Is a Deload + When + Warning Signs + Table
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div>
+        <div class="header-title">The Deload Week <span>Calculator</span></div>
+        <div class="header-sub">Science-Backed Recovery Protocol for Serious Trainers</div>
+      </div>
+    </div>
+    <div class="header-sub">trainer.evofit.io</div>
+  </div>
+
+  <div class="hero-band">
+    <div class="hero-eyebrow">Recovery is Programming</div>
+    <div class="hero-headline">Know Exactly <em>When</em> &amp; How to Deload</div>
+    <div class="hero-sub">A deload week is a planned, strategic reduction in training volume and/or intensity. It's not weakness — it's the mechanism that allows your clients to absorb training stress and come back stronger.</div>
+  </div>
+
+  <div class="content">
+
+    <div>
+      <div class="section-label">The Science</div>
+      <div class="what-grid">
+        <div class="what-box">
+          <div class="what-box-title">What Happens During a Deload</div>
+          <p>Training creates accumulated fatigue that masks your true fitness level. A deload reduces systemic fatigue while maintaining training adaptations — allowing the fitness gains you've built to express themselves as actual performance.</p>
+        </div>
+        <div class="what-box">
+          <div class="what-box-title">Deload ≠ Rest Week</div>
+          <p>During a proper deload you still train — typically 4–6 sessions. You reduce volume (sets × reps) by 40–60%, keep intensity moderate, and maintain movement patterns. Stopping entirely causes rapid detraining and wastes your training block.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">General Rule</div>
+      <div class="timing-rule">
+        <div class="timing-badge">3–6<span>WEEKS</span></div>
+        <div class="timing-text">
+          <strong>Deload every 3–6 weeks of hard training</strong>
+          <p>Beginners recover faster and can push to 6 weeks. Advanced trainees accumulate fatigue faster and may need to deload every 3–4 weeks. Listen to both data and athlete feedback when scheduling deloads.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Warning Signs — Schedule a Deload Immediately</div>
+      <div class="warning-grid">
+        <div class="warning-card">
+          <div class="warning-icon">📉</div>
+          <div class="warning-title">Stalled Progress</div>
+          <div class="warning-desc">No strength or performance gains for 2+ consecutive sessions despite correct programming</div>
+        </div>
+        <div class="warning-card">
+          <div class="warning-icon">😴</div>
+          <div class="warning-title">Persistent Fatigue</div>
+          <div class="warning-desc">Client reports heavy legs, sluggish warm-ups, or can't hit target loads that felt easy recently</div>
+        </div>
+        <div class="warning-card">
+          <div class="warning-icon">🧠</div>
+          <div class="warning-title">Motivation Drop</div>
+          <div class="warning-desc">Dreading sessions, skipping workouts, or lost enthusiasm for training they normally enjoy</div>
+        </div>
+        <div class="warning-card">
+          <div class="warning-icon">🦵</div>
+          <div class="warning-title">Joint Discomfort</div>
+          <div class="warning-desc">Achy knees, sore elbows, or nagging shoulder pain that wasn't there 2–3 weeks ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Deload Protocol by Training Phase</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Training Phase</th>
+              <th>Deload Frequency</th>
+              <th>Volume Reduction</th>
+              <th>Intensity Guidance</th>
+              <th>Primary Goal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hypertrophy</td>
+              <td><span class="freq-badge">Every 4 Weeks</span></td>
+              <td><span class="pill pill-orange">40–50% reduction</span></td>
+              <td>Keep intensity (same loads, fewer sets)</td>
+              <td>Restore tissue recovery</td>
+            </tr>
+            <tr>
+              <td>Strength</td>
+              <td><span class="freq-badge">Every 3–4 Weeks</span></td>
+              <td><span class="pill pill-orange">50% reduction</span></td>
+              <td>Reduce to ~70% 1RM; maintain patterns</td>
+              <td>CNS recovery, joint health</td>
+            </tr>
+            <tr>
+              <td>Power / Athletic</td>
+              <td><span class="freq-badge">Every 3 Weeks</span></td>
+              <td><span class="pill pill-purple">60% reduction</span></td>
+              <td>Reduce to ~60% intensity; cut explosives</td>
+              <td>Neural fatigue management</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">Page 1 of 2 · EvoFit Trainer — Professional Training Software</div>
+    <div class="footer-right">Free resource from <strong>trainer.evofit.io</strong></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 2: How EvoFit Automates This + CTA
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div>
+        <div class="header-title">The Deload Week <span>Calculator</span></div>
+        <div class="header-sub">Science-Backed Recovery Protocol for Serious Trainers</div>
+      </div>
+    </div>
+    <div class="header-sub">trainer.evofit.io</div>
+  </div>
+
+  <div class="p2-hero">
+    <div class="p2-eyebrow">Stop Guessing. Start Automating.</div>
+    <div class="p2-title">How EvoFit Trainer<br/><em>Automates</em> Your Deload Scheduling</div>
+    <div class="p2-sub">Managing deloads manually across 15+ clients is error-prone and time-consuming. EvoFit Trainer's progression engine handles this for you — automatically flagging deload windows based on real training data.</div>
+  </div>
+
+  <div class="content">
+
+    <div>
+      <div class="feature-section-title">Your Deload Workflow, <span>Automated</span></div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div>
+            <div class="feature-title">RPE-Based Auto-Suggestions</div>
+            <div class="feature-desc">EvoFit tracks every client's RPE across sessions. When sustained RPE rises above threshold without performance gains, the system flags a deload recommendation — before the athlete burns out.</div>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🗓</div>
+          <div>
+            <div class="feature-title">Deload Block Configuration</div>
+            <div class="feature-desc">Set deload frequency per program block (e.g., every 4th week). EvoFit automatically adjusts volume targets for that week in the Program Builder — no manual recalculation needed.</div>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <div>
+            <div class="feature-title">Progression Tracking</div>
+            <div class="feature-desc">Visual progression charts show exactly when a client's trajectory flattens, giving you objective data to justify a deload conversation — especially useful with competitive athletes.</div>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <div>
+            <div class="feature-title">Client Notifications</div>
+            <div class="feature-desc">When a deload is scheduled, clients receive automatic app notifications with their adjusted workout plan for the week — keeping them on track without extra admin work from you.</div>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div>
+            <div class="feature-title">ACWR Monitoring</div>
+            <div class="feature-desc">Acute:Chronic Workload Ratio analytics reveal overreaching patterns across your entire client roster. Spot fatigue accumulation at scale, not just individual sessions.</div>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div>
+            <div class="feature-title">One-Click Template Application</div>
+            <div class="feature-desc">Apply a deload template to any client's program with a single click. EvoFit scales volume by the percentages you set, respecting their specific training phase and exercise selection.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">How It Works in 4 Steps</div>
+      <div class="steps-row">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Set Block Structure</div>
+          <div class="step-desc">Configure mesocycle length and deload frequency in your program template</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">Track Training</div>
+          <div class="step-desc">Clients log sessions with RPE; EvoFit monitors fatigue accumulation in real-time</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Get Flagged</div>
+          <div class="step-desc">Dashboard alerts you when a client hits deload criteria — with supporting data</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-title">Apply &amp; Notify</div>
+          <div class="step-desc">One click applies the deload template; client is notified automatically via app</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-box">
+      <div class="cta-left">
+        <div class="cta-headline">Ready to Automate Your <em>Deload Scheduling?</em></div>
+        <div class="cta-sub">Join professional trainers who save 5+ hours per week managing deloads, progressions, and client programs with EvoFit Trainer. One-time payment. No monthly fees.</div>
+        <div class="pricing-pills">
+          <div class="price-pill">
+            <div class="price-tier">Starter</div>
+            <div class="price-amount">$199</div>
+            <div class="price-model">one-time</div>
+          </div>
+          <div class="price-pill">
+            <div class="price-tier">Professional</div>
+            <div class="price-amount">$299</div>
+            <div class="price-model">one-time</div>
+          </div>
+          <div class="price-pill">
+            <div class="price-tier">Enterprise</div>
+            <div class="price-amount">$399</div>
+            <div class="price-model">one-time</div>
+          </div>
+        </div>
+      </div>
+      <div class="cta-right">
+        <a class="cta-url" href="https://trainer.evofit.io/pricing">trainer.evofit.io/pricing</a>
+        <div class="cta-note">30-day money-back guarantee</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">Page 2 of 2 · EvoFit Trainer — Professional Training Software</div>
+    <div class="footer-right">Free resource from <strong>trainer.evofit.io</strong></div>
+  </div>
+
+</div>
+
+</body>
+</html>
