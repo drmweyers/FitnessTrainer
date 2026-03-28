@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Design Template Pack — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: avoid; }
+
+    /* ─── SHARED HEADER ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 10px; }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 4px 9px;
+      border-radius: 5px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-meta {
+      font-size: 9.5px;
+      color: #94a3b8;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: #f1f5f9;
+      padding: 7px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer p { font-size: 9px; color: #94a3b8; }
+    .footer strong { color: #2563EB; }
+
+    /* ─── COVER PAGE ─── */
+    .cover-body {
+      flex: 1;
+      background: linear-gradient(160deg, #0A0A0F 0%, #1e293b 50%, #0f172a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .cover-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 40%, rgba(37,99,235,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cover-badge {
+      background: rgba(37,99,235,0.2);
+      border: 1px solid rgba(37,99,235,0.5);
+      color: #93c5fd;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .cover-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 42px;
+      color: #ffffff;
+      line-height: 1.0;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .cover-headline em { color: #F97316; font-style: normal; }
+
+    .cover-sub-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: #93c5fd;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #2563EB, #F97316);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .cover-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.65;
+      max-width: 380px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .cover-contents {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 16px 20px;
+      min-width: 300px;
+      position: relative;
+      margin-bottom: 22px;
+    }
+
+    .cover-contents-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .cover-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cover-item-num {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cover-item-text {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    .cover-url {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+    }
+
+    .cover-url strong { color: #F97316; }
+
+    /* ─── TEMPLATE PAGES ─── */
+    .tpl-hero {
+      padding: 16px 24px 14px;
+      flex-shrink: 0;
+    }
+
+    .tpl-hero.hypertrophy { background: linear-gradient(90deg, #1e3a8a, #1d4ed8); }
+    .tpl-hero.strength    { background: linear-gradient(90deg, #1c1917, #292524); }
+    .tpl-hero.fullbody    { background: linear-gradient(90deg, #14532d, #15803d); }
+    .tpl-hero.bro         { background: linear-gradient(90deg, #4c1d95, #6d28d9); }
+    .tpl-hero.athletic    { background: linear-gradient(90deg, #7c2d12, #c2410c); }
+
+    .tpl-eyebrow {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 3px;
+    }
+
+    .tpl-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      color: #ffffff;
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+
+    .tpl-name em { color: #F97316; font-style: normal; }
+
+    .tpl-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .tpl-chip {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.9);
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ─── DAY SECTIONS ─── */
+    .template-content {
+      flex: 1;
+      padding: 12px 24px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .day-block { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .day-badge {
+      background: #0A0A0F;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 9.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .day-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0A0A0F;
+    }
+
+    .day-focus {
+      font-size: 9.5px;
+      color: #64748b;
+      font-style: italic;
+      margin-left: auto;
+    }
+
+    /* ─── EXERCISE TABLE ─── */
+    .ex-table { width: 100%; border-collapse: collapse; }
+
+    .ex-table thead tr {
+      background: #f1f5f9;
+      border-bottom: 1.5px solid #e2e8f0;
+    }
+
+    .ex-table thead th {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 6px;
+      text-align: left;
+    }
+
+    .ex-table thead th.wide { min-width: 120px; }
+
+    .ex-table tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .ex-table tbody tr:last-child { border-bottom: 1px solid #e2e8f0; }
+
+    .ex-table tbody td {
+      padding: 5px 6px;
+      font-size: 9.5px;
+      color: #334155;
+      vertical-align: middle;
+    }
+
+    .ex-num {
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 9px;
+    }
+
+    .ex-name-cell {
+      font-weight: 600;
+      font-size: 10px;
+      color: #1e293b;
+      min-width: 110px;
+    }
+
+    .input-line {
+      display: block;
+      border-bottom: 1px solid #cbd5e1;
+      min-width: 30px;
+      height: 14px;
+    }
+
+    .notes-line {
+      display: block;
+      border-bottom: 1px solid #cbd5e1;
+      min-width: 80px;
+      height: 14px;
+    }
+
+    /* ─── TIPS BOX ─── */
+    .tips-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-top: auto;
+    }
+
+    .tips-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #2563EB;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+
+    .tips-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .tip {
+      font-size: 9.5px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    .tip strong { color: #0A0A0F; font-weight: 600; }
+
+    /* ─── LAST PAGE CTA ─── */
+    .cta-page-hero {
+      background: linear-gradient(135deg, #0A0A0F 0%, #1e293b 100%);
+      padding: 20px 24px 18px;
+      flex-shrink: 0;
+    }
+
+    .cta-page-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #F97316;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 5px;
+    }
+
+    .cta-page-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -0.4px;
+    }
+
+    .cta-page-title em { color: #F97316; font-style: normal; }
+
+    .cta-page-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 5px;
+    }
+
+    .cta-content { flex: 1; padding: 16px 24px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+
+    .upgrade-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .upgrade-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .upgrade-card-header {
+      padding: 8px 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    .upgrade-card-header.blue { background: #2563EB; }
+    .upgrade-card-header.dark { background: #1e293b; }
+    .upgrade-card-header.orange { background: #ea580c; }
+
+    .upgrade-price {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .upgrade-model {
+      font-size: 9px;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    .upgrade-body {
+      padding: 8px 12px;
+    }
+
+    .upgrade-feature {
+      font-size: 9.5px;
+      color: #334155;
+      padding: 2px 0;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .upgrade-feature:last-child { border-bottom: none; }
+
+    .check { color: #2563EB; font-weight: 700; font-size: 10px; }
+
+    .final-cta {
+      background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .final-cta-left {}
+
+    .final-cta-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .final-cta-headline em { color: #F97316; font-style: normal; }
+
+    .final-cta-sub {
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.45;
+    }
+
+    .final-cta-right { flex-shrink: 0; text-align: center; }
+
+    .final-cta-btn {
+      display: block;
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 7px;
+      text-decoration: none;
+      margin-bottom: 4px;
+    }
+
+    .final-cta-note { font-size: 9px; color: rgba(255,255,255,0.65); }
+
+    .template-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 10px;
+      color: #1e40af;
+      line-height: 1.5;
+    }
+
+    .template-note strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 1: COVER
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div>
+        <div class="header-title">Program Design <span>Template Pack</span></div>
+      </div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-badge">EvoFit Trainer — Free Resource</div>
+    <div class="cover-headline">Program Design<br/><em>Template Pack</em></div>
+    <div class="cover-sub-headline">5 Professional Workout Templates for Personal Trainers</div>
+    <div class="cover-divider"></div>
+    <div class="cover-desc">Print-ready, fillable workout planning templates built around the most effective training splits. Use them in client sessions, program design meetings, or assessment calls — and then migrate everything into EvoFit Trainer.</div>
+
+    <div class="cover-contents">
+      <div class="cover-contents-title">What's Inside</div>
+      <div class="cover-item">
+        <div class="cover-item-num">1</div>
+        <div class="cover-item-text">Push / Pull / Legs Split (3-day or 6-day)</div>
+      </div>
+      <div class="cover-item">
+        <div class="cover-item-num">2</div>
+        <div class="cover-item-text">Upper / Lower Split (4-day)</div>
+      </div>
+      <div class="cover-item">
+        <div class="cover-item-num">3</div>
+        <div class="cover-item-text">Full Body 3×/Week Template</div>
+      </div>
+      <div class="cover-item">
+        <div class="cover-item-num">4</div>
+        <div class="cover-item-text">Bro Split — 5-Day Dedicated Split</div>
+      </div>
+      <div class="cover-item">
+        <div class="cover-item-num">5</div>
+        <div class="cover-item-text">Athletic Performance Template</div>
+      </div>
+    </div>
+
+    <div class="cover-url">Free resource from <strong>trainer.evofit.io</strong></div>
+  </div>
+
+  <div class="footer">
+    <p>EvoFit Trainer — Professional Training Software</p>
+    <p>© 2026 EvoFit · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 2: PUSH / PULL / LEGS
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">Program Design <span>Template Pack</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="tpl-hero hypertrophy">
+    <div class="tpl-eyebrow">Template 1 of 5</div>
+    <div class="tpl-name"><em>Push / Pull / Legs</em> Split</div>
+    <div class="tpl-meta">
+      <span class="tpl-chip">3–6 Days/Week</span>
+      <span class="tpl-chip">Intermediate–Advanced</span>
+      <span class="tpl-chip">Hypertrophy / Strength</span>
+    </div>
+  </div>
+
+  <div class="template-content">
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Push Day</span>
+        <span class="day-name">Chest · Shoulders · Triceps</span>
+        <span class="day-focus">Target: anterior chain pressing</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th class="wide">Exercise</th>
+            <th>Sets</th>
+            <th>Reps</th>
+            <th>Weight</th>
+            <th>RPE</th>
+            <th>Rest</th>
+            <th style="min-width:80px">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Bench Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Incline DB Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Overhead Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Lateral Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Tricep Pushdowns</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Overhead Tricep Ext.</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Pull Day</span>
+        <span class="day-name">Back · Biceps · Rear Delts</span>
+        <span class="day-focus">Target: posterior chain pulling</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th class="wide">Exercise</th>
+            <th>Sets</th>
+            <th>Reps</th>
+            <th>Weight</th>
+            <th>RPE</th>
+            <th>Rest</th>
+            <th style="min-width:80px">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Deadlift / Romanian DL</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Barbell Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Pull-ups / Lat Pulldown</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Cable Rows</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Barbell / DB Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Rear Delt Fly</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Legs Day</span>
+        <span class="day-name">Quads · Hamstrings · Glutes · Calves</span>
+        <span class="day-focus">Target: full lower body development</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th class="wide">Exercise</th>
+            <th>Sets</th>
+            <th>Reps</th>
+            <th>Weight</th>
+            <th>RPE</th>
+            <th>Rest</th>
+            <th style="min-width:80px">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Back Squat</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Romanian Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Leg Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Walking Lunges</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Leg Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Standing Calf Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-label">Programming Tips</div>
+      <div class="tips-row">
+        <div class="tip"><strong>6-day PPL:</strong> Run Push-Pull-Legs twice (P-P-L-P-P-L-Rest).</div>
+        <div class="tip"><strong>RPE Target:</strong> Work sets at RPE 7–9. Deload week at RPE 5–6.</div>
+        <div class="tip"><strong>Rest:</strong> 2–3 min for compounds, 60–90 sec for isolation work.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>Template 1 of 5 — Push/Pull/Legs · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 3: UPPER / LOWER SPLIT
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">Program Design <span>Template Pack</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="tpl-hero strength">
+    <div class="tpl-eyebrow">Template 2 of 5</div>
+    <div class="tpl-name"><em>Upper / Lower</em> Split</div>
+    <div class="tpl-meta">
+      <span class="tpl-chip">4 Days/Week</span>
+      <span class="tpl-chip">Beginner–Advanced</span>
+      <span class="tpl-chip">Strength / Hypertrophy</span>
+    </div>
+  </div>
+
+  <div class="template-content">
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Upper A</span>
+        <span class="day-name">Horizontal Push / Pull Focus</span>
+        <span class="day-focus">Day 1 · Mon or Tue</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:80px">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Bench Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Barbell Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">DB Shoulder Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Cable Rows</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Tricep + Bicep Superset</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Lateral Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Lower A</span>
+        <span class="day-name">Quad Dominant</span>
+        <span class="day-focus">Day 2 · Wed or Thu</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:80px">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Back Squat</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Romanian Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Leg Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Leg Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Hip Thrust / Glute Bridge</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Calf Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Upper B</span>
+        <span class="day-name">Vertical Push / Pull Focus</span>
+        <span class="day-focus">Day 3 · Fri or Sat</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:80px">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Overhead Press (BB/DB)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Pull-ups / Lat Pulldown</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Incline DB Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Single-Arm DB Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">DB Curls + Skull Crushers</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Rear Delt + Face Pulls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-label">Lower B (Day 4 · Sat or Sun) — Hip Dominant: Deadlift, Front Squat, Good Mornings, Bulgarian Split Squat, Leg Curls, Glute Kickbacks, Calf Raises</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>Template 2 of 5 — Upper/Lower · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 4: FULL BODY 3×/WEEK
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">Program Design <span>Template Pack</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="tpl-hero fullbody">
+    <div class="tpl-eyebrow">Template 3 of 5</div>
+    <div class="tpl-name"><em>Full Body</em> 3×/Week Template</div>
+    <div class="tpl-meta">
+      <span class="tpl-chip">3 Days/Week</span>
+      <span class="tpl-chip">Beginner–Intermediate</span>
+      <span class="tpl-chip">Strength / General Fitness</span>
+    </div>
+  </div>
+
+  <div class="template-content">
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Session A</span>
+        <span class="day-name">Monday — Squat Pattern Focus</span>
+        <span class="day-focus">Full body, squat as main compound</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:80px">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Back Squat</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Barbell Bench Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Barbell Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Overhead Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Romanian Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Accessory (trainer choice)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Session B</span>
+        <span class="day-name">Wednesday — Hinge Pattern Focus</span>
+        <span class="day-focus">Full body, deadlift as main compound</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:80px">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Conventional Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">Incline DB Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Pull-ups / Lat Pulldown</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Front Squat / Goblet Squat</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Hip Thrust</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Core Work (trainer choice)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="day-block">
+      <div class="day-header">
+        <span class="day-badge">Session C</span>
+        <span class="day-name">Friday — Volume Accumulation</span>
+        <span class="day-focus">Full body, higher rep / pump work</span>
+      </div>
+      <table class="ex-table">
+        <thead>
+          <tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:80px">Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="ex-num">1</td><td class="ex-name-cell">Leg Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">2</td><td class="ex-name-cell">DB Bench / Cable Fly</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">3</td><td class="ex-name-cell">Cable Row / DB Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">4</td><td class="ex-name-cell">Lateral Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">5</td><td class="ex-name-cell">Leg Curls + Leg Extensions</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+          <tr><td class="ex-num">6</td><td class="ex-name-cell">Arms / Calf Superset</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-label">Programming Tips</div>
+      <div class="tips-row">
+        <div class="tip"><strong>Progression:</strong> Add 2.5–5kg to main compound weekly. Track RPE to auto-regulate.</div>
+        <div class="tip"><strong>Volume:</strong> Session A: intensity-focused (3–5 reps). Session C: volume-focused (8–15 reps).</div>
+        <div class="tip"><strong>Rest days:</strong> Tue, Thu, Sat–Sun. Active recovery optional.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>Template 3 of 5 — Full Body 3×/Week · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 5: BRO SPLIT (5-DAY)
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">Program Design <span>Template Pack</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="tpl-hero bro">
+    <div class="tpl-eyebrow">Template 4 of 5</div>
+    <div class="tpl-name"><em>Bro Split</em> — 5-Day Dedicated Split</div>
+    <div class="tpl-meta">
+      <span class="tpl-chip">5 Days/Week</span>
+      <span class="tpl-chip">Intermediate–Advanced</span>
+      <span class="tpl-chip">Hypertrophy Focus</span>
+    </div>
+  </div>
+
+  <div class="template-content">
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1;">
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Mon</span>
+          <span class="day-name">Chest</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Flat Barbell Bench</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Incline DB Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Cable Fly / Pec Dec</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Dips (weighted)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Low Cable Crossover</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Push-up Burnout</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Tue</span>
+          <span class="day-name">Back</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Barbell Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Pull-ups (weighted)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Lat Pulldown</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Cable Rows</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Face Pulls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Wed</span>
+          <span class="day-name">Shoulders</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell OHP</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">DB Arnold Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Lateral Raises (3×)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Front Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Rear Delt Fly</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Upright Rows</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Thu</span>
+          <span class="day-name">Arms</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Skull Crushers</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Incline DB Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Tricep Dips / Pushdowns</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Hammer Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">OH Tricep Extension</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="day-header" style="margin-top:8px; margin-bottom:4px">
+      <span class="day-badge">Fri</span>
+      <span class="day-name">Legs — Quads, Hamstrings, Glutes, Calves</span>
+      <span class="day-focus">Rest: Sat + Sun</span>
+    </div>
+    <table class="ex-table">
+      <thead><tr><th>#</th><th class="wide">Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th><th>Rest</th><th style="min-width:100px">Notes</th></tr></thead>
+      <tbody>
+        <tr><td class="ex-num">1</td><td class="ex-name-cell">Barbell Squat</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        <tr><td class="ex-num">2</td><td class="ex-name-cell">Leg Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        <tr><td class="ex-num">3</td><td class="ex-name-cell">Romanian Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        <tr><td class="ex-num">4</td><td class="ex-name-cell">Leg Extensions + Curls</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        <tr><td class="ex-num">5</td><td class="ex-name-cell">Hip Thrust</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+        <tr><td class="ex-num">6</td><td class="ex-name-cell">Calf Raises (seated+standing)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="notes-line"></span></td></tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="footer">
+    <p>Template 4 of 5 — Bro Split 5-Day · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 6: ATHLETIC PERFORMANCE + CTA
+     ═══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-badge">EvoFit</div>
+      <div class="header-title">Program Design <span>Template Pack</span></div>
+    </div>
+    <div class="header-meta">trainer.evofit.io</div>
+  </div>
+
+  <div class="tpl-hero athletic">
+    <div class="tpl-eyebrow">Template 5 of 5</div>
+    <div class="tpl-name"><em>Athletic Performance</em> Template</div>
+    <div class="tpl-meta">
+      <span class="tpl-chip">4 Days/Week</span>
+      <span class="tpl-chip">Intermediate–Advanced</span>
+      <span class="tpl-chip">Power · Speed · Strength</span>
+    </div>
+  </div>
+
+  <div class="template-content">
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Day 1</span>
+          <span class="day-name">Lower Power</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Box Squat (explosive)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Trap Bar Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Broad Jumps / Box Jumps</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Bulgarian Split Squat</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Nordic Hamstring Curl</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Single-Leg Calf Raises</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Day 2</span>
+          <span class="day-name">Upper Power</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Bench Press (speed)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Weighted Pull-ups</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Medicine Ball Throw</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Push Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">DB Row (heavy)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Rotator Cuff Work</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Day 3</span>
+          <span class="day-name">Lower Strength</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">Back Squat (heavy)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Conventional Deadlift</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Reverse Lunge (loaded)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Glute-Ham Raise</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Sled Push / Pull</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Core Anti-Rotation</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="day-header" style="margin-bottom:4px">
+          <span class="day-badge">Day 4</span>
+          <span class="day-name">Upper Strength + Accessory</span>
+        </div>
+        <table class="ex-table">
+          <thead><tr><th>#</th><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>RPE</th></tr></thead>
+          <tbody>
+            <tr><td class="ex-num">1</td><td class="ex-name-cell">OHP (heavy)</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">2</td><td class="ex-name-cell">Barbell Row</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">3</td><td class="ex-name-cell">Incline Bench</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">4</td><td class="ex-name-cell">Face Pulls + Cuban Press</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">5</td><td class="ex-name-cell">Farmer Carry</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+            <tr><td class="ex-num">6</td><td class="ex-name-cell">Grip / Wrist Work</td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td><td><span class="input-line"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="final-cta">
+      <div class="final-cta-left">
+        <div class="final-cta-headline">Build Programs Like This in <em>Minutes</em> — Not Hours</div>
+        <div class="final-cta-sub">EvoFit Trainer's Program Builder lets you create, assign, and track these templates digitally. Clients log every set with RPE in real time. You see progress, flag deloads, and adjust — all in one place.</div>
+      </div>
+      <div class="final-cta-right">
+        <a class="final-cta-btn" href="https://trainer.evofit.io/pricing">trainer.evofit.io/pricing</a>
+        <div class="final-cta-note">Starter $199 · Pro $299 · Enterprise $399</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>Template 5 of 5 — Athletic Performance · EvoFit Trainer</p>
+    <p>Free resource · <strong>trainer.evofit.io</strong></p>
+  </div>
+</div>
+
+</body>
+</html>
