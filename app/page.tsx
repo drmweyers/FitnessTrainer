@@ -149,10 +149,10 @@ export default function HomePage() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link
-                href="/auth/register"
+                href="/pricing"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-white text-blue-700 rounded-xl hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
               >
-                Get Started Free
+                See Pricing
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <button
@@ -782,10 +782,10 @@ export default function HomePage() {
                 </li>
               </ul>
               <Link
-                href="/auth/register"
+                href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Get Started
+                Get Started — $49
               </Link>
             </motion.div>
 
@@ -825,10 +825,10 @@ export default function HomePage() {
                 </li>
               </ul>
               <Link
-                href="/auth/register"
+                href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Go Professional
+                Go Professional — $149
               </Link>
             </motion.div>
 
@@ -872,10 +872,10 @@ export default function HomePage() {
                 </li>
               </ul>
               <Link
-                href="/auth/register"
+                href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Start Generating
+                Add AI Features — $49/mo
               </Link>
             </motion.div>
 
@@ -911,10 +911,10 @@ export default function HomePage() {
                 </li>
               </ul>
               <Link
-                href="/auth/register"
+                href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Contact Sales
+                Get Enterprise — $299
               </Link>
             </motion.div>
           </motion.div>
@@ -1085,10 +1085,10 @@ export default function HomePage() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link
-                href="/auth/register"
+                href="/pricing"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-white text-blue-700 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
               >
-                Get Started Free
+                See Pricing — Starts at $49
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link
