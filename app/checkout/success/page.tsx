@@ -185,7 +185,7 @@ function CheckoutSuccessContent() {
                 <h2 className="text-2xl md:text-3xl font-extrabold mb-1">
                   Unlock AI Workout Generation + Progression Suggestions
                 </h2>
-                <p className="text-blue-100 text-lg font-semibold">$49/month</p>
+                <p className="text-blue-100 text-lg font-semibold">$39.99/month</p>
               </div>
 
               {/* Body */}
@@ -220,7 +220,7 @@ function CheckoutSuccessContent() {
                     className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-md hover:shadow-lg"
                   >
                     <Sparkles className="h-5 w-5" />
-                    Yes, add the AI layer — $49/month
+                    Yes, add the AI layer — $39.99/month
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>

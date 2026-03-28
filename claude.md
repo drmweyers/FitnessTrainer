@@ -42,10 +42,10 @@ See: `~/Claude/second-brain/dev-updates/HOW-IT-WORKS.md`
 
 | Tier | Price | Model | Stripe Price ID |
 |------|-------|-------|-----------------|
-| Starter | $49 | One-time | price_1TEwpaGo4HHYDfDVyvecwfMc |
-| Professional | $149 | One-time | price_1TEwpcGo4HHYDfDVqNAFCnDt |
-| Enterprise | $299 | One-time | price_1TEwpeGo4HHYDfDVe7M1XZTD |
-| SaaS Add-on | $49/mo | Subscription | price_1TEwpdGo4HHYDfDVmtIVLSQo |
+| Starter | $199 | One-time | price_1TEwpaGo4HHYDfDVyvecwfMc |
+| Professional | $299 | One-time | price_1TEwpcGo4HHYDfDVqNAFCnDt |
+| Enterprise | $399 | One-time | price_1TEwpeGo4HHYDfDVe7M1XZTD |
+| SaaS Add-on | $39.99/mo | Subscription | price_1TEwpdGo4HHYDfDVmtIVLSQo |
 
 Checkout: `POST /api/create-checkout-session` (lazy-init Stripe to prevent build crash)
 

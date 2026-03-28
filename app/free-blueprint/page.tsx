@@ -438,7 +438,7 @@ export default function FreeBlueprintPage() {
 
             <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
               Everything in the blueprint — ACWR monitoring, RPE prescriptions, periodization
-              blocks, deload weeks — is built into EvoFit Trainer. Start for $49, own it forever.
+              blocks, deload weeks — is built into EvoFit Trainer. Start for $199, own it forever.
             </p>
 
             <Link href="/get-started">

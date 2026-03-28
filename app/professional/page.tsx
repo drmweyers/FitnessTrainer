@@ -177,7 +177,7 @@ export default function ProfessionalSalesPage() {
               href="/register"
               className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
-              Upgrade to Professional — $149
+              Upgrade to Professional — $299
               <ArrowRight className="w-5 h-5" />
             </Link>
             <p className="mt-4 text-white/40 text-sm">
@@ -234,7 +234,7 @@ export default function ProfessionalSalesPage() {
                 <span className="text-green-400">Month 2</span>
               </h2>
               <p className="text-white/60 mt-4 text-lg">
-                The competition charges $80-200/month. EvoFit Professional: $149. Once.
+                The competition charges $80-200/month. EvoFit Professional: $299. Once.
               </p>
             </div>
           </AnimatedSection>
@@ -278,11 +278,11 @@ export default function ProfessionalSalesPage() {
                 <div className="space-y-3 text-white/60">
                   <div className="flex justify-between">
                     <span>One-time cost</span>
-                    <span className="text-green-400 font-bold">$149</span>
+                    <span className="text-green-400 font-bold">$299</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Year 1</span>
-                    <span className="text-green-400 font-bold">$149</span>
+                    <span className="text-green-400 font-bold">$299</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Year 2</span>
@@ -303,7 +303,7 @@ export default function ProfessionalSalesPage() {
             <div className="text-center p-6 bg-blue-600/10 border border-blue-500/20 rounded-2xl">
               <p className="text-2xl font-black text-white mb-2">
                 You save{' '}
-                <span className="text-green-400">$5,793</span> over 5 years vs a $99/month
+                <span className="text-green-400">$5,701</span> over 5 years vs a $99.99/month
                 platform
               </p>
               <p className="text-white/50">
@@ -429,7 +429,7 @@ export default function ProfessionalSalesPage() {
                 </div>
                 <div className="text-sm text-white/50 mb-2">YOUR ONE-TIME PRICE</div>
                 <div className="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
-                  $149
+                  $299
                 </div>
                 <div className="text-white/50 mt-2 text-lg">
                   One time. Not per year.{' '}
@@ -648,14 +648,14 @@ export default function ProfessionalSalesPage() {
               <div className="inline-flex items-center gap-3 px-8 py-4 bg-green-500/10 border border-green-500/30 rounded-xl">
                 <BadgeCheck className="w-6 h-6 text-green-400" />
                 <span className="text-green-400 font-bold text-lg">
-                  At 10 clients × $100/mo = $1,000/mo revenue. Your platform cost: $149 total.
+                  At 10 clients × $100/mo = $1,000/mo revenue. Your platform cost: $299 total.
                 </span>
               </div>
             </div>
 
             <div className="mt-6 p-6 bg-blue-600/10 border border-blue-500/20 rounded-2xl text-center">
               <p className="text-white/70 italic text-lg">
-                &ldquo;Trainers on Professional typically recover their $149 in the first new client
+                &ldquo;Trainers on Professional typically recover their $299 in the first new client
                 they land using EvoFit&apos;s professional analytics and reporting to justify their
                 rates.&rdquo;
               </p>
@@ -721,8 +721,8 @@ export default function ProfessionalSalesPage() {
               answer="ACWR (Acute:Chronic Workload Ratio) is the same training load monitoring system used by the NFL, NBA, and Olympic sports teams. It compares your client's last 7 days of training load against their last 28 days to detect overtraining risk before it becomes injury. EvoFit calculates this automatically from workout data."
             />
             <FAQItem
-              question="Can I really have unlimited clients for $149 forever?"
-              answer="Yes. Professional has no client cap. You can have 5 clients or 500 — your $149 covers all of them. There are no per-client fees, no roster tiers, no surprise charges when you grow. Ever."
+              question="Can I really have unlimited clients for $299 forever?"
+              answer="Yes. Professional has no client cap. You can have 5 clients or 500 — your $299 covers all of them. There are no per-client fees, no roster tiers, no surprise charges when you grow. Ever."
             />
             <FAQItem
               question="What does the template library let me do?"
@@ -730,7 +730,7 @@ export default function ProfessionalSalesPage() {
             />
             <FAQItem
               question="What if I eventually need Enterprise features?"
-              answer="Upgrade at any time. Pay the difference between Professional ($149) and Enterprise ($299) — just $150. Your data, clients, programs, and settings migrate seamlessly. You never rebuild from scratch."
+              answer="Upgrade at any time. Pay the difference between Professional ($299) and Enterprise ($399) — just $100. Your data, clients, programs, and settings migrate seamlessly. You never rebuild from scratch."
             />
           </div>
         </div>
@@ -782,14 +782,14 @@ export default function ProfessionalSalesPage() {
               <span className="text-blue-400">Professional Coaching Business</span>?
             </h2>
             <p className="text-xl text-white/60 mb-10 max-w-xl mx-auto">
-              $149. One time. Unlimited clients. Break even in month 2.
+              $299. One time. Unlimited clients. Break even in month 3.
             </p>
 
             <Link
               href="/register"
               className="inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
-              Upgrade to Professional — $149
+              Upgrade to Professional — $299
               <ArrowRight className="w-6 h-6" />
             </Link>
 

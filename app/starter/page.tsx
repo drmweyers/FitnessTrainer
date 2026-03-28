@@ -131,7 +131,7 @@ export default function StarterSalesPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-300 text-sm font-medium mb-8"
           >
             <Sparkles className="w-4 h-4" />
-            STARTER PLAN — $49 ONE-TIME
+            STARTER PLAN — $199 ONE-TIME
           </motion.div>
 
           {/* Headline */}
@@ -143,7 +143,7 @@ export default function StarterSalesPage() {
           >
             Your Coaching Platform.{' '}
             <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-orange-400 bg-clip-text text-transparent">
-              Forever. $49.
+              Forever. $199.
             </span>
           </motion.h1>
 
@@ -170,7 +170,7 @@ export default function StarterSalesPage() {
               href="/register"
               className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
-              Get Started for $49
+              Get Started for $199
               <ArrowRight className="w-5 h-5" />
             </Link>
             <p className="mt-4 text-white/40 text-sm">
@@ -257,12 +257,12 @@ export default function StarterSalesPage() {
               <p>
                 There&apos;s a better way. EvoFit Starter gives you a{' '}
                 <span className="text-blue-400 font-semibold">
-                  professional coaching platform for $49 — once
+                  professional coaching platform for $199 — once
                 </span>
                 . Not per month. Not per year. Once.
               </p>
               <p className="text-xl text-white font-semibold">
-                Get organized today. Look professional from client one. Pay $49 and never again.
+                Get organized today. Look professional from client one. Pay $199 and never again.
               </p>
             </div>
           </AnimatedSection>
@@ -284,7 +284,7 @@ export default function StarterSalesPage() {
                 Here&apos;s Everything You Get
               </h2>
               <p className="text-white/50 mt-4 text-lg">
-                Everything below is included in your one-time $49 payment
+                Everything below is included in your one-time $199 payment
               </p>
             </div>
           </AnimatedSection>
@@ -370,7 +370,7 @@ export default function StarterSalesPage() {
                 </div>
                 <div className="text-sm text-white/50 mb-2">YOUR ONE-TIME PRICE</div>
                 <div className="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
-                  $49
+                  $199
                 </div>
                 <div className="text-white/50 mt-2 text-lg">
                   One time. Not per year.{' '}
@@ -394,7 +394,7 @@ export default function StarterSalesPage() {
                 See It In Action
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mt-4">
-                Professional Tools, $49 Price Tag
+                Professional Tools, $199 Price Tag
               </h2>
             </div>
           </AnimatedSection>
@@ -635,7 +635,7 @@ export default function StarterSalesPage() {
             />
             <FAQItem
               question="What does 'one-time payment' mean? Are there hidden fees?"
-              answer="It means exactly what it says. You pay $49 once and you own access to the Starter plan forever. No monthly fees, no annual renewals, no hidden charges. The only optional costs are if you decide to upgrade to Professional or Enterprise later, or add the AI SaaS add-on."
+              answer="It means exactly what it says. You pay $199 once and you own access to the Starter plan forever. No monthly fees, no annual renewals, no hidden charges. The only optional costs are if you decide to upgrade to Professional or Enterprise later, or add the AI SaaS add-on."
             />
             <FAQItem
               question="Can I really manage 5 clients with this?"
@@ -647,7 +647,7 @@ export default function StarterSalesPage() {
             />
             <FAQItem
               question="What happens when I hit 5 clients and want to grow?"
-              answer="Upgrade to Professional ($149 one-time) for unlimited clients, the full Program Builder, ACWR analytics, and scheduling features. Your Starter data migrates seamlessly. You pay the difference — not the full price again. Growing your business shouldn't mean rebuilding your platform."
+              answer="Upgrade to Professional ($3$39$199 one-time) for unlimited clients, the full Program Builder, ACWR analytics, and scheduling features. Your Starter data migrates seamlessly. You pay the difference — not the full price again. Growing your business shouldn't mean rebuilding your platform."
             />
           </div>
         </div>
@@ -695,14 +695,14 @@ export default function StarterSalesPage() {
               <span className="text-blue-400">Coaching Platform</span>?
             </h2>
             <p className="text-xl text-white/60 mb-10 max-w-xl mx-auto">
-              $49. One time. No subscriptions. Start serving clients today.
+              $199. One time. No subscriptions. Start serving clients today.
             </p>
 
             <Link
               href="/register"
               className="inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
-              Get Starter for $49
+              Get Starter for $199
               <ArrowRight className="w-6 h-6" />
             </Link>
 

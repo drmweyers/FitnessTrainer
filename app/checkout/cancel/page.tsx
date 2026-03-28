@@ -79,7 +79,7 @@ export default function CheckoutCancelPage() {
 
           {/* Soft reassurance */}
           <motion.p variants={fadeInUp} className="mt-10 text-sm text-gray-400">
-            Starter starts at $49 one-time &mdash; no monthly fees, no per-client charges, ever.{' '}
+            Starter starts at $199 one-time &mdash; no monthly fees, no per-client charges, ever.{' '}
             <Link href="/" className="text-blue-500 hover:text-blue-600 underline">
               Learn more
             </Link>

@@ -239,13 +239,13 @@ export default function SpecialOfferPage() {
               <p className="text-gray-500 text-sm">Competitors charge:</p>
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-2xl sm:text-3xl font-extrabold text-gray-500 line-through decoration-red-400">
-                  $89/month
+                  $80–199/month
                 </span>
               </div>
               <p className="text-gray-400 text-sm mb-2">Your price today:</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl sm:text-6xl font-extrabold text-green-400">
-                  $49
+                  $39.99
                 </span>
                 <span className="text-xl text-gray-400 font-semibold">/month</span>
               </div>
@@ -362,7 +362,7 @@ export default function SpecialOfferPage() {
             className="w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 h-auto text-base sm:text-lg font-extrabold bg-green-500 hover:bg-green-600 text-white shadow-xl shadow-green-500/25 transition-all duration-200 hover:shadow-green-500/40 hover:scale-[1.02] rounded-xl inline-flex items-center justify-center gap-3"
           >
             <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
-            Yes, Add AI Features — $49/month
+            Yes, Add AI Features — $39.99/month
             <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 

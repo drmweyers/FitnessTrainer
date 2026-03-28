@@ -755,7 +755,7 @@ export default function HomePage() {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
                 <div className="flex items-baseline justify-center gap-1 mb-1">
-                  <span className="text-4xl font-bold text-gray-900">$149</span>
+                  <span className="text-4xl font-bold text-gray-900">$199</span>
                 </div>
                 <p className="text-sm text-gray-500">one-time payment</p>
               </div>
@@ -785,7 +785,7 @@ export default function HomePage() {
                 href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Get Started — $49
+                Get Started — $199
               </Link>
             </motion.div>
 
@@ -794,7 +794,7 @@ export default function HomePage() {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Professional</h3>
                 <div className="flex items-baseline justify-center gap-1 mb-1">
-                  <span className="text-4xl font-bold text-gray-900">$249</span>
+                  <span className="text-4xl font-bold text-gray-900">$299</span>
                 </div>
                 <p className="text-sm text-gray-500">one-time payment</p>
               </div>
@@ -828,7 +828,7 @@ export default function HomePage() {
                 href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Go Professional — $149
+                Go Professional — $299
               </Link>
             </motion.div>
 
@@ -840,7 +840,7 @@ export default function HomePage() {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">SaaS</h3>
                 <div className="flex items-baseline justify-center gap-1 mb-1">
-                  <span className="text-4xl font-bold text-gray-900">$29</span>
+                  <span className="text-4xl font-bold text-gray-900">$39.99</span>
                   <span className="text-lg text-gray-500">/month</span>
                 </div>
                 <p className="text-sm text-gray-500">cancel anytime</p>
@@ -875,7 +875,7 @@ export default function HomePage() {
                 href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Add AI Features — $49/mo
+                Add AI Features — $39.99/mo
               </Link>
             </motion.div>
 
@@ -884,7 +884,7 @@ export default function HomePage() {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h3>
                 <div className="flex items-baseline justify-center gap-1 mb-1">
-                  <span className="text-4xl font-bold text-gray-900">$349</span>
+                  <span className="text-4xl font-bold text-gray-900">$399</span>
                 </div>
                 <p className="text-sm text-gray-500">one-time payment</p>
               </div>
@@ -914,7 +914,7 @@ export default function HomePage() {
                 href="/pricing"
                 className="block w-full text-center px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
               >
-                Get Enterprise — $299
+                Get Enterprise — $399
               </Link>
             </motion.div>
           </motion.div>
@@ -1088,7 +1088,7 @@ export default function HomePage() {
                 href="/pricing"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-white text-blue-700 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
               >
-                See Pricing — Starts at $49
+                See Pricing — Starts at $199
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link

@@ -179,7 +179,7 @@ function HeroSection() {
         >
           {[
             { value: '1,344', label: 'Exercises' },
-            { value: '$149', label: 'One-time' },
+            { value: '$199', label: 'One-time' },
             { value: '0', label: 'Monthly fees' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
@@ -530,7 +530,7 @@ function TierComparisonSection() {
   const tiers = [
     {
       name: 'Starter',
-      price: '$49',
+      price: '$199',
       tagline: 'Own your platform forever.',
       description: 'Perfect for solo trainers and coaches just getting started.',
       href: '/pricing',
@@ -549,7 +549,7 @@ function TierComparisonSection() {
     },
     {
       name: 'Professional',
-      price: '$149',
+      price: '$299',
       tagline: 'Run a real coaching business.',
       description: 'Unlimited clients, full program builder, ACWR analytics.',
       href: '/pricing',
@@ -569,7 +569,7 @@ function TierComparisonSection() {
     },
     {
       name: 'Enterprise',
-      price: '$299',
+      price: '$399',
       tagline: 'Platform control for operators.',
       description: 'Admin dashboard, audit logs, and multi-trainer management.',
       href: '/pricing',
@@ -664,7 +664,7 @@ function TierComparisonSection() {
               </div>
               <div>
                 <h4 className="font-bold text-white">
-                  SaaS Add-on — $49/mo{' '}
+                  SaaS Add-on — $39.99/mo{' '}
                   <span className="text-xs font-normal text-purple-400 ml-2">Stack on any tier</span>
                 </h4>
                 <p className="text-gray-400 text-sm mt-0.5">
@@ -777,7 +777,7 @@ function TestimonialsSection() {
   const testimonials = [
     {
       quote:
-        "I was paying $129/month for Everfit. Switched to EvoFit, paid $149 once. I broke even in 5 weeks and now every client I add is pure profit. The ACWR analytics alone are worth the price — my clients think I have a PhD in sports science.",
+        "I was paying $120/month for Everfit. Switched to EvoFit, paid $299 once. I broke even in 5 weeks and now every client I add is pure profit. The ACWR analytics alone are worth the price — my clients think I have a PhD in sports science.",
       name: 'Marcus D.',
       title: 'Online Strength Coach, 23 clients',
       stars: 5,
@@ -791,7 +791,7 @@ function TestimonialsSection() {
     },
     {
       quote:
-        "As a gym owner with 4 trainers, Enterprise at $299 was an obvious call. Admin dashboard, activity logs, feature flags — I can see everything happening on the platform. One trainer tried to tell me he'd done a session he hadn't. The audit log said otherwise.",
+        "As a gym owner with 4 trainers, Enterprise at $399 was an obvious call. Admin dashboard, activity logs, feature flags — I can see everything happening on the platform. One trainer tried to tell me he'd done a session he hadn't. The audit log said otherwise.",
       name: 'Raj P.',
       title: 'Gym Owner, Performance Fitness Studio',
       stars: 5,
@@ -849,7 +849,7 @@ function FAQSection() {
   const faqs = [
     {
       q: 'Is this really a one-time payment — no subscriptions ever?',
-      a: "Yes. You pay once for your chosen tier (Starter $49, Professional $149, or Enterprise $299) and the software is yours forever. The only optional recurring charge is the SaaS Add-on ($49/month) which adds AI features — and that's entirely optional.",
+      a: "Yes. You pay once for your chosen tier (Starter $199, Professional $299, or Enterprise $399) and the software is yours forever. The only optional recurring charge is the SaaS Add-on ($39.99/month) which adds AI features — and that's entirely optional.",
     },
     {
       q: 'Can I upgrade from Starter to Professional later?',
@@ -857,7 +857,7 @@ function FAQSection() {
     },
     {
       q: 'How does EvoFit compare to Everfit or TrueCoach?',
-      a: 'EvoFit offers comparable or better features — ACWR training load monitoring, RPE/RIR/tempo prescriptions, iCal export, offline workout logging — at a one-time price. Everfit and TrueCoach charge $80-199/month, every month, with per-client fees that grow as your roster does.',
+      a: 'EvoFit offers comparable or better features — ACWR training load monitoring, RPE/RIR/tempo prescriptions, iCal export, offline workout logging — at a one-time price. Everfit and TrueCoach charge $80–199/month, every month, with per-client fees that grow as your roster does.',
     },
     {
       q: 'Does it work on mobile?',
@@ -873,11 +873,11 @@ function FAQSection() {
     },
     {
       q: 'Is there a free trial?',
-      a: "You can register for free and explore the platform. The Starter tier at $49 is designed to be low-risk enough that you don't need a trial — and if you're unsatisfied within 30 days, contact support for a full refund.",
+      a: "You can register for free and explore the platform. The Starter tier at $199 is backed by a 30-day money-back guarantee — if you're unsatisfied within 30 days, contact support for a full refund.",
     },
     {
       q: 'What is the SaaS Add-on exactly?',
-      a: 'The $49/month SaaS Add-on adds the AI layer: instant workout generation from 1,344 exercises, RPE-based progression suggestions per exercise, plateau detection and deload recommendations, browser push notifications for clients, and biometric login (Face ID / Touch ID). It stacks on any tier.',
+      a: 'The $39.99/month SaaS Add-on adds the AI layer: instant workout generation from 1,344 exercises, RPE-based progression suggestions per exercise, plateau detection and deload recommendations, browser push notifications for clients, and biometric login (Face ID / Touch ID). It stacks on any tier.',
     },
   ]
 
@@ -956,7 +956,7 @@ function FinalCTA() {
           </h2>
 
           <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">
-            Start at $49. Upgrade any time. Your clients, your programs, your platform — no
+            Start at $199. Upgrade any time. Your clients, your programs, your platform — no
             subscription strings attached.
           </p>
 

@@ -183,7 +183,7 @@ export default function EnterpriseSalesPage() {
               href="/register"
               className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
-              Get Enterprise Access — $299
+              Get Enterprise Access — $399
               <ArrowRight className="w-5 h-5" />
             </Link>
             <p className="mt-4 text-white/40 text-sm">
@@ -270,7 +270,7 @@ export default function EnterpriseSalesPage() {
                 trainer.
               </p>
               <p className="text-xl text-white font-semibold">
-                One platform. Every trainer. Full visibility. $299, once.
+                One platform. Every trainer. Full visibility. $399, once.
               </p>
             </div>
           </AnimatedSection>
@@ -496,7 +496,7 @@ export default function EnterpriseSalesPage() {
                 </div>
                 <div className="text-sm text-white/50 mb-2">YOUR ONE-TIME PRICE</div>
                 <div className="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
-                  $299
+                  $399
                 </div>
                 <div className="text-white/50 mt-2 text-lg">
                   One time. Not per year.{' '}
@@ -660,8 +660,8 @@ export default function EnterpriseSalesPage() {
                     grows.
                   </p>
                   <p className="text-white/70 leading-relaxed text-lg mt-4">
-                    The upgrade path is pay the difference: Professional ($149) → Enterprise ($299)
-                    = $150 to upgrade. Your data, clients, and programs stay intact.
+                    The upgrade path is pay the difference: Professional ($299) → Enterprise ($399)
+                    = $100 to upgrade. Your data, clients, and programs stay intact.
                   </p>
                 </div>
               </div>
@@ -706,7 +706,7 @@ export default function EnterpriseSalesPage() {
             />
             <FAQItem
               question="Is there a per-trainer fee for Enterprise?"
-              answer="No. Enterprise is one flat fee — $299 once. You can add as many trainers and clients as your studio needs. No per-trainer costs, no per-client charges, no annual renewal. The platform scales with your business at no additional software cost."
+              answer="No. Enterprise is one flat fee — $399 once. You can add as many trainers and clients as your studio needs. No per-trainer costs, no per-client charges, no annual renewal. The platform scales with your business at no additional software cost."
             />
           </div>
         </div>
@@ -758,14 +758,14 @@ export default function EnterpriseSalesPage() {
               <span className="text-blue-400">One Platform</span>?
             </h2>
             <p className="text-xl text-white/60 mb-10 max-w-xl mx-auto">
-              $299. One time. Full admin access. Every trainer. Every client.
+              $399. One time. Full admin access. Every trainer. Every client.
             </p>
 
             <Link
               href="/register"
               className="inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
-              Get Enterprise Access — $299
+              Get Enterprise Access — $399
               <ArrowRight className="w-6 h-6" />
             </Link>
 

@@ -39,13 +39,13 @@ const staggerContainer = {
 const tiers = [
   {
     name: 'Starter',
-    price: '$49',
+    price: '$199',
     cadence: 'one-time',
     tagline: 'Your Coaching Platform. Forever.',
     description:
       'For the solo trainer with 1–5 clients who wants professional software without subscription fatigue.',
     priceId: 'starter',
-    cta: 'Get Started for $49',
+    cta: 'Get Started for $199',
     highlighted: false,
     learnMoreHref: '/starter',
     features: [
@@ -63,13 +63,13 @@ const tiers = [
   },
   {
     name: 'Professional',
-    price: '$149',
+    price: '$299',
     cadence: 'one-time',
     tagline: 'Run a Professional Coaching Business. Own It Forever.',
     description:
       'The complete platform for the full-time trainer. Unlimited clients, full program builder, ACWR analytics.',
     priceId: 'professional',
-    cta: 'Upgrade to Professional — $149',
+    cta: 'Upgrade to Professional — $299',
     highlighted: true,
     badge: 'Most Popular',
     learnMoreHref: '/professional',
@@ -90,13 +90,13 @@ const tiers = [
   },
   {
     name: 'Enterprise',
-    price: '$299',
+    price: '$399',
     cadence: 'one-time',
     tagline: 'Platform-Level Control for Gym Owners and Studio Operators.',
     description:
       'Admin dashboard, audit logs, feature flags, and multi-trainer oversight. Run EvoFit as your studio OS.',
     priceId: 'enterprise',
-    cta: 'Get Enterprise Access — $299',
+    cta: 'Get Enterprise Access — $399',
     highlighted: false,
     learnMoreHref: '/enterprise',
     features: [
@@ -113,13 +113,13 @@ const tiers = [
   },
   {
     name: 'SaaS Add-on',
-    price: '$49',
+    price: '$39.99',
     cadence: '/month',
     tagline: 'Let AI Handle the Programming. You Handle the Coaching.',
     description:
       'Stack onto any tier. AI workout generation, RPE-based progression, plateau detection, and push notifications.',
     priceId: 'saas-addon',
-    cta: 'Add AI Features — $49/mo',
+    cta: 'Add AI Features — $39.99/mo',
     highlighted: false,
     isAddon: true,
     learnMoreHref: '/special-offer',
@@ -253,8 +253,8 @@ const competitors = [
   {
     name: 'EvoFit Trainer',
     monthlyEquivalent: '$0/mo after purchase',
-    yearOneCost: '$149 (Professional)',
-    threeYearCost: '$149',
+    yearOneCost: '$299 (Professional)',
+    threeYearCost: '$299',
     isEvofit: true,
     note: 'One-time. Own forever.',
   },
@@ -639,7 +639,7 @@ export default function PricingPage() {
                     <span className="font-extrabold text-lg">You Pay (Professional)</span>
                     <p className="text-blue-200 text-xs mt-0.5">One-time · Own forever · 98% off</p>
                   </div>
-                  <span className="font-extrabold text-2xl">$149</span>
+                  <span className="font-extrabold text-2xl">$299</span>
                 </div>
               </div>
             </motion.div>
@@ -687,19 +687,19 @@ export default function PricingPage() {
                     <th className="px-4 py-4 text-left text-gray-900 font-bold w-1/2 md:w-2/5">Feature</th>
                     <th className="px-4 py-4 text-center text-gray-700 font-semibold">
                       <div>Starter</div>
-                      <div className="text-blue-600 font-bold">$49</div>
+                      <div className="text-blue-600 font-bold">$199</div>
                     </th>
                     <th className="px-4 py-4 text-center bg-blue-50 font-semibold">
                       <div className="text-blue-700">Professional</div>
-                      <div className="text-blue-600 font-bold">$149</div>
+                      <div className="text-blue-600 font-bold">$299</div>
                     </th>
                     <th className="px-4 py-4 text-center text-gray-700 font-semibold">
                       <div>Enterprise</div>
-                      <div className="text-blue-600 font-bold">$299</div>
+                      <div className="text-blue-600 font-bold">$399</div>
                     </th>
                     <th className="px-4 py-4 text-center text-purple-700 font-semibold">
                       <div>SaaS Add-on</div>
-                      <div className="text-purple-600 font-bold">$49/mo</div>
+                      <div className="text-purple-600 font-bold">$39.99/mo</div>
                     </th>
                   </tr>
                 </thead>
@@ -781,9 +781,9 @@ export default function PricingPage() {
 
             <motion.div variants={fadeInUp} className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { label: 'vs Everfit (3 years)', savings: '$5,251', detail: '$5,400 − $149' },
-                { label: 'vs TrueCoach (3 years)', savings: 'Up to $5,251', detail: 'At $150/mo plan' },
-                { label: 'vs TrainHeroic (3 years)', savings: '$3,055', detail: '$3,204 − $149' },
+                { label: 'vs Everfit (3 years)', savings: '$5,101', detail: '$5,400 − $299' },
+                { label: 'vs TrueCoach (3 years)', savings: 'Up to $5,101', detail: 'At $150/mo plan' },
+                { label: 'vs TrainHeroic (3 years)', savings: '$2,905', detail: '$3,204 − $299' },
               ].map((s) => (
                 <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-5 text-center">
                   <div className="text-2xl font-extrabold text-green-600 mb-1">{s.savings}</div>
@@ -915,7 +915,7 @@ export default function PricingPage() {
             </motion.div>
 
             <motion.p variants={fadeInUp} className="text-blue-300 text-sm mt-6">
-              Professional tier · $149 one-time · 14-day money-back guarantee · Secure checkout via Stripe
+              Professional tier · $3$39$199 one-time · 14-day money-back guarantee · Secure checkout via Stripe
             </motion.p>
           </motion.div>
         </div>
