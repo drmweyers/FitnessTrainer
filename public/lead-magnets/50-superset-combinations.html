@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>50 Superset Combinations That Actually Work — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    /* ─── PAGE WRAPPER ─── */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── COVER PAGE ─── */
+    .cover {
+      background: #0A0A0F;
+      min-height: 297mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 40px;
+    }
+
+    .cover-bg-circle {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.35) 0%, transparent 70%);
+      top: -60px;
+      right: -80px;
+    }
+
+    .cover-bg-circle2 {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,115,22,0.2) 0%, transparent 70%);
+      bottom: 80px;
+      left: -40px;
+    }
+
+    .cover-logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 32px;
+      text-transform: uppercase;
+    }
+
+    .cover-number {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 120px;
+      color: #2563EB;
+      line-height: 1;
+      margin-bottom: -10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-title-main {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 42px;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-title-accent {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 28px;
+      color: #F97316;
+      text-align: center;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 3px;
+      background: #2563EB;
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+
+    .cover-subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      text-align: center;
+      max-width: 320px;
+      line-height: 1.6;
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-tag {
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.35);
+      color: #93c5fd;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .cover-footer {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .cover-footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .cover-footer-url {
+      font-size: 10.5px;
+      color: #2563EB;
+    }
+
+    .cover-how-to {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px 24px;
+      max-width: 380px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-how-to p {
+      font-size: 11px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .cover-how-to strong {
+      color: #F97316;
+    }
+
+    /* ─── CONTENT PAGES ─── */
+    .content-page {
+      padding: 0;
+    }
+
+    .content-header {
+      background: #0A0A0F;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .content-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ch-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .ch-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    .ch-page {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 24px;
+      border-bottom: 1.5px solid #e2e8f0;
+    }
+
+    .section-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .section-info {}
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #0A0A0F;
+      line-height: 1.2;
+    }
+
+    .section-sub {
+      font-size: 9.5px;
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    .section-count {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── TABLE HEADER ─── */
+    .table-col-header {
+      display: grid;
+      grid-template-columns: 26px 1fr 1fr 90px 50px;
+      gap: 0;
+      padding: 4px 24px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table-col-header span {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* ─── SUPERSET ROW ─── */
+    .superset-row {
+      display: grid;
+      grid-template-columns: 26px 1fr 1fr 90px 50px;
+      align-items: stretch;
+      border-bottom: 1px solid #f1f5f9;
+      min-height: 17mm;
+    }
+
+    .superset-row:last-child { border-bottom: none; }
+    .superset-row:nth-child(even) { background: #fafafa; }
+
+    .ss-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      color: #94a3b8;
+      padding: 6px 2px;
+    }
+
+    .ss-exercise {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 7px 8px;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .ss-exercise-name {
+      font-weight: 700;
+      font-size: 10.5px;
+      color: #0A0A0F;
+      line-height: 1.25;
+    }
+
+    .ss-exercise-detail {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    .ss-exercise-b {
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .ss-muscles {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 7px 8px;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .ss-muscles-text {
+      font-size: 9px;
+      color: #374151;
+      line-height: 1.4;
+    }
+
+    .ss-rest {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #2563EB;
+      padding: 6px;
+      text-align: center;
+    }
+
+    /* section colors */
+    .sec-cb .section-icon { background: #dbeafe; }
+    .sec-sa .section-icon { background: #ede9fe; }
+    .sec-qh .section-icon { background: #dcfce7; }
+    .sec-pp .section-icon { background: #fff7ed; }
+    .sec-fb .section-icon { background: #fef9c3; }
+
+    .sec-cb .section-title { color: #1d4ed8; }
+    .sec-sa .section-title { color: #6d28d9; }
+    .sec-qh .section-title { color: #15803d; }
+    .sec-pp .section-title { color: #c2410c; }
+    .sec-fb .section-title { color: #a16207; }
+
+    .sec-cb { border-left: 3px solid #2563EB; }
+    .sec-sa { border-left: 3px solid #7c3aed; }
+    .sec-qh { border-left: 3px solid #16a34a; }
+    .sec-pp { border-left: 3px solid #f97316; }
+    .sec-fb { border-left: 3px solid #eab308; }
+
+    /* ─── CONTENT FOOTER ─── */
+    .content-footer {
+      margin-top: auto;
+      background: #f8fafc;
+      border-top: 1.5px solid #e2e8f0;
+      padding: 7px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cf-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      color: #475569;
+    }
+
+    .cf-url {
+      font-size: 9px;
+      color: #2563EB;
+    }
+
+    .cf-tip {
+      font-size: 9px;
+      color: #94a3b8;
+      max-width: 260px;
+      text-align: center;
+    }
+
+    /* ─── CTA PAGE ─── */
+    .cta-page {
+      background: #0A0A0F;
+      min-height: 297mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-bg {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%);
+      top: -80px;
+      left: -80px;
+    }
+
+    .cta-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #F97316;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 36px;
+      color: #fff;
+      text-align: center;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-headline span { color: #2563EB; }
+
+    .cta-body {
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+      max-width: 380px;
+      line-height: 1.65;
+      margin-bottom: 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .cta-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .cta-feature-icon {
+      width: 22px;
+      height: 22px;
+      background: #2563EB;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .cta-feature-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .cta-feature-text strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .cta-button {
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 14px 36px;
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 10px;
+    }
+
+    .cta-button-sub {
+      font-size: 10px;
+      color: #64748b;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-url {
+      font-size: 12px;
+      color: #2563EB;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── REST KEY ─── */
+    .rest-key {
+      display: flex;
+      gap: 8px;
+      padding: 5px 24px;
+      align-items: center;
+      background: #eff6ff;
+      border-top: 1px solid #dbeafe;
+    }
+
+    .rk-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+
+    .rk-item {
+      font-size: 8.5px;
+      color: #374151;
+    }
+
+    .rk-item strong {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 1: COVER -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="cover">
+      <div class="cover-bg-circle"></div>
+      <div class="cover-bg-circle2"></div>
+
+      <div class="cover-logo-badge">EvoFit Trainer</div>
+
+      <div class="cover-number">50</div>
+      <div class="cover-title-main">Superset<br>Combinations</div>
+      <div class="cover-title-accent">That Actually Work</div>
+
+      <div class="cover-divider"></div>
+
+      <div class="cover-subtitle">
+        Organized by muscle group. Ready to program. Save time, maximize efficiency, and keep sessions moving.
+      </div>
+
+      <div class="cover-tags">
+        <span class="cover-tag">Chest + Back</span>
+        <span class="cover-tag">Shoulders + Arms</span>
+        <span class="cover-tag">Quads + Hamstrings</span>
+        <span class="cover-tag">Push + Pull</span>
+        <span class="cover-tag">Full Body</span>
+      </div>
+
+      <div class="cover-how-to">
+        <p><strong>How to use this guide:</strong> Each superset lists Exercise A, Exercise B, target muscles, and recommended rest time. Perform A and B back-to-back with minimal rest between exercises. Rest the listed time before the next pair.</p>
+      </div>
+
+      <div class="cover-footer">
+        <span class="cover-footer-brand">EvoFit Trainer</span>
+        <span class="cover-footer-url">evofittrainer-six.vercel.app</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 2: CHEST + BACK / SHOULDERS + ARMS -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page content-page">
+    <div class="content-header">
+      <div class="content-header-left">
+        <span class="ch-badge">EVOFIT</span>
+        <span class="ch-title">50 Superset Combinations That Actually Work</span>
+      </div>
+      <span class="ch-page">Page 2 of 5</span>
+    </div>
+
+    <!-- SECTION 1: CHEST + BACK -->
+    <div class="section-header sec-cb">
+      <div class="section-icon">💪</div>
+      <div class="section-info">
+        <div class="section-title sec-cb">Section 1: Chest + Back</div>
+        <div class="section-sub">Antagonist pairs — ideal for hypertrophy and joint health. A pushes, B pulls.</div>
+      </div>
+      <span class="section-count">1–10</span>
+    </div>
+
+    <div class="table-col-header">
+      <span>#</span>
+      <span>Exercise A (Push / Chest)</span>
+      <span>Exercise B (Pull / Back)</span>
+      <span>Target Muscles</span>
+      <span>Rest</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">1</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Barbell Bench Press</div>
+        <div class="ss-exercise-detail">4×8, moderate load</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Barbell Bent-Over Row</div>
+        <div class="ss-exercise-detail">4×8, pronated grip</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec major, anterior delt / Lats, mid traps, rhomboids</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">2</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Incline DB Press</div>
+        <div class="ss-exercise-detail">3×10–12, controlled eccentric</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Seated Cable Row</div>
+        <div class="ss-exercise-detail">3×10–12, neutral grip</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Upper pec, anterior delt / Lats, biceps, rhomboids</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">3</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Cable Chest Fly</div>
+        <div class="ss-exercise-detail">3×12–15, peak contraction</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Single-Arm DB Row</div>
+        <div class="ss-exercise-detail">3×12 each side</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec major (inner) / Lats, teres major, rear delt</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">4</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Push-Up (weighted)</div>
+        <div class="ss-exercise-detail">3×12–15, plate on back</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Pull-Up / Lat Pulldown</div>
+        <div class="ss-exercise-detail">3×8–10</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec, triceps, front delt / Lats, biceps, lower traps</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">5</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Decline DB Press</div>
+        <div class="ss-exercise-detail">3×10, lower chest focus</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">T-Bar Row</div>
+        <div class="ss-exercise-detail">3×10, chest on pad</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Lower pec, triceps / Lats, mid traps, rhomboids</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">6</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Pec Deck Machine</div>
+        <div class="ss-exercise-detail">3×15, slow eccentric</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Reverse Pec Deck (Rear Delt)</div>
+        <div class="ss-exercise-detail">3×15, arms parallel</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec major (inner) / Posterior delt, rhomboids</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">7</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">DB Floor Press</div>
+        <div class="ss-exercise-detail">3×12, elbow protection</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Face Pull</div>
+        <div class="ss-exercise-detail">3×15, rope attachment</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec, triceps / Rear delt, external rotators, traps</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">8</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Smith Machine Press</div>
+        <div class="ss-exercise-detail">4×8–10, controlled</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Wide-Grip Cable Pulldown</div>
+        <div class="ss-exercise-detail">4×10, full stretch</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec, triceps / Lats (width focus), teres minor</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">9</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Dips (chest-forward lean)</div>
+        <div class="ss-exercise-detail">3×8–12, bodyweight or weighted</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Chest-Supported DB Row</div>
+        <div class="ss-exercise-detail">3×12, incline bench</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Lower pec, triceps / Lats, mid traps, rhomboids</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">10</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">DB Pullover (chest focus)</div>
+        <div class="ss-exercise-detail">3×12, full stretch</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Straight-Arm Pulldown</div>
+        <div class="ss-exercise-detail">3×15, cable station</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec, serratus / Lats, teres major, core</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="rest-key">
+      <span class="rk-label">Rest Guide:</span>
+      <span class="rk-item"><strong>60s</strong> = Hypertrophy / conditioning</span>
+      <span class="rk-item" style="margin-left:10px;"><strong>75s</strong> = Strength-hypertrophy</span>
+      <span class="rk-item" style="margin-left:10px;"><strong>90s</strong> = Strength focus</span>
+      <span class="rk-item" style="margin-left:10px;"><strong>120s+</strong> = Heavy compound sets</span>
+    </div>
+
+    <div class="content-footer">
+      <div>
+        <div class="cf-brand">EvoFit Trainer</div>
+        <div class="cf-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="cf-tip">Antagonist supersets allow one muscle to recover while the opposing muscle works — cutting rest time by up to 40% without sacrificing performance.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 3: SHOULDERS + ARMS / QUADS + HAMSTRINGS -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page content-page">
+    <div class="content-header">
+      <div class="content-header-left">
+        <span class="ch-badge">EVOFIT</span>
+        <span class="ch-title">50 Superset Combinations That Actually Work</span>
+      </div>
+      <span class="ch-page">Page 3 of 5</span>
+    </div>
+
+    <!-- SECTION 2: SHOULDERS + ARMS -->
+    <div class="section-header sec-sa">
+      <div class="section-icon">🏋️</div>
+      <div class="section-info">
+        <div class="section-title" style="color:#6d28d9;">Section 2: Shoulders + Arms</div>
+        <div class="section-sub">Compound + isolation pairings. Drive shoulder development while maintaining arm pump.</div>
+      </div>
+      <span class="section-count">11–20</span>
+    </div>
+
+    <div class="table-col-header">
+      <span>#</span>
+      <span>Exercise A</span>
+      <span>Exercise B</span>
+      <span>Target Muscles</span>
+      <span>Rest</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">11</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">DB Overhead Press</div>
+        <div class="ss-exercise-detail">4×8–10, neutral grip</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Lateral Raise</div>
+        <div class="ss-exercise-detail">4×12–15, light load</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Anterior/medial delt, upper trap / Medial delt, supraspinatus</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">12</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Barbell Curl</div>
+        <div class="ss-exercise-detail">3×10, supinated grip</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Skull Crusher</div>
+        <div class="ss-exercise-detail">3×10, EZ bar</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Biceps brachii, brachialis / Triceps long head, lateral head</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">13</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Cable Lateral Raise</div>
+        <div class="ss-exercise-detail">3×15, low pulley</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Rear Delt Cable Fly</div>
+        <div class="ss-exercise-detail">3×15, cross-body</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Medial deltoid / Posterior deltoid, external rotators</div>
+      </div>
+      <div class="ss-rest">45s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">14</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Incline DB Curl</div>
+        <div class="ss-exercise-detail">3×12, long head stretch</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Overhead DB Tricep Extension</div>
+        <div class="ss-exercise-detail">3×12, long head focus</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Biceps long head / Triceps long head (stretched position)</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">15</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Arnold Press</div>
+        <div class="ss-exercise-detail">3×10, pronation through movement</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Upright Row</div>
+        <div class="ss-exercise-detail">3×12, wide grip</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">All three delt heads / Medial delt, upper trap, biceps</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">16</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Hammer Curl</div>
+        <div class="ss-exercise-detail">3×12, neutral grip</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Tricep Pushdown (rope)</div>
+        <div class="ss-exercise-detail">3×15, flare at bottom</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Brachioradialis, brachialis / Triceps lateral + medial heads</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">17</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">DB Front Raise</div>
+        <div class="ss-exercise-detail">3×12, alternating</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Bent-Over Rear Delt Raise</div>
+        <div class="ss-exercise-detail">3×15, hip-hinge position</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Anterior deltoid / Posterior delt, rhomboids</div>
+      </div>
+      <div class="ss-rest">45s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">18</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Preacher Curl (machine)</div>
+        <div class="ss-exercise-detail">3×10–12, slow eccentric</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Tricep Dips (bench)</div>
+        <div class="ss-exercise-detail">3×12–15, bodyweight</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Biceps short head, brachialis / Triceps all heads, anterior delt</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">19</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Landmine Press</div>
+        <div class="ss-exercise-detail">3×10 each side</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Cable Face Pull</div>
+        <div class="ss-exercise-detail">3×15, rope at eye level</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Anterior delt, upper chest / Rear delt, external rotators</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">20</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Concentration Curl</div>
+        <div class="ss-exercise-detail">3×12 each arm</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Single-Arm Cable Pushdown</div>
+        <div class="ss-exercise-detail">3×12 each arm</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Biceps peak contraction / Triceps lateral head isolation</div>
+      </div>
+      <div class="ss-rest">45s</div>
+    </div>
+
+    <!-- SECTION 3: QUADS + HAMSTRINGS -->
+    <div class="section-header sec-qh">
+      <div class="section-icon">🦵</div>
+      <div class="section-info">
+        <div class="section-title" style="color:#15803d;">Section 3: Quads + Hamstrings</div>
+        <div class="section-sub">Lower body antagonist pairs. Balanced knee joint development and injury prevention.</div>
+      </div>
+      <span class="section-count">21–30</span>
+    </div>
+
+    <div class="table-col-header">
+      <span>#</span>
+      <span>Exercise A (Quads / Knee Extension)</span>
+      <span>Exercise B (Hamstrings / Knee Flexion)</span>
+      <span>Target Muscles</span>
+      <span>Rest</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">21</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Barbell Back Squat</div>
+        <div class="ss-exercise-detail">4×6–8, strength focus</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Romanian Deadlift</div>
+        <div class="ss-exercise-detail">4×8–10, full hip hinge</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes / Hamstrings, glutes, erectors</div>
+      </div>
+      <div class="ss-rest">120s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">22</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Leg Extension (machine)</div>
+        <div class="ss-exercise-detail">3×12–15, slow eccentric</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Leg Curl (machine)</div>
+        <div class="ss-exercise-detail">3×12–15, same weight</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quadriceps (all 4 heads) / Hamstrings (biceps femoris)</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">23</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Hack Squat</div>
+        <div class="ss-exercise-detail">3×10, narrow stance</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Stiff-Leg Deadlift (DB)</div>
+        <div class="ss-exercise-detail">3×12, minimal knee bend</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Vastus medialis, rectus femoris / Hamstrings, glutes</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">24</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Walking Lunges</div>
+        <div class="ss-exercise-detail">3×12 steps, bodyweight or DB</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Nordic Hamstring Curl</div>
+        <div class="ss-exercise-detail">3×6–8, eccentric focus</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes, balance / Hamstrings (eccentric strength)</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">25</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Bulgarian Split Squat</div>
+        <div class="ss-exercise-detail">3×10 each leg</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Single-Leg Curl (machine)</div>
+        <div class="ss-exercise-detail">3×12 each leg</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes (unilateral) / Hamstrings (unilateral isolation)</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="content-footer">
+      <div>
+        <div class="cf-brand">EvoFit Trainer</div>
+        <div class="cf-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="cf-tip">Build these supersets in EvoFit Trainer's program builder — drag, drop, and assign to any client in under 60 seconds.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 4: QUADS+HAMS CONT / PUSH+PULL / FULL BODY -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page content-page">
+    <div class="content-header">
+      <div class="content-header-left">
+        <span class="ch-badge">EVOFIT</span>
+        <span class="ch-title">50 Superset Combinations That Actually Work</span>
+      </div>
+      <span class="ch-page">Page 4 of 5</span>
+    </div>
+
+    <!-- CONTINUED: QUADS + HAMS -->
+    <div class="section-header sec-qh">
+      <div class="section-icon">🦵</div>
+      <div class="section-info">
+        <div class="section-title" style="color:#15803d;">Section 3 (continued): Quads + Hamstrings</div>
+        <div class="section-sub"></div>
+      </div>
+      <span class="section-count">26–30</span>
+    </div>
+
+    <div class="table-col-header">
+      <span>#</span>
+      <span>Exercise A</span>
+      <span>Exercise B</span>
+      <span>Target Muscles</span>
+      <span>Rest</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">26</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Goblet Squat</div>
+        <div class="ss-exercise-detail">3×15, DB or KB at chest</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Glute Bridge</div>
+        <div class="ss-exercise-detail">3×15, barbell or bodyweight</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes, core / Glutes, hamstrings, hip extensors</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">27</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Step-Up (weighted)</div>
+        <div class="ss-exercise-detail">3×12 each leg</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Good Morning</div>
+        <div class="ss-exercise-detail">3×12, light-moderate</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes (functional) / Hamstrings, erectors, glutes</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">28</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Sissy Squat</div>
+        <div class="ss-exercise-detail">3×10, quad isolation</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Lying Leg Curl</div>
+        <div class="ss-exercise-detail">3×12, full range</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Rectus femoris (stretched) / Biceps femoris, semitendinosus</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">29</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Leg Press (narrow)</div>
+        <div class="ss-exercise-detail">3×10–12, quad emphasis</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Seated Leg Curl</div>
+        <div class="ss-exercise-detail">3×12, long muscle length</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads (all), glutes / Hamstrings at hip extended position</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">30</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Wall Sit</div>
+        <div class="ss-exercise-detail">3×45–60s, isometric hold</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Hamstring Slider Curl</div>
+        <div class="ss-exercise-detail">3×10, sliders on floor</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads (isometric endurance) / Hamstrings, glutes (eccentric)</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <!-- SECTION 4: PUSH + PULL -->
+    <div class="section-header sec-pp">
+      <div class="section-icon">⚡</div>
+      <div class="section-info">
+        <div class="section-title" style="color:#c2410c;">Section 4: Push + Pull (Upper Body)</div>
+        <div class="section-sub">Full upper body efficiency — one push, one pull. Perfect for time-limited sessions.</div>
+      </div>
+      <span class="section-count">31–40</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">31</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">DB Shoulder Press</div>
+        <div class="ss-exercise-detail">4×8–10, seated</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Barbell Row</div>
+        <div class="ss-exercise-detail">4×8–10, supinated</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Shoulders, triceps / Lats, biceps, rhomboids</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">32</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Push-Up (feet elevated)</div>
+        <div class="ss-exercise-detail">3×15, decline variation</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Inverted Row</div>
+        <div class="ss-exercise-detail">3×15, underhand grip</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Upper pec, anterior delt / Lats, mid traps, biceps</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">33</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Bench Press (DB)</div>
+        <div class="ss-exercise-detail">3×10, neutral grip</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Neutral-Grip Chin-Up</div>
+        <div class="ss-exercise-detail">3×8–10, full dead hang</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec major, triceps / Lats, biceps, brachialis</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">34</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Cable Chest Press (standing)</div>
+        <div class="ss-exercise-detail">3×12, staggered stance</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Single-Arm Cable Row (standing)</div>
+        <div class="ss-exercise-detail">3×12 each side</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec, anterior delt, core / Lats, rear delt, core</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">35</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Floor Press</div>
+        <div class="ss-exercise-detail">3×10, tricep emphasis</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Renegade Row</div>
+        <div class="ss-exercise-detail">3×8 each arm, DB plank</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Pec, triceps / Lats, core, stabilisers</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="content-footer">
+      <div>
+        <div class="cf-brand">EvoFit Trainer</div>
+        <div class="cf-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="cf-tip">EvoFit Trainer's 1,344-exercise library means you'll always find the right substitution when equipment isn't available.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 5: PUSH+PULL CONT / FULL BODY -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page content-page">
+    <div class="content-header">
+      <div class="content-header-left">
+        <span class="ch-badge">EVOFIT</span>
+        <span class="ch-title">50 Superset Combinations That Actually Work</span>
+      </div>
+      <span class="ch-page">Page 5 of 5</span>
+    </div>
+
+    <!-- PUSH + PULL CONTINUED -->
+    <div class="section-header sec-pp">
+      <div class="section-icon">⚡</div>
+      <div class="section-info">
+        <div class="section-title" style="color:#c2410c;">Section 4 (continued): Push + Pull</div>
+        <div class="section-sub"></div>
+      </div>
+      <span class="section-count">36–40</span>
+    </div>
+
+    <div class="table-col-header">
+      <span>#</span>
+      <span>Exercise A</span>
+      <span>Exercise B</span>
+      <span>Target Muscles</span>
+      <span>Rest</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">36</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Overhead Press (machine)</div>
+        <div class="ss-exercise-detail">3×10–12</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Lat Pulldown (machine)</div>
+        <div class="ss-exercise-detail">3×10–12, same stack</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Delts, triceps / Lats, biceps — same machine station</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">37</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Incline Push-Up</div>
+        <div class="ss-exercise-detail">3×15, hands elevated</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">TRX Row</div>
+        <div class="ss-exercise-detail">3×15, feet forward lean</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Lower pec, triceps / Lats, rear delt — bodyweight only</div>
+      </div>
+      <div class="ss-rest">45s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">38</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">KB Press (half-kneeling)</div>
+        <div class="ss-exercise-detail">3×10 each side</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">KB Bent-Over Row</div>
+        <div class="ss-exercise-detail">3×12 each side</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Delt, triceps, core / Lats, rhomboids (KB only session)</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">39</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Band Pull-Apart (horizontal)</div>
+        <div class="ss-exercise-detail">3×20, shoulder health</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Band Press (chest)</div>
+        <div class="ss-exercise-detail">3×20, standing</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Rear delt, traps / Pec, anterior delt — bands only, warm-up</div>
+      </div>
+      <div class="ss-rest">30s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">40</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Barbell Overhead Press (seated)</div>
+        <div class="ss-exercise-detail">4×6–8, strength focus</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Weighted Pull-Up</div>
+        <div class="ss-exercise-detail">4×5–8, belt + plate</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Delts, triceps, upper trap / Lats, biceps — strength pair</div>
+      </div>
+      <div class="ss-rest">120s</div>
+    </div>
+
+    <!-- SECTION 5: FULL BODY -->
+    <div class="section-header sec-fb">
+      <div class="section-icon">🔥</div>
+      <div class="section-info">
+        <div class="section-title" style="color:#a16207;">Section 5: Full Body Conditioning</div>
+        <div class="section-sub">Upper + lower pairings. High metabolic demand. Perfect for fat loss phases.</div>
+      </div>
+      <span class="section-count">41–50</span>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">41</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Goblet Squat</div>
+        <div class="ss-exercise-detail">3×12, DB at chest</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">DB Row</div>
+        <div class="ss-exercise-detail">3×12, hip-hinged position</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes, core / Lats, rhomboids — zero equipment swap needed</div>
+      </div>
+      <div class="ss-rest">60s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">42</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Deadlift</div>
+        <div class="ss-exercise-detail">4×5, heavy load</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Bench Press</div>
+        <div class="ss-exercise-detail">4×8, moderate load</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Full posterior chain / Pec, triceps — classic compound pair</div>
+      </div>
+      <div class="ss-rest">120s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">43</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Box Jump</div>
+        <div class="ss-exercise-detail">3×8, explosive intent</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Push-Up (AMRAP)</div>
+        <div class="ss-exercise-detail">3 sets, max reps</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Glutes, quads (power) / Pec, triceps (power-endurance)</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">44</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">KB Swing</div>
+        <div class="ss-exercise-detail">3×15, hip hinge power</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Push Press (BB or DB)</div>
+        <div class="ss-exercise-detail">3×10, leg drive allowed</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Glutes, hamstrings, core / Delts, triceps, legs (drive)</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">45</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Front Squat</div>
+        <div class="ss-exercise-detail">3×8, bar on front rack</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Pendlay Row</div>
+        <div class="ss-exercise-detail">3×8, bar to floor each rep</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, upper back (posture) / Lats, traps — postural balance</div>
+      </div>
+      <div class="ss-rest">90s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">46</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Reverse Lunge (DB)</div>
+        <div class="ss-exercise-detail">3×10 each leg</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Seated Cable Row</div>
+        <div class="ss-exercise-detail">3×12, wide-grip</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Quads, glutes, balance / Lats, mid traps, rhomboids</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">47</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Trap Bar Deadlift</div>
+        <div class="ss-exercise-detail">4×6, quad + hip focus</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Incline DB Press</div>
+        <div class="ss-exercise-detail">4×10, upper chest</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Full body posterior + quads / Upper pec, anterior delt</div>
+      </div>
+      <div class="ss-rest">120s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">48</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Step-Up + Knee Drive</div>
+        <div class="ss-exercise-detail">3×12 each leg, explosive</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Chin-Up (bodyweight)</div>
+        <div class="ss-exercise-detail">3×max reps, full hang</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Glutes, quads (unilateral) / Biceps, lats — bodyweight</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">49</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Sumo Deadlift (DB)</div>
+        <div class="ss-exercise-detail">3×12, inner thigh focus</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Arnold Press (standing)</div>
+        <div class="ss-exercise-detail">3×10, all delt heads</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Inner quad, adductors, glutes / All deltoid heads, traps</div>
+      </div>
+      <div class="ss-rest">75s</div>
+    </div>
+
+    <div class="superset-row">
+      <div class="ss-num">50</div>
+      <div class="ss-exercise">
+        <div class="ss-exercise-name">Power Clean (light)</div>
+        <div class="ss-exercise-detail">3×5, technique focus</div>
+      </div>
+      <div class="ss-exercise ss-exercise-b">
+        <div class="ss-exercise-name">Weighted Dip</div>
+        <div class="ss-exercise-detail">3×8, belt + plate</div>
+      </div>
+      <div class="ss-muscles">
+        <div class="ss-muscles-text">Full body power + triple extension / Chest, triceps, dip pattern</div>
+      </div>
+      <div class="ss-rest">120s</div>
+    </div>
+
+    <div class="content-footer">
+      <div>
+        <div class="cf-brand">EvoFit Trainer</div>
+        <div class="cf-url">evofittrainer-six.vercel.app</div>
+      </div>
+      <div class="cf-tip">All 50 of these supersets are programmable in EvoFit Trainer's program builder. Your clients get the exact plan. You get the credit.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- PAGE 6: CTA PAGE -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="cta-page">
+      <div class="cta-bg"></div>
+
+      <div class="cta-label">Ready to program faster?</div>
+
+      <div class="cta-headline">
+        Build Every Superset in<br><span>EvoFit Trainer</span><br>in Under 60 Seconds
+      </div>
+
+      <div class="cta-body">
+        Stop copy-pasting programs into spreadsheets. EvoFit Trainer's program builder lets you create and assign supersets, sets, reps, and RPE targets — then send it directly to your client's phone.
+      </div>
+
+      <div class="cta-features">
+        <div class="cta-feature">
+          <div class="cta-feature-icon">✓</div>
+          <div class="cta-feature-text"><strong>1,344 exercises</strong> — every compound, isolation, and accessory lift you need</div>
+        </div>
+        <div class="cta-feature">
+          <div class="cta-feature-icon">✓</div>
+          <div class="cta-feature-text"><strong>Superset grouping</strong> — pair exercises in your program builder with one click</div>
+        </div>
+        <div class="cta-feature">
+          <div class="cta-feature-icon">✓</div>
+          <div class="cta-feature-text"><strong>RPE + RIR logging</strong> — clients log effort on every set so you see real data</div>
+        </div>
+        <div class="cta-feature">
+          <div class="cta-feature-icon">✓</div>
+          <div class="cta-feature-text"><strong>Progression tracking</strong> — automatic suggestions when it's time to add load or volume</div>
+        </div>
+        <div class="cta-feature">
+          <div class="cta-feature-icon">✓</div>
+          <div class="cta-feature-text"><strong>Free for your first 3 clients</strong> — no credit card, no time limit</div>
+        </div>
+      </div>
+
+      <div class="cta-button">Start Free — No Credit Card Required</div>
+      <div class="cta-button-sub">Free for up to 3 clients · Upgrade anytime</div>
+      <div class="cta-url">evofittrainer-six.vercel.app</div>
+
+    </div>
+  </div>
+
+</body>
+</html>
