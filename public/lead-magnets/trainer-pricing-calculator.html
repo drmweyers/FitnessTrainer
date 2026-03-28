@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trainer Pricing Calculator — EvoFit Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #0A0A0F;
+      width: 210mm;
+      margin: 0 auto;
+    }
+
+    /* ─── SHARED PAGE STRUCTURE ─── */
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      page-break-after: always;
+      position: relative;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── HEADER (all pages) ─── */
+    .header {
+      background: #0A0A0F;
+      padding: 14px 28px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .header-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .header-title span { color: #F97316; }
+
+    .header-tag {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 500;
+      background: rgba(255,255,255,0.08);
+      padding: 3px 9px;
+      border-radius: 4px;
+    }
+
+    /* ─── FOOTER (all pages) ─── */
+    .footer {
+      background: #0A0A0F;
+      padding: 9px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
+    .footer-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      color: #fff;
+    }
+
+    .footer-brand span { color: #F97316; }
+
+    .footer-url {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .footer-pg {
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    /* ════════════════════════════════
+       PAGE 1 — COVER
+    ════════════════════════════════ */
+    .cover-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #0A0A0F 0%, #0f172a 60%, #1e3a5f 100%);
+      padding: 40px 40px;
+      gap: 0;
+    }
+
+    .cover-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      color: #F97316;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .cover-headline {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 42px;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      max-width: 480px;
+      margin-bottom: 10px;
+    }
+
+    .cover-headline em {
+      font-style: normal;
+      color: #F97316;
+    }
+
+    .cover-sub {
+      font-size: 17px;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.5;
+      max-width: 420px;
+      margin-bottom: 36px;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 4px;
+      background: #2563EB;
+      border-radius: 2px;
+      margin-bottom: 36px;
+    }
+
+    .cover-stats {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .cover-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cover-stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 30px;
+      color: #2563EB;
+      line-height: 1;
+    }
+
+    .cover-stat-label {
+      font-size: 10px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 500;
+    }
+
+    .cover-stat-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      margin-top: 6px;
+    }
+
+    .cover-promise {
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.35);
+      border-radius: 10px;
+      padding: 16px 28px;
+      text-align: center;
+      max-width: 420px;
+    }
+
+    .cover-promise p {
+      font-size: 12px;
+      color: #93c5fd;
+      line-height: 1.6;
+    }
+
+    .cover-promise strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ════════════════════════════════
+       PAGE 2 — PRICING FRAMEWORK
+    ════════════════════════════════ */
+    .page2-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 28px;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #0A0A0F;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 16px;
+      background: #2563EB;
+      border-radius: 2px;
+    }
+
+    /* Rate formula box */
+    .formula-box {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .formula-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .formula-eq {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .formula-part {
+      background: #2563EB;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .formula-op {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: #94a3b8;
+    }
+
+    .formula-result {
+      background: #F97316;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 6px;
+    }
+
+    /* Session pricing tiers grid */
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tier-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tier-type {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .tier-range {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 15px;
+      color: #0A0A0F;
+      line-height: 1;
+    }
+
+    .tier-range span {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .tier-note {
+      font-size: 9px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .tier-card.highlight {
+      border-color: #2563EB;
+      background: rgba(37,99,235,0.05);
+    }
+
+    .tier-card.highlight .tier-range { color: #2563EB; }
+
+    /* Package discounts */
+    .packages-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .pkg-card {
+      background: #0A0A0F;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .pkg-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .pkg-discount {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      color: #F97316;
+      line-height: 1;
+    }
+
+    .pkg-desc {
+      font-size: 9px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* Worksheet */
+    .worksheet {
+      background: #fff;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+
+    .worksheet-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      color: #0A0A0F;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pencil-icon {
+      font-size: 13px;
+    }
+
+    .ws-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 16px;
+    }
+
+    .ws-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .ws-label {
+      font-size: 10px;
+      color: #374151;
+    }
+
+    .ws-field {
+      width: 64px;
+      height: 16px;
+      border: none;
+      border-bottom: 1.5px solid #cbd5e1;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      text-align: right;
+      color: #0A0A0F;
+    }
+
+    .ws-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0 0;
+      margin-top: 4px;
+      border-top: 2px solid #0A0A0F;
+      grid-column: span 2;
+    }
+
+    .ws-total-label {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      color: #0A0A0F;
+    }
+
+    .ws-total-field {
+      width: 80px;
+      height: 18px;
+      border: none;
+      border-bottom: 2px solid #0A0A0F;
+      background: transparent;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: right;
+      color: #2563EB;
+    }
+
+    /* Revenue scaling */
+    .rev-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .rev-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .rev-card.rev-highlight {
+      background: rgba(37,99,235,0.06);
+      border-color: #2563EB;
+    }
+
+    .rev-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .rev-math {
+      font-size: 10px;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    .rev-result {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      color: #2563EB;
+      margin-top: 3px;
+    }
+
+    /* ════════════════════════════════
+       PAGE 3 — SOFTWARE ROI + CTA
+    ════════════════════════════════ */
+    .page3-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 28px;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .p3-intro {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    .p3-intro strong {
+      color: #0A0A0F;
+    }
+
+    /* Comparison table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .comparison-table thead th {
+      background: #0A0A0F;
+      color: #fff;
+      padding: 8px 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      text-align: left;
+    }
+
+    .comparison-table thead th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .comparison-table thead th:last-child {
+      border-radius: 0 8px 0 0;
+      text-align: right;
+    }
+
+    .comparison-table tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .comparison-table tbody td {
+      padding: 7px 12px;
+      color: #374151;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .comparison-table tbody td:last-child {
+      text-align: right;
+    }
+
+    .td-label {
+      font-weight: 600;
+      color: #0A0A0F;
+    }
+
+    .td-neg { color: #ef4444; font-weight: 700; }
+    .td-pos { color: #16a34a; font-weight: 700; }
+
+    /* ROI spotlight */
+    .roi-spotlight {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .roi-card {
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .roi-card.roi-bad {
+      background: #fff1f2;
+      border: 1.5px solid #fecdd3;
+    }
+
+    .roi-card.roi-good {
+      background: rgba(22,163,74,0.06);
+      border: 1.5px solid #bbf7d0;
+    }
+
+    .roi-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .roi-bad .roi-label { color: #ef4444; }
+    .roi-good .roi-label { color: #16a34a; }
+
+    .roi-product {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #0A0A0F;
+      margin-bottom: 8px;
+    }
+
+    .roi-line {
+      font-size: 10px;
+      color: #374151;
+      line-height: 1.5;
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+
+    .roi-line .roi-amount {
+      font-weight: 700;
+      color: #0A0A0F;
+    }
+
+    .roi-total {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1.5px solid currentColor;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .roi-bad .roi-total { border-top-color: #fca5a5; }
+    .roi-good .roi-total { border-top-color: #86efac; }
+
+    .roi-total-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .roi-total-amount {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .roi-bad .roi-total-amount { color: #ef4444; }
+    .roi-good .roi-total-amount { color: #16a34a; }
+
+    /* Savings banner */
+    .savings-banner {
+      background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+      border-radius: 10px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .savings-big {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 44px;
+      color: #fff;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .savings-big small {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .savings-text h3 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .savings-text p {
+      font-size: 11px;
+      color: #bfdbfe;
+      line-height: 1.5;
+    }
+
+    /* CTA box */
+    .cta-box {
+      background: #0A0A0F;
+      border-radius: 12px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cta-text {
+      flex: 1;
+    }
+
+    .cta-text h3 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .cta-text h3 span { color: #F97316; }
+
+    .cta-text p {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .cta-pricing {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+      align-items: flex-end;
+    }
+
+    .cta-tier {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cta-tier-name {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 500;
+      width: 82px;
+      text-align: right;
+    }
+
+    .cta-tier-price {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      background: rgba(37,99,235,0.25);
+      border: 1px solid rgba(37,99,235,0.4);
+      padding: 2px 8px;
+      border-radius: 5px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .cta-tier-price.popular {
+      background: #F97316;
+      border-color: #F97316;
+    }
+
+    .cta-url {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: #F97316;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       PAGE 1 — COVER
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Trainer <span>Pricing</span> Calculator</div>
+      </div>
+      <div class="header-tag">Free Resource</div>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-eyebrow">Lead Magnet #10</div>
+
+      <div class="cover-headline">
+        Are You <em>Charging</em><br>Enough?
+      </div>
+      <div class="cover-sub">
+        The complete pricing framework every personal trainer needs to set profitable, sustainable rates — without guessing.
+      </div>
+      <div class="cover-divider"></div>
+
+      <div class="cover-stats">
+        <div class="cover-stat">
+          <div class="cover-stat-num">3×</div>
+          <div class="cover-stat-label">avg. undercharge rate</div>
+        </div>
+        <div class="cover-stat-divider"></div>
+        <div class="cover-stat">
+          <div class="cover-stat-num">$0</div>
+          <div class="cover-stat-label">cost of this guide</div>
+        </div>
+        <div class="cover-stat-divider"></div>
+        <div class="cover-stat">
+          <div class="cover-stat-num">10min</div>
+          <div class="cover-stat-label">to your right price</div>
+        </div>
+      </div>
+
+      <div class="cover-promise">
+        <p><strong>Inside:</strong> A fill-in worksheet, session pricing benchmarks, package discount formulas, and a clear comparison showing why <strong>your software bill shouldn't eat your profit margin.</strong></p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io/pricing</div>
+      <div class="footer-pg">1 / 3</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE 2 — PRICING FRAMEWORK
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Trainer <span>Pricing</span> Calculator</div>
+      </div>
+      <div class="header-tag">Pricing Framework</div>
+    </div>
+
+    <div class="page2-body">
+
+      <!-- Formula -->
+      <div class="section-title">Your Hourly Rate Formula</div>
+      <div class="formula-box">
+        <div class="formula-label">Calculate your minimum viable hourly rate</div>
+        <div class="formula-eq">
+          <div class="formula-part">Monthly<br>Expenses</div>
+          <div class="formula-op">+</div>
+          <div class="formula-part">Desired<br>Profit</div>
+          <div class="formula-op">÷</div>
+          <div class="formula-part">Available<br>Hours/Mo</div>
+          <div class="formula-op">=</div>
+          <div class="formula-result">Your Floor<br>Hourly Rate</div>
+        </div>
+      </div>
+
+      <!-- Session tiers -->
+      <div class="section-title">Session Pricing Benchmarks</div>
+      <div class="tiers-grid">
+        <div class="tier-card">
+          <div class="tier-type">1:1 In-Person</div>
+          <div class="tier-range">$60–150 <span>/hr</span></div>
+          <div class="tier-note">Premium rate. Best for established trainers with proven results.</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-type">Semi-Private (2-4)</div>
+          <div class="tier-range">$40–80 <span>/person</span></div>
+          <div class="tier-note">Per-person rate. Scale your hourly without adding hours.</div>
+        </div>
+        <div class="tier-card highlight">
+          <div class="tier-type">Group Classes</div>
+          <div class="tier-range">$20–40 <span>/person</span></div>
+          <div class="tier-note">Volume play. 10 clients × $30 = $300/hr total revenue.</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-type">Online Coaching</div>
+          <div class="tier-range">$30–100 <span>/mo</span></div>
+          <div class="tier-note">Recurring revenue. Low overhead. Unlimited scale potential.</div>
+        </div>
+      </div>
+
+      <!-- Packages -->
+      <div class="section-title">Package Discounts That Protect Margins</div>
+      <div class="packages-row">
+        <div class="pkg-card">
+          <div class="pkg-title">10-Session Pack</div>
+          <div class="pkg-discount">10% OFF</div>
+          <div class="pkg-desc">Reward commitment. Client locks in value, you lock in revenue.</div>
+        </div>
+        <div class="pkg-card">
+          <div class="pkg-title">20-Session Pack</div>
+          <div class="pkg-discount">15% OFF</div>
+          <div class="pkg-desc">Best seller. Deep enough to see real results. Lower churn.</div>
+        </div>
+        <div class="pkg-card">
+          <div class="pkg-title">Monthly Unlimited</div>
+          <div class="pkg-discount">Set Cap</div>
+          <div class="pkg-desc">Cap sessions at 12–16/mo. Predictable revenue, clear boundaries.</div>
+        </div>
+      </div>
+
+      <!-- Worksheet -->
+      <div class="section-title">Monthly Expense Worksheet <span style="font-size:11px; font-weight:400; color:#64748b; font-family:'Inter', sans-serif; text-transform:none; letter-spacing:0;">(fill in your numbers)</span></div>
+      <div class="worksheet">
+        <div class="ws-grid">
+          <div class="ws-row">
+            <span class="ws-label">Rent / Studio space</span>
+            <input type="text" class="ws-field" placeholder="$___" />
+          </div>
+          <div class="ws-row">
+            <span class="ws-label">Liability insurance</span>
+            <input type="text" class="ws-field" placeholder="$___" />
+          </div>
+          <div class="ws-row">
+            <span class="ws-label">Equipment / Gear</span>
+            <input type="text" class="ws-field" placeholder="$___" />
+          </div>
+          <div class="ws-row">
+            <span class="ws-label">Software & apps</span>
+            <input type="text" class="ws-field" placeholder="$___" />
+          </div>
+          <div class="ws-row">
+            <span class="ws-label">Continuing education</span>
+            <input type="text" class="ws-field" placeholder="$___" />
+          </div>
+          <div class="ws-row">
+            <span class="ws-label">Marketing / Ads</span>
+            <input type="text" class="ws-field" placeholder="$___" />
+          </div>
+          <div class="ws-total-row">
+            <span class="ws-total-label">Total Monthly Expenses</span>
+            <input type="text" class="ws-total-field" placeholder="$______" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue scaling -->
+      <div class="section-title">Revenue Scaling Math</div>
+      <div class="rev-grid">
+        <div class="rev-card">
+          <div class="rev-title">Starter Roster</div>
+          <div class="rev-math">10 clients × 4 sessions/mo × $80/session</div>
+          <div class="rev-result">$3,200/mo</div>
+        </div>
+        <div class="rev-card rev-highlight">
+          <div class="rev-title">Growth Roster</div>
+          <div class="rev-math">20 clients × 4 sessions/mo × $80/session</div>
+          <div class="rev-result">$6,400/mo</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io/pricing</div>
+      <div class="footer-pg">2 / 3</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE 3 — SOFTWARE ROI + CTA
+  ════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-badge">EvoFit</div>
+        <div class="header-title">Trainer <span>Pricing</span> Calculator</div>
+      </div>
+      <div class="header-tag">Software ROI</div>
+    </div>
+
+    <div class="page3-body">
+
+      <div class="section-title">Software Shouldn't Be Your Biggest Expense</div>
+
+      <div class="p3-intro">
+        Most trainers pay <strong>$100–$200/month</strong> for coaching software — before they've served a single client. That's money coming straight out of your profit margin every single month, forever. There's a better model.
+      </div>
+
+      <!-- Comparison table -->
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Everfit (typical)</th>
+            <th>TrainHeroic</th>
+            <th>EvoFit Trainer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-label">Pricing model</td>
+            <td>Monthly subscription</td>
+            <td>Monthly subscription</td>
+            <td><strong>One-time purchase</strong></td>
+          </tr>
+          <tr>
+            <td class="td-label">Monthly cost</td>
+            <td class="td-neg">~$150/mo</td>
+            <td class="td-neg">~$90/mo</td>
+            <td class="td-pos">$0/mo</td>
+          </tr>
+          <tr>
+            <td class="td-label">Year 1 total cost</td>
+            <td class="td-neg">~$1,800</td>
+            <td class="td-neg">~$1,080</td>
+            <td class="td-pos">$299 (once)</td>
+          </tr>
+          <tr>
+            <td class="td-label">Year 3 total cost</td>
+            <td class="td-neg">~$5,400</td>
+            <td class="td-neg">~$3,240</td>
+            <td class="td-pos">$299 (still)</td>
+          </tr>
+          <tr>
+            <td class="td-label">Client management</td>
+            <td>✓</td>
+            <td>✓</td>
+            <td>✓</td>
+          </tr>
+          <tr>
+            <td class="td-label">Program builder</td>
+            <td>✓</td>
+            <td>✓</td>
+            <td>✓</td>
+          </tr>
+          <tr>
+            <td class="td-label">Progress analytics</td>
+            <td>✓</td>
+            <td>Partial</td>
+            <td>✓</td>
+          </tr>
+          <tr>
+            <td class="td-label">RPE-based progression</td>
+            <td>Limited</td>
+            <td>Limited</td>
+            <td>✓ Built-in</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ROI comparison -->
+      <div class="roi-spotlight">
+        <div class="roi-card roi-bad">
+          <div class="roi-label">Subscription Model</div>
+          <div class="roi-product">Everfit Pro — Monthly</div>
+          <div class="roi-line"><span>Month 1</span> <span class="roi-amount">$150</span></div>
+          <div class="roi-line"><span>Month 12</span> <span class="roi-amount">$150</span></div>
+          <div class="roi-line"><span>Year 1 total</span> <span class="roi-amount">$1,800</span></div>
+          <div class="roi-line"><span>Year 3 total</span> <span class="roi-amount">$5,400</span></div>
+          <div class="roi-total">
+            <span class="roi-total-label">3-year cost</span>
+            <span class="roi-total-amount">$5,400</span>
+          </div>
+        </div>
+        <div class="roi-card roi-good">
+          <div class="roi-label">One-Time Model</div>
+          <div class="roi-product">EvoFit Professional</div>
+          <div class="roi-line"><span>Purchase price</span> <span class="roi-amount">$299</span></div>
+          <div class="roi-line"><span>Month 2–12</span> <span class="roi-amount">$0/mo</span></div>
+          <div class="roi-line"><span>Year 1 total</span> <span class="roi-amount">$299</span></div>
+          <div class="roi-line"><span>Year 3 total</span> <span class="roi-amount">$299</span></div>
+          <div class="roi-total">
+            <span class="roi-total-label">3-year cost</span>
+            <span class="roi-total-amount">$299</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Savings banner -->
+      <div class="savings-banner">
+        <div class="savings-big"><small>$</small>5,101</div>
+        <div class="savings-text">
+          <h3>saved over 3 years by switching to a one-time license</h3>
+          <p>That's 63 extra 1:1 sessions at $80 each. Or your entire equipment budget for 2 years. Or just money that stays in your pocket — where it belongs.</p>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-box">
+        <div class="cta-text">
+          <h3>Own your software.<br><span>Pay once. Train forever.</span></h3>
+          <p>EvoFit Trainer is a one-time purchase with no monthly fees, no per-client limits, and no surprises. Pick the tier that fits your practice.</p>
+        </div>
+        <div class="cta-pricing">
+          <div class="cta-tier">
+            <span class="cta-tier-name">Starter</span>
+            <span class="cta-tier-price">$199</span>
+          </div>
+          <div class="cta-tier">
+            <span class="cta-tier-name">Professional</span>
+            <span class="cta-tier-price popular">$299</span>
+          </div>
+          <div class="cta-tier">
+            <span class="cta-tier-name">Enterprise</span>
+            <span class="cta-tier-price">$399</span>
+          </div>
+          <div class="cta-tier">
+            <span class="cta-tier-name">SaaS Add-on</span>
+            <span class="cta-tier-price">$39.99/mo</span>
+          </div>
+          <div class="cta-url">trainer.evofit.io/pricing</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div class="footer-brand">Evo<span>Fit</span> Trainer</div>
+      <div class="footer-url">trainer.evofit.io/pricing</div>
+      <div class="footer-pg">3 / 3</div>
+    </div>
+  </div>
+
+</body>
+</html>
