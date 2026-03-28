@@ -28,7 +28,7 @@ export default function AppLayout({
   const pathname = usePathname();
 
   // Check if we're on a public page that shouldn't show navigation
-  const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/auth/login' || pathname === '/auth/register' || pathname === '/auth/forgot-password';
+  const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/auth/login' || pathname === '/auth/register' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/pricing' || pathname === '/get-started' || pathname === '/starter' || pathname === '/professional' || pathname === '/enterprise' || pathname === '/free-blueprint' || pathname === '/special-offer' || pathname === '/checkout/success' || pathname === '/checkout/cancel' || pathname.startsWith('/blog');
   const isAdminPage = pathname.startsWith('/admin');
 
   // Auto-collapse sidebar on smaller screens
