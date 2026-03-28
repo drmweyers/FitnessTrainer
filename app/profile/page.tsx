@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import Link from 'next/link';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,51 +41,45 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useRequireAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expiringCerts, setExpiringCerts] = useState<ExpiringCertification[]>([]);
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !user)) {
-      router.push('/login');
-      return;
-    }
+    if (isLoading || !user) return;
 
-    if (!isLoading && user) {
-      const token = localStorage.getItem('accessToken');
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      };
+    const token = localStorage.getItem('accessToken');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
-      fetch('/api/profiles/me', { headers })
+    fetch('/api/profiles/me', { headers })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          setProfile(result.data);
+        } else {
+          setError(result.error || 'Failed to load profile');
+        }
+      })
+      .catch(() => setError('Failed to load profile'))
+      .finally(() => setIsDataLoading(false));
+
+    // Load expiring certifications for trainers
+    if (user.role === 'trainer') {
+      fetch('/api/profiles/certifications/expiring', { headers })
         .then(res => res.json())
         .then(result => {
-          if (result.success) {
-            setProfile(result.data);
-          } else {
-            setError(result.error || 'Failed to load profile');
-          }
+          if (result.success) setExpiringCerts(result.data);
         })
-        .catch(() => setError('Failed to load profile'))
-        .finally(() => setIsDataLoading(false));
-
-      // Load expiring certifications for trainers
-      if (user.role === 'trainer') {
-        fetch('/api/profiles/certifications/expiring', { headers })
-          .then(res => res.json())
-          .then(result => {
-            if (result.success) setExpiringCerts(result.data);
-          })
-          .catch(() => {
-            // Non-critical — silently ignore cert expiry fetch errors
-          });
-      }
+        .catch(() => {
+          // Non-critical — silently ignore cert expiry fetch errors
+        });
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, user]);
 
   if (isLoading || isDataLoading) {
     return (
