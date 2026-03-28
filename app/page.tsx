@@ -121,7 +121,7 @@ export default function HomePage() {
           >
             <motion.div variants={fadeInUp} className="mb-6">
               <img
-                src="/logo.svg"
+                src="/logo.png"
                 alt="EvoFit Trainer"
                 width={72}
                 height={72}
@@ -1109,7 +1109,7 @@ export default function HomePage() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
                 <img
-                  src="/logo.svg"
+                  src="/logo.png"
                   alt="EvoFit Trainer"
                   width={36}
                   height={36}
