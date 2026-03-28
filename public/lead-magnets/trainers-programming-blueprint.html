@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Trainer's Programming Blueprint — EvoFit Trainer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-light: #3B82F6;
+      --primary-dark: #1D4ED8;
+      --accent: #F97316;
+      --dark: #0A0A0F;
+      --dark-card: #141420;
+      --dark-surface: #1A1A2E;
+      --text-white: #FFFFFF;
+      --text-muted: #94A3B8;
+      --text-dark: #1E293B;
+      --text-body: #334155;
+      --border: #E2E8F0;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: var(--text-dark);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ─── PAGE LAYOUT ─── */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      body { background: white; }
+      .page { page-break-after: always; }
+      .page:last-child { page-break-after: avoid; }
+    }
+
+    /* ─── TYPOGRAPHY ─── */
+    h1, h2, h3, h4, h5 {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 1 — COVER
+    ───────────────────────────────────────────────── */
+    .cover {
+      background: linear-gradient(145deg, #0A0A0F 0%, #0F1729 35%, #1A1A2E 65%, #0A0A0F 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0;
+    }
+
+    .cover-top-bar {
+      width: 100%;
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+    }
+
+    .cover-logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-light);
+      letter-spacing: -0.5px;
+    }
+
+    .cover-logo span {
+      color: var(--text-white);
+    }
+
+    .cover-badge {
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid rgba(37, 99, 235, 0.5);
+      color: var(--primary-light);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .cover-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 48px;
+      text-align: center;
+      gap: 28px;
+    }
+
+    .cover-icon {
+      width: 88px;
+      height: 88px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 60px rgba(37, 99, 235, 0.4);
+    }
+
+    .cover-icon svg {
+      width: 48px;
+      height: 48px;
+      fill: white;
+    }
+
+    .cover-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-light);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--text-white);
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+    }
+
+    .cover-title .highlight {
+      color: var(--primary-light);
+    }
+
+    .cover-divider {
+      width: 64px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    .cover-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 480px;
+    }
+
+    .cover-subtitle strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+    }
+
+    .cover-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 8px;
+    }
+
+    .cover-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cover-stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-light);
+    }
+
+    .cover-stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cover-stat-sep {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      align-self: center;
+    }
+
+    .cover-bottom {
+      width: 100%;
+      padding: 24px 40px;
+      border-top: 1px solid rgba(37, 99, 235, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cover-url {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+    }
+
+    .cover-url span {
+      color: var(--primary-light);
+    }
+
+    .cover-tagline {
+      font-size: 12px;
+      color: rgba(148, 163, 184, 0.6);
+    }
+
+    /* ─────────────────────────────────────────────────
+       LIGHT PAGES — SHARED STYLES
+    ───────────────────────────────────────────────── */
+    .light-page {
+      background: #FAFBFF;
+      padding: 40px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .page-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .page-number {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.5px;
+    }
+
+    .page-logo-small {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .section-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--text-body);
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 2 — INTRO
+    ───────────────────────────────────────────────── */
+    .intro-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 16px;
+      padding: 28px 32px;
+      color: white;
+    }
+
+    .intro-hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .intro-hero p {
+      color: rgba(255,255,255,0.85);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .intro-problem-box {
+      background: #FFF7ED;
+      border: 1px solid #FED7AA;
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+
+    .intro-problem-box .box-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .intro-problem-box p {
+      font-size: 13.5px;
+      color: #7C2D12;
+    }
+
+    .intro-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .intro-col-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .intro-col-card .col-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(37, 99, 235, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .intro-col-card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+    .intro-col-card p {
+      font-size: 12.5px;
+      color: var(--text-body);
+    }
+
+    .intro-what-learn {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+
+    .intro-what-learn h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+
+    .learn-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .learn-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-body);
+      line-height: 1.5;
+    }
+
+    .learn-list .check {
+      width: 18px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .learn-list .check svg {
+      width: 10px;
+      height: 10px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 3 — PERIODIZATION
+    ───────────────────────────────────────────────── */
+    .period-intro {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 22px;
+    }
+
+    .phase-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .phase-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 0;
+      position: relative;
+    }
+
+    .phase-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .phase-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .phase-line {
+      width: 2px;
+      flex: 1;
+      min-height: 12px;
+    }
+
+    .phase-content {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      margin-left: 12px;
+    }
+
+    .phase-content-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .phase-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .phase-content h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .phase-content p {
+      font-size: 12.5px;
+      color: var(--text-body);
+      line-height: 1.55;
+    }
+
+    /* Colors per phase */
+    .ph1 { background: #3B82F6; }
+    .ph2 { background: #8B5CF6; }
+    .ph3 { background: #EC4899; }
+    .ph4 { background: #F97316; }
+    .ph5 { background: #EF4444; }
+    .ph6 { background: #10B981; }
+
+    .ph1-line { background: linear-gradient(to bottom, #3B82F6, #8B5CF6); }
+    .ph2-line { background: linear-gradient(to bottom, #8B5CF6, #EC4899); }
+    .ph3-line { background: linear-gradient(to bottom, #EC4899, #F97316); }
+    .ph4-line { background: linear-gradient(to bottom, #F97316, #EF4444); }
+    .ph5-line { background: linear-gradient(to bottom, #EF4444, #10B981); }
+
+    .tag-1 { background: rgba(59,130,246,0.12); color: #1D4ED8; }
+    .tag-2 { background: rgba(139,92,246,0.12); color: #6D28D9; }
+    .tag-3 { background: rgba(236,72,153,0.12); color: #9D174D; }
+    .tag-4 { background: rgba(249,115,22,0.12); color: #C2410C; }
+    .tag-5 { background: rgba(239,68,68,0.12); color: #B91C1C; }
+    .tag-6 { background: rgba(16,185,129,0.12); color: #047857; }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 4 — ACWR
+    ───────────────────────────────────────────────── */
+    .acwr-formula {
+      background: linear-gradient(135deg, #0F1729 0%, #1A1A2E 100%);
+      border-radius: 16px;
+      padding: 24px 28px;
+      text-align: center;
+    }
+
+    .acwr-formula .formula-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-light);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .formula-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .formula-box {
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+
+    .formula-box .formula-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-light);
+    }
+
+    .formula-box .formula-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .formula-operator {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .formula-equals {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-white);
+    }
+
+    .formula-result {
+      background: rgba(37, 99, 235, 0.25);
+      border: 1px solid rgba(37, 99, 235, 0.6);
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+
+    .formula-result .result-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .formula-result .result-sub {
+      font-size: 11px;
+      color: var(--primary-light);
+      margin-top: 2px;
+    }
+
+    .acwr-zones {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .acwr-zone {
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .zone-undertrain {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+    }
+
+    .zone-sweet {
+      background: #ECFDF5;
+      border: 2px solid #6EE7B7;
+    }
+
+    .zone-overtrain {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+    }
+
+    .acwr-zone .zone-range {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .zone-undertrain .zone-range { color: #2563EB; }
+    .zone-sweet .zone-range { color: #059669; }
+    .zone-overtrain .zone-range { color: #DC2626; }
+
+    .acwr-zone .zone-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .zone-undertrain .zone-label { color: #1D4ED8; }
+    .zone-sweet .zone-label { color: #065F46; }
+    .zone-overtrain .zone-label { color: #991B1B; }
+
+    .acwr-zone .zone-desc {
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    .zone-undertrain .zone-desc { color: #1E40AF; }
+    .zone-sweet .zone-desc { color: #064E3B; }
+    .zone-overtrain .zone-desc { color: #7F1D1D; }
+
+    .acwr-evo-box {
+      background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(37,99,235,0.04) 100%);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .acwr-evo-box .evo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .acwr-evo-box h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 5px;
+    }
+
+    .acwr-evo-box p {
+      font-size: 12.5px;
+      color: var(--text-body);
+    }
+
+    .warning-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-left: 4px solid var(--warning);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .warning-box .warning-icon {
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .warning-box p {
+      font-size: 12.5px;
+      color: #78350F;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 5 — RPE
+    ───────────────────────────────────────────────── */
+    .rpe-scale {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .rpe-scale-header {
+      background: var(--dark);
+      padding: 12px 20px;
+      display: grid;
+      grid-template-columns: 40px 1fr 100px 140px;
+      gap: 12px;
+    }
+
+    .rpe-scale-header span {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rpe-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 100px 140px;
+      gap: 12px;
+      padding: 9px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+
+    .rpe-row:last-child { border-bottom: none; }
+
+    .rpe-row:nth-child(even) { background: #F8FAFF; }
+
+    .rpe-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .rpe-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rpe-bar {
+      height: 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .rpe-row .rpe-desc {
+      font-size: 12px;
+      color: var(--text-body);
+    }
+
+    .rpe-row .rpe-reps {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .rpe-row .rpe-use {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .rpe-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .rpe-compare-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .rpe-compare-card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .compare-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .compare-list li {
+      font-size: 12px;
+      color: var(--text-body);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .compare-list .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .dot-blue { background: var(--primary); }
+    .dot-orange { background: var(--accent); }
+
+    .blend-box {
+      background: linear-gradient(135deg, #F0F9FF 0%, #EEF2FF 100%);
+      border: 1px solid #BFDBFE;
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .blend-box h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .blend-box p {
+      font-size: 12.5px;
+      color: #1E3A5F;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 6 — 12-WEEK TEMPLATE
+    ───────────────────────────────────────────────── */
+    .phase-table-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .phase-block {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .phase-block-header {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .phase-block-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .phase-block-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .phase-block-weeks {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
+      font-weight: 500;
+    }
+
+    .phase-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .phase-table th {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 8px 14px;
+      text-align: left;
+      background: #F8FAFF;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-table td {
+      font-size: 12.5px;
+      color: var(--text-dark);
+      padding: 9px 14px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .phase-table tr:last-child td { border-bottom: none; }
+
+    .phase-table .highlight-cell {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .deload-row td { background: #F0FDF4; color: #065F46; font-style: italic; }
+
+    .ph-1 { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+    .ph-2 { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+    .ph-3 { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+    .ph-1 .phase-block-title { color: #1D4ED8; }
+    .ph-2 .phase-block-title { color: #5B21B6; }
+    .ph-3 .phase-block-title { color: #991B1B; }
+
+    .phase-block-header.ph-1-h { background: #EFF6FF; border-bottom: 2px solid #BFDBFE; }
+    .phase-block-header.ph-2-h { background: #F5F3FF; border-bottom: 2px solid #DDD6FE; }
+    .phase-block-header.ph-3-h { background: #FFF1F2; border-bottom: 2px solid #FECDD3; }
+
+    .ph-1-num { background: #2563EB; }
+    .ph-2-num { background: #7C3AED; }
+    .ph-3-num { background: #DC2626; }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 7 — EXERCISE SELECTION
+    ───────────────────────────────────────────────── */
+    .ppl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .ppl-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .ppl-card-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ppl-card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .ppl-card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .ppl-card-body {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .ppl-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .ppl-list li {
+      font-size: 12px;
+      color: var(--text-body);
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #F8FAFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ppl-list .ex-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      flex-shrink: 0;
+    }
+
+    .push-h { background: #EFF6FF; border-bottom: 2px solid #BFDBFE; }
+    .pull-h { background: #F5F3FF; border-bottom: 2px solid #DDD6FE; }
+    .legs-h { background: #ECFDF5; border-bottom: 2px solid #A7F3D0; }
+
+    .push-icon { background: rgba(37,99,235,0.1); }
+    .pull-icon { background: rgba(139,92,246,0.1); }
+    .legs-icon { background: rgba(16,185,129,0.1); }
+
+    .push-t { color: #1D4ED8; }
+    .pull-t { color: #5B21B6; }
+    .legs-t { color: #047857; }
+
+    .eighty-twenty {
+      background: linear-gradient(135deg, #0F1729 0%, #1A1A2E 100%);
+      border-radius: 14px;
+      padding: 22px 28px;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .eighty-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 52px;
+      font-weight: 900;
+      color: var(--primary-light);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .eighty-content h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .eighty-content p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .equip-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .equip-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .equip-card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .equip-tag {
+      font-size: 10px;
+      background: rgba(37,99,235,0.1);
+      color: var(--primary);
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .equip-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .equip-list li {
+      font-size: 12px;
+      color: var(--text-body);
+      padding-left: 12px;
+      position: relative;
+    }
+
+    .equip-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary-light);
+      font-size: 10px;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 8 — CLIENT ASSESSMENT
+    ───────────────────────────────────────────────── */
+    .assessment-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .assessment-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .assessment-card-header {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .assessment-card-header .a-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .assessment-card-header h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .assessment-card-body {
+      padding: 14px 18px;
+    }
+
+    .assessment-checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .assessment-checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-body);
+      line-height: 1.5;
+    }
+
+    .chk-box {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #CBD5E1;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      background: white;
+    }
+
+    .data-flow {
+      background: linear-gradient(135deg, rgba(37,99,235,0.06) 0%, rgba(37,99,235,0.02) 100%);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+
+    .data-flow h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 14px;
+    }
+
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .flow-step {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .flow-step .f-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .flow-step .f-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .flow-step .f-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .flow-arrow {
+      font-size: 16px;
+      color: var(--primary-light);
+      padding: 0 6px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 9 — CTA
+    ───────────────────────────────────────────────── */
+    .cta-page {
+      background: linear-gradient(145deg, #0A0A0F 0%, #0F1729 40%, #1A1A2E 100%);
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      min-height: 297mm;
+    }
+
+    .cta-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-light);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .cta-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      color: white;
+      text-align: center;
+      line-height: 1.15;
+      letter-spacing: -1px;
+    }
+
+    .cta-heading .accent {
+      color: var(--accent);
+    }
+
+    .cta-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      text-align: center;
+      max-width: 440px;
+      line-height: 1.6;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .pricing-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .pricing-card.featured {
+      background: rgba(37, 99, 235, 0.15);
+      border: 2px solid rgba(37, 99, 235, 0.6);
+      position: relative;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pricing-tier {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .pricing-price {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+    }
+
+    .pricing-price span {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-muted);
+      vertical-align: super;
+      margin-right: 2px;
+    }
+
+    .pricing-once {
+      font-size: 11px;
+      color: var(--primary-light);
+      font-weight: 600;
+      margin-top: -4px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      text-align: left;
+    }
+
+    .pricing-features li {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+    }
+
+    .pricing-features .pf-check {
+      color: var(--primary-light);
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: 14px;
+      line-height: 1.1;
+    }
+
+    .cta-button-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cta-button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px 48px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
+      letter-spacing: 0.3px;
+    }
+
+    .cta-url {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-light);
+    }
+
+    .cta-guarantee {
+      font-size: 12px;
+      color: rgba(148, 163, 184, 0.7);
+      text-align: center;
+    }
+
+    /* ─────────────────────────────────────────────────
+       PAGE 10 — BACK COVER
+    ───────────────────────────────────────────────── */
+    .back-cover {
+      background: linear-gradient(160deg, #0A0A0F 0%, #0F172A 50%, #0A0A0F 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      padding: 60px 48px;
+    }
+
+    .back-logo-mark {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 16px 50px rgba(37, 99, 235, 0.35);
+    }
+
+    .back-logo-mark svg {
+      width: 44px;
+      height: 44px;
+      fill: white;
+    }
+
+    .back-brand {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -1px;
+    }
+
+    .back-brand span {
+      color: var(--primary-light);
+    }
+
+    .back-divider {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    .back-tagline {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      max-width: 380px;
+      line-height: 1.4;
+    }
+
+    .back-url {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-light);
+    }
+
+    .back-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .back-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .back-dot.active {
+      background: var(--primary);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* ─── UTILITY ─── */
+    .mt-4 { margin-top: 4px; }
+    .mt-8 { margin-top: 8px; }
+    .mt-12 { margin-top: 12px; }
+    .fw-bold { font-weight: 700; }
+    .text-primary { color: var(--primary); }
+    .text-accent { color: var(--accent); }
+    .text-white { color: white; }
+    .text-muted { color: var(--text-muted); }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 1 — COVER
+════════════════════════════════════════════════ -->
+<div class="page cover">
+
+  <div class="cover-top-bar">
+    <div class="cover-logo">Evo<span>Fit</span> Trainer</div>
+    <div class="cover-badge">Free Resource</div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-icon">
+      <!-- Clipboard / Program icon -->
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+      </svg>
+    </div>
+
+    <div class="cover-eyebrow">The Definitive Guide to</div>
+
+    <h1 class="cover-title">
+      The Trainer's<br/>
+      <span class="highlight">Programming</span><br/>
+      Blueprint
+    </h1>
+
+    <div class="cover-divider"></div>
+
+    <p class="cover-subtitle">
+      How <strong>Elite S&amp;C Coaches</strong> Build Programs That
+      Keep Clients Engaged, Progressing, and Paying — For Years.
+    </p>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <div class="cover-stat-num">6</div>
+        <div class="cover-stat-label">Phases</div>
+      </div>
+      <div class="cover-stat-sep"></div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">12</div>
+        <div class="cover-stat-label">Week Template</div>
+      </div>
+      <div class="cover-stat-sep"></div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">1,344</div>
+        <div class="cover-stat-label">Exercises</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-url">By <span>EvoFit Trainer</span> — trainer.evofit.io</div>
+    <div class="cover-tagline">Own Your Coaching Platform. Forever.</div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 2 — INTRODUCTION
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Introduction</div>
+      <h2 class="page-title">Why Most Trainers Lose Clients After 3 Months</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <div class="intro-hero">
+    <div class="intro-hero-title">The 90-Day Dropout Problem</div>
+    <p>
+      Research consistently shows that <strong>over 60% of personal training clients quit within their first three months</strong>.
+      The reason is almost never the trainer's personality or gym quality. It's the program.
+      Clients plateau, get confused, or feel like they're just doing random workouts with no clear direction — and they leave.
+    </p>
+  </div>
+
+  <div class="intro-problem-box">
+    <div class="box-label">The Core Problem</div>
+    <p>
+      A random collection of exercises is <strong>not</strong> a program. A program is a purposeful, periodised
+      sequence of training stimuli designed to produce a specific physiological adaptation over time.
+      Without periodisation, clients stop progressing. Without progression, they stop paying.
+    </p>
+  </div>
+
+  <div class="intro-cols">
+    <div class="intro-col-card">
+      <div class="col-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+      <h4>Program vs. Random Exercises</h4>
+      <p>A real program manipulates load, volume, intensity, and rest in a calculated sequence. Each session builds on the last.</p>
+    </div>
+    <div class="intro-col-card">
+      <div class="col-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <h4>The Progression Equation</h4>
+      <p>Systematic overload + appropriate recovery = sustainable adaptation. Miss either side and results stall permanently.</p>
+    </div>
+  </div>
+
+  <div class="intro-what-learn">
+    <h4>What This Blueprint Will Teach You</h4>
+    <ul class="learn-list">
+      <li>
+        <span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+        The 6-phase periodisation framework used by elite strength &amp; conditioning coaches worldwide
+      </li>
+      <li>
+        <span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+        How to monitor training load using the Acute:Chronic Workload Ratio to prevent overtraining and injury
+      </li>
+      <li>
+        <span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+        The RPE vs percentage-based loading debate — and when to use each method with your clients
+      </li>
+      <li>
+        <span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+        A complete 12-week hypertrophy block template you can use immediately with any client
+      </li>
+      <li>
+        <span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+        A systematic exercise selection framework using Push/Pull/Legs from 1,344+ exercises
+      </li>
+      <li>
+        <span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>
+        The client assessment checklist that feeds directly into your EvoFit Trainer programming workflow
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 3 — THE 6-PHASE PERIODIZATION FRAMEWORK
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Chapter 1</div>
+      <h2 class="page-title">The 6-Phase Periodisation Framework</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <div class="period-intro">
+    <p>
+      Periodisation is the systematic planning of athletic training. It involves progressive cycling of various aspects of a
+      training program during a specific period. Here are the six phases every complete annual plan should include:
+    </p>
+  </div>
+
+  <div class="phase-timeline">
+
+    <div class="phase-item">
+      <div class="phase-connector">
+        <div class="phase-num ph1">1</div>
+        <div class="phase-line ph1-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-content-header">
+          <h4>Anatomical Adaptation</h4>
+          <span class="phase-tag tag-1">2–4 Weeks</span>
+        </div>
+        <p>Prepares tendons, ligaments, and stabiliser muscles for heavier loading ahead. High reps (15–20), light loads, full body movements. This phase is often skipped by impatient trainers — and later regretted. Injury prevention starts here.</p>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-connector">
+        <div class="phase-num ph2">2</div>
+        <div class="phase-line ph2-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-content-header">
+          <h4>Hypertrophy</h4>
+          <span class="phase-tag tag-2">6–12 Weeks</span>
+        </div>
+        <p>The foundation of physique development. Moderate loads (67–85% 1RM), moderate-to-high volume (3–5 sets of 8–15 reps). Metabolic stress and mechanical tension drive muscle growth. This is where most client transformations are built.</p>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-connector">
+        <div class="phase-num ph3">3</div>
+        <div class="phase-line ph3-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-content-header">
+          <h4>Strength</h4>
+          <span class="phase-tag tag-3">4–8 Weeks</span>
+        </div>
+        <p>Builds maximal force production by recruiting more motor units. Heavy loads (85–95% 1RM), lower reps (3–6), longer rest periods (3–5 min). Neural adaptations take priority over muscle growth in this phase.</p>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-connector">
+        <div class="phase-num ph4">4</div>
+        <div class="phase-line ph4-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-content-header">
+          <h4>Power</h4>
+          <span class="phase-tag tag-4">2–4 Weeks</span>
+        </div>
+        <p>Converts strength gains into explosive force. Submaximal loads (30–70% 1RM) moved as fast as possible. Olympic lifts, plyometrics, medicine ball throws. Primarily for athletes, but adds variety and athleticism for general clients.</p>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-connector">
+        <div class="phase-num ph5">5</div>
+        <div class="phase-line ph5-line"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-content-header">
+          <h4>Peaking</h4>
+          <span class="phase-tag tag-5">1–3 Weeks</span>
+        </div>
+        <p>Maximises performance for a specific event, competition, or test. Volume drops significantly (40–60%), intensity stays high. Allows full recovery while maintaining strength. Used before competitions, photoshoots, or milestone assessments.</p>
+      </div>
+    </div>
+
+    <div class="phase-item">
+      <div class="phase-connector">
+        <div class="phase-num ph6">6</div>
+        <div class="phase-line" style="background: transparent;"></div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-content-header">
+          <h4>Active Recovery</h4>
+          <span class="phase-tag tag-6">1–2 Weeks</span>
+        </div>
+        <p>Structured rest that allows physiological and psychological restoration. Light movement, mobility, low-intensity cardio. Supercompensation (the rebound effect) occurs here — skip it and you leave gains on the table.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 4 — ACWR TRAINING LOAD MONITORING
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Chapter 2</div>
+      <h2 class="page-title">ACWR Training Load Monitoring</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <p>
+    The <strong>Acute:Chronic Workload Ratio (ACWR)</strong> is the gold-standard method for monitoring
+    whether your client is training at a productive level or drifting into overtraining territory. Originally developed in
+    elite sport science, it's now accessible to every trainer through modern coaching software.
+  </p>
+
+  <div class="acwr-formula">
+    <div class="formula-label">The ACWR Formula</div>
+    <div class="formula-display">
+      <div class="formula-box">
+        <div class="formula-num">Acute</div>
+        <div class="formula-sub">7-day training load</div>
+      </div>
+      <div class="formula-operator">÷</div>
+      <div class="formula-box">
+        <div class="formula-num">Chronic</div>
+        <div class="formula-sub">28-day training load</div>
+      </div>
+      <div class="formula-equals">=</div>
+      <div class="formula-result">
+        <div class="result-text">ACWR Score</div>
+        <div class="result-sub">Target: 0.8 – 1.3</div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Training load is calculated as <strong>session RPE × duration (minutes)</strong>. For example, a client who
+    rates a 60-minute session at RPE 7 generates a load score of 420 arbitrary units (AU).
+    Track this daily, and the rolling average tells you exactly where your client sits on the readiness spectrum.
+  </p>
+
+  <div class="acwr-zones">
+    <div class="acwr-zone zone-undertrain">
+      <div class="zone-range">&lt; 0.8</div>
+      <div class="zone-label">Undertraining</div>
+      <p class="zone-desc">Load too low. Client is deconditioned, losing fitness. Increase training stimulus.</p>
+    </div>
+    <div class="acwr-zone zone-sweet">
+      <div class="zone-range">0.8 – 1.3</div>
+      <div class="zone-label">Sweet Spot</div>
+      <p class="zone-desc">Optimal training zone. Client is adapting safely. Maintain or incrementally progress.</p>
+    </div>
+    <div class="acwr-zone zone-overtrain">
+      <div class="zone-range">&gt; 1.5</div>
+      <div class="zone-label">Danger Zone</div>
+      <p class="zone-desc">Injury risk 2–4× higher. Load increased too fast. Immediate volume reduction required.</p>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <div class="warning-icon">⚠️</div>
+    <p>
+      <strong>The Spike Warning:</strong> A single hard week after low training volume is one of the highest injury predictors.
+      Never increase weekly load by more than 10% and always ensure your 28-day chronic load base supports the acute demand.
+      "Doing too much too soon" is responsible for the majority of non-contact training injuries.
+    </p>
+  </div>
+
+  <div class="acwr-evo-box">
+    <div class="evo-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    </div>
+    <div>
+      <h4>How EvoFit Trainer Automates ACWR</h4>
+      <p>
+        EvoFit Trainer automatically calculates your clients' ACWR from logged workout data. The dashboard flags
+        clients approaching the danger zone in real time, so you can adjust programming before injury occurs —
+        not after. No spreadsheets. No manual calculations.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 5 — RPE VS PERCENTAGE-BASED LOADING
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Chapter 3</div>
+      <h2 class="page-title">RPE vs Percentage-Based Loading</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <p>
+    The debate between autoregulated RPE loading and fixed percentage-based programming is one of the most
+    practical decisions you'll make for each client. The truth? Neither is universally superior — context determines which wins.
+  </p>
+
+  <div class="rpe-scale">
+    <div class="rpe-scale-header">
+      <span>RPE</span>
+      <span>Effort Description</span>
+      <span>Reps in Reserve</span>
+      <span>Best Use Case</span>
+    </div>
+    <div class="rpe-row">
+      <div class="rpe-num" style="color: #10B981;">6</div>
+      <div class="rpe-bar-wrap"><div class="rpe-bar" style="width:55px; background: #10B981;"></div><span class="rpe-desc">Comfortable, could talk easily</span></div>
+      <div class="rpe-reps">4+ reps left</div>
+      <div class="rpe-use">Warm-up sets, beginners</div>
+    </div>
+    <div class="rpe-row">
+      <div class="rpe-num" style="color: #3B82F6;">7</div>
+      <div class="rpe-bar-wrap"><div class="rpe-bar" style="width:72px; background: #3B82F6;"></div><span class="rpe-desc">Moderate effort, still comfortable</span></div>
+      <div class="rpe-reps">3 reps left</div>
+      <div class="rpe-use">Foundation phase</div>
+    </div>
+    <div class="rpe-row">
+      <div class="rpe-num" style="color: #6366F1;">8</div>
+      <div class="rpe-bar-wrap"><div class="rpe-bar" style="width:88px; background: #6366F1;"></div><span class="rpe-desc">Challenging but controlled</span></div>
+      <div class="rpe-reps">2 reps left</div>
+      <div class="rpe-use">Hypertrophy &amp; strength</div>
+    </div>
+    <div class="rpe-row">
+      <div class="rpe-num" style="color: #F59E0B;">9</div>
+      <div class="rpe-bar-wrap"><div class="rpe-bar" style="width:104px; background: #F59E0B;"></div><span class="rpe-desc">Very hard, form starting to strain</span></div>
+      <div class="rpe-reps">1 rep left</div>
+      <div class="rpe-use">Intensification, peaking</div>
+    </div>
+    <div class="rpe-row">
+      <div class="rpe-num" style="color: #EF4444;">10</div>
+      <div class="rpe-bar-wrap"><div class="rpe-bar" style="width:120px; background: #EF4444;"></div><span class="rpe-desc">Maximal effort, true 1RM</span></div>
+      <div class="rpe-reps">0 reps left</div>
+      <div class="rpe-use">Testing only, not training</div>
+    </div>
+  </div>
+
+  <div class="rpe-compare">
+    <div class="rpe-compare-card">
+      <h4>Use RPE When:</h4>
+      <ul class="compare-list">
+        <li><span class="dot dot-blue"></span>Client is intermediate or advanced (self-aware)</li>
+        <li><span class="dot dot-blue"></span>Daily readiness fluctuates (poor sleep, stress)</li>
+        <li><span class="dot dot-blue"></span>No recent 1RM test data is available</li>
+        <li><span class="dot dot-blue"></span>Autoregulation fits client psychology</li>
+        <li><span class="dot dot-blue"></span>Injury rehab requires daily load modulation</li>
+      </ul>
+    </div>
+    <div class="rpe-compare-card">
+      <h4>Use Percentages When:</h4>
+      <ul class="compare-list">
+        <li><span class="dot dot-orange"></span>Client is a beginner (no reliable RPE gauge)</li>
+        <li><span class="dot dot-orange"></span>Peaking for a tested competition</li>
+        <li><span class="dot dot-orange"></span>You have recent, reliable 1RM data</li>
+        <li><span class="dot dot-orange"></span>Client prefers structure over intuition</li>
+        <li><span class="dot dot-orange"></span>Accessory lifts with fixed progression targets</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="blend-box">
+    <h4>The Blended Approach (Recommended for Most Clients)</h4>
+    <p>
+      Use <strong>RPE for main compound lifts</strong> (squat, deadlift, bench, press, row) where daily readiness
+      significantly impacts safe loading. Use <strong>percentage-based loading for accessories</strong> where
+      consistency matters more than autoregulation. EvoFit Trainer's progression engine supports both
+      simultaneously — assign RPE targets to primary movements and fixed percentages to secondary work,
+      all within the same program block.
+    </p>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 6 — 12-WEEK HYPERTROPHY BLOCK
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Chapter 4</div>
+      <h2 class="page-title">The 12-Week Hypertrophy Block Template</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <p>
+    A 12-week hypertrophy block is the most requested program structure in general fitness. Here is a
+    battle-tested template structured into three 4-week mesocycles with built-in deload weeks for recovery and supercompensation.
+  </p>
+
+  <div class="phase-table-wrap">
+
+    <!-- Phase 1 -->
+    <div class="phase-block">
+      <div class="phase-block-header ph-1-h">
+        <div class="phase-block-num ph-1-num">I</div>
+        <div class="phase-block-title ph-1-t" style="color:#1D4ED8;">Foundation — Building the Base</div>
+        <div class="phase-block-weeks">Weeks 1–4</div>
+      </div>
+      <table class="phase-table">
+        <thead>
+          <tr>
+            <th>Week</th><th>Sets × Reps</th><th>RPE Target</th><th>Rest Period</th><th>Tempo</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight-cell">Wk 1</td><td>3 × 12</td><td>RPE 6</td><td>90 sec</td><td>3-0-1-0</td><td>Establish technique, light load</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 2</td><td>3 × 10</td><td>RPE 6–7</td><td>90 sec</td><td>3-0-1-0</td><td>Small load increase</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 3</td><td>3 × 10</td><td>RPE 7</td><td>90 sec</td><td>3-1-1-0</td><td>Add eccentric pause</td>
+          </tr>
+          <tr class="deload-row">
+            <td>Wk 4</td><td>2 × 10</td><td>RPE 5–6</td><td>60 sec</td><td>2-0-1-0</td><td>Deload — 60% volume</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-block">
+      <div class="phase-block-header ph-2-h">
+        <div class="phase-block-num ph-2-num">II</div>
+        <div class="phase-block-title" style="color:#5B21B6;">Volume Accumulation</div>
+        <div class="phase-block-weeks">Weeks 5–8</div>
+      </div>
+      <table class="phase-table">
+        <thead>
+          <tr>
+            <th>Week</th><th>Sets × Reps</th><th>RPE Target</th><th>Rest Period</th><th>Tempo</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight-cell">Wk 5</td><td>4 × 10</td><td>RPE 7</td><td>90–120 sec</td><td>3-0-1-0</td><td>Volume jump — expect soreness</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 6</td><td>4 × 8</td><td>RPE 7–8</td><td>2 min</td><td>3-1-1-0</td><td>Load increases, reps reduce</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 7</td><td>4 × 8</td><td>RPE 8</td><td>2 min</td><td>3-1-1-1</td><td>Peak volume week</td>
+          </tr>
+          <tr class="deload-row">
+            <td>Wk 8</td><td>3 × 8</td><td>RPE 5–6</td><td>90 sec</td><td>2-0-1-0</td><td>Deload — 60% volume</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-block">
+      <div class="phase-block-header ph-3-h">
+        <div class="phase-block-num ph-3-num">III</div>
+        <div class="phase-block-title" style="color:#991B1B;">Intensification</div>
+        <div class="phase-block-weeks">Weeks 9–12</div>
+      </div>
+      <table class="phase-table">
+        <thead>
+          <tr>
+            <th>Week</th><th>Sets × Reps</th><th>RPE Target</th><th>Rest Period</th><th>Tempo</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight-cell">Wk 9</td><td>5 × 6</td><td>RPE 7–8</td><td>2–3 min</td><td>2-1-1-0</td><td>Transition to strength emphasis</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 10</td><td>5 × 5</td><td>RPE 8</td><td>3 min</td><td>2-1-1-1</td><td>Heavier loads, fewer reps</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 11</td><td>5 × 5</td><td>RPE 8–9</td><td>3–4 min</td><td>2-1-1-1</td><td>Near-maximal intensification</td>
+          </tr>
+          <tr>
+            <td class="highlight-cell">Wk 12</td><td>3 × 3</td><td>RPE 9</td><td>4 min</td><td>2-0-1-0</td><td>Peaking week — test new maxes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
+    <strong>Tempo notation:</strong> Eccentric–Pause at bottom–Concentric–Pause at top (seconds). E.g. 3-1-1-0 = 3s lower, 1s pause, 1s lift, no pause at top.
+  </p>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 7 — EXERCISE SELECTION FRAMEWORK
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Chapter 5</div>
+      <h2 class="page-title">Exercise Selection Framework</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <p>
+    With 1,344 exercises in the EvoFit Trainer library, smart selection is critical. The Push/Pull/Legs framework
+    provides a biomechanically balanced structure that prevents overuse injuries and ensures every major muscle group
+    receives adequate volume throughout the week.
+  </p>
+
+  <div class="ppl-grid">
+
+    <div class="ppl-card">
+      <div class="ppl-card-header push-h">
+        <div class="ppl-card-icon push-icon">🫸</div>
+        <div class="ppl-card-title push-t">Push Day</div>
+      </div>
+      <div class="ppl-card-body">
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Chest, Shoulders, Triceps</p>
+        <ul class="ppl-list">
+          <li><span class="ex-dot"></span>Barbell Bench Press</li>
+          <li><span class="ex-dot"></span>Incline DB Press</li>
+          <li><span class="ex-dot"></span>Overhead Press</li>
+          <li><span class="ex-dot"></span>Lateral Raises</li>
+          <li><span class="ex-dot"></span>Tricep Pushdown</li>
+          <li><span class="ex-dot"></span>Cable Flye</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ppl-card">
+      <div class="ppl-card-header pull-h">
+        <div class="ppl-card-icon pull-icon">🫷</div>
+        <div class="ppl-card-title pull-t">Pull Day</div>
+      </div>
+      <div class="ppl-card-body">
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Back, Biceps, Rear Delts</p>
+        <ul class="ppl-list">
+          <li><span class="ex-dot"></span>Deadlift / RDL</li>
+          <li><span class="ex-dot"></span>Pull-ups / Lat Pulldown</li>
+          <li><span class="ex-dot"></span>Barbell Row</li>
+          <li><span class="ex-dot"></span>Face Pulls</li>
+          <li><span class="ex-dot"></span>Barbell Curl</li>
+          <li><span class="ex-dot"></span>Hammer Curl</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ppl-card">
+      <div class="ppl-card-header legs-h">
+        <div class="ppl-card-icon legs-icon">🦵</div>
+        <div class="ppl-card-title legs-t">Leg Day</div>
+      </div>
+      <div class="ppl-card-body">
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Quads, Hamstrings, Glutes, Calves</p>
+        <ul class="ppl-list">
+          <li><span class="ex-dot"></span>Back Squat / Front Squat</li>
+          <li><span class="ex-dot"></span>Romanian Deadlift</li>
+          <li><span class="ex-dot"></span>Leg Press</li>
+          <li><span class="ex-dot"></span>Bulgarian Split Squat</li>
+          <li><span class="ex-dot"></span>Leg Curl</li>
+          <li><span class="ex-dot"></span>Standing Calf Raise</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="eighty-twenty">
+    <div class="eighty-num">80%</div>
+    <div class="eighty-content">
+      <h4>The 80/20 Rule of Exercise Selection</h4>
+      <p>
+        80% of your clients' results come from 20% of their exercises. Compound, multi-joint movements —
+        squats, deadlifts, pressing, pulling — drive the overwhelming majority of strength, hypertrophy,
+        and body composition changes. Fill primary slots with these first, then use accessories to address
+        weak points, add volume, or improve aesthetics.
+      </p>
+    </div>
+  </div>
+
+  <div class="equip-row">
+    <div class="equip-card">
+      <h4>Home Gym Programming <span class="equip-tag">Minimal Kit</span></h4>
+      <ul class="equip-list">
+        <li>Dumbbells: Romanian DL, DB Press, DB Row, Lunges</li>
+        <li>Resistance bands: Face pulls, lateral raises, rows</li>
+        <li>Bodyweight: Push-ups, pull-ups, dips, single-leg work</li>
+        <li>Focus on unilateral movements to address imbalances</li>
+      </ul>
+    </div>
+    <div class="equip-card">
+      <h4>Commercial Gym Programming <span class="equip-tag">Full Kit</span></h4>
+      <ul class="equip-list">
+        <li>Barbell compounds as primary movements every session</li>
+        <li>Cable machines for constant tension on accessories</li>
+        <li>Machines for isolated hypertrophy (leg extension, etc.)</li>
+        <li>Filter by equipment in EvoFit Trainer's exercise library</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 8 — CLIENT ASSESSMENT CHECKLIST
+════════════════════════════════════════════════ -->
+<div class="page light-page">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-number">Chapter 6</div>
+      <h2 class="page-title">Client Assessment Checklist</h2>
+    </div>
+    <div class="page-logo-small">EvoFit</div>
+  </div>
+
+  <p>
+    A thorough initial assessment is the difference between a generic program and a life-changing one. Use this
+    checklist before building any client's first program. This data feeds directly into EvoFit Trainer's
+    client profile, enabling personalised programming from day one.
+  </p>
+
+  <div class="assessment-cols">
+
+    <div class="assessment-card">
+      <div class="assessment-card-header">
+        <div class="a-num">1</div>
+        <h4>PAR-Q Health Screening</h4>
+      </div>
+      <div class="assessment-card-body">
+        <ul class="assessment-checklist">
+          <li><span class="chk-box"></span>Has a doctor ever told them they have a heart condition?</li>
+          <li><span class="chk-box"></span>Do they feel chest pain during physical activity?</li>
+          <li><span class="chk-box"></span>Have they experienced dizziness or loss of consciousness?</li>
+          <li><span class="chk-box"></span>Any bone or joint problems aggravated by exercise?</li>
+          <li><span class="chk-box"></span>Currently on any medication affecting exercise safety?</li>
+          <li><span class="chk-box"></span>Any other condition requiring medical supervision?</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="assessment-card">
+      <div class="assessment-card-header">
+        <div class="a-num">2</div>
+        <h4>Movement Screen Basics</h4>
+      </div>
+      <div class="assessment-card-body">
+        <ul class="assessment-checklist">
+          <li><span class="chk-box"></span>Overhead squat assessment (hip mobility, ankle dorsiflexion)</li>
+          <li><span class="chk-box"></span>Single-leg balance test (stability, proprioception)</li>
+          <li><span class="chk-box"></span>Hip hinge pattern (deadlift mechanics, hamstring flexibility)</li>
+          <li><span class="chk-box"></span>Thoracic spine rotation (overhead press capability)</li>
+          <li><span class="chk-box"></span>Push pattern (scapular control, anterior shoulder)</li>
+          <li><span class="chk-box"></span>Pull pattern (lat engagement, elbow path)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="assessment-card">
+      <div class="assessment-card-header">
+        <div class="a-num">3</div>
+        <h4>Goal-Setting Framework</h4>
+      </div>
+      <div class="assessment-card-body">
+        <ul class="assessment-checklist">
+          <li><span class="chk-box"></span>Primary goal: strength / hypertrophy / performance / general fitness</li>
+          <li><span class="chk-box"></span>Timeline: when do they need to achieve the goal?</li>
+          <li><span class="chk-box"></span>Training history: years, frequency, injuries</li>
+          <li><span class="chk-box"></span>Available training days per week (3, 4, 5, or 6?)</li>
+          <li><span class="chk-box"></span>Session duration available (45, 60, 90 min?)</li>
+          <li><span class="chk-box"></span>Equipment access: home gym, commercial, outdoor?</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="assessment-card">
+      <div class="assessment-card-header">
+        <div class="a-num">4</div>
+        <h4>Baseline Performance Metrics</h4>
+      </div>
+      <div class="assessment-card-body">
+        <ul class="assessment-checklist">
+          <li><span class="chk-box"></span>Max push-ups (unbroken, bodyweight baseline)</li>
+          <li><span class="chk-box"></span>1RM or estimated 1RM on primary compound lifts</li>
+          <li><span class="chk-box"></span>Bodyweight measurements (if relevant to goals)</li>
+          <li><span class="chk-box"></span>Resting heart rate and HRV if available</li>
+          <li><span class="chk-box"></span>Prior injury history documented and flagged</li>
+          <li><span class="chk-box"></span>Lifestyle factors: sleep quality, stress levels</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="data-flow">
+    <h4>How This Data Flows Into EvoFit Trainer</h4>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="f-icon">📋</div>
+        <div class="f-title">Assessment</div>
+        <div class="f-sub">PAR-Q + Screen</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-icon">👤</div>
+        <div class="f-title">Client Profile</div>
+        <div class="f-sub">Goals + History</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-icon">📐</div>
+        <div class="f-title">Program Design</div>
+        <div class="f-sub">Periodised plan</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-icon">📊</div>
+        <div class="f-title">Track Progress</div>
+        <div class="f-sub">ACWR + RPE data</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-icon">🔄</div>
+        <div class="f-title">Auto-Adjust</div>
+        <div class="f-sub">Progression engine</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 9 — CTA
+════════════════════════════════════════════════ -->
+<div class="page cta-page">
+
+  <div class="cta-eyebrow">Ready to Put This Into Action?</div>
+
+  <h2 class="cta-heading">
+    Stop Building Programs in<br/>
+    Spreadsheets. <span class="accent">Own Your Platform.</span>
+  </h2>
+
+  <p class="cta-sub">
+    EvoFit Trainer gives you everything in this blueprint — periodisation tools, ACWR monitoring,
+    RPE progression, 1,344 exercises, and client management — in one platform you pay for once and own forever.
+  </p>
+
+  <div class="pricing-grid">
+
+    <div class="pricing-card">
+      <div class="pricing-tier">Starter</div>
+      <div class="pricing-price"><span>$</span>49</div>
+      <div class="pricing-once">One-time payment</div>
+      <ul class="pricing-features">
+        <li><span class="pf-check">✓</span>Up to 10 active clients</li>
+        <li><span class="pf-check">✓</span>Full exercise library (1,344)</li>
+        <li><span class="pf-check">✓</span>Program builder + templates</li>
+        <li><span class="pf-check">✓</span>Workout tracking + RPE logging</li>
+        <li><span class="pf-check">✓</span>Progress analytics dashboard</li>
+      </ul>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="featured-badge">Most Popular</div>
+      <div class="pricing-tier">Professional</div>
+      <div class="pricing-price"><span>$</span>149</div>
+      <div class="pricing-once">One-time payment</div>
+      <ul class="pricing-features">
+        <li><span class="pf-check">✓</span>Unlimited clients</li>
+        <li><span class="pf-check">✓</span>Everything in Starter</li>
+        <li><span class="pf-check">✓</span>ACWR load monitoring</li>
+        <li><span class="pf-check">✓</span>Auto-progression engine (RPE)</li>
+        <li><span class="pf-check">✓</span>Calendar export + scheduling</li>
+        <li><span class="pf-check">✓</span>Client messaging</li>
+      </ul>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-tier">Enterprise</div>
+      <div class="pricing-price"><span>$</span>299</div>
+      <div class="pricing-once">One-time payment</div>
+      <ul class="pricing-features">
+        <li><span class="pf-check">✓</span>Multi-trainer team access</li>
+        <li><span class="pf-check">✓</span>Everything in Professional</li>
+        <li><span class="pf-check">✓</span>White-label branding</li>
+        <li><span class="pf-check">✓</span>Admin dashboard + reporting</li>
+        <li><span class="pf-check">✓</span>Priority support</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="cta-button-wrap">
+    <div class="cta-button">Start Building at EvoFit Trainer →</div>
+    <div class="cta-url">trainer.evofit.io/pricing</div>
+  </div>
+
+  <div class="cta-guarantee">
+    No subscription. No monthly fees. Own your coaching platform forever.
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 10 — BACK COVER
+════════════════════════════════════════════════ -->
+<div class="page back-cover">
+
+  <div class="back-logo-mark">
+    <!-- Dumbbell / fitness icon -->
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6.5 6.5h11M6.5 17.5h11M4 9.5v5M8 8v8M16 8v8M20 9.5v5M2 12h20"/>
+    </svg>
+  </div>
+
+  <div class="back-brand">Evo<span>Fit</span> Trainer</div>
+
+  <div class="back-divider"></div>
+
+  <div class="back-tagline">
+    Own Your Coaching Platform.<br/>Forever.
+  </div>
+
+  <div class="back-url">trainer.evofit.io</div>
+
+  <div class="back-dots">
+    <div class="back-dot"></div>
+    <div class="back-dot active"></div>
+    <div class="back-dot"></div>
+  </div>
+
+</div>
+
+</body>
+</html>
