@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,7 +41,7 @@ const TIMEZONES = [
 const GENDERS = ['male', 'female', 'non-binary', 'prefer not to say'];
 
 export default function ProfileEditPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useRequireAuth();
   const router = useRouter();
 
   const [isDataLoading, setIsDataLoading] = useState(true);
@@ -80,44 +80,39 @@ export default function ProfileEditPage() {
   });
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !user)) {
-      router.push('/login');
-      return;
-    }
+    if (isLoading || !user) return;
 
-    if (!isLoading && user) {
-      const token = localStorage.getItem('accessToken');
-      fetch('/api/profiles/me', {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
+    const token = localStorage.getItem('accessToken');
+    fetch('/api/profiles/me', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data?.userProfile) {
+          const p = result.data.userProfile;
+          setForm({
+            bio: p.bio || '',
+            dateOfBirth: p.dateOfBirth ? p.dateOfBirth.split('T')[0] : '',
+            gender: p.gender || '',
+            phone: p.phone || '',
+            timezone: p.timezone || '',
+            preferredUnits: p.preferredUnits || 'metric',
+            isPublic: p.isPublic ?? true,
+          });
+          if (p.whatsappNumber) setWhatsappNumber(p.whatsappNumber);
+        }
       })
-        .then(res => res.json())
-        .then(result => {
-          if (result.success && result.data?.userProfile) {
-            const p = result.data.userProfile;
-            setForm({
-              bio: p.bio || '',
-              dateOfBirth: p.dateOfBirth ? p.dateOfBirth.split('T')[0] : '',
-              gender: p.gender || '',
-              phone: p.phone || '',
-              timezone: p.timezone || '',
-              preferredUnits: p.preferredUnits || 'metric',
-              isPublic: p.isPublic ?? true,
-            });
-            if (p.whatsappNumber) setWhatsappNumber(p.whatsappNumber);
-          }
-        })
-        .catch(err => console.error('Failed to load profile:', err))
-        .finally(() => setIsDataLoading(false));
+      .catch(err => console.error('Failed to load profile:', err))
+      .finally(() => setIsDataLoading(false));
 
-      // Load certifications for trainers
-      if (user.role === 'trainer') {
-        loadCertifications();
-      }
+    // Load certifications for trainers
+    if (user.role === 'trainer') {
+      loadCertifications();
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

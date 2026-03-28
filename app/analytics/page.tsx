@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BodyMeasurement } from '@/types/analytics';
 import { analyticsApi } from '@/lib/api/analytics';
-import { useAuth } from '@/contexts/AuthContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import MeasurementTracker from '@/components/features/Analytics/MeasurementTracker';
 import ProgressChart from '@/components/features/Analytics/ProgressChart';
 import MultiLineChart from '@/components/features/Analytics/MultiLineChart';
@@ -17,7 +17,7 @@ import ClientSelector from '@/components/features/Analytics/ClientSelector';
 import { useToast, ToastContainer } from '@/components/shared/Toast';
 
 export default function AnalyticsPage() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useRequireAuth();
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
@@ -48,17 +48,14 @@ export default function AnalyticsPage() {
     }
   }, [user?.id, selectedClientId]);
 
-  // Redirect to login if not authenticated
-  if (!authLoading && !isAuthenticated) {
-    window.location.href = '/login';
-    return null;
-  }
-
-  // Show loading while auth is initializing
+  // Show loading while auth is initializing or user not yet available
   if (authLoading || !user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading analytics...</p>
+        </div>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/shared/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +14,7 @@ import PARQuestionnaire, { PARQResponses } from '@/components/features/Profile/P
 const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
 export default function HealthPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useRequireAuth();
   const router = useRouter();
 
   const [isDataLoading, setIsDataLoading] = useState(true);
@@ -31,39 +31,34 @@ export default function HealthPage() {
   });
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !user)) {
-      router.push('/login');
-      return;
-    }
+    if (isLoading || !user) return;
 
-    if (!isLoading && user) {
-      const token = localStorage.getItem('accessToken');
-      fetch('/api/profiles/health', {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      })
-        .then(res => res.json())
-        .then(result => {
-          if (result.success && result.data) {
-            const h = result.data;
-            setForm({
-              bloodType: h.bloodType || '',
-              medicalConditions: (h.medicalConditions || []).join('\n'),
-              medications: (h.medications || []).join('\n'),
-              allergies: (h.allergies || []).join('\n'),
-              injuries: h.injuries ? JSON.stringify(h.injuries, null, 2) : '',
-            });
-            if (h.lifestyle?.parQ) {
-              setParQResponses(h.lifestyle.parQ);
-            }
+    const token = localStorage.getItem('accessToken');
+    fetch('/api/profiles/health', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success && result.data) {
+          const h = result.data;
+          setForm({
+            bloodType: h.bloodType || '',
+            medicalConditions: (h.medicalConditions || []).join('\n'),
+            medications: (h.medications || []).join('\n'),
+            allergies: (h.allergies || []).join('\n'),
+            injuries: h.injuries ? JSON.stringify(h.injuries, null, 2) : '',
+          });
+          if (h.lifestyle?.parQ) {
+            setParQResponses(h.lifestyle.parQ);
           }
-        })
-        .catch(err => console.error('Failed to load health data:', err))
-        .finally(() => setIsDataLoading(false));
-    }
-  }, [isLoading, isAuthenticated, user, router]);
+        }
+      })
+      .catch(err => console.error('Failed to load health data:', err))
+      .finally(() => setIsDataLoading(false));
+  }, [isLoading, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
