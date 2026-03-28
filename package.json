@@ -109,6 +109,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.3.3",
     "prisma": "^5.22.0",
+    "puppeteer": "^24.40.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
