@@ -18,9 +18,21 @@ module.exports = {
       },
     },
     extend: {
-      // EvoFit Custom Brand Colors
+      // EvoFit Custom Brand Colors (from DESIGN.md)
       colors: {
         // Primary brand colors
+        'primary-dark': '#191919',
+        'primary-light': '#f9f9f9',
+        'accent-green': '#38c214',
+        'accent-blue': '#03b2fd',
+        'accent-orange': '#ff632f',
+        'accent-purple': '#673dff',
+        
+        // Extended palette
+        'card-bg': '#ffffff',
+        'muted-text': '#999999',
+        'subtle-border': '#0000001a',
+        
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
