@@ -67,6 +67,7 @@ const customJestConfig = {
     // Skip .worktrees/ ONLY if we're in the main project (not running from within a worktree)
     ...(process.cwd().includes('.worktrees') ? [] : ['/\\.worktrees/']),
     '/tests/e2e/',
+    '/e2e/',
   ],
 
   forceExit: true,

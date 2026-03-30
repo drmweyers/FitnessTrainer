@@ -40,6 +40,8 @@ jest.mock('@/config/navigation', () => ({
   publicNavLinks: [
     { label: 'Pricing', href: '/pricing' },
     { label: 'Get Started', href: '/get-started' },
+    { id: 'pricing', label: 'Pricing', href: '/pricing' },
+    { id: 'get-started', label: 'Get Started', href: '/get-started' },
   ],
 }));
 

@@ -87,7 +87,7 @@ describe('HomePage', () => {
     it('renders the logo with correct attributes', () => {
       const logos = screen.getAllByAltText('EvoFit Trainer')
       expect(logos.length).toBeGreaterThanOrEqual(1)
-      expect(logos[0]).toHaveAttribute('src', '/logo.svg')
+      expect(logos[0]).toHaveAttribute('src', '/logo.png')
     })
 
     it('renders Get Started CTA linking to register', () => {
