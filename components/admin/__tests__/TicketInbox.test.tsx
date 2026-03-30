@@ -3,7 +3,8 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import TicketInbox from '../TicketInbox';
 
@@ -51,6 +52,7 @@ const mockTickets = [
 describe('TicketInbox', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFetch.mockReset(); // Also reset mock implementations/return values
   });
 
   it('renders loading state initially', () => {
@@ -187,6 +189,358 @@ describe('TicketInbox', () => {
     await waitFor(() => {
       const resolveButtons = screen.getAllByRole('button', { name: /resolve/i });
       expect(resolveButtons.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('calls updateTicket with resolved status when Resolve button clicked', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /resolve/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /resolve/i }));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/support/tickets/ticket-001',
+        expect.objectContaining({ method: 'PUT' })
+      );
+    });
+  });
+
+  it('calls updateTicket with in_progress status when Mark In Progress clicked', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    // Expand first ticket (open status)
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /mark in progress/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /mark in progress/i }));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/support/tickets/ticket-001',
+        expect.objectContaining({
+          method: 'PUT',
+          body: JSON.stringify({ status: 'in_progress' }),
+        })
+      );
+    });
+  });
+
+  it('shows reply form and textarea in expanded ticket', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: mockTickets,
+        meta: { total: 2 },
+      }),
+    });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    // Expand first ticket
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/type your reply/i)).toBeInTheDocument();
+      expect(screen.getByText('Send Reply')).toBeInTheDocument();
+    });
+
+    // Type a reply - verify textarea is interactive
+    const textarea = screen.getByPlaceholderText(/type your reply/i);
+    fireEvent.change(textarea, { target: { value: 'Hello there' } });
+    expect(textarea).toHaveValue('Hello there');
+  });
+
+  it('send button is disabled when reply text is empty', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: mockTickets,
+        meta: { total: 2 },
+      }),
+    });
+
+    const { container } = render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    // Expand first ticket
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/type your reply/i)).toBeInTheDocument();
+    });
+
+    // Find the send button using query selector (it's next to the textarea)
+    const sendBtn = container.querySelector('textarea + button, textarea ~ button') as HTMLButtonElement;
+    // Should be disabled when no text entered
+    if (sendBtn) {
+      expect(sendBtn).toBeDisabled();
+    } else {
+      // Find by disabled attribute
+      const buttons = container.querySelectorAll('button[disabled]');
+      expect(buttons.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('shows replies when ticket has them', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: mockTickets,
+        meta: { total: 2 },
+      }),
+    });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Payment issue')).toBeInTheDocument();
+    });
+
+    // Expand second ticket (has replies)
+    fireEvent.click(screen.getByText('Payment issue'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Looking into it')).toBeInTheDocument();
+    });
+  });
+
+  it('shows error when updateTicket fails', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+      });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /resolve/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /resolve/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to update/i)).toBeInTheDocument();
+    });
+  });
+
+  it('closes a ticket using close button', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/support/tickets/ticket-001',
+        expect.objectContaining({
+          method: 'PUT',
+          body: JSON.stringify({ status: 'closed' }),
+        })
+      );
+    });
+  });
+
+  it('collapses expanded ticket on second click', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: mockTickets,
+        meta: { total: 2 },
+      }),
+    });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    // Expand
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText(/type your reply/i)).toBeInTheDocument();
+    });
+
+    // Collapse
+    fireEvent.click(screen.getByText('Cannot log workout'));
+
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText(/type your reply/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('retries fetch when Retry button clicked on error state', async () => {
+    mockFetch
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText(/retry/i));
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+  });
+
+  it('refreshes tickets when Refresh button clicked', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: mockTickets,
+          meta: { total: 2 },
+        }),
+      });
+
+    render(<TicketInbox />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cannot log workout')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /refresh/i }));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
   });
 });

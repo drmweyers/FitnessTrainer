@@ -143,4 +143,98 @@ describe('CalendarExport', () => {
       expect(screen.getByText('Outlook:')).toBeInTheDocument();
     });
   });
+
+  it('handles download failure gracefully', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+    });
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    render(<CalendarExport />);
+
+    fireEvent.click(screen.getByText('Export to Calendar'));
+    fireEvent.click(screen.getByText('Download .ics'));
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to download ICS:', expect.any(Error));
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it('sets feed URL from server response when subscribe fetch succeeds', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ token: 'server-feed-token-123' }),
+    });
+
+    render(<CalendarExport />);
+
+    fireEvent.click(screen.getByText('Export to Calendar'));
+    fireEvent.click(screen.getByText('Subscribe to Feed'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Subscribe to Calendar Feed')).toBeInTheDocument();
+    });
+
+    // Feed URL should contain the server token
+    const input = screen.getByDisplayValue(/server-feed-token-123/);
+    expect(input).toBeInTheDocument();
+  });
+
+  it('uses fallback URL when subscribe fetch throws', async () => {
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network failure'));
+
+    render(<CalendarExport />);
+
+    fireEvent.click(screen.getByText('Export to Calendar'));
+    fireEvent.click(screen.getByText('Subscribe to Feed'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Subscribe to Calendar Feed')).toBeInTheDocument();
+    });
+
+    // Should use fallback URL
+    const input = screen.getByDisplayValue(/your-feed-token/);
+    expect(input).toBeInTheDocument();
+  });
+
+  it('uses clipboard fallback when clipboard API fails', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+    });
+
+    // Make clipboard.writeText fail
+    (navigator.clipboard.writeText as jest.Mock).mockRejectedValueOnce(new Error('Clipboard denied'));
+
+    // Mock document.querySelector to return an input element
+    const mockInput = {
+      select: jest.fn(),
+      value: 'http://localhost/api/schedule/feed/your-feed-token',
+    };
+    const querySelectorSpy = jest.spyOn(document, 'querySelector').mockImplementation((selector: string) => {
+      if (selector === '[data-feed-url]') return mockInput as any;
+      return null;
+    });
+
+    // Mock execCommand
+    Object.defineProperty(document, 'execCommand', { value: jest.fn(() => true), writable: true, configurable: true });
+
+    render(<CalendarExport />);
+
+    fireEvent.click(screen.getByText('Export to Calendar'));
+    fireEvent.click(screen.getByText('Subscribe to Feed'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Copy')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Copy'));
+
+    await waitFor(() => {
+      expect(mockInput.select).toHaveBeenCalled();
+    });
+
+    querySelectorSpy.mockRestore();
+  });
 });
