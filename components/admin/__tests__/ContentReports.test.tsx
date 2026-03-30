@@ -194,4 +194,137 @@ describe('ContentReports', () => {
       expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
     });
   });
+
+  it('shows error when resolve API call fails', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, data: mockReports }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /resolve/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /resolve/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to resolve report/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows reviewing status badge correctly', async () => {
+    const reviewingReport = {
+      ...mockReports[0],
+      id: 'report-003',
+      status: 'reviewing' as const,
+    };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: [reviewingReport] }),
+    });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByText('reviewing')).toBeInTheDocument();
+    });
+  });
+
+  it('shows dismissed status text for dismissed reports', async () => {
+    const dismissedReport = {
+      ...mockReports[0],
+      id: 'report-004',
+      status: 'dismissed' as const,
+    };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: [dismissedReport] }),
+    });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Dismissed')).toBeInTheDocument();
+    });
+  });
+
+  it('shows Resolved text for resolved reports', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: [mockReports[1]] }),
+    });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Resolved')).toBeInTheDocument();
+    });
+  });
+
+  it('shows note view button when notes exist', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: [mockReports[0]] }),
+    });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('icon-eye')).toBeInTheDocument();
+    });
+  });
+
+  it('does not show note view button when notes are null', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: [mockReports[1]] }),
+    });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('icon-eye')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows report count in header', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: mockReports }),
+    });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByText('(2)')).toBeInTheDocument();
+    });
+  });
+
+  it('retries on error when retry button clicked', async () => {
+    mockFetch
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, data: mockReports }),
+      });
+
+    render(<ContentReports />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load reports/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Retry'));
+
+    await waitFor(() => {
+      expect(screen.getByText('inappropriate')).toBeInTheDocument();
+    });
+  });
 });
