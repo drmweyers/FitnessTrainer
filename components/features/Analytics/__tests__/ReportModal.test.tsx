@@ -23,6 +23,13 @@ Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
 // Mock fetch
 global.fetch = jest.fn();
 
+// Mock URL.createObjectURL
+Object.defineProperty(global.URL, 'createObjectURL', {
+  value: jest.fn(() => 'blob:mock-url'),
+  writable: true,
+  configurable: true,
+});
+
 describe('ReportModal', () => {
   const mockOnClose = jest.fn();
 
@@ -400,6 +407,73 @@ describe('ReportModal', () => {
       await waitFor(() => {
         expect(screen.getAllByText('N/A')).toHaveLength(2);
       });
+    });
+  });
+
+  describe('CSV Download', () => {
+    const fullReportData = {
+      id: 'report-csv',
+      generatedAt: '2024-02-10T12:00:00Z',
+      period: { startDate: '2024-01-01', endDate: '2024-01-31' },
+      summary: {
+        totalWorkouts: 10,
+        completedWorkouts: 8,
+        completionRate: 80,
+        totalDurationMinutes: 400,
+        totalVolume: 8000,
+        averageRpe: 7,
+      },
+      workouts: [
+        { date: '2024-01-10', status: 'completed', duration: 45, volume: 1000, sets: 10, completedSets: 10 },
+        { date: '2024-01-15', status: 'skipped', duration: null, volume: null, sets: null, completedSets: null },
+      ],
+      measurements: [
+        { date: '2024-01-15', weight: 80, bodyFat: 16, muscleMass: 67 },
+      ],
+      goals: [
+        { type: 'strength', specific: 'Bench press 100kg', target: 100, targetDate: '2024-06-01', latestProgress: { value: 85, percentage: 85 } },
+        { type: 'endurance', specific: null, target: null, targetDate: null, latestProgress: null },
+      ],
+    };
+
+    it('downloads CSV with full report data including workouts, measurements and goals', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        json: async () => ({ success: true, data: fullReportData }),
+      });
+
+      // Mock the anchor link
+      const mockLink = {
+        setAttribute: jest.fn(),
+        click: jest.fn(),
+        style: { visibility: '' },
+      };
+      const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(
+        (tag: string) => {
+          if (tag === 'a') return mockLink as any;
+          // Use the original implementation for other tags
+          createElementSpy.mockRestore();
+          return document.createElement(tag);
+        }
+      );
+
+      render(<ReportModal isOpen={true} onClose={mockOnClose} />);
+      fireEvent.click(screen.getByText('Generate Report'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Download as CSV')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Download as CSV'));
+
+      // The function should have been called
+      expect(URL.createObjectURL).toHaveBeenCalled();
+    });
+
+    it('does not download when report is null', async () => {
+      render(<ReportModal isOpen={true} onClose={mockOnClose} />);
+
+      // No report generated, so Download as CSV button should not be visible
+      expect(screen.queryByText('Download as CSV')).not.toBeInTheDocument();
     });
   });
 });

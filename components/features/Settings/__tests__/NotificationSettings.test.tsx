@@ -123,4 +123,46 @@ describe('NotificationSettings', () => {
     const workoutReminders = screen.getByRole('checkbox', { name: /workout reminders/i });
     expect(workoutReminders).toBeDisabled();
   });
+
+  it('saves quiet hours start when changed', async () => {
+    render(<NotificationSettings />);
+
+    const startInput = screen.getByLabelText(/quiet hours start/i) as HTMLInputElement;
+    fireEvent.change(startInput, { target: { value: '21:00' } });
+
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.quietHoursStart).toBe('21:00');
+  });
+
+  it('saves quiet hours end when changed', async () => {
+    render(<NotificationSettings />);
+
+    const endInput = screen.getByLabelText(/quiet hours end/i) as HTMLInputElement;
+    fireEvent.change(endInput, { target: { value: '08:00' } });
+
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.quietHoursEnd).toBe('08:00');
+  });
+
+  it('handles invalid localStorage JSON gracefully', () => {
+    localStorage.setItem('notification_preferences', '{invalid json}');
+    // Should not throw
+    expect(() => render(<NotificationSettings />)).not.toThrow();
+  });
+
+  it('enables test notification button when subscribed', () => {
+    mockedPushService.isSubscribed.mockReturnValue(true);
+    render(<NotificationSettings />);
+
+    const testBtn = screen.getByRole('button', { name: /test notification/i });
+    expect(testBtn).not.toBeDisabled();
+  });
+
+  it('disables test notification button when not enabled', () => {
+    mockedPushService.isSubscribed.mockReturnValue(false);
+    render(<NotificationSettings />);
+
+    const testBtn = screen.getByRole('button', { name: /test notification/i });
+    expect(testBtn).toBeDisabled();
+  });
 });
