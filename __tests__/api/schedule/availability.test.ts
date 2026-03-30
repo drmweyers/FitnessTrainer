@@ -302,4 +302,56 @@ describe('DELETE /api/schedule/availability', () => {
     expect(data.success).toBe(false);
     expect(data.error).toBe('Only trainers can modify availability');
   });
+
+  it('returns 400 for invalid slotId UUID', async () => {
+    const mockUser = { id: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/availability'), { user: mockUser })
+    );
+
+    const request = makeRequest('/api/schedule/availability', {
+      method: 'DELETE',
+      body: JSON.stringify({ slotId: 'not-a-uuid' }),
+    });
+    const response = await DELETE(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Validation failed');
+  });
+
+  it('handles server error in GET', async () => {
+    jest.spyOn(console, 'error').mockImplementation();
+    const mockUser = { id: 't1', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/availability'), { user: mockUser })
+    );
+    mockedPrisma.trainerAvailability.findMany.mockRejectedValueOnce(new Error('DB error'));
+
+    const response = await GET(makeRequest('/api/schedule/availability'));
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+  });
+
+  it('handles server error in POST', async () => {
+    jest.spyOn(console, 'error').mockImplementation();
+    const mockUser = { id: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/availability'), { user: mockUser })
+    );
+    mockedPrisma.trainerAvailability.upsert.mockRejectedValueOnce(new Error('DB error'));
+
+    const request = makeRequest('/api/schedule/availability', {
+      method: 'POST',
+      body: JSON.stringify({ slots: [{ dayOfWeek: 1, startTime: '09:00', endTime: '12:00' }] }),
+    });
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+  });
 });

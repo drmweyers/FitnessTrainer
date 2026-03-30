@@ -274,4 +274,92 @@ describe('POST /api/auth/login', () => {
 
     expect(response.status).toBe(500);
   });
+
+  it('detects mobile device from user-agent header', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      email: 'user@test.com',
+      passwordHash: '$2a$10$hash',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+      deletedAt: null,
+    });
+    (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = makeLoginRequest(
+      { email: 'user@test.com', password: 'password123' },
+      { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) Mobile/15E148' }
+    );
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+  });
+
+  it('detects Firefox browser from user-agent header', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      email: 'user@test.com',
+      passwordHash: '$2a$10$hash',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+      deletedAt: null,
+    });
+    (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = makeLoginRequest(
+      { email: 'user@test.com', password: 'password123' },
+      { 'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0' }
+    );
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+  });
+
+  it('detects macOS from user-agent header', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      email: 'user@test.com',
+      passwordHash: '$2a$10$hash',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+      deletedAt: null,
+    });
+    (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = makeLoginRequest(
+      { email: 'user@test.com', password: 'password123' },
+      { 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_0) AppleWebKit/537.36 Safari/537.36' }
+    );
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+  });
+
+  it('detects Android from user-agent header', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      email: 'user@test.com',
+      passwordHash: '$2a$10$hash',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+      deletedAt: null,
+    });
+    (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = makeLoginRequest(
+      { email: 'user@test.com', password: 'password123' },
+      { 'user-agent': 'Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36 Chrome/97.0.4692.99 Mobile' }
+    );
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+  });
 });

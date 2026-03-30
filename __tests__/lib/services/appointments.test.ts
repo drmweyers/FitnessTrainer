@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { checkAppointmentConflicts, generateAppointmentReminder } from '@/lib/services/appointments';
+import { checkAppointmentConflicts, generateAppointmentReminder, getGroupClassParticipantCount } from '@/lib/services/appointments';
 import { prisma } from '@/lib/db/prisma';
 
 jest.mock('@/lib/db/prisma', () => ({
@@ -128,6 +128,59 @@ describe('Appointment Services', () => {
       (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(generateAppointmentReminder('invalid-id')).rejects.toThrow('Appointment not found');
+    });
+  });
+
+  describe('getGroupClassParticipantCount', () => {
+    it('returns 1 for an existing group_class appointment', async () => {
+      (prisma.appointment.findUnique as jest.Mock).mockResolvedValue({
+        id: 'appt-group-1',
+        appointmentType: 'group_class',
+      });
+
+      const count = await getGroupClassParticipantCount('appt-group-1');
+      expect(count).toBe(1);
+    });
+
+    it('returns 0 when appointment does not exist', async () => {
+      (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(null);
+
+      const count = await getGroupClassParticipantCount('non-existent');
+      expect(count).toBe(0);
+    });
+
+    it('returns 0 for a non-group_class appointment type', async () => {
+      (prisma.appointment.findUnique as jest.Mock).mockResolvedValue({
+        id: 'appt-individual',
+        appointmentType: 'individual',
+      });
+
+      const count = await getGroupClassParticipantCount('appt-individual');
+      expect(count).toBe(0);
+    });
+
+    it('returns 0 for a consultation appointment type', async () => {
+      (prisma.appointment.findUnique as jest.Mock).mockResolvedValue({
+        id: 'appt-consult',
+        appointmentType: 'consultation',
+      });
+
+      const count = await getGroupClassParticipantCount('appt-consult');
+      expect(count).toBe(0);
+    });
+
+    it('queries with correct select fields', async () => {
+      (prisma.appointment.findUnique as jest.Mock).mockResolvedValue({
+        id: 'appt-1',
+        appointmentType: 'group_class',
+      });
+
+      await getGroupClassParticipantCount('appt-1');
+
+      expect(prisma.appointment.findUnique).toHaveBeenCalledWith({
+        where: { id: 'appt-1' },
+        select: { appointmentType: true },
+      });
     });
   });
 });

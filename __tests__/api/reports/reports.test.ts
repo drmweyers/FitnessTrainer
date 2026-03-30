@@ -274,4 +274,75 @@ describe('PUT /api/reports/[id]', () => {
     expect(response.status).toBe(404);
     expect(data.success).toBe(false);
   });
+
+  it('returns 400 on invalid status in PUT body', async () => {
+    const request = new NextRequest('http://localhost:3000/api/reports/report-uuid-001', {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'invalid_status' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockAdminUser })
+    );
+    mockedPrisma.contentReport.findUnique.mockResolvedValueOnce(mockReport);
+
+    const response = await PUT(request, { params: { id: 'report-uuid-001' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Validation failed');
+    expect(data.details).toBeDefined();
+  });
+
+  it('admin can update report with adminNotes', async () => {
+    const request = new NextRequest('http://localhost:3000/api/reports/report-uuid-001', {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'reviewing', adminNotes: 'Looking into this.' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockAdminUser })
+    );
+    mockedPrisma.contentReport.findUnique.mockResolvedValueOnce(mockReport);
+    mockedPrisma.contentReport.update.mockResolvedValueOnce({
+      ...mockReport,
+      status: 'reviewing',
+      adminNotes: 'Looking into this.',
+    });
+
+    const response = await PUT(request, { params: { id: 'report-uuid-001' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(mockedPrisma.contentReport.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ adminNotes: 'Looking into this.' }),
+      })
+    );
+  });
+
+  it('handles server error in PUT', async () => {
+    jest.spyOn(console, 'error').mockImplementation();
+    const request = new NextRequest('http://localhost:3000/api/reports/report-uuid-001', {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'resolved' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockAdminUser })
+    );
+    mockedPrisma.contentReport.findUnique.mockResolvedValueOnce(mockReport);
+    mockedPrisma.contentReport.update.mockRejectedValueOnce(new Error('DB error'));
+
+    const response = await PUT(request, { params: { id: 'report-uuid-001' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+  });
 });

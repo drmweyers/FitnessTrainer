@@ -240,4 +240,102 @@ describe('POST /api/auth/register', () => {
 
     expect(response.status).toBe(500);
   });
+
+  it('registers successfully with Android mobile user-agent', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue(null);
+    mockedPrisma.user.create.mockResolvedValue({
+      id: 'mobile-user',
+      email: 'mobile@test.com',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+    });
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = new NextRequest('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-agent': 'Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36 Chrome/97.0 Mobile',
+        'x-forwarded-for': '192.168.1.1',
+      },
+      body: JSON.stringify({ ...validRegisterData, email: 'mobile@test.com' }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(201);
+  });
+
+  it('registers successfully with Windows Chrome user-agent', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue(null);
+    mockedPrisma.user.create.mockResolvedValue({
+      id: 'desktop-user',
+      email: 'desktop@test.com',
+      role: 'trainer',
+      isActive: true,
+      isVerified: true,
+    });
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = new NextRequest('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/99.0.4844.51 Safari/537.36',
+        'x-real-ip': '10.0.0.1',
+      },
+      body: JSON.stringify({ email: 'desktop@test.com', password: 'Password1', role: 'trainer' }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(201);
+  });
+
+  it('registers successfully with Linux Firefox user-agent', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue(null);
+    mockedPrisma.user.create.mockResolvedValue({
+      id: 'linux-user',
+      email: 'linux@test.com',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+    });
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = new NextRequest('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0',
+      },
+      body: JSON.stringify({ email: 'linux@test.com', password: 'Password1' }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(201);
+  });
+
+  it('registers successfully with iOS Safari user-agent', async () => {
+    mockedPrisma.user.findUnique.mockResolvedValue(null);
+    mockedPrisma.user.create.mockResolvedValue({
+      id: 'ios-user',
+      email: 'ios@test.com',
+      role: 'client',
+      isActive: true,
+      isVerified: true,
+    });
+    mockedTokenService.generateAccessToken.mockReturnValue('token');
+    mockedTokenService.generateRefreshToken.mockResolvedValue('refresh');
+
+    const request = new NextRequest('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148',
+      },
+      body: JSON.stringify({ email: 'ios@test.com', password: 'Password1' }),
+    });
+    const response = await POST(request);
+    expect(response.status).toBe(201);
+  });
 });
