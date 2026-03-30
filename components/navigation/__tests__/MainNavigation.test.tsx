@@ -37,6 +37,10 @@ jest.mock('@/config/navigation', () => ({
     { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: 'Home' },
     { id: 'clients', label: 'Clients', href: '/clients', icon: 'Users' },
   ],
+  publicNavLinks: [
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Get Started', href: '/get-started' },
+  ],
 }));
 
 jest.mock('../UserMenu', () => ({
@@ -105,7 +109,8 @@ describe('MainNavigation', () => {
     mockAuthState = { user: null as any, isAuthenticated: false, isLoading: false };
     render(<MainNavigation />);
     expect(screen.getByText('Sign In')).toBeInTheDocument();
-    expect(screen.getByText('Get Started')).toBeInTheDocument();
+    const getStartedElements = screen.getAllByText('Get Started');
+    expect(getStartedElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it('should not show UserMenu for unauthenticated users', () => {
