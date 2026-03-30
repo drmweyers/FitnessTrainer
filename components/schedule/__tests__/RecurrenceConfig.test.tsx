@@ -156,4 +156,75 @@ describe('RecurrenceConfig', () => {
       expect(screen.getByText(/upcoming dates/i)).toBeInTheDocument();
     });
   });
+
+  it('shows monthly preview dates when frequency is monthly', () => {
+    render(<RecurrenceConfig {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this recurring/i }));
+
+    fireEvent.change(screen.getByLabelText(/frequency/i), {
+      target: { value: 'monthly' },
+    });
+
+    expect(screen.getByText(/upcoming dates/i)).toBeInTheDocument();
+    const dateItems = screen.getAllByRole('listitem');
+    expect(dateItems.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('shows "First session" label on first date', () => {
+    render(<RecurrenceConfig {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this recurring/i }));
+
+    expect(screen.getByText(/First session/i)).toBeInTheDocument();
+  });
+
+  it('shows remaining session count when occurrences > 5', () => {
+    render(<RecurrenceConfig {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this recurring/i }));
+
+    // Default 12 occurrences shows preview of 5, with "+ 7 more sessions"
+    expect(screen.getByText(/\+ 7 more session/i)).toBeInTheDocument();
+  });
+
+  it('does not show "more sessions" when occurrences is 5 or less', () => {
+    render(<RecurrenceConfig {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this recurring/i }));
+
+    fireEvent.change(screen.getByLabelText(/occurrences/i), {
+      target: { value: '5' },
+    });
+
+    expect(screen.queryByText(/more session/i)).not.toBeInTheDocument();
+  });
+
+  it('enforces minimum of 1 for occurrences', () => {
+    render(<RecurrenceConfig {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this recurring/i }));
+
+    fireEvent.change(screen.getByLabelText(/occurrences/i), {
+      target: { value: '0' },
+    });
+
+    expect(mockOnConfigChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ occurrences: 1 })
+    );
+  });
+
+  it('calls onConfigChange with monthly frequency', () => {
+    render(<RecurrenceConfig {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this recurring/i }));
+
+    fireEvent.change(screen.getByLabelText(/frequency/i), {
+      target: { value: 'monthly' },
+    });
+
+    expect(mockOnConfigChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ frequency: 'monthly' })
+    );
+  });
 });
