@@ -123,4 +123,106 @@ describe('NotificationSettings', () => {
     const workoutReminders = screen.getByRole('checkbox', { name: /workout reminders/i });
     expect(workoutReminders).toBeDisabled();
   });
+
+  it('updates quiet hours start time when changed', async () => {
+    render(<NotificationSettings />);
+    const startInput = screen.getByLabelText(/quiet hours start/i) as HTMLInputElement;
+    fireEvent.change(startInput, { target: { value: '21:00' } });
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.quietHoursStart).toBe('21:00');
+  });
+
+  it('updates quiet hours end time when changed', async () => {
+    render(<NotificationSettings />);
+    const endInput = screen.getByLabelText(/quiet hours end/i) as HTMLInputElement;
+    fireEvent.change(endInput, { target: { value: '08:00' } });
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.quietHoursEnd).toBe('08:00');
+  });
+
+  it('handles malformed JSON in localStorage gracefully', () => {
+    localStorage.setItem('notification_preferences', 'invalid-json');
+    // Should not throw
+    expect(() => render(<NotificationSettings />)).not.toThrow();
+  });
+
+  it('test notification button is disabled when push is not enabled', () => {
+    mockedPushService.isSubscribed.mockReturnValue(false);
+    render(<NotificationSettings />);
+    const testBtn = screen.getByRole('button', { name: /test notification/i });
+    expect(testBtn).toBeDisabled();
+  });
+
+  it('test notification button is enabled when push is enabled', () => {
+    mockedPushService.isSubscribed.mockReturnValue(true);
+    render(<NotificationSettings />);
+    const testBtn = screen.getByRole('button', { name: /test notification/i });
+    expect(testBtn).not.toBeDisabled();
+  });
+
+  it('clicking test notification when not enabled does nothing', () => {
+    mockedPushService.isSubscribed.mockReturnValue(false);
+    render(<NotificationSettings />);
+    const testBtn = screen.getByRole('button', { name: /test notification/i });
+    // Should not throw when clicked while disabled
+    expect(() => fireEvent.click(testBtn)).not.toThrow();
+  });
+
+  it('does not update enabled state when subscribe returns null', async () => {
+    mockedPushService.subscribe.mockResolvedValueOnce(null as unknown as PushSubscription);
+    render(<NotificationSettings />);
+
+    const toggle = screen.getByRole('checkbox', { name: /enable push notifications/i });
+    await userEvent.click(toggle);
+
+    await waitFor(() => {
+      // The toggle should remain unchecked since subscribe returned null
+      expect(toggle).not.toBeChecked();
+    });
+  });
+
+  it('disables toggle during loading', async () => {
+    // Make subscribe take time
+    mockedPushService.subscribe.mockImplementationOnce(
+      () => new Promise((resolve) => setTimeout(() => resolve({} as PushSubscription), 200))
+    );
+    render(<NotificationSettings />);
+
+    const toggle = screen.getByRole('checkbox', { name: /enable push notifications/i });
+    await userEvent.click(toggle);
+
+    // During loading, toggle should be disabled
+    expect(toggle).toBeDisabled();
+
+    await waitFor(() => {
+      expect(toggle).not.toBeDisabled();
+    });
+  });
+
+  it('unchecks pr celebrations preference when enabled', async () => {
+    mockedPushService.isSubscribed.mockReturnValue(true);
+    render(<NotificationSettings />);
+    const prCelebrations = screen.getByRole('checkbox', { name: /pr celebrations/i });
+    await userEvent.click(prCelebrations);
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.prCelebrations).toBe(false);
+  });
+
+  it('unchecks scheduling reminders preference when enabled', async () => {
+    mockedPushService.isSubscribed.mockReturnValue(true);
+    render(<NotificationSettings />);
+    const schedulingReminders = screen.getByRole('checkbox', { name: /scheduling reminders/i });
+    await userEvent.click(schedulingReminders);
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.schedulingReminders).toBe(false);
+  });
+
+  it('unchecks message notifications preference when enabled', async () => {
+    mockedPushService.isSubscribed.mockReturnValue(true);
+    render(<NotificationSettings />);
+    const messageNotifications = screen.getByRole('checkbox', { name: /message notifications/i });
+    await userEvent.click(messageNotifications);
+    const saved = JSON.parse(localStorage.getItem('notification_preferences') || '{}');
+    expect(saved.messageNotifications).toBe(false);
+  });
 });

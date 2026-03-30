@@ -117,4 +117,35 @@ describe('BiometricSettings', () => {
       expect(screen.getByText(/registration failed/i)).toBeInTheDocument();
     });
   });
+
+  it('shows error message when registration throws an error', async () => {
+    mockedWebauthn.registerCredential.mockRejectedValueOnce(new Error('User cancelled'));
+
+    render(<BiometricSettings userId={mockUserId} userEmail={mockUserEmail} />);
+
+    const registerBtn = screen.getByRole('button', { name: /register this device/i });
+    await userEvent.click(registerBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/registration failed/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows loading state while registering', async () => {
+    mockedWebauthn.registerCredential.mockImplementationOnce(
+      () => new Promise((resolve) => setTimeout(() => resolve({ id: 'cred-x', name: 'x', createdAt: 0 }), 200))
+    );
+
+    render(<BiometricSettings userId={mockUserId} userEmail={mockUserEmail} />);
+
+    const registerBtn = screen.getByRole('button', { name: /register this device/i });
+    await userEvent.click(registerBtn);
+
+    // During loading
+    expect(registerBtn).toBeDisabled();
+
+    await waitFor(() => {
+      expect(registerBtn).not.toBeDisabled();
+    });
+  });
 });
