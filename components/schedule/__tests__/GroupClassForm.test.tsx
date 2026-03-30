@@ -135,4 +135,86 @@ describe('GroupClassForm', () => {
     fireEvent.click(toggle);
     expect(toggle).not.toBeChecked();
   });
+
+  it('pre-fills form with initialValues', () => {
+    render(
+      <GroupClassForm
+        {...defaultProps}
+        initialValues={{
+          className: 'HIIT Bootcamp',
+          maxParticipants: 20,
+          isOpenForRegistration: true,
+        }}
+      />
+    );
+
+    const classNameInput = screen.getByLabelText(/class name/i) as HTMLInputElement;
+    const maxParticipantsInput = screen.getByLabelText(/max participants/i) as HTMLInputElement;
+    const toggle = screen.getByRole('checkbox', { name: /open for registration/i }) as HTMLInputElement;
+
+    expect(classNameInput.value).toBe('HIIT Bootcamp');
+    expect(parseInt(maxParticipantsInput.value)).toBe(20);
+    expect(toggle.checked).toBe(true);
+  });
+
+  it('clears className error when user types in the class name field', async () => {
+    render(<GroupClassForm {...defaultProps} />);
+
+    // Submit to trigger error
+    fireEvent.click(screen.getByRole('button', { name: /create class/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/class name is required/i)).toBeInTheDocument();
+    });
+
+    // Type in class name field - error should clear
+    fireEvent.change(screen.getByLabelText(/class name/i), {
+      target: { value: 'Morning Yoga' },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText(/class name is required/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('clears maxParticipants error when user updates the field', async () => {
+    render(<GroupClassForm {...defaultProps} />);
+
+    // Set class name, then set invalid max participants
+    fireEvent.change(screen.getByLabelText(/class name/i), {
+      target: { value: 'Morning Yoga' },
+    });
+    fireEvent.change(screen.getByLabelText(/max participants/i), {
+      target: { value: '0' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /create class/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/must have at least 1 participant/i)).toBeInTheDocument();
+    });
+
+    // Fix the value - error should clear
+    fireEvent.change(screen.getByLabelText(/max participants/i), {
+      target: { value: '5' },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText(/must have at least 1 participant/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('trims whitespace from class name on submit', async () => {
+    render(<GroupClassForm {...defaultProps} />);
+
+    fireEvent.change(screen.getByLabelText(/class name/i), {
+      target: { value: '  Morning Yoga  ' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /create class/i }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ className: 'Morning Yoga' })
+      );
+    });
+  });
 });

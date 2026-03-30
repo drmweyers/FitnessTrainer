@@ -44,6 +44,7 @@ let mockBulkAssignCallback: ((clientIds: string[], customizations: any) => void)
 
 jest.mock('../BulkAssignmentModal', () => ({
   __esModule: true,
+<<<<<<< HEAD
   default: ({ isOpen, onAssign, onClose }: any) => {
     if (isOpen) {
       // Capture the onAssign callback for test use
@@ -62,6 +63,20 @@ jest.mock('../BulkAssignmentModal', () => ({
     }
     return null;
   },
+=======
+  default: ({ isOpen, onAssign, onClose }: any) =>
+    isOpen ? (
+      <div data-testid="bulk-assignment-modal">
+        <button
+          data-testid="trigger-assign"
+          onClick={() => onAssign(['client-1'], { startDate: '2026-04-01', allowModifications: true, sendNotification: true })}
+        >
+          Trigger Assign
+        </button>
+        <button data-testid="trigger-close" onClick={onClose}>Close Modal</button>
+      </div>
+    ) : null,
+>>>>>>> feat/coverage-b
 }));
 
 const mockFetchPrograms = jest.fn();
@@ -905,6 +920,135 @@ describe('ProgramList', () => {
       });
 
       expect(screen.queryByText(/Showing.*of/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Program actions - handleBulkAssign', () => {
+    beforeEach(() => {
+      global.fetch = jest.fn();
+    });
+
+    it('should call fetch for each client on bulk assign and reload', async () => {
+      const programs = createMockPrograms(1);
+      mockFetchPrograms.mockResolvedValue(programs);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true }),
+      });
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('assign-prog-1')).toBeInTheDocument();
+      });
+
+      // Open the modal
+      screen.getByTestId('assign-prog-1').click();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('bulk-assignment-modal')).toBeInTheDocument();
+      });
+
+      // Trigger the onAssign callback (lines 119-170)
+      screen.getByTestId('trigger-assign').click();
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/programs/prog-1/assign',
+          expect.objectContaining({ method: 'POST' })
+        );
+      });
+    });
+
+    it('should redirect to login if no token when bulk assigning', async () => {
+      const programs = createMockPrograms(1);
+      mockFetchPrograms.mockResolvedValue(programs);
+      Storage.prototype.getItem = jest.fn()
+        .mockReturnValueOnce('mock-token') // initial load
+        .mockReturnValueOnce(null); // handleBulkAssign token check
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('assign-prog-1')).toBeInTheDocument();
+      });
+
+      screen.getByTestId('assign-prog-1').click();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('bulk-assignment-modal')).toBeInTheDocument();
+      });
+
+      screen.getByTestId('trigger-assign').click();
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith('/auth/login');
+      });
+    });
+
+    it('should handle fetch failure during bulk assign', async () => {
+      const programs = createMockPrograms(1);
+      mockFetchPrograms.mockResolvedValue(programs);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        json: async () => ({}),
+      });
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('assign-prog-1')).toBeInTheDocument();
+      });
+
+      screen.getByTestId('assign-prog-1').click();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('bulk-assignment-modal')).toBeInTheDocument();
+      });
+
+      screen.getByTestId('trigger-assign').click();
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      });
+    });
+
+    it('should close modal via onClose callback', async () => {
+      const programs = createMockPrograms(1);
+      mockFetchPrograms.mockResolvedValue(programs);
+
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('assign-prog-1')).toBeInTheDocument();
+      });
+
+      screen.getByTestId('assign-prog-1').click();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('bulk-assignment-modal')).toBeInTheDocument();
+      });
+
+      screen.getByTestId('trigger-close').click();
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('bulk-assignment-modal')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Program actions - Create Program', () => {
+    it('should navigate to new program page when create button clicked', async () => {
+      mockFetchPrograms.mockResolvedValue([]);
+      render(<ProgramList filters={defaultFilters} viewMode="grid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Create Your First Program')).toBeInTheDocument();
+      });
+
+      screen.getByText('Create Your First Program').click();
+
+      expect(mockPush).toHaveBeenCalledWith('/programs/new');
     });
   });
 });

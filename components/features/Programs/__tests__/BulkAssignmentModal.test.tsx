@@ -309,26 +309,20 @@ describe('BulkAssignmentModal', () => {
         expect(screen.getByText('John Doe')).toBeInTheDocument();
       });
 
-      // Select a client
-      const checkboxes = screen.getAllByRole('checkbox');
-      fireEvent.click(checkboxes[0]);
+      // Select all clients via Select All Visible button
+      fireEvent.click(screen.getByText('Select All Visible'));
 
-      // Wait for state update
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(screen.getByText('Assignment Details')).toBeInTheDocument();
+      });
 
-      // Find and click assign button
-      const buttons = screen.getAllByRole('button');
-      const assignButton = buttons.find(btn =>
-        btn.textContent?.includes('Assign to') && !btn.textContent?.includes('0')
-      );
+      // Find and click assign button (line 168 - catch block)
+      const assignButton = screen.getByText(/Assign to 2 Clients/);
+      fireEvent.click(assignButton);
 
-      if (assignButton) {
-        fireEvent.click(assignButton);
-
-        await waitFor(() => {
-          expect(consoleSpy).toHaveBeenCalledWith('Failed to assign program:', expect.any(Error));
-        });
-      }
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Failed to assign program:', expect.any(Error));
+      });
 
       consoleSpy.mockRestore();
     });
@@ -477,6 +471,227 @@ describe('BulkAssignmentModal', () => {
       // Should not crash
       await waitFor(() => {
         expect(screen.getByText('Assign Program to Clients')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Status filter', () => {
+    it('filters by status when status filter is changed', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            data: [
+              {
+                id: 'client-1',
+                displayName: 'Active User',
+                email: 'active@example.com',
+                trainerClient: { status: 'active' },
+              },
+              {
+                id: 'client-2',
+                displayName: 'Pending User',
+                email: 'pending@example.com',
+                trainerClient: { status: 'pending' },
+              },
+            ],
+          }),
+      });
+
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Active User')).toBeInTheDocument();
+        expect(screen.getByText('Pending User')).toBeInTheDocument();
+      });
+
+      // Open filters
+      fireEvent.click(screen.getByText('Filters'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Status')).toBeInTheDocument();
+      });
+
+      // Change status filter to 'active' (covers lines 87-88)
+      const statusSelect = screen.getByDisplayValue('All Statuses');
+      fireEvent.change(statusSelect, { target: { value: 'active' } });
+
+      await waitFor(() => {
+        expect(screen.getByText('Active User')).toBeInTheDocument();
+        expect(screen.queryByText('Pending User')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Assignment Details section (selectedClients.length > 0)', () => {
+    it('shows assignment details section when clients are selected via Select All', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      // Use Select All Visible to select clients (covers lines 356-409)
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Assignment Details')).toBeInTheDocument();
+      });
+    });
+
+    it('shows start date input when clients selected via Select All', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        // Label is "Start Date" - get by text since there's no htmlFor linkage
+        expect(screen.getByText('Start Date')).toBeInTheDocument();
+        expect(screen.getByDisplayValue(/\d{4}-\d{2}-\d{2}/)).toBeInTheDocument();
+      });
+    });
+
+    it('updates start date in assignment details', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Assignment Details')).toBeInTheDocument();
+      });
+
+      // Find date input by type
+      const dateInputs = document.querySelectorAll('input[type="date"]');
+      expect(dateInputs.length).toBeGreaterThan(0);
+      fireEvent.change(dateInputs[0], { target: { value: '2026-05-01' } });
+      expect((dateInputs[0] as HTMLInputElement).value).toBe('2026-05-01');
+    });
+
+    it('shows and updates assignment notes textarea', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/Add any special instructions/i)).toBeInTheDocument();
+      });
+
+      const notesTextarea = screen.getByPlaceholderText(/Add any special instructions/i);
+      fireEvent.change(notesTextarea, { target: { value: 'Focus on form' } });
+      expect((notesTextarea as HTMLTextAreaElement).value).toBe('Focus on form');
+    });
+
+    it('toggles allowModifications checkbox', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Assignment Details')).toBeInTheDocument();
+      });
+
+      const allowModCheckbox = document.getElementById('allowModifications') as HTMLInputElement;
+      expect(allowModCheckbox).not.toBeNull();
+      expect(allowModCheckbox.checked).toBe(true);
+      fireEvent.click(allowModCheckbox);
+      expect(allowModCheckbox.checked).toBe(false);
+    });
+
+    it('toggles sendNotification checkbox', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Assignment Details')).toBeInTheDocument();
+      });
+
+      const sendNotifCheckbox = document.getElementById('sendNotification') as HTMLInputElement;
+      expect(sendNotifCheckbox).not.toBeNull();
+      expect(sendNotifCheckbox.checked).toBe(true);
+      fireEvent.click(sendNotifCheckbox);
+      expect(sendNotifCheckbox.checked).toBe(false);
+    });
+
+    it('sets custom duration in assignment details', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/Default: 12 weeks/i)).toBeInTheDocument();
+      });
+
+      const durationInput = screen.getByPlaceholderText(/Default: 12 weeks/i);
+      fireEvent.change(durationInput, { target: { value: '8' } });
+      expect((durationInput as HTMLInputElement).value).toBe('8');
+    });
+
+    it('calls handleAssign when assign button clicked after selecting all clients', async () => {
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      // Select all clients to reveal assignment details and enable assign button
+      fireEvent.click(screen.getByText('Select All Visible'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Assignment Details')).toBeInTheDocument();
+      });
+
+      // Find assign button (now enabled since 2 clients selected)
+      const assignButton = screen.getByText(/Assign to 2 Clients/);
+      expect(assignButton).not.toBeDisabled();
+      fireEvent.click(assignButton);
+
+      await waitFor(() => {
+        // onAssign covers lines 153-170
+        expect(mockOnAssign).toHaveBeenCalledWith(
+          ['client-1', 'client-2'],
+          expect.objectContaining({
+            startDate: expect.any(String),
+            allowModifications: true,
+            sendNotification: true,
+          })
+        );
+        expect(mockOnClose).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Client goal display', () => {
+    it('shows client primary goal when available (line 262)', async () => {
+      // John Doe has clientProfile.goals.primaryGoal = 'Weight Loss'
+      render(<BulkAssignmentModal {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Goal: Weight Loss')).toBeInTheDocument();
       });
     });
   });
