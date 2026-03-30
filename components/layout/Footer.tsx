@@ -35,7 +35,7 @@ export default function Footer() {
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="Logo"
                   width={40}
                   height={40}

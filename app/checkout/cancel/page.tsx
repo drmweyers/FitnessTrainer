@@ -23,7 +23,7 @@ export default function CheckoutCancelPage() {
       {/* Header bar */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
-          <img src="/logo.png" alt="EvoFit" width={36} height={36} className="rounded-lg" />
+          <img src="/logo.svg" alt="EvoFit" width={36} height={36} className="rounded-lg" />
           <span className="font-bold text-lg tracking-tight">EvoFit Trainer</span>
         </div>
       </div>

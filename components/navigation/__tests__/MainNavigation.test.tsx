@@ -37,6 +37,10 @@ jest.mock('@/config/navigation', () => ({
     { id: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: 'Home' },
     { id: 'clients', label: 'Clients', href: '/clients', icon: 'Users' },
   ],
+  publicNavLinks: [
+    { id: 'pricing', label: 'Pricing', href: '/pricing' },
+    { id: 'get-started', label: 'Get Started', href: '/get-started' },
+  ],
 }));
 
 jest.mock('../UserMenu', () => ({
