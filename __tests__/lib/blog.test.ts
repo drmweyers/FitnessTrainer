@@ -1,223 +1,224 @@
-/**
- * @jest-environment node
- */
+/** @jest-environment node */
 
-import * as fs from 'fs';
-import * as path from 'path';
-
-// Mock fs module
-jest.mock('fs');
-
-const mockFs = fs as jest.Mocked<typeof fs>;
-
-// Import blog after mock is set up
 import { getAllPosts, getPostBySlug } from '@/lib/blog';
+import fs from 'fs';
+import path from 'path';
 
-describe('lib/blog', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+jest.mock('fs');
+jest.mock('path');
 
-  describe('getAllPosts', () => {
-    it('returns empty array when blog directory does not exist', () => {
-      mockFs.existsSync.mockReturnValue(false);
-      expect(getAllPosts()).toEqual([]);
-    });
+const mockedFs = fs as jest.Mocked<typeof fs>;
+const mockedPath = path as jest.Mocked<typeof path>;
 
-    it('returns empty array when no markdown files exist', () => {
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue([]);
-      expect(getAllPosts()).toEqual([]);
-    });
+// Mock process.cwd()
+const CWD = '/mock/project';
+jest.spyOn(process, 'cwd').mockReturnValue(CWD);
 
-    it('parses a blog post with full frontmatter', () => {
-      const content = `---
+const BLOG_DIR = `${CWD}/content/blog`;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  // Default: path.join just concatenates with /
+  mockedPath.join.mockImplementation((...parts: string[]) => parts.join('/'));
+});
+
+const sampleMdFile = `---
 title: Test Post
 slug: test-post
 excerpt: A test excerpt
-author: Jane Doe
+author: John Doe
 date: 2026-01-15
 category: Fitness
-tags: [workout, strength]
+tags: [strength, cardio]
 readTime: 7
 ---
-# Body Content
-This is the body.`;
+# Test Post Content
 
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['test-post.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
+This is the body of the test post.
+`;
 
-      const posts = getAllPosts();
+const noFrontmatterFile = `Just raw content without frontmatter`;
 
-      expect(posts).toHaveLength(1);
-      expect(posts[0].title).toBe('Test Post');
-      expect(posts[0].slug).toBe('test-post');
-      expect(posts[0].excerpt).toBe('A test excerpt');
-      expect(posts[0].author).toBe('Jane Doe');
-      expect(posts[0].category).toBe('Fitness');
-      expect(posts[0].readTime).toBe(7);
-      expect(posts[0].tags).toEqual(['workout', 'strength']);
-    });
-
-    it('uses filename as slug when slug is not in frontmatter', () => {
-      const content = `---
-title: No Slug Post
-date: 2026-01-10
----
-Body here.`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['my-post.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
-
-      const posts = getAllPosts();
-
-      expect(posts[0].slug).toBe('my-post');
-    });
-
-    it('uses defaults for missing frontmatter fields', () => {
-      const content = `---
-title: Minimal Post
-date: 2026-01-01
----
-Body.`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['minimal.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
-
-      const posts = getAllPosts();
-
-      expect(posts[0].author).toBe('EvoFit Team');
-      expect(posts[0].category).toBe('General');
-      expect(posts[0].readTime).toBe(5);
-      expect(posts[0].tags).toEqual([]);
-    });
-
-    it('ignores non-markdown files', () => {
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['post.md', 'image.png', 'notes.txt']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(`---\ntitle: Post\ndate: 2026-01-01\n---\nBody.`);
-
-      const posts = getAllPosts();
-
-      // Only the .md file should be read
-      expect(mockFs.readFileSync).toHaveBeenCalledTimes(1);
-      expect(posts).toHaveLength(1);
-    });
-
-    it('sorts posts by date descending', () => {
-      const post1 = `---\ntitle: Older Post\ndate: 2026-01-01\n---\nOld.`;
-      const post2 = `---\ntitle: Newer Post\ndate: 2026-03-15\n---\nNew.`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['older.md', 'newer.md']);
-      (mockFs.readFileSync as jest.Mock)
-        .mockReturnValueOnce(post1)
-        .mockReturnValueOnce(post2);
-
-      const posts = getAllPosts();
-
-      expect(posts[0].title).toBe('Newer Post');
-      expect(posts[1].title).toBe('Older Post');
-    });
-
-    it('handles post with no frontmatter delimiter', () => {
-      const content = `Just plain content with no frontmatter`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['no-fm.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
-
-      const posts = getAllPosts();
-
-      expect(posts).toHaveLength(1);
-      expect(posts[0].content).toBe(content);
-      expect(posts[0].title).toBe('');
-    });
-
-    it('handles tags array in frontmatter', () => {
-      const content = `---\ntitle: Tagged\ndate: 2026-01-01\ntags: [fitness, nutrition, recovery]\n---\nContent.`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['tagged.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
-
-      const posts = getAllPosts();
-
-      expect(posts[0].tags).toEqual(['fitness', 'nutrition', 'recovery']);
-    });
-
-    it('returns empty tags when tags field missing', () => {
-      const content = `---\ntitle: No Tags\ndate: 2026-01-01\n---\nContent.`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['no-tags.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
-
-      const posts = getAllPosts();
-
-      expect(posts[0].tags).toEqual([]);
-    });
-
-    it('returns content body (text after frontmatter)', () => {
-      const body = '# Heading\nThis is the body content.\n\nSecond paragraph.';
-      const content = `---\ntitle: Content Test\ndate: 2026-01-01\n---\n${body}`;
-
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['content-test.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
-
-      const posts = getAllPosts();
-
-      expect(posts[0].content).toBe(body);
-    });
+describe('getAllPosts', () => {
+  it('returns empty array when blog directory does not exist', () => {
+    mockedFs.existsSync.mockReturnValue(false);
+    const result = getAllPosts();
+    expect(result).toEqual([]);
   });
 
-  describe('getPostBySlug', () => {
-    it('returns the post matching the slug', () => {
-      const content = `---\ntitle: Found Post\nslug: found-post\ndate: 2026-01-01\n---\nBody.`;
+  it('returns empty array when no markdown files in directory', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['image.png', 'notes.txt'] as any);
+    const result = getAllPosts();
+    expect(result).toEqual([]);
+  });
 
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['found-post.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
+  it('parses a single markdown file with frontmatter', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['test-post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(sampleMdFile);
 
-      const post = getPostBySlug('found-post');
+    const result = getAllPosts();
+    expect(result).toHaveLength(1);
+    expect(result[0].title).toBe('Test Post');
+    expect(result[0].slug).toBe('test-post');
+    expect(result[0].excerpt).toBe('A test excerpt');
+    expect(result[0].author).toBe('John Doe');
+    expect(result[0].category).toBe('Fitness');
+    expect(result[0].readTime).toBe(7);
+  });
 
-      expect(post).toBeDefined();
-      expect(post?.title).toBe('Found Post');
-      expect(post?.slug).toBe('found-post');
-    });
+  it('parses tags array from frontmatter', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['test-post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(sampleMdFile);
 
-    it('returns undefined when slug not found', () => {
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue([]);
+    const result = getAllPosts();
+    expect(result[0].tags).toEqual(['strength', 'cardio']);
+  });
 
-      const post = getPostBySlug('non-existent');
+  it('extracts body content correctly', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['test-post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(sampleMdFile);
 
-      expect(post).toBeUndefined();
-    });
+    const result = getAllPosts();
+    expect(result[0].content).toContain('Test Post Content');
+    expect(result[0].content).toContain('body of the test post');
+  });
 
-    it('returns undefined when blog dir does not exist', () => {
-      mockFs.existsSync.mockReturnValue(false);
+  it('uses filename as slug fallback when slug not in frontmatter', () => {
+    const mdWithoutSlug = `---
+title: No Slug Post
+---
+Content here`;
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['no-slug-post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(mdWithoutSlug);
 
-      const post = getPostBySlug('any-slug');
+    const result = getAllPosts();
+    expect(result[0].slug).toBe('no-slug-post');
+  });
 
-      expect(post).toBeUndefined();
-    });
+  it('uses defaults when frontmatter fields are missing', () => {
+    const minimal = `---
+title: Minimal Post
+---
+Body`;
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['minimal.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(minimal);
 
-    it('finds post by filename-derived slug when no explicit slug', () => {
-      const content = `---\ntitle: File Slug Post\ndate: 2026-01-01\n---\nBody.`;
+    const result = getAllPosts();
+    expect(result[0].author).toBe('EvoFit Team');
+    expect(result[0].category).toBe('General');
+    expect(result[0].tags).toEqual([]);
+    expect(result[0].readTime).toBe(5);
+    expect(result[0].excerpt).toBe('');
+  });
 
-      mockFs.existsSync.mockReturnValue(true);
-      (mockFs.readdirSync as jest.Mock).mockReturnValue(['file-slug-post.md']);
-      (mockFs.readFileSync as jest.Mock).mockReturnValue(content);
+  it('handles file without frontmatter delimiters', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['raw.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(noFrontmatterFile);
 
-      const post = getPostBySlug('file-slug-post');
+    const result = getAllPosts();
+    expect(result).toHaveLength(1);
+    expect(result[0].content).toBe(noFrontmatterFile);
+  });
 
-      expect(post).toBeDefined();
-      expect(post?.title).toBe('File Slug Post');
-    });
+  it('sorts posts by date descending (newest first)', () => {
+    const post1 = `---
+title: Older Post
+date: 2026-01-01
+---
+Old`;
+    const post2 = `---
+title: Newer Post
+date: 2026-03-01
+---
+New`;
+    const post3 = `---
+title: Middle Post
+date: 2026-02-01
+---
+Mid`;
+
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['post1.md', 'post2.md', 'post3.md'] as any);
+    mockedFs.readFileSync
+      .mockReturnValueOnce(post1)
+      .mockReturnValueOnce(post2)
+      .mockReturnValueOnce(post3);
+
+    const result = getAllPosts();
+    expect(result[0].title).toBe('Newer Post');
+    expect(result[1].title).toBe('Middle Post');
+    expect(result[2].title).toBe('Older Post');
+  });
+
+  it('handles colon in frontmatter value', () => {
+    const mdWithColon = `---
+title: Post: With Colon
+---
+Body`;
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(mdWithColon);
+
+    const result = getAllPosts();
+    expect(result[0].title).toBe('Post: With Colon');
+  });
+
+  it('handles quoted frontmatter values', () => {
+    const mdWithQuotes = `---
+title: "Quoted Title"
+author: 'Single Quoted Author'
+---
+Body`;
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(mdWithQuotes);
+
+    const result = getAllPosts();
+    expect(result[0].title).toBe('Quoted Title');
+  });
+
+  it('reads files only with .md extension', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['post.md', 'readme.txt', 'image.jpg', 'other.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(`---\ntitle: T\n---\nB`);
+
+    getAllPosts();
+    expect(mockedFs.readFileSync).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('getPostBySlug', () => {
+  it('returns post matching the slug', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['test-post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(sampleMdFile);
+
+    const result = getPostBySlug('test-post');
+    expect(result).not.toBeUndefined();
+    expect(result!.slug).toBe('test-post');
+    expect(result!.title).toBe('Test Post');
+  });
+
+  it('returns undefined for non-existent slug', () => {
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readdirSync.mockReturnValue(['test-post.md'] as any);
+    mockedFs.readFileSync.mockReturnValue(sampleMdFile);
+
+    const result = getPostBySlug('nonexistent-slug');
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when no blog posts exist', () => {
+    mockedFs.existsSync.mockReturnValue(false);
+
+    const result = getPostBySlug('any-slug');
+    expect(result).toBeUndefined();
   });
 });
