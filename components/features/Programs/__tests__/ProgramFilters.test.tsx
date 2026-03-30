@@ -108,4 +108,58 @@ describe('ProgramFilters', () => {
     fireEvent.click(screen.getByText('Clear all filters'));
     expect(defaultProps.onFiltersChange).toHaveBeenCalledWith({});
   });
+
+  it('should call onFiltersChange when template toggle is checked', () => {
+    render(<ProgramFilters {...defaultProps} />);
+    fireEvent.click(screen.getByText('Filters'));
+    const templateCheckbox = screen.getByRole('checkbox');
+    fireEvent.click(templateCheckbox);
+    expect(defaultProps.onFiltersChange).toHaveBeenCalledWith(
+      expect.objectContaining({ isTemplate: true })
+    );
+  });
+
+  it('should call onFiltersChange when sort is changed', () => {
+    render(<ProgramFilters {...defaultProps} />);
+    fireEvent.click(screen.getByText('Filters'));
+    const sortSelect = screen.getByDisplayValue('Newest First');
+    fireEvent.change(sortSelect, { target: { value: 'name-asc' } });
+    expect(defaultProps.onFiltersChange).toHaveBeenCalledWith(
+      expect.objectContaining({ sortBy: 'name', sortOrder: 'asc' })
+    );
+  });
+
+  it('should call onFiltersChange with undefined programType when type is cleared', () => {
+    render(
+      <ProgramFilters
+        {...defaultProps}
+        filters={{ programType: 'strength' } as ProgramFiltersType}
+      />
+    );
+    const typeSelect = screen.getByDisplayValue('Strength');
+    fireEvent.change(typeSelect, { target: { value: '' } });
+    expect(defaultProps.onFiltersChange).toHaveBeenCalledWith(
+      expect.objectContaining({ programType: undefined })
+    );
+  });
+
+  it('should call onFiltersChange with undefined difficultyLevel when cleared', () => {
+    render(
+      <ProgramFilters
+        {...defaultProps}
+        filters={{ difficultyLevel: 'beginner' } as ProgramFiltersType}
+      />
+    );
+    const levelSelect = screen.getByDisplayValue('Beginner');
+    fireEvent.change(levelSelect, { target: { value: '' } });
+    expect(defaultProps.onFiltersChange).toHaveBeenCalledWith(
+      expect.objectContaining({ difficultyLevel: undefined })
+    );
+  });
+
+  it('should not show clear filters when no filters are active', () => {
+    render(<ProgramFilters {...defaultProps} />);
+    fireEvent.click(screen.getByText('Filters'));
+    expect(screen.queryByText('Clear all filters')).not.toBeInTheDocument();
+  });
 });

@@ -219,6 +219,61 @@ describe('ProgramCard', () => {
     });
   });
 
+  describe('List view dropdown', () => {
+    it('should show dropdown when more button clicked in list view', () => {
+      render(<ProgramCard {...defaultProps} viewMode="list" />);
+      const moreButtons = screen.getAllByTestId('icon-more-vertical');
+      const moreButton = moreButtons[0].closest('button');
+      if (moreButton) fireEvent.click(moreButton);
+      expect(screen.getByText('Edit Program')).toBeInTheDocument();
+      expect(screen.getByText('Duplicate')).toBeInTheDocument();
+      expect(screen.getByText('Delete')).toBeInTheDocument();
+    });
+
+    it('should call onEdit when Edit Program clicked in list view', () => {
+      render(<ProgramCard {...defaultProps} viewMode="list" />);
+      const moreButtons = screen.getAllByTestId('icon-more-vertical');
+      const moreButton = moreButtons[0].closest('button');
+      if (moreButton) fireEvent.click(moreButton);
+      fireEvent.click(screen.getByText('Edit Program'));
+      expect(defaultProps.onEdit).toHaveBeenCalledWith(defaultProps.program);
+    });
+
+    it('should call onDuplicate when Duplicate clicked in list view', () => {
+      render(<ProgramCard {...defaultProps} viewMode="list" />);
+      const moreButtons = screen.getAllByTestId('icon-more-vertical');
+      const moreButton = moreButtons[0].closest('button');
+      if (moreButton) fireEvent.click(moreButton);
+      fireEvent.click(screen.getByText('Duplicate'));
+      expect(defaultProps.onDuplicate).toHaveBeenCalledWith(defaultProps.program);
+    });
+
+    it('should call onDelete when Delete clicked in list view', () => {
+      render(<ProgramCard {...defaultProps} viewMode="list" />);
+      const moreButtons = screen.getAllByTestId('icon-more-vertical');
+      const moreButton = moreButtons[0].closest('button');
+      if (moreButton) fireEvent.click(moreButton);
+      fireEvent.click(screen.getByText('Delete'));
+      expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.program);
+    });
+
+    it('should show star icon for template in list view', () => {
+      const templateProgram = createMockProgram({ isTemplate: true });
+      render(<ProgramCard {...defaultProps} program={templateProgram} viewMode="list" />);
+      expect(screen.getByTestId('icon-star')).toBeInTheDocument();
+    });
+
+    it('should toggle dropdown off when more button clicked again', () => {
+      render(<ProgramCard {...defaultProps} viewMode="list" />);
+      const moreButtons = screen.getAllByTestId('icon-more-vertical');
+      const moreButton = moreButtons[0].closest('button')!;
+      fireEvent.click(moreButton);
+      expect(screen.getByText('Edit Program')).toBeInTheDocument();
+      fireEvent.click(moreButton);
+      expect(screen.queryByText('Edit Program')).not.toBeInTheDocument();
+    });
+  });
+
   describe('No data edge cases', () => {
     it('should handle program with no goals', () => {
       const noGoals = createMockProgram({ goals: [] });
