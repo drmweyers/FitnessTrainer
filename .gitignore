@@ -82,3 +82,4 @@ nul
 .env*.local
 .playwright-cli/
 .worktrees/
+.worktrees/
