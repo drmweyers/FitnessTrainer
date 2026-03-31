@@ -291,7 +291,7 @@ export class WorkflowRunner {
       throw new Error('Invalid file format. Supported: JPG, PNG, WebP');
     }
 
-    if (data.fileSize && data.fileSize > 5 * 1024 * 1024) {
+    if (data.file?.size && data.file.size > 5 * 1024 * 1024) {
       throw new Error('File size exceeds 5MB limit');
     }
 
