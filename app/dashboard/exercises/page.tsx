@@ -325,11 +325,20 @@ export default function ExercisesPage() {
               {popularExercises.map(exercise => (
                 <div key={exercise.exerciseId} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                   <div className="aspect-video bg-gray-100 rounded-lg mb-3 overflow-hidden">
-                    <img
-                      src={`/exerciseGifs/${exercise.gifUrl}`}
-                      alt={exercise.name}
-                      className="w-full h-full object-cover"
-                    />
+                    {exercise.gifUrl ? (
+                      <img
+                        src={`/exerciseGifs/${exercise.gifUrl}`}
+                        alt={exercise.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/images/exercise-placeholder.jpg';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <span className="text-gray-400 text-sm">No preview</span>
+                      </div>
+                    )}
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">
                     {exercise.name}
