@@ -194,6 +194,28 @@ docker push registry.digitalocean.com/bci/evofit:prod
 
 ---
 
+## FORGE User Simulation System
+
+**FORGE** (Fidelity-Oriented Regression & Growth Engine) provides actor-based user simulation testing for comprehensive multi-role workflow validation.
+
+| Metric | Value |
+|--------|-------|
+| **FORGE Tests** | 1,069+ across 108 user stories |
+| **Test Location** | `__tests__/forge/` |
+| **Documentation** | `docs/FORGE-SYSTEM.md` |
+| **Reusable Skill** | `.claude/skills/user-simulation/` |
+
+### Running FORGE Tests
+```bash
+npm test -- __tests__/forge/              # All FORGE tests
+npm test -- __tests__/forge/phase2/stream-a/  # Specific stream
+```
+
+### FORGE Architecture
+- **ActorFactory** — Creates authenticated actors (admin/trainer/client)
+- **WorkflowRunner** — Orchestrates multi-step workflows
+- **Stateful Context** — Passes state between workflow steps
+
 ## Image Generation
 
 Use **Nano Banana Pro** for any EvoFit marketing or feature images:
@@ -209,18 +231,24 @@ uv run ~/.openclaw/workspace/skills/nano-banana-pro/scripts/generate_image.py \
 
 | Epic | Feature | Status |
 |------|---------|--------|
-| 001 | User Profiles | ~95% |
+| 001 | User Profiles | ✅ 100% |
 | 002 | Authentication | ✅ 100% |
-| 003 | Client Management | ✅ Complete |
-| 004 | Exercise Library | In Progress |
-| — | Analytics Dashboard | Implemented |
-| — | Landing Page | Live with screenshots |
+| 003 | Client Management | ✅ 100% |
+| 004 | Exercise Library | ✅ 100% |
+| 005 | Program Builder | ✅ 100% |
+| 006 | Workout Tracking | ✅ 100% |
+| 007 | Progress Analytics | ✅ 100% |
+| 008 | Messaging | ✅ 100% |
+| 009 | Scheduling | ✅ 100% |
+| 010 | Payments | ✅ 100% |
+| 011 | Mobile/PWA | ✅ 100% |
+| 012 | Admin Dashboard | ✅ 100% |
 
 ---
 
 ## Important Notes
 
-1. **Always run tests before pushing** — 3,276+ tests across 203+ suites
+1. **Always run tests before pushing** — 6,500+ tests (5,026 unit + 461 E2E + 1,069 FORGE simulation)
 2. **Dual Prisma schemas** — changes may need updating in both `prisma/` and `backend/prisma/`
 3. **BMAD methodology** — extensive docs in `docs/` and `.bmad-core/`
 4. **Default branch is `master`** (not `main`)
