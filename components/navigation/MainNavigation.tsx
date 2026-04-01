@@ -105,15 +105,13 @@ export default function MainNavigation({
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
-                <button 
+                <button
                   className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label="View notifications"
                 >
                   <Bell size={20} className="text-gray-600" />
-                  {/* Notification badge */}
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                    3
-                  </span>
+                  {/* Notification badge - hidden until notification system is implemented */}
+                  {/* TODO: Show actual notification count from API */}
                 </button>
 
                 {/* User Menu */}
