@@ -33,6 +33,19 @@ const WORKOUT_EXERCISES = {
   'lower': ['ex-squat', 'ex-deadlift', 'ex-extension']
 };
 
+function createWorkoutsFromExercises(): Array<{ id: string; name: string; exercises: Array<{ name: string; sets: number; reps: number; weight?: number }> }> {
+  return Object.entries(WORKOUT_EXERCISES).map(([key, exercises], index) => ({
+    id: `workout-${index + 1}`,
+    name: key.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()),
+    exercises: exercises.map(exId => ({
+      name: exId.replace('ex-', '').replace(/\b\w/g, c => c.toUpperCase()),
+      sets: 3,
+      reps: 10,
+      weight: 135
+    }))
+  }));
+}
+
 export class FourteenDayProgramWorkflow {
   private client: DailyClientActor;
   private trainer: DailyTrainerActor;
@@ -48,7 +61,7 @@ export class FourteenDayProgramWorkflow {
     const program = await this.trainer.createProgram({
       name: '14-Day Strength Foundation',
       duration: 14,
-      workouts: Object.values(WORKOUT_EXERCISES)
+      workouts: createWorkoutsFromExercises()
     });
 
     await this.trainer.assignProgram(this.client.id, program.id);
@@ -144,7 +157,7 @@ export class FourteenDayProgramWorkflow {
     }
 
     if (day === 7) {
-      await this.trainer.adjustProgram(programId, { volume: 'slight_increase' });
+      await this.trainer.adjustProgram(programId, { name: '14-Day Strength Foundation (Adjusted)' });
     }
 
     if (day === 7 || day === 14) {
