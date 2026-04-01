@@ -124,8 +124,6 @@ export function ExerciseCard({
                 src={getImageSrc()}
                 alt={exercise.name}
                 fill
-                width={64}
-                height={64}
                 className={`object-cover transition-all duration-300 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -233,8 +231,6 @@ export function ExerciseCard({
             src={getImageSrc()}
             alt={exercise.name}
             fill
-            width={320}
-            height={180}
             className={`object-cover transition-all duration-300 group-hover:scale-105 ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
             }`}
