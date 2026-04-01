@@ -22,8 +22,7 @@ const customJestConfig = {
 
   // Use testRegex instead of testMatch to avoid glob issues in worktree paths
   testRegex: [
-    '/__tests__/.*\\.(ts|tsx|js)$',
-    '\\.(spec|test)\\.(ts|tsx|js)$'
+    '/__tests__/.*\\.(test|spec)\\.(ts|tsx|js)$',
   ],
 
   collectCoverageFrom: [
@@ -68,6 +67,7 @@ const customJestConfig = {
     ...(process.cwd().includes('.worktrees') ? [] : ['/\\.worktrees/']),
     '/tests/e2e/',
     '/e2e/',
+    '/__tests__/.*\\/utils/',
   ],
 
   forceExit: true,
