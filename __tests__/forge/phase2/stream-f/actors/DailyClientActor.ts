@@ -44,6 +44,9 @@ export class DailyClientActor {
   recoveryLogs: RecoveryMetrics[] = [];
   measurements: BodyMeasurements[] = [];
   messages: { to: string; content: string; date: Date }[] = [];
+  workouts: { id: string; status: string; feedback?: string }[] = [];
+  photos: { type: string; uploadedAt: Date }[] = [];
+  receivedMessages: { from: string; content: string; date: Date }[] = [];
 
   constructor(config: ClientActorConfig) {
     this.id = config.id;
@@ -76,22 +79,30 @@ export class DailyClientActor {
   }
 
   async startWorkout(workoutId: string): Promise<{ id: string; status: string }> {
-    return {
+    const session = {
       id: `ws-${Date.now()}`,
       status: 'in_progress'
     };
+    this.workouts.push({ id: session.id, status: session.status });
+    return session;
   }
 
   async completeWorkout(sessionId: string, feedback?: string): Promise<void> {
-    // Mark workout complete
+    const workout = this.workouts.find(w => w.id === sessionId);
+    if (workout) {
+      workout.status = 'completed';
+      if (feedback) {
+        workout.feedback = feedback;
+      }
+    }
   }
 
   async uploadProgressPhoto(photoType: 'front' | 'back' | 'side'): Promise<void> {
-    // Simulate photo upload
+    this.photos.push({ type: photoType, uploadedAt: new Date() });
   }
 
   async readMessages(): Promise<{ from: string; content: string }[]> {
-    return [];
+    return this.receivedMessages.map(m => ({ from: m.from, content: m.content }));
   }
 
   getStats() {
@@ -99,7 +110,9 @@ export class DailyClientActor {
       totalSets: this.loggedSets.length,
       totalRecoveryLogs: this.recoveryLogs.length,
       totalMeasurements: this.measurements.length,
-      totalMessages: this.messages.length
+      totalMessages: this.messages.length,
+      totalWorkouts: this.workouts.length,
+      completedWorkouts: this.workouts.filter(w => w.status === 'completed').length
     };
   }
 }
