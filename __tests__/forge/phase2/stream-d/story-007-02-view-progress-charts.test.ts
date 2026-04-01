@@ -6,7 +6,7 @@
  * So that I can visualize my fitness journey
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

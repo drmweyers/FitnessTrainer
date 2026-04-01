@@ -6,7 +6,7 @@
  * So that I can stay motivated and measure success
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

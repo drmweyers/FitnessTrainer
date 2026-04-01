@@ -6,7 +6,7 @@
  * So that I can control how I receive alerts
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

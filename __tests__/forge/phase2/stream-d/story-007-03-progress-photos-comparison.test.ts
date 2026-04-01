@@ -6,7 +6,7 @@
  * So that I can visualize my physical transformation
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

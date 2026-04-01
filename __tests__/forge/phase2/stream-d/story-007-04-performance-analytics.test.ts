@@ -6,7 +6,7 @@
  * So that I can track strength gains and workout consistency
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

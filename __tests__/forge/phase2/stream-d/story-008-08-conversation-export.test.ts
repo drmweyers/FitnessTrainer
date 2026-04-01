@@ -6,7 +6,7 @@
  * So that I can keep records of my communications
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

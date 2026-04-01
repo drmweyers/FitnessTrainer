@@ -6,7 +6,7 @@
  * So that I can communicate with my trainer/client
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

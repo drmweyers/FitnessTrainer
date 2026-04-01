@@ -6,7 +6,7 @@
  * So that I can communicate quickly without typing
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

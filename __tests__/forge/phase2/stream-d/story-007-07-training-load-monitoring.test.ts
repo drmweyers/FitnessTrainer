@@ -6,7 +6,7 @@
  * So that I can avoid overtraining and optimize recovery
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

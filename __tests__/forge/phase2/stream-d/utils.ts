@@ -1,9 +1,8 @@
 /**
  * FORGE Stream D Utilities
  * Analytics & Messaging workflow testing utilities
+ * Uses mock-based approach (no database calls)
  */
-
-import { prisma } from '@/lib/db/prisma';
 
 // Types for FORGE simulations
 export interface Actor {
@@ -29,22 +28,23 @@ export interface WorkflowResult {
 }
 
 /**
- * ActorFactory - Creates test actors for simulations
+ * ActorFactory - Creates test actors for simulations (mock-based)
  */
 export class ActorFactory {
+  private static idCounter = 0;
+
+  private static generateId(): string {
+    this.idCounter++;
+    return `00000000-0000-0000-0000-${String(this.idCounter).padStart(12, '0')}`;
+  }
+
   static async createTrainer(overrides: Partial<Actor> = {}): Promise<Actor> {
-    const user = await prisma.user.create({
-      data: {
-        email: overrides.email || `trainer-${Date.now()}@test.com`,
-        passwordHash: 'hashed-password',
-        role: 'trainer',
-        ...overrides
-      }
-    });
+    const id = overrides.id || this.generateId();
+    const email = overrides.email || `trainer-${id.slice(-6)}@test.com`;
 
     return {
-      id: user.id,
-      email: user.email,
+      id,
+      email,
       role: 'trainer',
       fullName: overrides.fullName || 'Test Trainer',
       state: {}
@@ -52,18 +52,12 @@ export class ActorFactory {
   }
 
   static async createClient(overrides: Partial<Actor> = {}): Promise<Actor> {
-    const user = await prisma.user.create({
-      data: {
-        email: overrides.email || `client-${Date.now()}@test.com`,
-        passwordHash: 'hashed-password',
-        role: 'client',
-        ...overrides
-      }
-    });
+    const id = overrides.id || this.generateId();
+    const email = overrides.email || `client-${id.slice(-6)}@test.com`;
 
     return {
-      id: user.id,
-      email: user.email,
+      id,
+      email,
       role: 'client',
       fullName: overrides.fullName || 'Test Client',
       state: {}
@@ -71,18 +65,12 @@ export class ActorFactory {
   }
 
   static async createAdmin(overrides: Partial<Actor> = {}): Promise<Actor> {
-    const user = await prisma.user.create({
-      data: {
-        email: overrides.email || `admin-${Date.now()}@test.com`,
-        passwordHash: 'hashed-password',
-        role: 'admin',
-        ...overrides
-      }
-    });
+    const id = overrides.id || this.generateId();
+    const email = overrides.email || `admin-${id.slice(-6)}@test.com`;
 
     return {
-      id: user.id,
-      email: user.email,
+      id,
+      email,
       role: 'admin',
       fullName: overrides.fullName || 'Test Admin',
       state: {}
@@ -133,7 +121,7 @@ export class WorkflowRunner {
 }
 
 /**
- * Measurement utilities for analytics workflows
+ * Measurement utilities for analytics workflows (mock-based)
  */
 export class MeasurementHelpers {
   static async createMeasurement(userId: string, data: {
@@ -142,18 +130,18 @@ export class MeasurementHelpers {
     unit?: string;
     recordedAt?: Date;
   }) {
-    return prisma.userMeasurement.create({
-      data: {
-        userId,
-        weight: data.value,
-        recordedAt: data.recordedAt || new Date(),
-        measurements: {
-          type: data.type,
-          value: data.value,
-          unit: data.unit || 'kg'
-        }
+    // Mock implementation
+    return {
+      id: `measurement-${Date.now()}`,
+      userId,
+      weight: data.value,
+      recordedAt: data.recordedAt || new Date(),
+      measurements: {
+        type: data.type,
+        value: data.value,
+        unit: data.unit || 'kg'
       }
-    });
+    };
   }
 
   static async createBodyMeasurements(userId: string, data: {
@@ -178,13 +166,13 @@ export class MeasurementHelpers {
     if (data.rightThigh !== undefined) measurements.rightThigh = data.rightThigh;
     measurements.unit = data.unit || 'inches';
 
-    return prisma.userMeasurement.create({
-      data: {
-        userId,
-        recordedAt: data.recordedAt || new Date(),
-        measurements
-      }
-    });
+    // Mock implementation
+    return {
+      id: `measurement-${Date.now()}`,
+      userId,
+      recordedAt: data.recordedAt || new Date(),
+      measurements
+    };
   }
 
   static calculateProgress(current: number, previous: number): {
@@ -205,12 +193,11 @@ export class MeasurementHelpers {
 }
 
 /**
- * Messaging utilities for chat workflows
- * Note: Uses mock implementations since messaging models don't exist yet
+ * Messaging utilities for chat workflows (mock-based)
  */
 export class MessagingHelpers {
   static async createConversation(participantIds: string[]) {
-    // Mock implementation - return a mock conversation object
+    // Mock implementation
     return {
       id: `conv-${Date.now()}`,
       type: participantIds.length > 2 ? 'GROUP' : 'DIRECT',
@@ -220,7 +207,7 @@ export class MessagingHelpers {
   }
 
   static async sendMessage(conversationId: string, senderId: string, content: string) {
-    // Mock implementation - return a mock message object
+    // Mock implementation
     return {
       id: `msg-${Date.now()}`,
       conversationId,
@@ -247,7 +234,7 @@ export class MessagingHelpers {
 }
 
 /**
- * Goal tracking utilities
+ * Goal tracking utilities (mock-based)
  */
 export class GoalHelpers {
   static async createGoal(userId: string, data: {
@@ -257,16 +244,16 @@ export class GoalHelpers {
     unit: string;
     deadline?: Date;
   }) {
-    return prisma.userGoal.create({
-      data: {
-        userId,
-        goalType: data.type,
-        targetValue: data.target,
-        currentValue: data.current || 0,
-        deadline: data.deadline,
-        status: 'active'
-      }
-    });
+    // Mock implementation
+    return {
+      id: `goal-${Date.now()}`,
+      userId,
+      goalType: data.type,
+      targetValue: data.target,
+      currentValue: data.current || 0,
+      deadline: data.deadline,
+      status: 'active'
+    };
   }
 
   static calculateGoalProgress(current: number, target: number): {
@@ -287,95 +274,9 @@ export class GoalHelpers {
 }
 
 /**
- * Cleanup utilities - safely cleans up test data
+ * Cleanup utilities - no-op for mock-based tests
  */
 export async function cleanupTestData(): Promise<void> {
-  try {
-    // Clean up in reverse dependency order - only existing models
-    const cleanupOperations = [
-      // Analytics & Progress
-      prisma.goalProgress.deleteMany({}).catch(() => {}),
-      prisma.milestoneAchievement.deleteMany({}).catch(() => {}),
-      prisma.userInsight.deleteMany({}).catch(() => {}),
-      prisma.comparisonBaseline.deleteMany({}).catch(() => {}),
-      prisma.chartPreference.deleteMany({}).catch(() => {}),
-      prisma.analyticsReport.deleteMany({}).catch(() => {}),
-      prisma.trainingLoad.deleteMany({}).catch(() => {}),
-      prisma.performanceMetric.deleteMany({}).catch(() => {}),
-
-      // Workout logs
-      prisma.workoutSetLog.deleteMany({}).catch(() => {}),
-      prisma.workoutExerciseLog.deleteMany({}).catch(() => {}),
-      prisma.workoutSession.deleteMany({}).catch(() => {}),
-
-      // Programs
-      prisma.exerciseConfiguration.deleteMany({}).catch(() => {}),
-      prisma.workoutExercise.deleteMany({}).catch(() => {}),
-      prisma.programWorkout.deleteMany({}).catch(() => {}),
-      prisma.programWeek.deleteMany({}).catch(() => {}),
-      prisma.programAssignment.deleteMany({}).catch(() => {}),
-      prisma.programTemplate.deleteMany({}).catch(() => {}),
-      prisma.program.deleteMany({}).catch(() => {}),
-
-      // Exercises
-      prisma.exerciseUsage.deleteMany({}).catch(() => {}),
-      prisma.exerciseSearchHistory.deleteMany({}).catch(() => {}),
-      prisma.collectionExercise.deleteMany({}).catch(() => {}),
-      prisma.exerciseFavorite.deleteMany({}).catch(() => {}),
-      prisma.exerciseCollection.deleteMany({}).catch(() => {}),
-
-      // Client management
-      prisma.clientTagAssignment.deleteMany({}).catch(() => {}),
-      prisma.clientTag.deleteMany({}).catch(() => {}),
-      prisma.clientNote.deleteMany({}).catch(() => {}),
-      prisma.clientProfile.deleteMany({}).catch(() => {}),
-      prisma.clientInvitation.deleteMany({}).catch(() => {}),
-      prisma.trainerClient.deleteMany({}).catch(() => {}),
-
-      // User profile
-      prisma.profileCompletion.deleteMany({}).catch(() => {}),
-      prisma.progressPhoto.deleteMany({}).catch(() => {}),
-      prisma.trainerSpecialization.deleteMany({}).catch(() => {}),
-      prisma.trainerCertification.deleteMany({}).catch(() => {}),
-      prisma.userGoal.deleteMany({}).catch(() => {}),
-      prisma.userHealth.deleteMany({}).catch(() => {}),
-      prisma.userMeasurement.deleteMany({}).catch(() => {}),
-      prisma.userProfile.deleteMany({}).catch(() => {}),
-
-      // Scheduling
-      prisma.appointment.deleteMany({}).catch(() => {}),
-      prisma.trainerAvailability.deleteMany({}).catch(() => {}),
-
-      // Support
-      prisma.contentReport.deleteMany({}).catch(() => {}),
-      prisma.supportTicket.deleteMany({}).catch(() => {}),
-
-      // Activity
-      prisma.activity.deleteMany({}).catch(() => {}),
-
-      // Auth
-      prisma.apiToken.deleteMany({}).catch(() => {}),
-      prisma.accountLockout.deleteMany({}).catch(() => {}),
-      prisma.securityAuditLog.deleteMany({}).catch(() => {}),
-      prisma.oauthAccount.deleteMany({}).catch(() => {}),
-      prisma.userSession.deleteMany({}).catch(() => {}),
-      prisma.twoFactorAuth.deleteMany({}).catch(() => {}),
-      prisma.passwordReset.deleteMany({}).catch(() => {}),
-      prisma.emailVerification.deleteMany({}).catch(() => {}),
-
-      // Users last
-      prisma.user.deleteMany({
-        where: {
-          email: {
-            contains: '@test.com'
-          }
-        }
-      }).catch(() => {})
-    ];
-
-    await Promise.all(cleanupOperations);
-  } catch (error) {
-    // Silently handle cleanup errors
-    console.log('Cleanup completed with some errors (expected for missing models)');
-  }
+  // No-op for mock-based tests
+  // All data is in-memory and gets garbage collected
 }

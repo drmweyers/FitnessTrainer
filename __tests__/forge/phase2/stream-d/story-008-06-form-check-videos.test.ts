@@ -6,7 +6,7 @@
  * So that my trainer can review my technique
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,

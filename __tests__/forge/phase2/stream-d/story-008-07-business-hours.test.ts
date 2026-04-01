@@ -6,7 +6,7 @@
  * So that clients know when I am available
  */
 
-import { prisma } from '@/lib/db/prisma';
+
 import {
   ActorFactory,
   WorkflowRunner,
