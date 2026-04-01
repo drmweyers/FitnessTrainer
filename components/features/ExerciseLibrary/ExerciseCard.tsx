@@ -92,12 +92,20 @@ export function ExerciseCard({
   }
 
   const getGifPath = () => {
-    return `/exerciseGifs/${exercise.gifUrl}`
+    if (!exercise.gifUrl || exercise.gifUrl === 'null' || exercise.gifUrl === 'undefined') {
+      return null;
+    }
+    return `/exerciseGifs/${exercise.gifUrl}`;
   }
 
-  const getStaticImagePath = () => {
-    // Use first frame of GIF or a placeholder
-    return imageError ? '/images/exercise-placeholder.jpg' : getGifPath()
+  const getImageSrc = () => {
+    const gifPath = getGifPath();
+    // If no valid GIF path or there's an error, always use placeholder
+    if (!gifPath || imageError) {
+      return '/images/exercise-placeholder.jpg';
+    }
+    // Return GIF path for both static and animated (browser handles animation)
+    return gifPath;
   }
 
   if (viewMode === 'list') {
@@ -113,9 +121,11 @@ export function ExerciseCard({
             <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
               <Image
                 ref={imageRef}
-                src={isGifPlaying && !imageError ? getGifPath() : getStaticImagePath()}
+                src={getImageSrc()}
                 alt={exercise.name}
                 fill
+                width={64}
+                height={64}
                 className={`object-cover transition-all duration-300 ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -220,9 +230,11 @@ export function ExerciseCard({
         <div className="relative aspect-video bg-gray-100 overflow-hidden">
           <Image
             ref={imageRef}
-            src={isGifPlaying && !imageError ? getGifPath() : getStaticImagePath()}
+            src={getImageSrc()}
             alt={exercise.name}
             fill
+            width={320}
+            height={180}
             className={`object-cover transition-all duration-300 group-hover:scale-105 ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
             }`}
