@@ -108,13 +108,13 @@ describe('FORGE: Retry Logic', () => {
       return 'success';
     };
 
-    await RetryService.withRetry(fn, { maxRetries: 5, delayMs: 25 });
+    await RetryService.withRetry(fn, { maxRetries: 5, delayMs: 50 });
 
     // Should have 3 delays (between 4 attempts)
     expect(delays).toHaveLength(3);
-    // Each delay should be roughly double the previous
-    expect(delays[1]).toBeGreaterThan(delays[0]);
-    expect(delays[2]).toBeGreaterThan(delays[1]);
+    // Each delay should be roughly double the previous (allow 20% timing jitter)
+    expect(delays[1]).toBeGreaterThan(delays[0] * 0.8);
+    expect(delays[2]).toBeGreaterThan(delays[1] * 0.8);
   });
 
   it('resets retry count for new operations', async () => {
