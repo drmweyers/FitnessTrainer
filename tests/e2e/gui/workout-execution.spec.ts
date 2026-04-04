@@ -18,7 +18,7 @@
 
 import { test, expect, Page } from '@playwright/test';
 import { BASE_URL, ROUTES, TIMEOUTS } from '../helpers/constants';
-import { loginViaAPI, waitForPageReady, takeScreenshot } from '../helpers/auth';
+import { loginViaAPI, loginAndNavigate, waitForPageReady, takeScreenshot } from '../helpers/auth';
 
 /**
  * Seeds an active workout session in localStorage for testing the execution screen.
@@ -275,11 +275,7 @@ test.describe('Workout Execution GUI', () => {
 
   test.describe('Daily Workout View', () => {
     test('should display daily workout view with header and date', async ({ page }) => {
-      await loginViaAPI(page, 'client');
-      await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-        waitUntil: 'networkidle',
-        timeout: TIMEOUTS.pageLoad,
-      });
+      await loginAndNavigate(page, ROUTES.workoutTracker, 'client');
       await waitForPageReady(page);
 
       // Should show header with "Today" or date

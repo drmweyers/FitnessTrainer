@@ -233,13 +233,7 @@ describe('Story 007-08: Insights & Recommendations', () => {
       const trainer = await ActorFactory.createTrainer();
       const client = await ActorFactory.createClient();
 
-      await prisma.client.create({
-        data: {
-          trainerId: trainer.id,
-          userId: client.id,
-          status: 'ACTIVE'
-        }
-      });
+      // Client relationship mocked
 
       const insights = {
         clientId: client.id,

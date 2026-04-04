@@ -6,7 +6,8 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { loginAsTrainer, loginAsClient } from '../helpers/auth';
+import { loginViaAPI } from '../helpers/auth';
+import { BASE_URL, ROUTES } from '../helpers/constants';
 
 test.describe('Login Form', () => {
   test.beforeEach(async ({ page }) => {
@@ -266,8 +267,8 @@ test.describe('Reset Password Form', () => {
 
 test.describe('Profile Edit Form', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/profile/edit');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/profile/edit`);
   });
 
   test('renders with all expected fields', async ({ page }) => {
@@ -343,8 +344,8 @@ test.describe('Profile Edit Form', () => {
 
 test.describe('Client Form (Modal)', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/clients');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/clients`);
   });
 
   test('opens client form modal', async ({ page }) => {
@@ -410,8 +411,8 @@ test.describe('Client Form (Modal)', () => {
 
 test.describe('Client Invite Form', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/clients');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/clients`);
   });
 
   test('opens invite form modal', async ({ page }) => {
@@ -472,8 +473,8 @@ test.describe('Client Invite Form', () => {
 
 test.describe('Program Form', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/programs/new');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/programs/new`);
   });
 
   test('renders program creation form', async ({ page }) => {
@@ -555,8 +556,8 @@ test.describe('Program Form', () => {
 
 test.describe('Contact/Support Form', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsClient(page);
-    await page.goto('/support');
+    await loginViaAPI(page, 'client');
+    await page.goto(`${BASE_URL}/support`);
   });
 
   test('renders contact form', async ({ page }) => {
@@ -624,8 +625,8 @@ test.describe('Contact/Support Form', () => {
 
 test.describe('Group Class Form', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/schedule');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/schedule`);
   });
 
   test('opens group class form', async ({ page }) => {
@@ -684,8 +685,8 @@ test.describe('Group Class Form', () => {
 
 test.describe('Certification Form (Trainer Profile)', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/profile/edit');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/profile/edit`);
   });
 
   test('renders certification section for trainers', async ({ page }) => {
@@ -725,8 +726,8 @@ test.describe('Certification Form (Trainer Profile)', () => {
 
 test.describe('Emergency Contact Form', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsClient(page);
-    await page.goto('/profile/edit');
+    await loginViaAPI(page, 'client');
+    await page.goto(`${BASE_URL}/profile/edit`);
   });
 
   test('renders emergency contact section', async ({ page }) => {
@@ -825,8 +826,8 @@ test.describe('Form Error Handling', () => {
   });
 
   test('profile edit shows error on save failure', async ({ page }) => {
-    await loginAsTrainer(page);
-    await page.goto('/profile/edit');
+    await loginViaAPI(page, 'trainer');
+    await page.goto(`${BASE_URL}/profile/edit`);
 
     await page.route('**/api/profiles/me', async route => {
       await route.fulfill({

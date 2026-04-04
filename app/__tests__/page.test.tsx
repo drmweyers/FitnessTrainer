@@ -32,6 +32,10 @@ jest.mock('framer-motion', () => {
       img: createMotionComponent('img'),
       ul: createMotionComponent('ul'),
       li: createMotionComponent('li'),
+      form: createMotionComponent('form'),
+      nav: createMotionComponent('nav'),
+      header: createMotionComponent('header'),
+      footer: createMotionComponent('footer'),
     },
     AnimatePresence: ({ children }: any) => <>{children}</>,
   }
@@ -44,6 +48,15 @@ jest.mock('next/link', () => {
   )
   MockLink.displayName = 'Link'
   return { __esModule: true, default: MockLink }
+})
+
+// Mock next/image
+jest.mock('next/image', () => {
+  const MockImage = ({ src, alt, ...props }: any) => (
+    <img src={src} alt={alt} {...props} />
+  )
+  MockImage.displayName = 'Image'
+  return { __esModule: true, default: MockImage }
 })
 
 // Mock lucide-react icons
@@ -59,8 +72,16 @@ jest.mock('lucide-react', () => ({
   ArrowRight: (props: any) => <svg data-testid="icon-arrow" {...props} />,
   Calendar: (props: any) => <svg data-testid="icon-calendar" {...props} />,
   Sparkles: (props: any) => <svg data-testid="icon-sparkles" {...props} />,
-
-
+  Clock: (props: any) => <svg data-testid="icon-clock" {...props} />,
+  TrendingUp: (props: any) => <svg data-testid="icon-trending-up" {...props} />,
+  Star: (props: any) => <svg data-testid="icon-star" {...props} />,
+  Menu: (props: any) => <svg data-testid="icon-menu" {...props} />,
+  X: (props: any) => <svg data-testid="icon-x" {...props} />,
+  Shield: (props: any) => <svg data-testid="icon-shield" {...props} />,
+  Trophy: (props: any) => <svg data-testid="icon-trophy" {...props} />,
+  Target: (props: any) => <svg data-testid="icon-target" {...props} />,
+  MessageSquare: (props: any) => <svg data-testid="icon-message" {...props} />,
+  Brain: (props: any) => <svg data-testid="icon-brain" {...props} />,
 }))
 
 import HomePage from '../page'
@@ -72,278 +93,161 @@ describe('HomePage', () => {
 
   describe('Hero Section', () => {
     it('renders the main heading', () => {
-      expect(screen.getByText(/Own Your Coaching Platform\./i)).toBeInTheDocument()
-      // "Forever." appears in the h1 span, plus in body text; use getAllByText
-      const foreverElements = screen.getAllByText(/Forever\./i)
-      expect(foreverElements.length).toBeGreaterThanOrEqual(1)
+      const headings = screen.getAllByText(/Scale Your Training Business/i)
+      expect(headings.length).toBeGreaterThanOrEqual(1)
+      const burnoutElements = screen.getAllByText(/Without Burnout/i)
+      expect(burnoutElements.length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders the hero description', () => {
       expect(
-        screen.getByText(/The all-in-one fitness coaching platform for personal trainers/i)
+        screen.getByText(/Stop writing workout programs from scratch/i)
       ).toBeInTheDocument()
     })
 
-    it('renders the logo with correct attributes', () => {
-      const logos = screen.getAllByAltText('EvoFit Trainer')
-      expect(logos.length).toBeGreaterThanOrEqual(1)
-      expect(logos[0]).toHaveAttribute('src', '/logo.png')
+    it('renders Get Lifetime Access CTA linking to pricing', () => {
+      const ctaLinks = screen.getAllByRole('link')
+      const pricingCta = ctaLinks.find(el => el.textContent?.includes('Get Lifetime Access') && el.getAttribute('href') === '/pricing')
+      expect(pricingCta).toBeTruthy()
     })
 
-    it('renders Get Started CTA linking to register', () => {
-      const ctaButtons = screen.getAllByText(/Get Started/i)
-      expect(ctaButtons.length).toBeGreaterThanOrEqual(1)
-      const registerLink = ctaButtons.find(el => el.closest('a')?.getAttribute('href') === '/auth/register')
-      expect(registerLink).toBeTruthy()
+    it('renders See How It Works button', () => {
+      expect(screen.getByText('See How It Works')).toBeInTheDocument()
+    })
+  })
+
+  describe('Pain Points Section', () => {
+    it('renders the pain points heading', () => {
+      expect(
+        screen.getByText('Still Programming Workouts Manually?')
+      ).toBeInTheDocument()
     })
 
-    it('renders See Features button', () => {
-      expect(screen.getByText('See Features')).toBeInTheDocument()
+    it('renders time stat', () => {
+      expect(screen.getByText('3-5 hours')).toBeInTheDocument()
+      expect(screen.getByText('per client')).toBeInTheDocument()
+    })
+  })
+
+  describe('Solution Section', () => {
+    it('renders the solution heading', () => {
+      expect(
+        screen.getByText(/EvoFit Trainer: The Complete Platform/i)
+      ).toBeInTheDocument()
     })
   })
 
   describe('Features Section', () => {
     it('renders the features heading', () => {
       expect(
-        screen.getByText('Everything You Need to Train Smarter')
+        screen.getByText('Everything You Need in One Platform')
       ).toBeInTheDocument()
     })
 
-    it('renders the features subheading', () => {
-      expect(
-        screen.getByText(/From 1,344 exercise demonstrations to ACWR analytics/i)
-      ).toBeInTheDocument()
+    it('renders key feature headings', () => {
+      expect(screen.getByText('Build Programs in Minutes, Not Hours')).toBeInTheDocument()
+      expect(screen.getByText('Professional Exercise Database at Your Fingertips')).toBeInTheDocument()
+      expect(screen.getByText("Track Every Client's Progress Effortlessly")).toBeInTheDocument()
+      expect(screen.getByText('See Which Programs Drive Results')).toBeInTheDocument()
+      expect(screen.getByText(/Let AI Handle Your Program Variations/i)).toBeInTheDocument()
     })
 
-    it('renders all 8 feature cards', () => {
-      expect(screen.getAllByText('Exercise Library').length).toBeGreaterThanOrEqual(1)
-      expect(screen.getByText('Program Builder')).toBeInTheDocument()
-      expect(screen.getByText('Client Management')).toBeInTheDocument()
-      expect(screen.getByText('Workout Tracking')).toBeInTheDocument()
-      expect(screen.getByText('Progress Analytics')).toBeInTheDocument()
-      expect(screen.getByText('Activity Feed')).toBeInTheDocument()
-      expect(screen.getByText('Scheduling & Calendar')).toBeInTheDocument()
-      expect(screen.getByText('AI Workout Builder')).toBeInTheDocument()
-    })
-
-    it('renders feature descriptions', () => {
-      expect(screen.getByText(/Access 1,344 professional exercises/i)).toBeInTheDocument()
-      expect(screen.getByText(/Design multi-week programs with RPE/i)).toBeInTheDocument()
-      expect(screen.getByText(/Manage your roster with 5 status states/i)).toBeInTheDocument()
+    it('renders feature images', () => {
+      expect(screen.getByAltText(/Program builder interface/i)).toBeInTheDocument()
+      expect(screen.getByAltText(/Exercise library with search/i)).toBeInTheDocument()
+      expect(screen.getByAltText(/Client management dashboard/i)).toBeInTheDocument()
     })
   })
 
-  describe('Feature Spotlight Section', () => {
-    it('renders the Feature Spotlight heading', () => {
-      expect(screen.getByText('Feature Spotlight')).toBeInTheDocument()
-    })
-
-    it('renders Exercise Library spotlight', () => {
-      expect(screen.getByText('1,344 Exercises. Zero Setup.')).toBeInTheDocument()
-      expect(screen.getByText(/The Exercise Library is your complete movement database/i)).toBeInTheDocument()
-    })
-
-    it('renders Program Builder spotlight', () => {
-      expect(screen.getByText('Elite Programming. Simple Interface.')).toBeInTheDocument()
-      expect(screen.getByText(/The Program Builder gives you the same sophisticated/i)).toBeInTheDocument()
-    })
-
-    it('renders Analytics spotlight', () => {
-      expect(screen.getByText('Pro Sports Analytics for Every Trainer')).toBeInTheDocument()
-      expect(screen.getByText(/ACWR \(Acute:Chronic Workload Ratio\) monitoring/i)).toBeInTheDocument()
-    })
-
-    it('renders Client Management spotlight', () => {
-      expect(screen.getByText('CRM-Level Client Organization')).toBeInTheDocument()
-      expect(screen.getByText(/Your client roster is more than a list/i)).toBeInTheDocument()
-    })
-
-    it('renders Workout Tracking spotlight', () => {
-      expect(screen.getByText('Every Rep Logged. Every PR Celebrated.')).toBeInTheDocument()
-      expect(screen.getByText(/Real-time workout tracking that captures everything/i)).toBeInTheDocument()
-    })
-
-    it('renders Scheduling spotlight', () => {
-      expect(screen.getByText('One Calendar. Every Session Type.')).toBeInTheDocument()
-      expect(screen.getByText(/Manage your entire training schedule from one calendar/i)).toBeInTheDocument()
-    })
-
-    it('renders spotlight screenshots', () => {
-      expect(screen.getByAltText(/EvoFit Exercise Library/i)).toBeInTheDocument()
-      expect(screen.getByAltText(/EvoFit Program Builder/i)).toBeInTheDocument()
-      expect(screen.getByAltText(/EvoFit Analytics Dashboard/i)).toBeInTheDocument()
-      expect(screen.getByAltText(/EvoFit Client Management/i)).toBeInTheDocument()
-      expect(screen.getByAltText(/EvoFit Workout Tracker/i)).toBeInTheDocument()
-      expect(screen.getByAltText(/EvoFit Schedule/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('Benefits Section', () => {
-    it('renders the benefits heading', () => {
-      expect(
-        screen.getByText('Built for Trainers Who Refuse to Rent')
-      ).toBeInTheDocument()
-    })
-
-    it('renders all benefit items', () => {
-      expect(
-        screen.getByText(/1,344 exercises with animated demonstrations/i)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText('Build and assign programs in minutes')
-      ).toBeInTheDocument()
-      // "ACWR training load monitoring" appears in features, spotlight, and benefits; use exact match
-      expect(
-        screen.getByText('ACWR training load monitoring (pro-level analytics)')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText('Track every rep, set, and personal record')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText('Works on desktop, tablet, and mobile')
-      ).toBeInTheDocument()
-    })
-
-    it('renders stats preview cards', () => {
-      // Stats cards below the dashboard screenshot
-      const exercisesText = screen.getAllByText('Exercises')
-      expect(exercisesText.length).toBeGreaterThanOrEqual(1)
-      const programTypesText = screen.getAllByText('Program Types')
-      expect(programTypesText.length).toBeGreaterThanOrEqual(1)
-      const setTypesText = screen.getAllByText('Set Types')
-      expect(setTypesText.length).toBeGreaterThanOrEqual(1)
-      const musclesText = screen.getAllByText('Muscles')
-      expect(musclesText.length).toBeGreaterThanOrEqual(1)
-    })
-
-    it('renders the dashboard screenshot', () => {
-      expect(screen.getByAltText(/EvoFit Trainer Dashboard/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('Social Proof / Stats Section', () => {
-    it('renders the social proof heading', () => {
-      expect(
-        screen.getByText('Professional-Grade Tools You Own Outright')
-      ).toBeInTheDocument()
-    })
-
-    it('renders the social proof description', () => {
-      expect(
-        screen.getByText(/Trusted by trainers who demand professional-grade tools/i)
-      ).toBeInTheDocument()
-    })
-
+  describe('Social Proof Section', () => {
     it('renders stat numbers', () => {
-      // 1,344 appears in multiple places (stats, feature cards, benefits, pricing)
-      const stat1344 = screen.getAllByText('1,344')
-      expect(stat1344.length).toBeGreaterThanOrEqual(2)
-
-      const stat8 = screen.getAllByText('8')
-      expect(stat8.length).toBeGreaterThanOrEqual(1)
-
-      const stat7 = screen.getAllByText('7')
-      expect(stat7.length).toBeGreaterThanOrEqual(1)
-
-      const stat26 = screen.getAllByText('26')
-      expect(stat26.length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText('500+')).toBeInTheDocument()
+      expect(screen.getByText('1,200+')).toBeInTheDocument()
+      expect(screen.getByText('15,000+')).toBeInTheDocument()
+      expect(screen.getByText('94%')).toBeInTheDocument()
     })
 
     it('renders stat labels', () => {
-      expect(screen.getAllByText('Exercises Included').length).toBeGreaterThanOrEqual(1)
-      expect(screen.getAllByText('Target Muscles').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText('Exercises')).toBeInTheDocument()
+      expect(screen.getByText('Trainers')).toBeInTheDocument()
+      expect(screen.getByText('Programs Created')).toBeInTheDocument()
+      expect(screen.getByText('Time Savings')).toBeInTheDocument()
+    })
+
+    it('renders testimonials', () => {
+      expect(screen.getByText(/Sarah Chen/i)).toBeInTheDocument()
+      expect(screen.getByText(/Marcus Rodriguez/i)).toBeInTheDocument()
+      expect(screen.getByText(/Jennifer Park/i)).toBeInTheDocument()
+    })
+
+    it('renders testimonial quotes', () => {
+      expect(screen.getByText(/EvoFit Trainer cut my programming time/i)).toBeInTheDocument()
     })
   })
 
-  describe('Roles Section', () => {
-    it('renders the roles heading', () => {
-      expect(
-        screen.getByText('One Platform, Three Perspectives')
-      ).toBeInTheDocument()
+  describe('Pricing Section', () => {
+    it('renders the pricing heading', () => {
+      expect(screen.getByText('Choose Your Growth Plan')).toBeInTheDocument()
     })
 
-    it('renders the roles subheading', () => {
-      expect(
-        screen.getByText(/Tailored dashboards and tools for every role/i)
-      ).toBeInTheDocument()
+    it('renders pricing tiers', () => {
+      expect(screen.getByText('Starter')).toBeInTheDocument()
+      expect(screen.getByText('Enterprise')).toBeInTheDocument()
+      expect(screen.getByText('SaaS')).toBeInTheDocument()
     })
 
-    it('renders all three role cards', () => {
-      expect(screen.getByText('Administrator')).toBeInTheDocument()
-      expect(screen.getByText('Trainer')).toBeInTheDocument()
-      expect(screen.getByText('Client')).toBeInTheDocument()
-    })
-
-    it('renders role subtitles', () => {
-      expect(screen.getByText('Full Control')).toBeInTheDocument()
-      expect(screen.getByText('Build and Coach')).toBeInTheDocument()
-      expect(screen.getByText('Train and Improve')).toBeInTheDocument()
-    })
-
-    it('shows Most Popular badge on Trainer card', () => {
-      expect(screen.getByText('Most Popular')).toBeInTheDocument()
-    })
-
-    it('renders role feature lists', () => {
-      expect(screen.getByText('Platform analytics dashboard')).toBeInTheDocument()
-      expect(screen.getByText('Client roster management')).toBeInTheDocument()
-      expect(screen.getByText('Real-time workout logging')).toBeInTheDocument()
+    it('renders pricing CTA links', () => {
+      expect(screen.getByText('Get Professional Access')).toBeInTheDocument()
+      expect(screen.getByText('Get Enterprise Access')).toBeInTheDocument()
+      expect(screen.getByText('Start Free Trial')).toBeInTheDocument()
     })
   })
 
   describe('CTA Section', () => {
     it('renders the final CTA heading', () => {
       expect(
-        screen.getByText('Ready to Level Up Your Coaching?')
+        screen.getByText("Ready to 3x Your Client Capacity?")
       ).toBeInTheDocument()
     })
 
     it('renders the final CTA description', () => {
       expect(
-        screen.getByText(/Join trainers who use EvoFit to build better programs/i)
+        screen.getByText(/Join 1,200\+ trainers who've reclaimed their weekends/i)
       ).toBeInTheDocument()
     })
 
-    it('renders CTA buttons', () => {
-      const ctaButtons = screen.getAllByText(/Get Started/i)
-      expect(ctaButtons.length).toBeGreaterThanOrEqual(2)
-
-      expect(screen.getByText('Sign In to Dashboard')).toBeInTheDocument()
-    })
-
-    it('renders Sign In to Dashboard linking to login', () => {
-      const signInDashboard = screen.getByText('Sign In to Dashboard')
-      const link = signInDashboard.closest('a')
-      expect(link).toHaveAttribute('href', '/auth/login')
+    it('renders CTA form with email input', () => {
+      expect(screen.getByPlaceholderText('Your email address')).toBeInTheDocument()
+      expect(screen.getByText('Get Lifetime Access Now')).toBeInTheDocument()
     })
   })
 
   describe('Footer', () => {
-    it('renders the footer logo and company name', () => {
-      const logos = screen.getAllByAltText('EvoFit Trainer')
-      expect(logos.length).toBeGreaterThanOrEqual(2) // Hero + Footer
+    it('renders footer brand name', () => {
+      const brandNames = screen.getAllByText('EvoFit Trainer')
+      expect(brandNames.length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders footer section headings', () => {
       expect(screen.getByText('Platform')).toBeInTheDocument()
       expect(screen.getByText('Account')).toBeInTheDocument()
+      expect(screen.getByText('Company')).toBeInTheDocument()
     })
 
     it('renders platform links in footer', () => {
+      const featuresLinks = screen.getAllByText('Features')
+      expect(featuresLinks.length).toBeGreaterThanOrEqual(1)
+      const pricingLinks = screen.getAllByText('Pricing')
+      expect(pricingLinks.length).toBeGreaterThanOrEqual(1)
       const exerciseLinks = screen.getAllByText('Exercise Library')
-      expect(exerciseLinks.length).toBeGreaterThanOrEqual(2) // feature card + footer
-      expect(screen.getByText('Programs')).toBeInTheDocument()
-      expect(screen.getByText('Workouts')).toBeInTheDocument()
-      expect(screen.getByText('Analytics')).toBeInTheDocument()
+      expect(exerciseLinks.length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText('Program Templates')).toBeInTheDocument()
     })
 
     it('renders account links in footer', () => {
-      const getStartedLinks = screen.getAllByText(/Get Started/i)
-      expect(getStartedLinks.length).toBeGreaterThanOrEqual(2)
-
-      // "Sign In" appears in footer
-      expect(screen.getByText('Sign In')).toBeInTheDocument()
-      expect(screen.getByText('Dashboard')).toBeInTheDocument()
+      expect(screen.getByText('Sign Up')).toBeInTheDocument()
+      expect(screen.getByText('Log In')).toBeInTheDocument()
+      expect(screen.getByText('Support')).toBeInTheDocument()
     })
 
     it('renders copyright notice', () => {
@@ -355,7 +259,7 @@ describe('HomePage', () => {
 
     it('renders footer description', () => {
       expect(
-        screen.getByText(/Build programs, track progress, grow your business/i)
+        screen.getByText(/Scale your training business without burnout/i)
       ).toBeInTheDocument()
     })
   })

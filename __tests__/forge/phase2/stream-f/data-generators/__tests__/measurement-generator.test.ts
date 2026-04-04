@@ -15,11 +15,14 @@ describe('Measurement Generator', () => {
   });
 
   it('should show weight decrease over time', () => {
+    // Mock Math.random to return 0.5 so variance term is 0, giving deterministic results
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
     const measurements = generateMeasurementSeries({
       startWeight: 180,
       startBodyFat: 18,
       measurementDays: [1, 7, 14]
     });
+    jest.restoreAllMocks();
 
     expect(measurements[1].weight).toBeLessThan(measurements[0].weight);
     expect(measurements[2].weight).toBeLessThan(measurements[1].weight);

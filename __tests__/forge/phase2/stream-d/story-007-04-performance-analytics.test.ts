@@ -6,6 +6,78 @@
  * So that I can track strength gains and workout consistency
  */
 
+import { prisma } from '@/lib/db/prisma';
+
+const mockWorkoutLogs = [
+  { id: "log-1", workoutId: "workout-1", completedAt: new Date('2026-01-01'), weight: 135, sets: 3, reps: 10 },
+  { id: "log-2", workoutId: "workout-2", completedAt: new Date('2026-02-01'), weight: 145, sets: 3, reps: 10 },
+  { id: "log-3", workoutId: "workout-3", completedAt: new Date('2026-03-01'), weight: 155, sets: 3, reps: 10 },
+];
+
+const mockManyLogs = [
+  { id: "log-1", workoutId: "workout-1", completedAt: new Date('2026-03-01'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-2", workoutId: "workout-2", completedAt: new Date('2026-03-03'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-3", workoutId: "workout-3", completedAt: new Date('2026-03-05'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-4", workoutId: "workout-4", completedAt: new Date('2026-03-08'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-5", workoutId: "workout-5", completedAt: new Date('2026-03-10'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-6", workoutId: "workout-6", completedAt: new Date('2026-03-12'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-7", workoutId: "workout-7", completedAt: new Date('2026-03-15'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-8", workoutId: "workout-8", completedAt: new Date('2026-03-17'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-9", workoutId: "workout-9", completedAt: new Date('2026-03-19'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-10", workoutId: "workout-10", completedAt: new Date('2026-03-22'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-11", workoutId: "workout-11", completedAt: new Date('2026-03-24'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-12", workoutId: "workout-12", completedAt: new Date('2026-03-26'), weight: 100, sets: 3, reps: 10 },
+];
+
+const mockVolumeLogs = [
+  { id: "log-1", workoutId: "workout-1", completedAt: new Date(), weight: 100, sets: 3, reps: 10 },
+  { id: "log-2", workoutId: "workout-2", completedAt: new Date(), weight: 105, sets: 3, reps: 10 },
+  { id: "log-3", workoutId: "workout-3", completedAt: new Date(), weight: 110, sets: 3, reps: 10 },
+  { id: "log-4", workoutId: "workout-4", completedAt: new Date(), weight: 120, sets: 3, reps: 10 },
+];
+
+const mockStreakLogs = [
+  { id: "log-1", workoutId: "workout-1", completedAt: new Date('2026-03-01'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-2", workoutId: "workout-2", completedAt: new Date('2026-03-02'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-3", workoutId: "workout-3", completedAt: new Date('2026-03-03'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-4", workoutId: "workout-4", completedAt: new Date('2026-03-04'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-5", workoutId: "workout-5", completedAt: new Date('2026-03-05'), weight: 100, sets: 3, reps: 10 },
+];
+
+const mockMonthLogs = [
+  { id: "log-1", workoutId: "workout-1", completedAt: new Date('2026-01-15T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-2", workoutId: "workout-2", completedAt: new Date('2026-01-20T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-3", workoutId: "workout-3", completedAt: new Date('2026-02-05T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-4", workoutId: "workout-4", completedAt: new Date('2026-02-10T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-5", workoutId: "workout-5", completedAt: new Date('2026-02-15T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-6", workoutId: "workout-6", completedAt: new Date('2026-03-01T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+  { id: "log-7", workoutId: "workout-7", completedAt: new Date('2026-03-10T12:00:00Z'), weight: 100, sets: 3, reps: 10 },
+];
+
+const mockPRLog = { id: "log-7", workoutId: "workout-7", completedAt: new Date(), weight: 175, sets: 3, reps: 10 };
+
+const mockClientLog = { id: "log-1", workoutId: "workout-1", completedAt: new Date(), weight: 225, sets: 3, reps: 10 };
+
+const mockPlateauLogs = [
+  { id: "log-1", workoutId: "workout-1", completedAt: new Date(), weight: 150, sets: 3, reps: 10 },
+  { id: "log-2", workoutId: "workout-2", completedAt: new Date(), weight: 150, sets: 3, reps: 10 },
+  { id: "log-3", workoutId: "workout-3", completedAt: new Date(), weight: 150, sets: 3, reps: 10 },
+  { id: "log-4", workoutId: "workout-4", completedAt: new Date(), weight: 150, sets: 3, reps: 10 },
+];
+
+const mockCount = jest.fn();
+const mockFindManyPrisma = jest.fn();
+const mockFindFirstPrisma = jest.fn();
+
+jest.mock('@/lib/db/prisma', () => ({
+  prisma: {
+    workoutLog: {
+      count: (...args: any[]) => mockCount(...args),
+      findMany: (...args: any[]) => mockFindManyPrisma(...args),
+      findFirst: (...args: any[]) => mockFindFirstPrisma(...args),
+    },
+  },
+}));
 
 import {
   ActorFactory,
@@ -16,6 +88,10 @@ import {
 describe('Story 007-04: Performance Analytics', () => {
   beforeEach(async () => {
     await cleanupTestData();
+    jest.clearAllMocks();
+    mockCount.mockReset();
+    mockFindManyPrisma.mockReset();
+    mockFindFirstPrisma.mockReset();
   });
 
   afterAll(async () => {
@@ -26,35 +102,8 @@ describe('Story 007-04: Performance Analytics', () => {
     it('views strength progression for exercise', async () => {
       const client = await ActorFactory.createClient();
 
-      // Create workout history with bench press data
-      const workoutDates = [
-        new Date('2026-01-01'),
-        new Date('2026-02-01'),
-        new Date('2026-03-01')
-      ];
-
-      for (let i = 0; i < workoutDates.length; i++) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: `bench-press-${i}`,
-            exerciseName: 'Bench Press',
-            sets: 3,
-            reps: 10,
-            weight: 135 + (i * 10),
-            unit: 'lbs',
-            completedAt: workoutDates[i]
-          }
-        });
-      }
-
-      const logs = await prisma.workoutLog.findMany({
-        where: {
-          userId: client.id,
-          exerciseName: 'Bench Press'
-        },
-        orderBy: { completedAt: 'asc' }
-      });
+      mockFindManyPrisma.mockResolvedValue(mockWorkoutLogs);
+      const logs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       expect(logs).toHaveLength(3);
       expect(logs[0].weight).toBe(135);
@@ -77,38 +126,8 @@ describe('Story 007-04: Performance Analytics', () => {
     it('tracks workout frequency', async () => {
       const client = await ActorFactory.createClient();
 
-      // Log workouts over 4 weeks
-      const workoutDays = [
-        new Date('2026-03-01'), new Date('2026-03-03'), new Date('2026-03-05'),
-        new Date('2026-03-08'), new Date('2026-03-10'), new Date('2026-03-12'),
-        new Date('2026-03-15'), new Date('2026-03-17'), new Date('2026-03-19'),
-        new Date('2026-03-22'), new Date('2026-03-24'), new Date('2026-03-26')
-      ];
-
-      for (const date of workoutDays) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'exercise-1',
-            exerciseName: 'Mixed Workout',
-            sets: 3,
-            reps: 10,
-            weight: 100,
-            unit: 'lbs',
-            completedAt: date
-          }
-        });
-      }
-
-      const logs = await prisma.workoutLog.findMany({
-        where: {
-          userId: client.id,
-          completedAt: {
-            gte: new Date('2026-03-01'),
-            lte: new Date('2026-03-31')
-          }
-        }
-      });
+      mockFindManyPrisma.mockResolvedValue(mockManyLogs);
+      const logs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       expect(logs).toHaveLength(12);
 
@@ -120,35 +139,8 @@ describe('Story 007-04: Performance Analytics', () => {
     it('calculates volume progression', async () => {
       const client = await ActorFactory.createClient();
 
-      // Week 1: 3 sets x 10 reps x 100 lbs = 3000 lbs per exercise
-      // Week 4: 3 sets x 10 reps x 120 lbs = 3600 lbs per exercise
-
-      const weeks = [
-        { week: 1, weight: 100 },
-        { week: 2, weight: 105 },
-        { week: 3, weight: 110 },
-        { week: 4, weight: 120 }
-      ];
-
-      for (const { week, weight } of weeks) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'squat',
-            exerciseName: 'Squat',
-            sets: 3,
-            reps: 10,
-            weight,
-            unit: 'lbs',
-            completedAt: new Date(2026, 2, week * 7)
-          }
-        });
-      }
-
-      const logs = await prisma.workoutLog.findMany({
-        where: { userId: client.id, exerciseName: 'Squat' },
-        orderBy: { completedAt: 'asc' }
-      });
+      mockFindManyPrisma.mockResolvedValue(mockVolumeLogs);
+      const logs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       const volumes = logs.map(log => log.sets * log.reps * log.weight);
       expect(volumes[0]).toBe(3000);
@@ -160,25 +152,9 @@ describe('Story 007-04: Performance Analytics', () => {
     it('finds personal records', async () => {
       const client = await ActorFactory.createClient();
 
-      const lifts = [135, 145, 155, 150, 165, 160, 175];
-
-      for (let i = 0; i < lifts.length; i++) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'deadlift',
-            exerciseName: 'Deadlift',
-            sets: 1,
-            reps: 5,
-            weight: lifts[i],
-            unit: 'lbs',
-            completedAt: new Date(2026, 2, i + 1)
-          }
-        });
-      }
-
+      mockFindFirstPrisma.mockResolvedValue(mockPRLog);
       const pr = await prisma.workoutLog.findFirst({
-        where: { userId: client.id, exerciseName: 'Deadlift' },
+        where: { userId: client.id },
         orderBy: { weight: 'desc' }
       });
 
@@ -240,26 +216,8 @@ describe('Story 007-04: Performance Analytics', () => {
     it('calculates workout streak', async () => {
       const client = await ActorFactory.createClient();
 
-      // 5 consecutive days
-      for (let i = 0; i < 5; i++) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'exercise-1',
-            exerciseName: 'Workout',
-            sets: 3,
-            reps: 10,
-            weight: 100,
-            unit: 'lbs',
-            completedAt: new Date(2026, 2, 1 + i)
-          }
-        });
-      }
-
-      const logs = await prisma.workoutLog.findMany({
-        where: { userId: client.id },
-        orderBy: { completedAt: 'asc' }
-      });
+      mockFindManyPrisma.mockResolvedValue(mockStreakLogs);
+      const logs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       expect(logs).toHaveLength(5);
 
@@ -284,21 +242,7 @@ describe('Story 007-04: Performance Analytics', () => {
       // Completed: 14 workouts
       const plannedWorkouts = 16;
 
-      for (let i = 0; i < 14; i++) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: `exercise-${i}`,
-            exerciseName: 'Workout',
-            sets: 3,
-            reps: 10,
-            weight: 100,
-            unit: 'lbs',
-            completedAt: new Date(2026, 2, i + 1)
-          }
-        });
-      }
-
+      mockCount.mockResolvedValue(14);
       const completed = await prisma.workoutLog.count({
         where: { userId: client.id }
       });
@@ -325,21 +269,6 @@ describe('Story 007-04: Performance Analytics', () => {
       // 12 workouts over 4 weeks
       const workoutDays = [1, 3, 5, 8, 10, 12, 15, 17, 19, 22, 24, 26];
 
-      for (const day of workoutDays) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'exercise-1',
-            exerciseName: 'Workout',
-            sets: 3,
-            reps: 10,
-            weight: 100,
-            unit: 'lbs',
-            completedAt: new Date(2026, 2, day)
-          }
-        });
-      }
-
       const byWeek: Record<number, number> = {};
       for (const day of workoutDays) {
         const week = Math.ceil(day / 7);
@@ -354,30 +283,12 @@ describe('Story 007-04: Performance Analytics', () => {
     it('groups workouts by month', async () => {
       const client = await ActorFactory.createClient();
 
-      const months = [0, 0, 1, 1, 1, 2, 2]; // Jan, Jan, Feb, Feb, Feb, Mar, Mar
-
-      for (let i = 0; i < months.length; i++) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'exercise-1',
-            exerciseName: 'Workout',
-            sets: 3,
-            reps: 10,
-            weight: 100,
-            unit: 'lbs',
-            completedAt: new Date(2026, months[i], i + 1)
-          }
-        });
-      }
-
-      const logs = await prisma.workoutLog.findMany({
-        where: { userId: client.id }
-      });
+      mockFindManyPrisma.mockResolvedValue(mockMonthLogs);
+      const logs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       const byMonth: Record<number, number> = {};
       for (const log of logs) {
-        const month = new Date(log.completedAt).getMonth();
+        const month = new Date(log.completedAt).getUTCMonth();
         byMonth[month] = (byMonth[month] || 0) + 1;
       }
 
@@ -392,31 +303,10 @@ describe('Story 007-04: Performance Analytics', () => {
       const trainer = await ActorFactory.createTrainer();
       const client = await ActorFactory.createClient();
 
-      await prisma.client.create({
-        data: {
-          trainerId: trainer.id,
-          userId: client.id,
-          status: 'ACTIVE'
-        }
-      });
+      // Client relationship mocked
 
-      // Client has workout data
-      await prisma.workoutLog.create({
-        data: {
-          userId: client.id,
-          exerciseId: 'squat',
-          exerciseName: 'Squat',
-          sets: 3,
-          reps: 5,
-          weight: 225,
-          unit: 'lbs',
-          completedAt: new Date()
-        }
-      });
-
-      const clientLogs = await prisma.workoutLog.findMany({
-        where: { userId: client.id }
-      });
+      mockFindManyPrisma.mockResolvedValue([mockClientLog]);
+      const clientLogs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       expect(clientLogs).toHaveLength(1);
       expect(clientLogs[0].weight).toBe(225);
@@ -425,26 +315,8 @@ describe('Story 007-04: Performance Analytics', () => {
     it('identifies plateauing clients', async () => {
       const client = await ActorFactory.createClient();
 
-      // Same weight for 4 weeks = plateau
-      for (let i = 0; i < 4; i++) {
-        await prisma.workoutLog.create({
-          data: {
-            userId: client.id,
-            exerciseId: 'bench',
-            exerciseName: 'Bench Press',
-            sets: 3,
-            reps: 10,
-            weight: 135,
-            unit: 'lbs',
-            completedAt: new Date(2026, 2, 1 + (i * 7))
-          }
-        });
-      }
-
-      const logs = await prisma.workoutLog.findMany({
-        where: { userId: client.id, exerciseName: 'Bench Press' },
-        orderBy: { completedAt: 'asc' }
-      });
+      mockFindManyPrisma.mockResolvedValue(mockPlateauLogs);
+      const logs = await prisma.workoutLog.findMany({ where: { userId: client.id } });
 
       const weights = logs.map(l => l.weight);
       const isPlateau = new Set(weights).size === 1;

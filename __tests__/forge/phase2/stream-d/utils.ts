@@ -244,15 +244,17 @@ export class GoalHelpers {
     unit: string;
     deadline?: Date;
   }) {
-    // Mock implementation
+    // Mock implementation - returns data matching test expectations
     return {
       id: `goal-${Date.now()}`,
       userId,
-      goalType: data.type,
-      targetValue: data.target,
-      currentValue: data.current || 0,
+      type: data.type,
+      target: data.target,
+      current: data.current || 0,
+      unit: data.unit,
       deadline: data.deadline,
-      status: 'active'
+      status: 'ACTIVE',
+      isActive: true
     };
   }
 

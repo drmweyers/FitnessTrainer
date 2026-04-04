@@ -68,6 +68,15 @@ export async function loginViaAPI(
     { accessToken, refreshToken, user }
   );
 
+  // Wait for auth state to be ready by checking localStorage
+  await page.waitForFunction(
+    () => {
+      const token = localStorage.getItem('accessToken');
+      return !!token;
+    },
+    { timeout: 5000 }
+  );
+
   return { accessToken, user };
 }
 

@@ -23,6 +23,7 @@ async function authPost(api: APIRequestContext, path: string, token: string, dat
   return api.post(`${BASE}${path}`, {
     data,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    timeout: 60000,
   });
 }
 
@@ -30,6 +31,7 @@ async function authPost(api: APIRequestContext, path: string, token: string, dat
 async function authGet(api: APIRequestContext, path: string, token: string) {
   return api.get(`${BASE}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
+    timeout: 60000,
   });
 }
 
@@ -38,6 +40,7 @@ async function authPut(api: APIRequestContext, path: string, token: string, data
   return api.put(`${BASE}${path}`, {
     data,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    timeout: 60000,
   });
 }
 
@@ -58,16 +61,72 @@ async function ensureAccount(api: APIRequestContext, email: string, password: st
   let token = await login(api, email, password);
   if (token) return token;
 
+  console.log(`  Registering ${email}...`);
+
   // Register
-  await api.post(`${BASE}${API.register}`, {
+  const registerRes = await api.post(`${BASE}${API.register}`, {
     data: { email, password, role },
     headers: { 'Content-Type': 'application/json' },
   });
 
+  if (!registerRes.ok()) {
+    const errorBody = await registerRes.json().catch(() => ({}));
+    console.log(`  ⚠ Registration response: ${registerRes.status()} - ${JSON.stringify(errorBody)}`);
+  } else {
+    console.log(`  ✓ Registered ${email}`);
+  }
+
   // Login after register
   token = await login(api, email, password);
+  if (!token) {
+    // Try one more time with delay
+    await new Promise(r => setTimeout(r, 1000));
+    token = await login(api, email, password);
+  }
   if (!token) throw new Error(`Failed to create/login account: ${email}`);
   return token;
+}
+
+/** Wait for database to be available with retries */
+async function waitForDatabase(api: APIRequestContext, maxRetries = 10): Promise<boolean> {
+  console.log('[Global Setup] Warming up database connection...');
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      // Try health check endpoint first
+      const healthRes = await api.get(`${BASE}/api/health`, { timeout: 10000 });
+      if (healthRes.ok()) {
+        const health = await healthRes.json();
+        if (health.data?.database === 'healthy') {
+          console.log('  ✓ Database is healthy');
+          return true;
+        }
+      }
+    } catch {
+      // Health check failed, try login as a warmup
+    }
+
+    // Try a simple login request to wake up the DB
+    try {
+      const res = await api.post(`${BASE}${API.login}`, {
+        data: { email: 'test@test.com', password: 'test' },
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      });
+      // Even if login fails (wrong credentials), if we get a response, DB is up
+      if (res.status() !== 500) {
+        console.log(`  ✓ Database responsive (attempt ${i + 1})`);
+        return true;
+      }
+    } catch {
+      // DB still waking up
+    }
+
+    console.log(`  ... waiting for database (attempt ${i + 1}/${maxRetries})`);
+    await new Promise(r => setTimeout(r, 3000));
+  }
+
+  return false;
 }
 
 async function globalSetup() {
@@ -76,6 +135,12 @@ async function globalSetup() {
   const api = context.request;
 
   console.log(`\n[Global Setup] Seeding complete simulation on ${BASE}...\n`);
+
+  // ─── Step 0: Wait for database to be ready ────────────────────────────────
+  const dbReady = await waitForDatabase(api, 15);
+  if (!dbReady) {
+    console.warn('\n⚠️  WARNING: Database may not be fully ready. Proceeding anyway...\n');
+  }
 
   // ─── Step 1: Create all accounts ──────────────────────────────────────────
   console.log('Step 1: Creating accounts...');
@@ -91,9 +156,35 @@ async function globalSetup() {
 
   // ─── Step 2: Trainer adds clients to roster ───────────────────────────────
   console.log('Step 2: Adding clients to trainer roster...');
-  await authPost(api, API.clients, trainerToken, { email: TEST_ACCOUNTS.client.email });
-  await authPost(api, API.clients, trainerToken, { email: client2Email });
-  console.log('  ✓ Both clients added to trainer roster');
+  try {
+    // Note: This endpoint can be slow on Neon cold start - use longer timeout
+    const clientRes = await api.post(`${BASE}${API.clients}`, {
+      data: { email: TEST_ACCOUNTS.client.email },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${trainerToken}` },
+      timeout: 120000,
+    });
+    if (!clientRes.ok()) {
+      const err = await clientRes.json().catch(() => ({}));
+      console.log(`  ⚠ Client 1: ${clientRes.status()} - ${err.message || 'Unknown error'}`);
+    } else {
+      console.log('  ✓ Client 1 added to roster');
+    }
+
+    const client2Res = await api.post(`${BASE}${API.clients}`, {
+      data: { email: client2Email },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${trainerToken}` },
+      timeout: 120000,
+    });
+    if (!client2Res.ok()) {
+      const err = await client2Res.json().catch(() => ({}));
+      console.log(`  ⚠ Client 2: ${client2Res.status()} - ${err.message || 'Unknown error'}`);
+    } else {
+      console.log('  ✓ Client 2 added to roster');
+    }
+  } catch (e: any) {
+    console.log(`  ⚠ Could not add clients to roster: ${e.message}`);
+    console.log('  (Tests may still work if clients exist in DB)');
+  }
 
   // ─── Step 3: Get exercise IDs for program ────────────────────────────────
   console.log('Step 3: Fetching exercises for program...');
