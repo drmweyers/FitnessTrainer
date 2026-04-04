@@ -36,6 +36,7 @@ export async function loginViaUI(
 
 /**
  * Login via API (faster for tests that don't need to test the login UI)
+ * Includes retry logic for Neon DB cold-start (free tier auto-suspends).
  */
 export async function loginViaAPI(
   page: Page,
@@ -45,13 +46,26 @@ export async function loginViaAPI(
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  const response = await page.request.post(API.login, {
-    data: { email, password },
-    headers: { 'Content-Type': 'application/json' },
-  });
+  // Retry up to 5 times with backoff to handle Neon DB cold-start (503/500 responses)
+  let response: import('@playwright/test').APIResponse | null = null;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    response = await page.request.post(API.login, {
+      data: { email, password },
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok()) break;
+    // Retry on server errors (Neon cold-start returns 503/500)
+    const status = response.status();
+    if (status >= 500 && attempt < 5) {
+      const delay = Math.min(2000 * attempt, 8000); // 2s, 4s, 6s, 8s backoff
+      await page.waitForTimeout(delay);
+      continue;
+    }
+    break;
+  }
 
-  expect(response.ok()).toBeTruthy();
-  const body = await response.json();
+  expect(response!.ok()).toBeTruthy();
+  const body = await response!.json();
 
   const accessToken = body.data?.tokens?.accessToken || body.data?.accessToken || body.accessToken;
   const refreshToken = body.data?.tokens?.refreshToken || body.data?.refreshToken || body.refreshToken;
@@ -95,6 +109,7 @@ export async function loginAndNavigate(
 
 /**
  * Get an auth token directly (for API-only tests)
+ * Includes retry logic for Neon DB cold-start.
  */
 export async function getAuthToken(
   page: Page,
@@ -102,12 +117,23 @@ export async function getAuthToken(
 ): Promise<string> {
   const { email, password } = TEST_ACCOUNTS[account];
 
-  const response = await page.request.post(API.login, {
-    data: { email, password },
-    headers: { 'Content-Type': 'application/json' },
-  });
+  let response: import('@playwright/test').APIResponse | null = null;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    response = await page.request.post(API.login, {
+      data: { email, password },
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok()) break;
+    const status = response.status();
+    if (status >= 500 && attempt < 5) {
+      const delay = Math.min(2000 * attempt, 8000);
+      await page.waitForTimeout(delay);
+      continue;
+    }
+    break;
+  }
 
-  const body = await response.json();
+  const body = await response!.json();
   return body.data?.tokens?.accessToken || body.data?.accessToken || body.accessToken;
 }
 

@@ -11,8 +11,10 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Allow 2 retries for production runs to handle Neon free-tier cold-start/rate-limit issues
+  retries: process.env.CI ? 2 : (process.env.E2E_BASE_URL ? 2 : 0),
+  // Limit workers for production runs to avoid overwhelming Neon free-tier DB (cold-start issue)
+  workers: process.env.CI ? 1 : (process.env.E2E_BASE_URL ? 2 : undefined),
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
     ['junit', { outputFile: 'test-results/results.xml' }],
@@ -33,7 +35,8 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  timeout: 90 * 1000,
+  // Increase timeout for production runs (Neon cold-start + retry backoff)
+  timeout: process.env.E2E_BASE_URL ? 120 * 1000 : 90 * 1000,
   expect: {
     timeout: 10000,
   },

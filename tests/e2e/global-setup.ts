@@ -57,34 +57,44 @@ async function login(api: APIRequestContext, email: string, password: string): P
 
 /** Register account (idempotent — returns token) */
 async function ensureAccount(api: APIRequestContext, email: string, password: string, role: string): Promise<string> {
-  // Try login first
-  let token = await login(api, email, password);
-  if (token) return token;
+  // Retry loop: Neon free-tier can return 503 even after health check passes
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    // Try login first
+    let token = await login(api, email, password);
+    if (token) return token;
 
-  console.log(`  Registering ${email}...`);
+    // If first attempt, try to register
+    if (attempt === 1) {
+      console.log(`  Registering ${email}...`);
+      const registerRes = await api.post(`${BASE}${API.register}`, {
+        data: { email, password, role },
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-  // Register
-  const registerRes = await api.post(`${BASE}${API.register}`, {
-    data: { email, password, role },
-    headers: { 'Content-Type': 'application/json' },
-  });
+      if (!registerRes.ok()) {
+        const errorBody = await registerRes.json().catch(() => ({}));
+        const status = registerRes.status();
+        console.log(`  ⚠ Registration response: ${status} - ${JSON.stringify(errorBody)}`);
+        // If DB unavailable (503/500), wait longer before retrying
+        if (status >= 500) {
+          await new Promise(r => setTimeout(r, 3000));
+          continue;
+        }
+      } else {
+        console.log(`  ✓ Registered ${email}`);
+      }
+    }
 
-  if (!registerRes.ok()) {
-    const errorBody = await registerRes.json().catch(() => ({}));
-    console.log(`  ⚠ Registration response: ${registerRes.status()} - ${JSON.stringify(errorBody)}`);
-  } else {
-    console.log(`  ✓ Registered ${email}`);
-  }
-
-  // Login after register
-  token = await login(api, email, password);
-  if (!token) {
-    // Try one more time with delay
-    await new Promise(r => setTimeout(r, 1000));
+    // Try login after register
     token = await login(api, email, password);
+    if (token) return token;
+
+    // Wait before next attempt (exponential backoff)
+    const delay = Math.min(2000 * attempt, 8000);
+    await new Promise(r => setTimeout(r, delay));
   }
-  if (!token) throw new Error(`Failed to create/login account: ${email}`);
-  return token;
+
+  throw new Error(`Failed to create/login account: ${email} after 5 attempts`);
 }
 
 /** Wait for database to be available with retries */
@@ -98,8 +108,8 @@ async function waitForDatabase(api: APIRequestContext, maxRetries = 10): Promise
       if (healthRes.ok()) {
         const health = await healthRes.json();
         if (health.data?.database === 'healthy') {
-          console.log('  ✓ Database is healthy');
-          return true;
+          // Health check passed but Neon might still be starting up actual query processing
+          // Fall through to test actual login API
         }
       }
     } catch {
@@ -113,8 +123,9 @@ async function waitForDatabase(api: APIRequestContext, maxRetries = 10): Promise
         headers: { 'Content-Type': 'application/json' },
         timeout: 15000,
       });
-      // Even if login fails (wrong credentials), if we get a response, DB is up
-      if (res.status() !== 500) {
+      // Even if login fails (wrong credentials = 401/400), if we get a non-5xx response, DB is up
+      // Neon cold-start returns 503; a warmed-up DB returns 400/401 for bad credentials
+      if (res.status() < 500) {
         console.log(`  ✓ Database responsive (attempt ${i + 1})`);
         return true;
       }
