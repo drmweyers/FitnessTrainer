@@ -94,6 +94,20 @@ describe('GET /api/reports', () => {
     expect(response.status).toBe(401);
   });
 
+  it('returns 500 when database error occurs during fetch', async () => {
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/reports'), { user: mockAdminUser })
+    );
+    mockedPrisma.contentReport.findMany.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const response = await GET(makeRequest('/api/reports'));
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Internal Server Error');
+  });
+
   it('supports status filter', async () => {
     mockedAuthenticate.mockResolvedValueOnce(
       Object.assign(makeRequest('/api/reports?status=pending'), { user: mockAdminUser })
@@ -206,6 +220,57 @@ describe('POST /api/reports', () => {
 
     const response = await POST(request);
     expect(response.status).toBe(401);
+  });
+
+  it('returns 400 when contentId is missing', async () => {
+    const body = {
+      contentType: 'exercise',
+      reason: 'incorrect',
+    };
+
+    const request = new NextRequest('http://localhost:3000/api/reports', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockClientUser })
+    );
+
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(data.message).toBe('Content ID is required');
+  });
+
+  it('returns 500 when database error occurs during creation', async () => {
+    const body = {
+      contentType: 'exercise',
+      contentId: 'exercise-uuid-123',
+      reason: 'incorrect',
+    };
+
+    mockedPrisma.contentReport.create.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const request = new NextRequest('http://localhost:3000/api/reports', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockClientUser })
+    );
+
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Internal Server Error');
   });
 });
 

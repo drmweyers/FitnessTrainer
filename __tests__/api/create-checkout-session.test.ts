@@ -137,6 +137,22 @@ describe('POST /api/create-checkout-session', () => {
     expect(json.error).toContain('does not match');
   });
 
+  it('returns 400 for invalid SaaS price ID', async () => {
+    const req = makeRequest({
+      priceId: 'price_1TEwpaGo4HHYDfDVyvecwfMc',
+      tier: 'starter',
+      saas: true,
+      saasPriceId: 'invalid_price_id',
+    });
+
+    const res = await POST(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.success).toBe(false);
+    expect(json.error).toBe('Invalid SaaS price ID');
+  });
+
   it('returns 500 when Stripe fails', async () => {
     _mockRef.create.mockRejectedValue(new Error('Stripe API error'));
 

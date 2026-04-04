@@ -123,6 +123,23 @@ describe('GET /api/support/tickets/[id]', () => {
     expect(response.status).toBe(403);
     expect(data.success).toBe(false);
   });
+
+  it('returns 500 when database error occurs during fetch', async () => {
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/support/tickets/ticket-uuid-001'), { user: mockAdminUser })
+    );
+    mockedPrisma.supportTicket.findUnique.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const response = await GET(
+      makeRequest('/api/support/tickets/ticket-uuid-001'),
+      routeContext
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Internal Server Error');
+  });
 });
 
 describe('PUT /api/support/tickets/[id]', () => {
@@ -216,5 +233,26 @@ describe('PUT /api/support/tickets/[id]', () => {
 
     expect(response.status).toBe(404);
     expect(data.success).toBe(false);
+  });
+
+  it('returns 500 when database error occurs during update', async () => {
+    const request = new NextRequest('http://localhost:3000/api/support/tickets/ticket-uuid-001', {
+      method: 'PUT',
+      body: JSON.stringify({ status: 'resolved' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockAdminUser })
+    );
+    mockedPrisma.supportTicket.findUnique.mockResolvedValueOnce(mockTicket);
+    mockedPrisma.supportTicket.update.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const response = await PUT(request, routeContext);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Internal Server Error');
   });
 });

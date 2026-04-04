@@ -122,6 +122,39 @@ describe('GET /api/support/tickets', () => {
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
   });
+
+  it('supports status filter for non-admin users', async () => {
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/support/tickets?status=open'), { user: mockClientUser })
+    );
+    mockedPrisma.supportTicket.findMany.mockResolvedValueOnce([mockTicket]);
+    mockedPrisma.supportTicket.count.mockResolvedValueOnce(1);
+
+    const response = await GET(makeRequest('/api/support/tickets?status=open'));
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(mockedPrisma.supportTicket.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ userId: 'client-uuid-5678', status: 'open' }),
+      })
+    );
+  });
+
+  it('returns 500 when database error occurs during fetch', async () => {
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/support/tickets'), { user: mockAdminUser })
+    );
+    mockedPrisma.supportTicket.findMany.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const response = await GET(makeRequest('/api/support/tickets'));
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Internal Server Error');
+  });
 });
 
 describe('POST /api/support/tickets', () => {
@@ -213,5 +246,31 @@ describe('POST /api/support/tickets', () => {
 
     const response = await POST(request);
     expect(response.status).toBe(401);
+  });
+
+  it('returns 500 when database error occurs during creation', async () => {
+    const body = {
+      subject: 'Database Error Test',
+      message: 'This will fail.',
+    };
+
+    mockedPrisma.supportTicket.create.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const request = new NextRequest('http://localhost:3000/api/support/tickets', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(request, { user: mockClientUser })
+    );
+
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Internal Server Error');
   });
 });

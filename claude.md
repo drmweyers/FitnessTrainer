@@ -1,41 +1,22 @@
-# CLAUDE.md — EvoFit Trainer
+# EvoFit Trainer — Project Configuration
 
-## ⚡ SUPERPOWERS — MANDATORY FOR ALL DEV WORK
-**Load and follow the Superpowers workflow before writing any code.**
-Skill: `~/.openclaw/workspace/skills/superpowers/SKILL.md`
-Flow: brainstorm → plan → TDD build → code review → finish. No exceptions.
-
-## 🧪 PHASE 5: VERIFY — POST-DEPLOY SIMULATION (MANDATORY)
-After every production deploy, run the FORGE User Simulation via **Bolt** (QA agent):
-```bash
-cd ~/.openclaw/workspace/FitnessTrainer
-npx tsx scripts/seed-demo-data.ts && npx playwright test tests/e2e/flows/ --reporter=list
-```
-Skill: `~/.openclaw/workspace/skills/evofit-user-simulation/SKILL.md`
-Agent: `.claude/agents/evofit-simulator.md`
-Training: `~/.openclaw/workspace/skills/evofit-user-simulation/docs/agent-training.md`
+**Type:** Full-Stack Fitness SaaS for Personal Trainers
+**Status:** All 13 Epics at 100% — Production Ready
+**Production:** https://trainer.evofit.io
+**Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
+**Tests:** 5,026 unit (311 suites) + 461 E2E (40 Playwright suites) = **5,487 total**
+**Deploy:** Vercel (auto-deploy on push to master)
 
 ---
 
-## Overview
+## BCI Claude Code Standard
+This project follows BCCS v1.0.0. All tasks use: Brainstorm → Plan → TDD → Spec Review → Quality Review → Verify → Finish.
+See: `~/Claude/second-brain/resources/BCI-CLAUDE-CODE-STANDARD.md`
 
-**EvoFit Trainer** — AI-powered fitness & nutrition platform for personal trainers.
-Part of **BCI Innovation Labs** 4-brand architecture.
-
-| Field | Value |
-|-------|-------|
-| **Production URL** | https://evofitmeals.com |
-| **Vercel URL** | https://evofittrainer-six.vercel.app |
-| **DO App Name** | `evofit-prod` (Toronto region) |
-| **DO Registry** | `registry.digitalocean.com/bci/evofit:prod` |
-| **Repo** | `drmweyers/FitnessTrainer` |
-| **Default Branch** | `master` |
-| **Brand Email** | evofit@bcinnovationlabs.com |
-
-### Brand Context
-- **Tagline:** "Built for You. Powered by AI."
-- EvoFit = AI-powered nutrition and fitness meal planning
-- Target: personal trainers managing clients, programs, and progress
+## Hal Bridge Protocol
+After every session: update `~/Claude/second-brain/dev-updates/evofit.md` and push.
+Shared skills: `~/Claude/second-brain/shared-skills/`
+See: `~/Claude/second-brain/dev-updates/HOW-IT-WORKS.md`
 
 ---
 
@@ -43,18 +24,61 @@ Part of **BCI Innovation Labs** 4-brand architecture.
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | Next.js 14 (App Router), React 18, TypeScript 5.6 |
+| **Frontend** | Next.js 14 App Router, React 18, TypeScript 5.6 |
 | **UI** | Tailwind CSS 3.4, Radix UI, shadcn/ui, Framer Motion |
 | **State** | TanStack Query (server), Jotai (client) |
-| **Backend** | Next.js API routes (primary) + Express 4.x (standalone) |
-| **Database** | PostgreSQL 16, Prisma 5.22 (dual schemas) |
-| **Cache** | Redis / Upstash |
-| **Auth** | JWT (15min access / 7d refresh), bcryptjs |
-| **Testing** | Jest (unit/integration), Playwright (E2E), RTL |
-| **Deploy** | Vercel (frontend), DigitalOcean App Platform (Docker) |
-| **Payments** | Stripe |
-| **AI** | OpenAI API |
-| **Storage** | AWS S3 |
+| **Backend** | Next.js API routes (93 endpoints) |
+| **Database** | PostgreSQL 16 (Neon serverless), Prisma 5.22 |
+| **Cache** | Upstash Redis |
+| **Auth** | JWT (15min/7d), WebAuthn passkeys, bcryptjs |
+| **Payments** | Stripe Checkout (4 tiers) |
+| **PWA** | Web Push API, Service Worker, IndexedDB |
+| **Testing** | Jest (unit), Playwright (E2E), RTL |
+| **Deploy** | Vercel (auto-deploy on push to master) |
+
+---
+
+## Pricing Tiers (Stripe)
+
+| Tier | Price | Model | Stripe Price ID |
+|------|-------|-------|-----------------|
+| Starter | $199 | One-time | price_1TEwpaGo4HHYDfDVyvecwfMc |
+| Professional | $299 | One-time | price_1TEwpcGo4HHYDfDVqNAFCnDt |
+| Enterprise | $399 | One-time | price_1TEwpeGo4HHYDfDVe7M1XZTD |
+| SaaS Add-on | $39.99/mo | Subscription | price_1TEwpdGo4HHYDfDVmtIVLSQo |
+
+Checkout: `POST /api/create-checkout-session` (lazy-init Stripe to prevent build crash)
+
+---
+
+## Quick Commands
+
+```bash
+npm run dev              # Next.js dev (port 3000)
+npm run build            # Production build
+npm test                 # Jest unit tests (5,026)
+npm run test:coverage    # Jest with coverage
+npm run lint             # ESLint
+```
+
+### E2E Testing (FORGE QA System)
+```bash
+# Against localhost
+npx playwright test tests/e2e/workflows/
+
+# Against production
+E2E_BASE_URL=https://trainer.evofit.io npx playwright test tests/e2e/workflows/
+
+# Capture marketing screenshots
+npx tsx scripts/capture-screenshots.ts
+```
+
+### Backend (from backend/ directory)
+```bash
+npm run dev              # Express API (port 5000)
+npm run db:seed          # Seed database
+npm run docker:up        # Start Docker services
+```
 
 ---
 
@@ -64,192 +88,160 @@ Part of **BCI Innovation Labs** 4-brand architecture.
 app/
   (auth)/               # Login, register pages
   (dashboard)/          # Protected dashboard routes
-  api/                  # Next.js API routes (primary backend)
+  api/                  # Next.js API routes (93 endpoints)
   admin/                # Admin panel
   analytics/            # Analytics dashboards
   clients/              # Client management
-  exercises/            # Exercise library (1300+ exercises)
-  programs/             # Program builder
-backend/
-  src/                  # Express API (standalone option)
-  prisma/               # Full schema + migrations + seed
-components/             # React components by feature domain
-  ui/                   # shadcn/ui primitives
-  shared/               # Cross-feature components
+  pricing/              # Pricing page (Brunson funnel)
+  checkout/             # Success + cancel pages
+  blog/                 # Blog posts
+components/             # React components by feature
 lib/                    # Utilities, services, types, middleware
-prisma/                 # Minimal Prisma schema (Vercel deploy)
-services/               # Business logic services
-hooks/                  # Custom React hooks
-contexts/               # React context providers
-tests/                  # Playwright E2E + integration tests
-__tests__/              # Jest unit tests
-scripts/                # Utility scripts (cleanup, seed, etc.)
-docs/                   # BMAD documentation
-```
-
-### Dual Backend Architecture
-- **Vercel mode:** Next.js API routes in `app/api/` — used in production
-- **Docker mode:** Express API in `backend/` — used for local dev with Docker Compose
-- **Dual Prisma schemas:** `prisma/` (minimal, Vercel) + `backend/prisma/` (full, Docker)
-
----
-
-## Quick Commands
-
-### Development
-```bash
-npm run dev              # Next.js dev server (port 3000)
-npm run build            # Production build
-npm run lint             # ESLint
-npm run lint:fix         # ESLint with auto-fix
-npm run type-check       # TypeScript type checking
-npm run clean            # Remove .next cache
-```
-
-### Backend (from backend/ directory)
-```bash
-npm run dev              # Express API (port 5000)
-npm run db:migrate       # Run Prisma migrations
-npm run db:seed          # Seed database
-npm run docker:up        # Start Docker services
-```
-
-### Testing
-```bash
-npm test                 # Jest unit tests
-npm run test:watch       # Jest in watch mode
-npm run test:coverage    # Jest with coverage report
-npm run test:e2e         # Playwright E2E tests
-npm run test:e2e:prod    # E2E against production
-npm run test:e2e:ui      # Playwright interactive UI
-npm run test:e2e:debug   # Playwright debug mode
-```
-
-### Docker (local dev)
-```bash
-docker compose --profile dev up -d    # Start all services
-docker compose down                    # Stop all services
-```
-
-### Scripts
-```bash
-npm run seed:exercises                 # Seed exercise library
-npm run seed:analytics                 # Seed analytics data
-npm run cleanup:production             # Clean production data
-npm run cleanup:production:dry-run     # Preview cleanup
+hooks/                  # Custom React hooks (audio, haptics, media session, etc.)
+tests/e2e/              # Playwright E2E (40 suites, 461 tests)
+  workflows/            # All E2E test files (01-40)
+  helpers/              # Auth, constants, assertions
+  global-setup.ts       # Seeds complete simulation data
+__tests__/              # Jest unit tests (5,026)
+docs/                   # BMAD docs, marketing assets, plans
+scripts/                # Seed scripts, screenshot capture
+prisma/                 # Prisma schema (50+ models)
 ```
 
 ---
 
-## Deployment
+## Epic Progress (All 100%)
 
-### Vercel (Frontend + API Routes)
-- Auto-deploys on push to `master`
-- Build: `npx prisma@5.22.0 generate && npm run build`
-- Config: `vercel.json`
-
-### DigitalOcean (Docker — Full Stack)
-- App spec: `app.yaml`
-- Region: Toronto (`tor`)
-- Container registry: `registry.digitalocean.com/bci/evofit:prod`
-- Auto-deploy enabled on registry push
-- Managed PostgreSQL 14 + environment secrets
-
-```bash
-# Manual deploy to DO
-doctl registry login
-docker build --target prod -t evofit:prod .
-docker tag evofit:prod registry.digitalocean.com/bci/evofit:prod
-docker push registry.digitalocean.com/bci/evofit:prod
-```
-
-⚠️ **Push to `master` auto-deploys to Vercel. Docker push auto-deploys to DO.**
+| Epic | Feature | Status |
+|------|---------|--------|
+| 001 | User Profiles | **100%** (gender, PAR-Q, cert alerts) |
+| 002 | Authentication | **100%** (JWT, WebAuthn, password reset) |
+| 003 | Client Management | **100%** (bulk ops, profile editor, invites) |
+| 004 | Exercise Library | **100%** (1,344 exercises, collections, favorites, CSV export) |
+| 005 | Program Builder | **100%** (progression chart, deload config, calculator) |
+| 006 | Workout Tracking | **100%** (substitution, modification templates, offline UI) |
+| 007 | Progress Analytics | **100%** (ACWR, goals, milestones, reports) |
+| 008 | WhatsApp/Messaging | **100%** |
+| 009 | Scheduling & Calendar | **100%** (iCal, group classes, recurring sessions) |
+| 010 | Payments/Stripe | **Active** (4-tier pricing, Stripe Checkout) |
+| 011 | Mobile/PWA | **100%** (push notifications, biometric, audio, haptics) |
+| 012 | Admin Dashboard | **100%** (user mgmt, feature flags, tickets, reports) |
+| 013 | Marketing & Docs | **100%** (landing page, blog, funnel, screenshots) |
 
 ---
 
-## Environment Variables
+## Funnel Pages
 
-| Variable | Purpose |
-|----------|---------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` / `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Auth tokens |
-| `OPENAI_API_KEY` | AI features |
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` | S3 storage |
-| `S3_BUCKET_NAME` | File uploads bucket |
-| `STRIPE_PUBLIC_KEY` / `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` | Payments |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth login |
-| `REDIS_URL` | Cache (Upstash in prod) |
-| `NODE_ENV` | `development` / `production` |
+| Page | URL | Purpose |
+|------|-----|---------|
+| Landing | `/` | Hero + features + pricing cards + CTA |
+| Pricing | `/pricing` | Brunson funnel — stack slide, comparison, FAQ, guarantee |
+| Checkout Success | `/checkout/success` | SaaS upsell + onboarding quick start |
+| Checkout Cancel | `/checkout/cancel` | Recovery page |
+| Blog | `/blog` | SEO content |
+
+---
+
+## FORGE QA System (40 Playwright Suites)
+
+| Category | Suites | Tests |
+|----------|--------|-------|
+| Auth & Sessions | 1-4 | 38 |
+| Profile & Onboarding | 5-6 | 27 |
+| Client Management | 7-10 | 42 |
+| Exercise Library | 11-13 | 39 |
+| Program Builder | 14-16 | 35 |
+| Workout Execution | 17-20 | 47 |
+| Analytics & Measurements | 21-24 | 45 |
+| Scheduling & Calendar | 25-27 | 31 |
+| Admin & Support | 28-31 | 40 |
+| PWA & Responsive | 32-35 | 40 |
+| E2E Journeys | 36-38 | 37 |
+| Error & Edge Cases | 39-40 | 35 |
+
+### QA Test Accounts
+| Role | Email | Password |
+|------|-------|----------|
+| Trainer | qa-trainer@evofit.io | QaTest2026! |
+| Client | qa-client@evofit.io | QaTest2026! |
+| Client 2 | qa-client2@evofit.io | QaTest2026! |
+| Admin | qa-admin@evofit.io | QaTest2026! |
+
+Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts, 2 clients on roster, program + assignment, certification, appointment, measurement, goal, favorites.
+
+---
+
+## Environment Variables (Vercel — 16 total)
+
+| Variable | Status |
+|----------|--------|
+| `DATABASE_URL` | SET |
+| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | SET |
+| `JWT_ACCESS_EXPIRE` / `JWT_REFRESH_EXPIRE` | SET |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | SET |
+| `CORS_ORIGIN` | SET |
+| `MAILGUN_API_KEY` / `MAILGUN_DOMAIN` / `EMAIL_FROM` | SET |
+| `NEXT_PUBLIC_APP_URL` | SET |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | SET |
+| `STRIPE_SECRET_KEY` | **NOT SET** (needs Stripe dashboard) |
 
 ---
 
 ## Architecture Patterns
 
-- **DB Conventions:** UUID PKs, soft deletes (`deletedAt`), snake_case DB → camelCase TS via Prisma `@map()`
 - **API Response:** `{ success: boolean, data?: any, error?: string }`
-- **Components:** Radix + shadcn/ui primitives, React Hook Form + Zod validation
-- **Path Alias:** `@/*` maps to project root
-- **API Routes:** `app/api/` — 30s max duration on Vercel
-- **Health Check:** `GET /api/health`
+- **DB Conventions:** UUID PKs, soft deletes (`deletedAt`), snake_case DB → camelCase TS via `@map()`
+- **Components:** Radix + shadcn/ui, React Hook Form + Zod, `@/*` path alias
+- **Stripe lazy-init:** `getStripe()` function prevents build-time crash without env var
+- **Push notifications:** Web Push API + Upstash Redis (key: `evofit:push-sub:{userId}`)
+- **Offline:** IndexedDB + SyncManager with exponential backoff + conflict resolution
 
 ---
 
-## FORGE User Simulation System
+## Local Skills (9)
 
-**FORGE** (Fidelity-Oriented Regression & Growth Engine) provides actor-based user simulation testing for comprehensive multi-role workflow validation.
-
-| Metric | Value |
-|--------|-------|
-| **FORGE Tests** | 1,069+ across 108 user stories |
-| **Test Location** | `__tests__/forge/` |
-| **Documentation** | `docs/FORGE-SYSTEM.md` |
-| **Reusable Skill** | `.claude/skills/user-simulation/` |
-
-### Running FORGE Tests
-```bash
-npm test -- __tests__/forge/              # All FORGE tests
-npm test -- __tests__/forge/phase2/stream-a/  # Specific stream
-```
-
-### FORGE Architecture
-- **ActorFactory** — Creates authenticated actors (admin/trainer/client)
-- **WorkflowRunner** — Orchestrates multi-step workflows
-- **Stateful Context** — Passes state between workflow steps
-
-## Image Generation
-
-Use **Nano Banana Pro** for any EvoFit marketing or feature images:
-```bash
-uv run ~/.openclaw/workspace/skills/nano-banana-pro/scripts/generate_image.py \
-  --prompt "EvoFit fitness meal planning dashboard, modern UI" \
-  --filename "evofit-hero.png" --resolution 2K
-```
+| Skill | Path | Purpose |
+|-------|------|---------|
+| evofit-demo-simulator | `.claude/skills/evofit-demo-simulator/` | Seed demo data + E2E validation |
+| evofit-help-generator | `.claude/skills/evofit-help-generator/` | Generate help files from businesslogic.md |
+| evofit-landing-page | `.claude/skills/evofit-landing-page/` | Update landing page marketing copy |
+| evofit-marketing-analysis | `.claude/skills/evofit-marketing-analysis/` | Deep-dive codebase → marketing doc |
+| evofit-screenshot-capture | `.claude/skills/evofit-screenshot-capture/` | Playwright screenshot capture |
+| parallel-workflow | `.claude/skills/parallel-workflow/` | Multi-agent parallel development |
+| ralph-loop-tdd | `.claude/skills/ralph-loop-tdd/` | TDD with Ralph retry loop |
+| test-credentials-helper | `.claude/skills/test-credentials-helper/` | Get valid auth credentials |
+| database-setup | `.claude/skills/database-setup/` | Database initialization |
 
 ---
 
-## Epic Progress
+## Documentation Map
 
-| Epic | Feature | Status |
-|------|---------|--------|
-| 001 | User Profiles | ✅ 100% |
-| 002 | Authentication | ✅ 100% |
-| 003 | Client Management | ✅ 100% |
-| 004 | Exercise Library | ✅ 100% |
-| 005 | Program Builder | ✅ 100% |
-| 006 | Workout Tracking | ✅ 100% |
-| 007 | Progress Analytics | ✅ 100% |
-| 008 | Messaging | ✅ 100% |
-| 009 | Scheduling | ✅ 100% |
-| 010 | Payments | ✅ 100% |
-| 011 | Mobile/PWA | ✅ 100% |
-| 012 | Admin Dashboard | ✅ 100% |
+| Document | Path |
+|----------|------|
+| Tier Feature Matrix | `docs/marketing/tier-feature-matrix.md` (838 lines) |
+| 40 Screenshots | `docs/marketing/screenshots/*.png` |
+| Business Logic | `docs/businesslogic.md` |
+| PRD | `docs/prd.md` |
+| Architecture | `docs/architecture.md` |
+| Epics | `docs/epics/*.md` (12 files) |
+| Stories | `docs/stories/*.md` (108 files) |
+| QA Design | `docs/plans/2026-03-26-qa-system-design.md` |
 
 ---
 
-## Important Notes
+## Known Issues
 
-1. **Always run tests before pushing** — 6,500+ tests (5,026 unit + 461 E2E + 1,069 FORGE simulation)
-2. **Dual Prisma schemas** — changes may need updating in both `prisma/` and `backend/prisma/`
-3. **BMAD methodology** — extensive docs in `docs/` and `.bmad-core/`
-4. **Default branch is `master`** (not `main`)
-5. **Read existing `claude.md`** (lowercase) for additional architecture details
+1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added
+2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
+3. **3 page errors for QA user** — /analytics, /profile, /programs show errors (missing data relationships). Works for demo users.
+
+---
+
+## Important Rules
+
+1. **Always run tests before pushing** — `npm test` (5,026) + E2E if touching UI
+2. **Default branch is `master`** (not `main`)
+3. **After every session: Update Hal** — edit `~/Claude/second-brain/dev-updates/evofit.md` and push
+4. **Shared skills** → `~/Claude/second-brain/shared-skills/`
+5. **Prisma schema changes** → run `npx prisma generate` before build
+6. **New Prisma models** → use `@db.Uuid` for FKs referencing User.id

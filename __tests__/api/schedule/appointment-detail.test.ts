@@ -109,6 +109,22 @@ describe('GET /api/schedule/appointments/[id]', () => {
     expect(data.success).toBe(false);
     expect(data.error).toBe('Not authorized to view this appointment');
   });
+
+  it('returns 500 when database error occurs during fetch', async () => {
+    const mockUser = { id: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/appointments/appt-1'), { user: mockUser })
+    );
+    mockedPrisma.appointment.findUnique.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const request = makeRequest('/api/schedule/appointments/appt-1');
+    const response = await GET(request, { params: { id: 'appt-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('DB connection failed');
+  });
 });
 
 describe('PUT /api/schedule/appointments/[id]', () => {
@@ -322,6 +338,70 @@ describe('PUT /api/schedule/appointments/[id]', () => {
     expect(response.status).toBe(403);
     expect(data.success).toBe(false);
     expect(data.error).toBe('Only the trainer can update this appointment');
+  });
+
+  it('returns 500 when database error occurs during update', async () => {
+    const mockUser = { id: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/appointments/appt-1'), { user: mockUser })
+    );
+
+    const mockExisting = {
+      id: 'appt-1',
+      trainerId: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999',
+      clientId: 'c1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5a6b',
+      title: 'Old Title',
+      startDatetime: new Date('2026-02-15T10:00:00Z'),
+      endDatetime: new Date('2026-02-15T11:00:00Z'),
+      status: 'scheduled',
+    };
+
+    mockedPrisma.appointment.findUnique.mockResolvedValueOnce(mockExisting);
+    mockedPrisma.appointment.update.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const request = makeRequest('/api/schedule/appointments/appt-1', {
+      method: 'PUT',
+      body: JSON.stringify({
+        title: 'New Title',
+      }),
+    });
+    const response = await PUT(request, { params: { id: 'appt-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('DB connection failed');
+  });
+
+  it('returns 400 for Zod validation error', async () => {
+    const mockUser = { id: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/appointments/appt-1'), { user: mockUser })
+    );
+
+    const mockExisting = {
+      id: 'appt-1',
+      trainerId: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999',
+      clientId: 'c1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5a6b',
+      startDatetime: new Date('2026-02-15T10:00:00Z'),
+      endDatetime: new Date('2026-02-15T11:00:00Z'),
+    };
+
+    mockedPrisma.appointment.findUnique.mockResolvedValueOnce(mockExisting);
+
+    const request = makeRequest('/api/schedule/appointments/appt-1', {
+      method: 'PUT',
+      body: JSON.stringify({
+        title: '', // Invalid: empty string fails min(1)
+      }),
+    });
+    const response = await PUT(request, { params: { id: 'appt-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Validation failed');
+    expect(data.details).toBeDefined();
   });
 });
 
@@ -570,5 +650,33 @@ describe('DELETE /api/schedule/appointments/[id]', () => {
 
     expect(response.status).toBe(200);
     expect(data.data.lateCancellation).toBeUndefined();
+  });
+
+  it('returns 500 when database error occurs during cancellation', async () => {
+    const mockUser = { id: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999', role: 'trainer', email: 'trainer@test.com' };
+    mockedAuthenticate.mockResolvedValueOnce(
+      Object.assign(makeRequest('/api/schedule/appointments/appt-1'), { user: mockUser })
+    );
+
+    const mockExisting = {
+      id: 'appt-1',
+      trainerId: 't1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5999',
+      clientId: 'c1e2a8b4-5d6c-4f8e-9a0b-1c2d3e4f5a6b',
+      startDatetime: new Date('2026-02-20T10:00:00Z'),
+      status: 'scheduled',
+    };
+
+    mockedPrisma.appointment.findUnique.mockResolvedValueOnce(mockExisting);
+    mockedPrisma.appointment.update.mockRejectedValueOnce(new Error('DB connection failed'));
+
+    const request = makeRequest('/api/schedule/appointments/appt-1', {
+      method: 'DELETE',
+    });
+    const response = await DELETE(request, { params: { id: 'appt-1' } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('DB connection failed');
   });
 });

@@ -67,7 +67,9 @@ const customJestConfig = {
     ...(process.cwd().includes('.worktrees') ? [] : ['/\\.worktrees/']),
     '/tests/e2e/',
     '/e2e/',
-    '/__tests__/.*\\/utils/',
+    // Exclude FORGE utility files (not tests)
+    '/__tests__/forge/phase2/.*/utils/',
+    '/__tests__/forge/utils/',
   ],
 
   forceExit: true,
