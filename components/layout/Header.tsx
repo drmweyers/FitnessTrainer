@@ -28,7 +28,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </button>
           <div className="flex items-center gap-2">
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="Logo"
               width={32}
               height={32}
