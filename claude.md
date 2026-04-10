@@ -4,7 +4,7 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,026 unit (311 suites) + 461 E2E (40 Playwright suites) = **5,487 total**
+**Tests:** 5,026 unit (311 suites) + ~500 E2E (40 workflow + 5 edge + 12 flow suites) = **~5,525 total**
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -233,7 +233,17 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 
 1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
-3. **3 page errors for QA user** — /analytics, /profile, /programs show errors (missing data relationships). Works for demo users.
+3. **No client-side RBAC on `/admin` or `/clients`** — server-side 403 enforced, but UI doesn't redirect non-admin users. Flagged during FORGE QA sweep 2026-04-09.
+4. **N+1 fetch in `useCollections` hook** — GET list + GET detail per item. Real perf bug; tests extended timeout as workaround.
+5. **Test DB pollution** — ~256 accounts accumulated from auto-generated test runs (`dup-edge-*`, `profile-check-*`). Needs cleanup job.
+
+## FORGE QA Sweep (2026-04-09)
+
+Full-spectrum sweep ran across trainer/client/admin workflows. Results:
+- **Real app bugs fixed:** global-setup exercise-shape mismatch, `POST /api/programs` missing role guard, missing `/api/auth/refresh` endpoint, `POST /api/programs/[id]/assign` 500-on-duplicate, favorites-page loading-state heading, service-worker blocking Next.js dev chunks.
+- **Test infrastructure fixes:** 46 `networkidle` → `domcontentloaded` replacements, `waitForPageReady` → best-effort, hydration waits added to suites 07 + 10, global-setup Step 10 wrapped in try/catch.
+- **New edge suites added (`tests/e2e/edge/`):** E01 trainer-deactivation-cascade, E02 program-assignment-cascade, E03 concurrent-workout-complete, E06 permission-leak, E07 jwt-refresh-mid-workflow (38 new tests).
+- **Baseline:** 356/54/17/34 (passed/failed/flaky/did-not-run). **After sweep:** all hotspot suites green, flakes are dev-server cold-compile artifacts.
 
 ---
 

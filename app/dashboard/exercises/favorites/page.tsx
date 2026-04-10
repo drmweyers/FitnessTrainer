@@ -196,9 +196,12 @@ export default function FavoritesPage() {
           <div className="max-w-7xl mx-auto">
             {/* Loading Header */}
             <div className="flex items-center justify-between mb-6">
-              <div className="space-y-2">
-                <div className="h-8 bg-gray-200 rounded w-64 animate-pulse" />
-                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
+              <div className="flex items-center">
+                <Heart size={24} className="text-red-500 mr-3" />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Favorite Exercises</h1>
+                  <p className="text-gray-500 mt-1">Loading your favorites...</p>
+                </div>
               </div>
               <div className="flex space-x-2">
                 <div className="h-10 bg-gray-200 rounded w-24 animate-pulse" />

@@ -64,6 +64,23 @@ export async function POST(
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + (program.durationWeeks * 7));
 
+    // Idempotency: if an assignment already exists for (programId, clientId),
+    // return 409 Conflict instead of blindly creating (which would either
+    // duplicate rows or crash on a Prisma P2002 unique constraint).
+    const existing = await prisma.programAssignment.findFirst({
+      where: { programId: id, clientId: data.clientId },
+    });
+    if (existing) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Program already assigned to this client',
+          data: existing,
+        },
+        { status: 409 }
+      );
+    }
+
     const assignment = await prisma.programAssignment.create({
       data: {
         programId: id,

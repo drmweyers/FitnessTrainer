@@ -21,6 +21,15 @@ test.describe('07 - Client Invitation', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
+
+    // Wait for React to fully hydrate before any .click() — under concurrent
+    // dev-server load, clicking before hydration silently drops the click.
+    // Wait for network idle + heading visible + JS chunks settled.
+    await page.waitForLoadState('networkidle', { timeout: TIMEOUTS.pageLoad }).catch(() => {});
+    await page
+      .locator('h1', { hasText: /clients/i })
+      .first()
+      .waitFor({ state: 'visible', timeout: TIMEOUTS.element });
   });
 
   // ── 1. Page loads ──────────────────────────────────────────────────────────

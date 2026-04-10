@@ -203,11 +203,20 @@ async function globalSetup() {
   let exerciseIds: string[] = [];
   if (exerciseRes.ok()) {
     const exerciseData = await exerciseRes.json();
-    const exercises = exerciseData.data?.exercises || exerciseData.data || [];
+    // Actual API shape: { exercises, pagination, filters } at top level.
+    // Historical shapes (kept as fallbacks): { data: { exercises } } and { data: [] }.
+    const exercises =
+      exerciseData.exercises ||
+      exerciseData.data?.exercises ||
+      (Array.isArray(exerciseData.data) ? exerciseData.data : []) ||
+      [];
     exerciseIds = exercises.slice(0, 3).map((e: any) => e.id);
     console.log(`  ✓ Got ${exerciseIds.length} exercises`);
+    if (exerciseIds.length === 0) {
+      console.log(`  ⚠ WARNING: exercise list empty. Response keys: ${Object.keys(exerciseData).join(', ')}`);
+    }
   } else {
-    console.log('  ⚠ Could not fetch exercises, creating program without exercises');
+    console.log(`  ⚠ Could not fetch exercises (${exerciseRes.status()}), creating program without exercises`);
   }
 
   // ─── Step 4: Trainer creates a program with exercises ────────────────────
@@ -343,7 +352,13 @@ async function globalSetup() {
   // ─── Step 10: Favorite some exercises ────────────────────────────────────
   console.log('Step 10: Favoriting exercises...');
   for (const exId of exerciseIds.slice(0, 2)) {
-    await authPost(api, API.exerciseFavorites, trainerToken, { exerciseId: exId });
+    try {
+      await authPost(api, API.exerciseFavorites, trainerToken, { exerciseId: exId });
+    } catch (err) {
+      // Non-fatal: under concurrent test load the dev server may stall on this
+      // endpoint. Favorites are not required by most suites.
+      console.log(`  ⚠ Favorite exercise ${exId} failed (non-fatal): ${(err as Error).message?.slice(0, 80)}`);
+    }
   }
   console.log(`  ✓ ${Math.min(2, exerciseIds.length)} exercises favorited`);
 

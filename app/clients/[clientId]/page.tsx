@@ -284,3 +284,4 @@ function QuickStatCard({ title, value, icon }: QuickStatCardProps) {
     </Card>
   );
 }
+

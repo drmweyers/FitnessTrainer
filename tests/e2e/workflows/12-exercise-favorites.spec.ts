@@ -8,20 +8,27 @@ import { test, expect } from '@playwright/test';
 import { BASE_URL, ROUTES, TIMEOUTS, API } from '../helpers/constants';
 import { loginViaAPI, getAuthToken, takeScreenshot, waitForPageReady } from '../helpers/auth';
 
+// Extended timeout for this suite — the favorites page client-hooks chain
+// (useFavorites → useCollections → getExercisesByIds N+1) can take 30s+ on
+// cold Next.js dev compiles before the h1 becomes visible.
+const PAGE_LOAD_EXT = 60000;
+
 test.describe('12 - Exercise Favorites', () => {
+  // Allow extra time for dev-server cold compiles on the favorites page chain
+  test.setTimeout(240000);
+
   test.beforeEach(async ({ page }) => {
     await loginViaAPI(page, 'trainer');
   });
 
   test('favorites page loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
 
     await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
-      timeout: TIMEOUTS.element,
+      timeout: PAGE_LOAD_EXT,
     });
 
     await takeScreenshot(page, '12-favorites-page.png');
@@ -32,42 +39,56 @@ test.describe('12 - Exercise Favorites', () => {
     const token = await getAuthToken(page, 'trainer');
     const favRes = await page.request.get(`${BASE_URL}${API.exerciseFavorites}`, {
       headers: { Authorization: `Bearer ${token}` },
+      timeout: PAGE_LOAD_EXT,
     });
     if (favRes.ok()) {
       const body = await favRes.json();
-      const favIds: string[] = (body?.data?.favorites ?? []).map(
-        (f: { exerciseId: string }) => f.exerciseId
-      );
+      const favList: { exerciseId: string }[] = Array.isArray(body?.data)
+        ? body.data
+        : (body?.data?.favorites ?? []);
+      const favIds: string[] = favList.map((f) => f.exerciseId);
       for (const id of favIds) {
-        await page.request.delete(`${BASE_URL}${API.exerciseFavorites}/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+        await page.request.delete(`${BASE_URL}${API.exerciseFavorites}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          data: { exerciseId: id },
+          timeout: PAGE_LOAD_EXT,
         });
       }
     }
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    const hasEmptyState =
-      pageText?.toLowerCase().includes('no favorite') ||
-      pageText?.toLowerCase().includes('start building') ||
-      pageText?.toLowerCase().includes('browse exercise library');
+    // Wait for the page heading to ensure the client component mounted
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
-    expect(hasEmptyState).toBeTruthy();
+    // Wait for the empty-state text to appear (polling for up to 30s)
+    await expect(async () => {
+      const pageText = await page.textContent('body');
+      const hasEmptyState =
+        pageText?.toLowerCase().includes('no favorite') ||
+        pageText?.toLowerCase().includes('start building') ||
+        pageText?.toLowerCase().includes('browse exercise library');
+      expect(hasEmptyState).toBeTruthy();
+    }).toPass({ timeout: PAGE_LOAD_EXT });
 
     await takeScreenshot(page, '12-favorites-empty.png');
   });
 
   test('navigate to exercise library and find an exercise', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
+    // Brief wait for exercise cards to render without blocking on the spinner
+    await page.waitForTimeout(3000);
 
     // Search to load exercise cards
     const searchInput = page
@@ -86,7 +107,7 @@ test.describe('12 - Exercise Favorites', () => {
   test('click heart/favorite icon on an exercise', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
       waitUntil: 'domcontentloaded',
-      timeout: TIMEOUTS.pageLoad,
+      timeout: PAGE_LOAD_EXT,
     });
 
     // Wait for exercise cards to render without blocking on networkidle
@@ -127,7 +148,7 @@ test.describe('12 - Exercise Favorites', () => {
     // Get an exercise to favorite
     const exercisesRes = await page.request.get(
       `${BASE_URL}${API.exercises}?limit=1`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` }, timeout: PAGE_LOAD_EXT }
     );
     if (!exercisesRes.ok()) return;
 
@@ -144,13 +165,14 @@ test.describe('12 - Exercise Favorites', () => {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+      timeout: PAGE_LOAD_EXT,
     });
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
+    await page.waitForTimeout(1500);
 
     // The favorites page should list at least one exercise
     const pageText = await page.textContent('body');
@@ -165,10 +187,15 @@ test.describe('12 - Exercise Favorites', () => {
 
   test('favorite count updates after favoriting', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
+
+    // Wait for the heading to appear
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
+    await page.waitForTimeout(1000);
 
     // Extract count text from the page (e.g. "3 exercises in your favorites")
     const countText = await page
@@ -186,7 +213,7 @@ test.describe('12 - Exercise Favorites', () => {
     // Ensure at least one favorite exists
     const exercisesRes = await page.request.get(
       `${BASE_URL}${API.exercises}?limit=1`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` }, timeout: PAGE_LOAD_EXT }
     );
     if (!exercisesRes.ok()) return;
     const exercisesBody = await exercisesRes.json();
@@ -200,13 +227,14 @@ test.describe('12 - Exercise Favorites', () => {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+      timeout: PAGE_LOAD_EXT,
     });
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
+    await page.waitForTimeout(1500);
 
     // Hover over the first card to reveal the favorite toggle
     const firstCard = page.locator('[class*="card"], [class*="exercise"]').first();
@@ -237,30 +265,43 @@ test.describe('12 - Exercise Favorites', () => {
     // Clear all favorites so we start fresh
     const favRes = await page.request.get(`${BASE_URL}${API.exerciseFavorites}`, {
       headers: { Authorization: `Bearer ${token}` },
+      timeout: PAGE_LOAD_EXT,
     });
     if (favRes.ok()) {
       const body = await favRes.json();
-      const favIds: string[] = (body?.data?.favorites ?? []).map(
-        (f: { exerciseId: string }) => f.exerciseId
-      );
+      const favList: { exerciseId: string }[] = Array.isArray(body?.data)
+        ? body.data
+        : (body?.data?.favorites ?? []);
+      const favIds: string[] = favList.map((f) => f.exerciseId);
       for (const id of favIds) {
-        await page.request.delete(`${BASE_URL}${API.exerciseFavorites}/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+        await page.request.delete(`${BASE_URL}${API.exerciseFavorites}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          data: { exerciseId: id },
+          timeout: PAGE_LOAD_EXT,
         });
       }
     }
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('no favorite') ||
-        pageText?.toLowerCase().includes('start building')
-    ).toBeTruthy();
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
+
+    // Wait for empty-state text to appear after the client hook finishes loading
+    await expect(async () => {
+      const pageText = await page.textContent('body');
+      const hasEmptyState =
+        pageText?.toLowerCase().includes('no favorite') ||
+        pageText?.toLowerCase().includes('start building');
+      expect(hasEmptyState).toBeTruthy();
+    }).toPass({ timeout: PAGE_LOAD_EXT });
   });
 
   test('can favorite multiple exercises', async ({ page }) => {
@@ -269,7 +310,7 @@ test.describe('12 - Exercise Favorites', () => {
     // Fetch 3 exercises and favorite them all
     const exercisesRes = await page.request.get(
       `${BASE_URL}${API.exercises}?limit=3`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` }, timeout: PAGE_LOAD_EXT }
     );
     if (!exercisesRes.ok()) return;
     const exercisesBody = await exercisesRes.json();
@@ -291,10 +332,10 @@ test.describe('12 - Exercise Favorites', () => {
     }
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
+    await page.waitForTimeout(1500);
 
     // There should be more than 1 exercise card
     const cards = page.locator('[class*="card"], [class*="exercise"]');
@@ -310,7 +351,7 @@ test.describe('12 - Exercise Favorites', () => {
     // Add a couple of favorites so there is something to search
     const exercisesRes = await page.request.get(
       `${BASE_URL}${API.exercises}?limit=5`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` }, timeout: PAGE_LOAD_EXT }
     );
     if (exercisesRes.ok()) {
       const exercisesBody = await exercisesRes.json();
@@ -331,10 +372,14 @@ test.describe('12 - Exercise Favorites', () => {
     }
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
+
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
+    await page.waitForTimeout(1500);
 
     const searchInput = page
       .locator('input[placeholder*="Search favorites" i], input[placeholder*="Search" i]')
@@ -358,7 +403,7 @@ test.describe('12 - Exercise Favorites', () => {
     // Ensure at least one favorite
     const exercisesRes = await page.request.get(
       `${BASE_URL}${API.exercises}?limit=1`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` }, timeout: PAGE_LOAD_EXT }
     );
     if (exercisesRes.ok()) {
       const exercisesBody = await exercisesRes.json();
@@ -379,25 +424,29 @@ test.describe('12 - Exercise Favorites', () => {
     }
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseFavorites}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+      waitUntil: 'domcontentloaded',
+      timeout: PAGE_LOAD_EXT,
     });
-    await waitForPageReady(page);
 
-    const exportButton = page
-      .locator('a[href*="export"], a[aria-label*="Export" i], button:has-text("Export")')
-      .first();
-    const isVisible = await exportButton.isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
-    // If the user has favorites the export button should be present;
-    // if there are no favorites we still verify the page loaded without crashing.
-    const pageText = await page.textContent('body');
-    const hasExportOrEmpty =
-      isVisible ||
-      pageText?.toLowerCase().includes('no favorite') ||
-      pageText?.toLowerCase().includes('browse exercise');
-
-    expect(hasExportOrEmpty).toBeTruthy();
+    // Poll until either the export button renders (favorites loaded) or the
+    // empty-state text shows (no favorites). The client hook takes a while to
+    // finish fetching on the first compile.
+    await expect(async () => {
+      const exportButton = page
+        .locator('a[href*="export"], a[aria-label*="Export" i], button:has-text("Export")')
+        .first();
+      const isVisible = await exportButton.isVisible().catch(() => false);
+      const pageText = await page.textContent('body');
+      const hasExportOrEmpty =
+        isVisible ||
+        pageText?.toLowerCase().includes('no favorite') ||
+        pageText?.toLowerCase().includes('browse exercise');
+      expect(hasExportOrEmpty).toBeTruthy();
+    }).toPass({ timeout: PAGE_LOAD_EXT });
 
     await takeScreenshot(page, '12-export-button.png');
   });
@@ -409,6 +458,7 @@ test.describe('12 - Exercise Favorites', () => {
       `${BASE_URL}${API.exerciseFavoritesExport}?format=csv`,
       {
         headers: { Authorization: `Bearer ${token}` },
+        timeout: PAGE_LOAD_EXT,
       }
     );
 

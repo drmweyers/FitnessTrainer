@@ -27,6 +27,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 30000,
+    // Block service worker: the app's SW does cache-first for .js files and
+    // intermittently serves stale 404 HTML for Next.js dev chunks, breaking
+    // client-side hydration (buttons become non-interactive).
+    serviceWorkers: 'block',
   },
   outputDir: 'test-results/e2e',
   projects: [

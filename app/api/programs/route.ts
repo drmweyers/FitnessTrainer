@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
+import { trainerOrAdmin } from '@/lib/middleware/authorize';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,12 +123,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/programs - Create new program
+// POST /api/programs - Create new program (trainers + admins only)
 export async function POST(request: NextRequest) {
   try {
     const authResult = await authenticate(request);
     if (authResult instanceof NextResponse) return authResult;
-    const user = (authResult as AuthenticatedRequest).user!;
+    const authReq = authResult as AuthenticatedRequest;
+    // Role guard: clients must not be able to create programs.
+    const roleError = trainerOrAdmin(authReq);
+    if (roleError) return roleError;
+    const user = authReq.user!;
 
     const body = await request.json();
     const data = createProgramSchema.parse(body);

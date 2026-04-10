@@ -13,22 +13,22 @@ test.describe('Smoke Tests - Basic Application Functionality', () => {
   });
 
   test('should navigate to login page', async ({ page }) => {
-    await page.goto('/');
-    
-    // Try to find login link or navigate directly
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    // Try to find login link or navigate directly. App route is /auth/login.
     try {
       const loginLink = page.locator('a:has-text("Login"), a:has-text("Sign In"), a[href*="login"]');
-      if (await loginLink.isVisible({ timeout: 2000 })) {
-        await loginLink.click();
+      if (await loginLink.first().isVisible({ timeout: 2000 })) {
+        await loginLink.first().click();
       } else {
-        await page.goto('/login');
+        await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
       }
     } catch {
-      await page.goto('/login');
+      await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
     }
-    
-    // Should reach login page
-    await expect(page).toHaveURL(/\/login/);
+
+    // Should reach login page (/auth/login, /login legacy alias, or a page with a login form)
+    await expect(page).toHaveURL(/\/(auth\/)?login/);
     
     // Should have login form elements
     const emailInput = page.locator('input[type="email"], input[name="email"]');
@@ -73,21 +73,22 @@ test.describe('Smoke Tests - Basic Application Functionality', () => {
     const baseUrl = process.env.E2E_BASE_URL || 'http://localhost:3000';
     const isProduction = baseUrl.includes('trainer.evofit.io') || baseUrl.startsWith('https://');
 
+    // Architecture note: Next.js API routes serve as backend on same origin as frontend.
+    // Legacy separate backend (port 4000/5000) is no longer in use.
     if (isProduction) {
       // On production, verify the Next.js API responds correctly
       const apiResponse = await page.request.get(`${baseUrl}/api/auth/me`);
       // Expecting 401 (not authenticated) or 200 — both mean the API is reachable
       expect([200, 401, 403]).toContain(apiResponse.status());
     } else {
-      // On local dev with separate backend
-      const apiResponse = await page.request.get('http://localhost:4000/api/health').catch(() => null);
-      if (apiResponse) {
-        expect(apiResponse.ok()).toBeTruthy();
-        const healthData = await apiResponse.json();
-        expect(healthData).toHaveProperty('success');
-        expect(healthData.success).toBe(true);
-      }
-      // If backend isn't running locally, skip gracefully
+      // On local dev, Next.js API routes live at the same base URL
+      const apiResponse = await page.request.get(`${baseUrl}/api/health`);
+      expect(apiResponse.ok()).toBeTruthy();
+      const healthData = await apiResponse.json();
+      expect(healthData).toHaveProperty('status');
+      // Accept 'healthy' or 'degraded' (degraded = cache optional, DB up)
+      expect(['healthy', 'degraded']).toContain(healthData.status);
+      expect(healthData.services?.database?.status).toBe('healthy');
     }
   });
 
@@ -119,13 +120,16 @@ test.describe('Smoke Tests - Basic Application Functionality', () => {
   test('should check basic performance', async ({ page }) => {
     const startTime = Date.now();
     
-    await page.goto('/');
-    
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
     const endTime = Date.now();
     const loadTime = endTime - startTime;
-    
-    // Page should load in reasonable time (under 10 seconds for smoke test)
-    expect(loadTime).toBeLessThan(10000);
+
+    // Page should load in reasonable time. Next.js dev server cold-compiles
+    // on first hit, which can take 15-20s. Production builds should be <5s.
+    const isLocal = !process.env.E2E_BASE_URL || process.env.E2E_BASE_URL.includes('localhost');
+    const threshold = isLocal ? 25000 : 10000;
+    expect(loadTime).toBeLessThan(threshold);
     
     console.log(`Page load time: ${loadTime}ms`);
     
