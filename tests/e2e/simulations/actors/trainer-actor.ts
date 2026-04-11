@@ -206,26 +206,34 @@ export class TrainerActor extends BaseActor {
     await this.navigateToWorkoutBuilder();
     await this.waitForPageReady();
 
-    // Wait for exercises to load (button becomes enabled)
+    // Wait for exercises to load (Generate button becomes enabled)
+    const generateBtn = this.page.getByRole('button', { name: 'Generate AI Workout' });
+    await generateBtn.waitFor({ state: 'visible', timeout: 15_000 });
     await this.page.waitForFunction(() => {
-      const btn = document.querySelector('button');
-      return btn && !btn.disabled;
+      const btns = document.querySelectorAll('button');
+      for (const btn of btns) {
+        if (btn.textContent?.includes('Generate AI Workout') && !btn.disabled) return true;
+      }
+      return false;
     }, { timeout: 15_000 });
 
+    // Set preferences via the select dropdowns
+    const selects = this.page.locator('select');
     if (options?.focusArea) {
-      await this.page.locator('select').first().selectOption(options.focusArea);
+      await selects.nth(0).selectOption(options.focusArea);
     }
     if (options?.difficulty) {
-      await this.page.locator('select').nth(1).selectOption(options.difficulty);
+      await selects.nth(1).selectOption(options.difficulty);
     }
     if (options?.workoutType) {
-      await this.page.locator('select').nth(3).selectOption(options.workoutType);
+      await selects.nth(3).selectOption(options.workoutType);
     }
 
-    await this.page.getByText('Generate AI Workout').click();
+    await generateBtn.click();
 
-    // Wait for workout to generate
-    await this.page.waitForSelector('text=Save to My Programs', { timeout: 5_000 });
+    // The component uses setTimeout(1500) to simulate AI generation,
+    // plus Next.js may need to compile on first hit. Give it plenty of time.
+    await this.page.waitForSelector('text=Save to My Programs', { timeout: 15_000 });
   }
 
   /** Save the generated AI workout. */
