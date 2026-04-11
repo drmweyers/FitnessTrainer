@@ -251,7 +251,26 @@ export default function AIWorkoutBuilder() {
         }],
       }
 
-      const created = await createProgram(programData)
+      // Retry up to 2 times (handles Neon DB cold-start)
+      let created: any = null
+      let lastError: any = null
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          created = await createProgram(programData)
+          break
+        } catch (err: any) {
+          lastError = err
+          if (attempt < 2) {
+            // Wait before retry (DB might be waking up)
+            await new Promise(r => setTimeout(r, 2000))
+          }
+        }
+      }
+
+      if (!created) {
+        throw lastError || new Error('Failed to save workout after retries')
+      }
+
       setSavedProgramId(created.id)
       setSavedWorkouts([...savedWorkouts, generatedWorkout])
       setGeneratedWorkout(null)

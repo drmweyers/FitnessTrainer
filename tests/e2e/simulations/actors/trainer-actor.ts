@@ -243,8 +243,9 @@ export class TrainerActor extends BaseActor {
   /** Save the generated AI workout. */
   async saveGeneratedWorkout(): Promise<void> {
     await this.page.getByText('Save to My Programs').click();
-    // Wait for save to complete
-    await this.page.waitForSelector('text=View Programs', { timeout: 10_000 });
+    // Save includes retry logic (up to 2 attempts with 2s delay for Neon cold-start)
+    // Total worst case: ~15s API + 2s wait + ~15s retry = ~32s
+    await this.page.waitForSelector('text=View Programs', { timeout: 40_000 });
   }
 
   // ═══════════════════════════════════════
