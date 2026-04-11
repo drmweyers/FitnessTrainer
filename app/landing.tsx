@@ -15,26 +15,20 @@ import {
   X,
 } from 'lucide-react'
 
-// Animation variants — subtle lift + fade. Stagger container stays visible so
-// children control their own visibility without flash-of-hidden parent state.
 const fadeInUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
 }
 
 const staggerContainer = {
-  hidden: { opacity: 1 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.1,
     },
   },
 }
-
-// Standard viewport config — fires as soon as 1% of element is visible, with
-// 120px pre-roll so animations start before element enters the fold.
-const viewportConfig = { once: true, amount: 0.01, margin: '0px 0px -120px 0px' } as const
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -78,7 +72,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">E</span>
               </div>
               <span className="text-xl font-bold text-gray-900">EvoFit Trainer</span>
@@ -95,9 +89,9 @@ export default function LandingPage() {
               <Link href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Reviews
               </Link>
-              <Link
-                href="/get-started"
-                className="inline-flex items-center px-6 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-all hover:scale-105"
+              <Link 
+                href="/pricing"
+                className="inline-flex items-center px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all hover:scale-105"
               >
                 Get Lifetime Access
               </Link>
@@ -127,7 +121,7 @@ export default function LandingPage() {
                 <Link href="#testimonials" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                   Reviews
                 </Link>
-                <Link href="/get-started" className="block px-3 py-2 bg-primary-600 text-white rounded-lg text-center font-semibold">
+                <Link href="/pricing" className="block px-3 py-2 bg-green-600 text-white rounded-lg text-center font-semibold">
                   Get Lifetime Access
                 </Link>
               </div>
@@ -137,7 +131,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-brand-dark text-white overflow-hidden">
+      <section className="relative bg-gray-900 text-white overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -160,10 +154,10 @@ export default function LandingPage() {
             <motion.h1
               variants={fadeInUp}
               className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
-              style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               Scale Your Training Business{' '}
-              <span className="text-secondary-500">Without Burnout</span>
+              <span className="text-green-400">Without Burnout</span>
             </motion.h1>
 
             <motion.p
@@ -178,8 +172,8 @@ export default function LandingPage() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link
-                href="/get-started"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all hover:scale-105 shadow-lg"
+                href="/pricing"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all hover:scale-105 shadow-lg"
               >
                 Get Lifetime Access
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -201,14 +195,14 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
             className="text-center mb-16"
           >
             <motion.h2
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               Still Programming Workouts Manually?
             </motion.h2>
@@ -217,7 +211,7 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
@@ -263,14 +257,14 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
             className="text-center max-w-4xl mx-auto"
           >
             <motion.h2
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-6"
-              style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               EvoFit Trainer: The Complete Platform for Professional Fitness Programming
             </motion.h2>
@@ -285,246 +279,236 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section — Editorial full-width layout (evofit.io style) */}
-      <section id="features" className="bg-brand-dark text-white">
-        {/* Section heading */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      {/* Features Section */}
+      <section id="features" className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
-            className="text-center"
+            className="text-center mb-16"
           >
             <motion.h2
               variants={fadeInUp}
-              className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none mb-4"
-              style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+              className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
-              Everything You Need
-              <br />
-              <span className="text-secondary-500">In One Platform</span>
+              Everything You Need in One Platform
             </motion.h2>
           </motion.div>
+
+          {/* Feature 1: Program Builder */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20"
+          >
+            <div>
+              <motion.h3
+                variants={fadeInUp}
+                className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+              >
+                Build Programs in Minutes, Not Hours
+              </motion.h3>
+              <motion.ul variants={staggerContainer} className="space-y-4">
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Drag-and-drop program creation saves 3+ hours per client</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">500+ pre-loaded exercises with video demonstrations</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Template library for instant program variations</span>
+                </motion.li>
+              </motion.ul>
+            </div>
+            <motion.div variants={fadeInUp} className="rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/feature-program.png"
+                alt="Program builder interface showing drag-and-drop workout creation"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </motion.div>
+          </motion.div>
+
+          {/* Feature 2: Exercise Library */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20"
+          >
+            <motion.div variants={fadeInUp} className="rounded-xl overflow-hidden shadow-lg lg:order-1">
+              <Image
+                src="/images/feature-exercise.png"
+                alt="Exercise library with search filters and video demonstrations"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </motion.div>
+            <div className="lg:order-2">
+              <motion.h3
+                variants={fadeInUp}
+                className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+              >
+                Professional Exercise Database at Your Fingertips
+              </motion.h3>
+              <motion.ul variants={staggerContainer} className="space-y-4">
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Search by muscle group, equipment, or movement pattern</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">High-quality video demonstrations for every exercise</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Custom exercise uploads to build your unique library</span>
+                </motion.li>
+              </motion.ul>
+            </div>
+          </motion.div>
+
+          {/* Feature 3: Client Management */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20"
+          >
+            <div>
+              <motion.h3
+                variants={fadeInUp}
+                className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+              >
+                Track Every Client's Progress Effortlessly
+              </motion.h3>
+              <motion.ul variants={staggerContainer} className="space-y-4">
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Assign programs and track completion rates automatically</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Progress photos and measurements in one dashboard</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Automated reminders keep clients engaged between sessions</span>
+                </motion.li>
+              </motion.ul>
+            </div>
+            <motion.div variants={fadeInUp} className="rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/feature-client.png"
+                alt="Client management dashboard showing progress tracking and program assignments"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </motion.div>
+          </motion.div>
+
+          {/* Feature 4: Analytics */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20"
+          >
+            <motion.div variants={fadeInUp} className="rounded-xl overflow-hidden shadow-lg lg:order-1">
+              <Image
+                src="/images/feature-client.png"
+                alt="Analytics dashboard showing client progress and business metrics"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </motion.div>
+            <div className="lg:order-2">
+              <motion.h3
+                variants={fadeInUp}
+                className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+              >
+                See Which Programs Drive Results
+              </motion.h3>
+              <motion.ul variants={staggerContainer} className="space-y-4">
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Client progress analytics show what's working</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Revenue tracking across all training packages</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Export reports to impress potential clients</span>
+                </motion.li>
+              </motion.ul>
+            </div>
+          </motion.div>
+
+          {/* Feature 5: AI Workout Generation */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+          >
+            <div>
+              <motion.h3
+                variants={fadeInUp}
+                className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+              >
+                Let AI Handle Your Program Variations
+                <span className="inline-block ml-2 px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">SaaS Tier</span>
+              </motion.h3>
+              <motion.ul variants={staggerContainer} className="space-y-4">
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Generate infinite program variations for any goal</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Customize for injuries, equipment, or time constraints</span>
+                </motion.li>
+                <motion.li variants={fadeInUp} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">Never run out of fresh programming ideas</span>
+                </motion.li>
+              </motion.ul>
+            </div>
+            <motion.div variants={fadeInUp} className="rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/feature-program.png"
+                alt="AI workout generation interface creating custom programs"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </motion.div>
+          </motion.div>
         </div>
-
-        {/* Feature 1: Program Builder — text LEFT */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
-          className="relative w-full min-h-[540px] md:min-h-[600px] overflow-hidden"
-        >
-          <Image
-            src="/images/feature-program-builder.png"
-            alt="Personal trainer designing a workout program on a tablet in a premium dark gym"
-            fill
-            className="object-cover object-center"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/85 md:via-brand-dark/70 to-brand-dark/20 md:to-transparent" />
-          <div className="relative h-full min-h-[540px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center py-20">
-            <motion.div variants={staggerContainer} className="max-w-xl">
-              <motion.h3
-                variants={fadeInUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-8"
-                style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
-              >
-                Build Programs in <span className="text-secondary-500">Minutes</span>, Not Hours
-              </motion.h3>
-              <motion.ul variants={staggerContainer} className="space-y-4">
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Drag-and-drop program creation saves 3+ hours per client</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">500+ pre-loaded exercises with video demonstrations</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Template library for instant program variations</span>
-                </motion.li>
-              </motion.ul>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Feature 2: Exercise Library — text RIGHT */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
-          className="relative w-full min-h-[540px] md:min-h-[600px] overflow-hidden"
-        >
-          <Image
-            src="/images/feature-exercise-library.png"
-            alt="Athlete mid-deadlift with chalk dust and rim lighting in a dark industrial gym"
-            fill
-            className="object-cover object-center"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-brand-dark via-brand-dark/85 md:via-brand-dark/70 to-brand-dark/20 md:to-transparent" />
-          <div className="relative h-full min-h-[540px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-end py-20">
-            <motion.div variants={staggerContainer} className="max-w-xl">
-              <motion.h3
-                variants={fadeInUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-8"
-                style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
-              >
-                Professional <span className="text-secondary-500">Exercise Database</span> at Your Fingertips
-              </motion.h3>
-              <motion.ul variants={staggerContainer} className="space-y-4">
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Search by muscle group, equipment, or movement pattern</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">High-quality video demonstrations for every exercise</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Custom exercise uploads to build your unique library</span>
-                </motion.li>
-              </motion.ul>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Feature 3: Client Management — text LEFT */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
-          className="relative w-full min-h-[540px] md:min-h-[600px] overflow-hidden"
-        >
-          <Image
-            src="/images/feature-client-progress.png"
-            alt="Trainer checking in with a client, reviewing progress data on a tablet"
-            fill
-            className="object-cover object-center"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/85 md:via-brand-dark/70 to-brand-dark/20 md:to-transparent" />
-          <div className="relative h-full min-h-[540px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center py-20">
-            <motion.div variants={staggerContainer} className="max-w-xl">
-              <motion.h3
-                variants={fadeInUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-8"
-                style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
-              >
-                Track Every Client's <span className="text-secondary-500">Progress</span> Effortlessly
-              </motion.h3>
-              <motion.ul variants={staggerContainer} className="space-y-4">
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Assign programs and track completion rates automatically</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Progress photos and measurements in one dashboard</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Automated reminders keep clients engaged between sessions</span>
-                </motion.li>
-              </motion.ul>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Feature 4: Analytics — text RIGHT */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
-          className="relative w-full min-h-[540px] md:min-h-[600px] overflow-hidden"
-        >
-          <Image
-            src="/images/feature-analytics.png"
-            alt="Close-up of a glowing analytics tablet in a dim gym at night"
-            fill
-            className="object-cover object-center"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-brand-dark via-brand-dark/85 md:via-brand-dark/70 to-brand-dark/20 md:to-transparent" />
-          <div className="relative h-full min-h-[540px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-end py-20">
-            <motion.div variants={staggerContainer} className="max-w-xl">
-              <motion.h3
-                variants={fadeInUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-8"
-                style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
-              >
-                See Which Programs <span className="text-secondary-500">Drive Results</span>
-              </motion.h3>
-              <motion.ul variants={staggerContainer} className="space-y-4">
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Client progress analytics show what's working</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Revenue tracking across all training packages</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Export reports to impress potential clients</span>
-                </motion.li>
-              </motion.ul>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Feature 5: AI Workout Generation — text LEFT */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
-          className="relative w-full min-h-[540px] md:min-h-[600px] overflow-hidden"
-        >
-          <Image
-            src="/images/feature-ai-workouts.png"
-            alt="Athlete mid-rep with heavy barbell in a dramatic dark home gym lit by a single warm accent light"
-            fill
-            className="object-cover object-center"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/85 md:via-brand-dark/70 to-brand-dark/20 md:to-transparent" />
-          <div className="relative h-full min-h-[540px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center py-20">
-            <motion.div variants={staggerContainer} className="max-w-xl">
-              <motion.div variants={fadeInUp} className="inline-block px-3 py-1 mb-4 text-xs uppercase tracking-widest bg-primary-600 text-white rounded-full font-semibold">
-                SaaS Tier
-              </motion.div>
-              <motion.h3
-                variants={fadeInUp}
-                className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-none mb-8"
-                style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
-              >
-                Let <span className="text-secondary-500">AI Handle</span> Your Program Variations
-              </motion.h3>
-              <motion.ul variants={staggerContainer} className="space-y-4">
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Generate infinite program variations for any goal</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Customize for injuries, equipment, or time constraints</span>
-                </motion.li>
-                <motion.li variants={fadeInUp} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">Never run out of fresh programming ideas</span>
-                </motion.li>
-              </motion.ul>
-            </motion.div>
-          </div>
-        </motion.div>
       </section>
 
       {/* Social Proof Section */}
@@ -534,12 +518,12 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
             className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-16"
           >
             <motion.div variants={fadeInUp}>
-              <div className="text-3xl md:text-4xl font-bold text-secondary-500 mb-1">500+</div>
+              <div className="text-3xl md:text-4xl font-bold text-green-400 mb-1">500+</div>
               <div className="text-gray-400">Exercises</div>
             </motion.div>
             <motion.div variants={fadeInUp}>
@@ -560,7 +544,7 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
@@ -574,7 +558,7 @@ export default function LandingPage() {
                 "EvoFit Trainer cut my programming time from 4 hours to 30 minutes per client. I went from 12 clients to 28 clients without working weekends. Game changer."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold">SC</span>
                 </div>
                 <div>
@@ -633,14 +617,14 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
             className="text-center mb-16"
           >
             <motion.h2
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-              style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               Choose Your Growth Plan
             </motion.h2>
@@ -649,7 +633,7 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
@@ -658,7 +642,7 @@ export default function LandingPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
               <p className="text-gray-600 text-sm mb-4">For new trainers getting started</p>
               <div className="mb-6">
-                <div className="text-3xl font-bold text-gray-900">$199</div>
+                <div className="text-3xl font-bold text-gray-900">$149</div>
                 <div className="text-gray-500 text-sm">One-Time</div>
               </div>
               <ul className="space-y-3 mb-8">
@@ -669,7 +653,7 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Lifetime updates</li>
               </ul>
               <Link
-                href="/starter"
+                href="/pricing"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Get Starter Access
@@ -677,14 +661,14 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Professional - Recommended */}
-            <motion.div variants={fadeInUp} className="bg-primary-50 border-2 border-primary-600 rounded-xl p-8 shadow-lg relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary-600 text-white rounded-full text-sm font-semibold">
+            <motion.div variants={fadeInUp} className="bg-green-50 border-2 border-green-600 rounded-xl p-8 shadow-lg relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-green-600 text-white rounded-full text-sm font-semibold">
                 ⭐ RECOMMENDED
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Professional</h3>
               <p className="text-gray-600 text-sm mb-4">For established trainers scaling up</p>
               <div className="mb-6">
-                <div className="text-3xl font-bold text-gray-900">$299</div>
+                <div className="text-3xl font-bold text-gray-900">$249</div>
                 <div className="text-gray-500 text-sm">One-Time</div>
               </div>
               <ul className="space-y-3 mb-8">
@@ -696,8 +680,8 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Exercise video downloads</li>
               </ul>
               <Link
-                href="/professional"
-                className="block w-full text-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
+                href="/pricing"
+                className="block w-full text-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
               >
                 Get Professional Access
               </Link>
@@ -708,7 +692,7 @@ export default function LandingPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h3>
               <p className="text-gray-600 text-sm mb-4">For gym owners and large operations</p>
               <div className="mb-6">
-                <div className="text-3xl font-bold text-gray-900">$399</div>
+                <div className="text-3xl font-bold text-gray-900">$349</div>
                 <div className="text-gray-500 text-sm">One-Time</div>
               </div>
               <ul className="space-y-3 mb-8">
@@ -720,7 +704,7 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Multi-trainer team access</li>
               </ul>
               <Link
-                href="/enterprise"
+                href="/pricing"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Get Enterprise Access
@@ -744,8 +728,8 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Cancel anytime</li>
               </ul>
               <Link
-                href="/special-offer"
-                className="block w-full text-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
+                href="/pricing"
+                className="block w-full text-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Start Free Trial
               </Link>
@@ -770,13 +754,13 @@ export default function LandingPage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={viewportConfig}
+            viewport={{ once: true, margin: '-100px' }}
             variants={staggerContainer}
           >
             <motion.h2
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               Ready to 3x Your Client Capacity?
             </motion.h2>
@@ -799,7 +783,7 @@ export default function LandingPage() {
                   placeholder="First name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 border-none outline-none focus:ring-2 focus:ring-primary-500"
+                  className="px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 border-none outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
                 <input
@@ -807,13 +791,13 @@ export default function LandingPage() {
                   placeholder="Your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 border-none outline-none focus:ring-2 focus:ring-primary-500"
+                  className="px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 border-none outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-8 py-4 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Subscribing...' : 'Get Lifetime Access Now'}
                 </button>
@@ -843,7 +827,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">E</span>
                 </div>
                 <span className="text-white text-lg font-semibold">EvoFit Trainer</span>
