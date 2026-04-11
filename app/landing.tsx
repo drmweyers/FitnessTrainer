@@ -47,13 +47,13 @@ export default function LandingPage() {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      const response = await fetch('https://smartsocial-ai.com/api/email-crm/subscribe', {
+      const response = await fetch('/api/leads/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           firstName,
-          productTag: 'evofit-trainer',
+          productTag: 'evofit-trainer-interest',
           source: 'trainer.evofit.io'
         })
       })
@@ -92,8 +92,8 @@ export default function LandingPage() {
               <Link href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Pricing
               </Link>
-              <Link href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Reviews
+              <Link href="/auth/login" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Sign In
               </Link>
               <Link
                 href="/get-started"
@@ -124,8 +124,8 @@ export default function LandingPage() {
                 <Link href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
                   Pricing
                 </Link>
-                <Link href="#testimonials" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
-                  Reviews
+                <Link href="/auth/login" className="block px-3 py-2 text-gray-600 hover:text-gray-900">
+                  Sign In
                 </Link>
                 <Link href="/get-started" className="block px-3 py-2 bg-primary-600 text-white rounded-lg text-center font-semibold">
                   Get Lifetime Access
@@ -499,7 +499,7 @@ export default function LandingPage() {
           <div className="relative h-full min-h-[540px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center py-20">
             <motion.div variants={staggerContainer} className="max-w-xl">
               <motion.div variants={fadeInUp} className="inline-block px-3 py-1 mb-4 text-xs uppercase tracking-widest bg-primary-600 text-white rounded-full font-semibold">
-                SaaS Tier
+                Coming Soon
               </motion.div>
               <motion.h3
                 variants={fadeInUp}
@@ -651,7 +651,7 @@ export default function LandingPage() {
             whileInView="visible"
             viewport={viewportConfig}
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {/* Starter */}
             <motion.div variants={fadeInUp} className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
@@ -669,7 +669,7 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Lifetime updates</li>
               </ul>
               <Link
-                href="/starter"
+                href="/get-started"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Get Starter Access
@@ -696,7 +696,7 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Exercise video downloads</li>
               </ul>
               <Link
-                href="/professional"
+                href="/get-started"
                 className="block w-full text-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Get Professional Access
@@ -720,7 +720,7 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Multi-trainer team access</li>
               </ul>
               <Link
-                href="/enterprise"
+                href="/get-started"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Get Enterprise Access
@@ -835,28 +835,16 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="#features" className="hover:text-white transition-colors">Features</Link></li>
                 <li><Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link href="/exercises" className="hover:text-white transition-colors">Exercise Library</Link></li>
-                <li><Link href="/programs" className="hover:text-white transition-colors">Program Templates</Link></li>
+                <li><Link href="/get-started" className="hover:text-white transition-colors">Get Started</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-white font-semibold mb-4">Account</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/register" className="hover:text-white transition-colors">Sign Up</Link></li>
-                <li><Link href="/login" className="hover:text-white transition-colors">Log In</Link></li>
-                <li><Link href="/reset" className="hover:text-white transition-colors">Reset Password</Link></li>
-                <li><Link href="/support" className="hover:text-white transition-colors">Support</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/about" className="hover:text-white transition-colors">About EvoFit</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/auth/login" className="hover:text-white transition-colors">Sign In</Link></li>
+                <li><Link href="https://evofit.io" className="hover:text-white transition-colors">EvoFit Home</Link></li>
+                <li><Link href="mailto:hello@evofit.io" className="hover:text-white transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>
