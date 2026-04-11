@@ -27,8 +27,10 @@ export default function AppLayout({
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
 
-  // Check if we're on a public page that shouldn't show navigation
-  const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/auth/login' || pathname === '/auth/register' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/pricing' || pathname === '/get-started' || pathname === '/starter' || pathname === '/professional' || pathname === '/enterprise' || pathname === '/free-blueprint' || pathname === '/special-offer' || pathname === '/checkout/success' || pathname === '/checkout/cancel' || pathname.startsWith('/blog');
+  // Landing page provides its own full nav + footer — render children only, no AppLayout chrome
+  const isLandingPage = pathname === '/';
+  // Other public pages get the minimal MainNavigation wrapper
+  const isPublicPage = pathname === '/login' || pathname === '/register' || pathname === '/auth/login' || pathname === '/auth/register' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/pricing' || pathname === '/get-started' || pathname === '/starter' || pathname === '/professional' || pathname === '/enterprise' || pathname === '/free-blueprint' || pathname === '/special-offer' || pathname === '/checkout/success' || pathname === '/checkout/cancel' || pathname.startsWith('/blog');
   const isAdminPage = pathname.startsWith('/admin');
 
   // Auto-collapse sidebar on smaller screens
@@ -43,6 +45,11 @@ export default function AppLayout({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Landing page owns its own chrome (nav + footer in landing.tsx)
+  if (isLandingPage) {
+    return <>{children}</>;
+  }
 
   // If on public pages, render minimal layout
   if (isPublicPage) {

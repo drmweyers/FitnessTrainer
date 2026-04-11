@@ -18,48 +18,47 @@ module.exports = {
       },
     },
     extend: {
-      // EvoFit Custom Brand Colors (from DESIGN.md)
+      // EvoFit Canonical Brand Colors (v2 — matches canonical spec + trainer lead magnets)
+      // See: C:\Users\drmwe\Claude\brand-audit\CANONICAL-BRAND.md
       colors: {
-        // Primary brand colors
-        'primary-dark': '#191919',
-        'primary-light': '#f9f9f9',
-        'accent-green': '#38c214',
-        'accent-blue': '#03b2fd',
-        'accent-orange': '#ff632f',
-        'accent-purple': '#673dff',
-        
+        // Brand neutrals (shared with meals via canonical spec)
+        'brand-dark': '#0A0A0F',
+        'brand-dark-card': '#141420',
+        'brand-surface': '#1A1A2E',
+
         // Extended palette
         'card-bg': '#ffffff',
         'muted-text': '#999999',
         'subtle-border': '#0000001a',
-        
+
+        // Primary: Trainer blue (replaces sky; was #0ea5e9 → now #2563EB per canonical spec)
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9', // Main primary color
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb', // Main primary — matches trainer lead magnet logo badge
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
         },
-        
-        // Secondary colors for fitness/energy
+
+        // Secondary: Shared orange accent (unchanged hex, rounded to canonical #F97316)
         secondary: {
-          50: '#fef7ee',
-          100: '#fdedd6',
-          200: '#fbd7ac',
-          300: '#f8bb77',
-          400: '#f59440',
-          500: '#f37316', // Secondary orange
-          600: '#e4570c',
-          700: '#bd420c',
-          800: '#973311',
-          900: '#7c2c12',
-          950: '#431507',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // Shared orange — title-word emphasis, matches lead magnets
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+          950: '#431407',
         },
         
         // Success/Progress colors (Green)
@@ -175,11 +174,12 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       
-      // Custom fonts
+      // Custom fonts — Canonical: Outfit (display) + Inter (body)
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
         mono: ['var(--font-mono)', ...fontFamily.mono],
-        heading: ['var(--font-heading)', ...fontFamily.sans],
+        display: ['var(--font-display)', ...fontFamily.sans],
+        heading: ['var(--font-display)', ...fontFamily.sans],
       },
       
       // Custom spacing for gym-friendly UI (larger touch targets)
