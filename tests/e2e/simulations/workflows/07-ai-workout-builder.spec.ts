@@ -9,6 +9,9 @@ import { test, expect } from '@playwright/test';
 import { TrainerActor } from '../actors/trainer-actor';
 
 test.describe('AI Workout Builder — Full Workflow', () => {
+  // Save tests are serial — each takes 2-3min with Neon cold-start retry
+  test.describe.configure({ mode: 'serial', timeout: 180_000 });
+
   let trainer: TrainerActor;
 
   test.beforeEach(async ({ page }) => {
