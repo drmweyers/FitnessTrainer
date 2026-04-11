@@ -635,7 +635,7 @@ export default function StarterSalesPage() {
             />
             <FAQItem
               question="What does 'one-time payment' mean? Are there hidden fees?"
-              answer="It means exactly what it says. You pay $199 once and you own access to the Starter plan forever. No monthly fees, no annual renewals, no hidden charges. The only optional costs are if you decide to upgrade to Professional or Enterprise later, or add the AI SaaS add-on."
+              answer="It means exactly what it says. You pay $199 once and you own access to the Starter plan forever. No monthly fees, no annual renewals, no hidden charges. The only optional cost is if you decide to upgrade to Professional or Enterprise later."
             />
             <FAQItem
               question="Can I really manage 5 clients with this?"

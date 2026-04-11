@@ -22,7 +22,6 @@ import {
   TrendingUp,
   ChevronDown,
   ChevronUp,
-  Sparkles,
   Target,
   Trophy,
   Clock,
@@ -655,31 +654,6 @@ function TierComparisonSection() {
           ))}
         </motion.div>
 
-        {/* SaaS add-on callout */}
-        <Reveal>
-          <div className="mt-8 rounded-2xl border border-purple-500/30 bg-purple-500/5 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-purple-400" />
-              </div>
-              <div>
-                <h4 className="font-bold text-white">
-                  SaaS Add-on — $39.99/mo{' '}
-                  <span className="text-xs font-normal text-purple-400 ml-2">Stack on any tier</span>
-                </h4>
-                <p className="text-gray-400 text-sm mt-0.5">
-                  AI workout generation, RPE-based progression suggestions, plateau detection, push
-                  notifications, and biometric login.
-                </p>
-              </div>
-            </div>
-            <Link href="/pricing" className="flex-shrink-0">
-              <button className="inline-flex items-center gap-2 bg-purple-600/80 hover:bg-purple-600 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-all whitespace-nowrap">
-                Add AI Features <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
-          </div>
-        </Reveal>
       </div>
     </section>
   )
@@ -849,7 +823,7 @@ function FAQSection() {
   const faqs = [
     {
       q: 'Is this really a one-time payment — no subscriptions ever?',
-      a: "Yes. You pay once for your chosen tier (Starter $199, Professional $299, or Enterprise $399) and the software is yours forever. The only optional recurring charge is the SaaS Add-on ($39.99/month) which adds AI features — and that's entirely optional.",
+      a: "Yes. You pay once for your chosen tier (Starter $199, Professional $299, or Enterprise $399) and the software is yours forever. No monthly fees, no annual renewals, no hidden charges.",
     },
     {
       q: 'Can I upgrade from Starter to Professional later?',
@@ -874,10 +848,6 @@ function FAQSection() {
     {
       q: 'Is there a free trial?',
       a: "You can register for free and explore the platform. The Starter tier at $199 is backed by a 30-day money-back guarantee — if you're unsatisfied within 30 days, contact support for a full refund.",
-    },
-    {
-      q: 'What is the SaaS Add-on exactly?',
-      a: 'The $39.99/month SaaS Add-on adds the AI layer: instant workout generation from 1,344 exercises, RPE-based progression suggestions per exercise, plateau detection and deload recommendations, browser push notifications for clients, and biometric login (Face ID / Touch ID). It stacks on any tier.',
     },
   ]
 

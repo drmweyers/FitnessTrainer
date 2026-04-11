@@ -727,29 +727,6 @@ export default function LandingPage() {
               </Link>
             </motion.div>
 
-            {/* SaaS */}
-            <motion.div variants={fadeInUp} className="bg-blue-50 border-2 border-blue-600 rounded-xl p-8 shadow-lg">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">SaaS</h3>
-              <p className="text-gray-600 text-sm mb-4">For trainers wanting AI assistance</p>
-              <div className="mb-6">
-                <div className="text-3xl font-bold text-gray-900">$29</div>
-                <div className="text-gray-500 text-sm">/Month</div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="text-gray-700">• Up to 20 clients</li>
-                <li className="text-gray-700">• AI workout generation</li>
-                <li className="text-gray-700">• Custom program variations</li>
-                <li className="text-gray-700">• Advanced analytics</li>
-                <li className="text-gray-700">• Monthly feature updates</li>
-                <li className="text-gray-700">• Cancel anytime</li>
-              </ul>
-              <Link
-                href="/special-offer"
-                className="block w-full text-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
-              >
-                Start Free Trial
-              </Link>
-            </motion.div>
           </motion.div>
         </div>
       </section>

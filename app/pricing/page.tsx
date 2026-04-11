@@ -111,30 +111,6 @@ const tiers = [
       'Account lockout controls from the admin panel',
     ],
   },
-  {
-    name: 'SaaS Add-on',
-    price: '$39.99',
-    cadence: '/month',
-    tagline: 'Let AI Handle the Programming. You Handle the Coaching.',
-    description:
-      'Stack onto any tier. AI workout generation, RPE-based progression, plateau detection, and push notifications.',
-    priceId: 'saas-addon',
-    cta: 'Add AI Features — $39.99/mo',
-    highlighted: false,
-    isAddon: true,
-    learnMoreHref: '/special-offer',
-    features: [
-      'AI workout generator — full balanced workout in under 5 seconds from 1,344 exercises',
-      'RPE-based progression suggestions: increase weight, add reps, maintain, or deload — per exercise',
-      'Confidence-rated suggestions: High / Medium / Low (requires 3+ sets)',
-      'Plateau detection — flags stalled exercises after 4+ weeks and suggests variation changes',
-      '6 progression rules based on actual client RPE data (not gut feel)',
-      'Enhanced AI coaching insights across volume, consistency, recovery, and goals',
-      'Push notifications — remind clients of scheduled workouts and milestones',
-      'Biometric login — WebAuthn Face ID and Touch ID for instant mobile login',
-      'Stacks with Starter, Professional, or Enterprise',
-    ],
-  },
 ]
 
 const stackItems = [
@@ -295,10 +271,6 @@ const faqs = [
     a: 'We offer a 14-day money-back guarantee on all tiers — full refund, no questions asked. Create an account, explore the platform, and if EvoFit isn\'t the right fit within 14 days, we\'ll refund every penny.',
   },
   {
-    q: 'What happens if I add the SaaS Add-on and then cancel it?',
-    a: 'Cancelling the SaaS Add-on reverts you to your base tier (Starter, Professional, or Enterprise). Your base tier data, programs, and clients are never affected. AI-generated workouts you saved remain accessible — you just lose future AI generation and progression suggestions.',
-  },
-  {
     q: 'Does EvoFit work offline?',
     a: 'Yes. Workout logging is fully offline via IndexedDB. Clients can log every rep and set in the gym without a Wi-Fi connection, and the background sync manager automatically uploads all data when the connection returns.',
   },
@@ -379,7 +351,7 @@ function ComparisonCategoryRow({
           )}
           {category.name}
         </td>
-        <td colSpan={4} />
+        <td colSpan={3} />
       </tr>
       {open &&
         category.rows.map((row) => (
@@ -393,9 +365,6 @@ function ComparisonCategoryRow({
             </td>
             <td className="px-4 py-3 text-center">
               <CellValue value={row.ent} />
-            </td>
-            <td className="px-4 py-3 text-center">
-              <CellValue value={row.addon} />
             </td>
           </tr>
         ))}
@@ -485,7 +454,7 @@ export default function PricingPage() {
             whileInView="visible"
             viewport={{ once: true, margin: '-80px' }}
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             {tiers.map((tier) => (
               <motion.div
@@ -494,8 +463,6 @@ export default function PricingPage() {
                 className={`relative rounded-2xl border-2 flex flex-col ${
                   tier.highlighted
                     ? 'border-blue-600 shadow-xl shadow-blue-100'
-                    : tier.isAddon
-                    ? 'border-purple-200 bg-purple-50/30'
                     : 'border-gray-200'
                 }`}
               >
@@ -508,16 +475,8 @@ export default function PricingPage() {
                   </div>
                 )}
 
-                {tier.isAddon && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                      <Zap className="h-3 w-3 fill-white" />
-                      Stack on any tier
-                    </span>
-                  </div>
-                )}
 
-                <div className={`p-6 ${tier.highlighted ? 'bg-blue-600 text-white rounded-t-2xl' : ''}`}>
+<div className={`p-6 ${tier.highlighted ? 'bg-blue-600 text-white rounded-t-2xl' : ''}`}>
                   <h3 className={`text-lg font-bold mb-1 ${tier.highlighted ? 'text-white' : 'text-gray-900'}`}>
                     {tier.name}
                   </h3>
@@ -538,7 +497,7 @@ export default function PricingPage() {
                   <ul className="space-y-3 flex-1 mb-6">
                     {tier.features.map((f) => (
                       <li key={f} className="flex items-start gap-2.5">
-                        <CheckCircle2 className={`h-4 w-4 flex-shrink-0 mt-0.5 ${tier.isAddon ? 'text-purple-500' : 'text-green-500'}`} />
+                        <CheckCircle2 className="h-4 w-4 flex-shrink-0 mt-0.5 text-green-500" />
                         <span className="text-sm text-gray-700 leading-snug">{f}</span>
                       </li>
                     ))}
@@ -549,8 +508,6 @@ export default function PricingPage() {
                     className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
                       tier.highlighted
                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
-                        : tier.isAddon
-                        ? 'bg-purple-600 text-white hover:bg-purple-700'
                         : 'bg-gray-900 text-white hover:bg-gray-800'
                     }`}
                   >
@@ -563,9 +520,7 @@ export default function PricingPage() {
                       <Link
                         href={tier.learnMoreHref}
                         className={`text-xs font-medium hover:underline transition-colors ${
-                          tier.isAddon
-                            ? 'text-purple-500 hover:text-purple-400'
-                            : tier.highlighted
+                          tier.highlighted
                             ? 'text-blue-500 hover:text-blue-400'
                             : 'text-gray-400 hover:text-gray-600'
                         }`}
@@ -696,10 +651,6 @@ export default function PricingPage() {
                     <th className="px-4 py-4 text-center text-gray-700 font-semibold">
                       <div>Enterprise</div>
                       <div className="text-blue-600 font-bold">$399</div>
-                    </th>
-                    <th className="px-4 py-4 text-center text-purple-700 font-semibold">
-                      <div>SaaS Add-on</div>
-                      <div className="text-purple-600 font-bold">$39.99/mo</div>
                     </th>
                   </tr>
                 </thead>
