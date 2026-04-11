@@ -39,32 +39,47 @@ export class BaseActor {
   /** Ensure account exists (idempotent), then login via API for speed. */
   async login(): Promise<void> {
     // Try to register (409 = already exists = fine)
-    const regRes = await this.apiCall('POST', '/api/auth/register', {
+    await this.apiCall('POST', '/api/auth/register', {
       email: this.credentials.email,
       password: this.credentials.password,
       role: this.credentials.role,
-    }).catch(() => null);
+    }).catch(() => {});
 
-    // If register returned a token, use it directly
-    const regToken = regRes?.data?.tokens?.accessToken;
-    if (regToken) {
-      this.token = regToken;
-    } else {
-      // Login via API
-      const res = await this.apiCall('POST', '/api/auth/login', {
+    // Login via API to get full auth payload
+    const loginUrl = `${BASE_URL}/api/auth/login`;
+    const response = await this.page.request.fetch(loginUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: JSON.stringify({
         email: this.credentials.email,
         password: this.credentials.password,
-      });
-      this.token = res.data?.tokens?.accessToken || res.data?.accessToken || res.accessToken;
-    }
+      }),
+    });
+
+    const json = await response.json();
+    const data = json.data;
+    this.token = data?.tokens?.accessToken || data?.accessToken;
+    const refreshToken = data?.tokens?.refreshToken || data?.refreshToken;
+    const user = data?.user;
 
     if (!this.token) throw new Error(`Login failed for ${this.credentials.email}`);
 
-    // Inject token into browser
+    // Inject ALL auth keys into browser localStorage (AuthContext reads these)
     await this.page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
-    await this.page.evaluate((t) => {
-      localStorage.setItem('accessToken', t);
-    }, this.token);
+    await this.page.evaluate(
+      ({ accessToken, refreshToken, user }) => {
+        localStorage.setItem('accessToken', accessToken);
+        if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+        if (user) localStorage.setItem('user', JSON.stringify(user));
+      },
+      { accessToken: this.token, refreshToken, user }
+    );
+
+    // Confirm localStorage is set
+    await this.page.waitForFunction(
+      () => !!localStorage.getItem('accessToken'),
+      { timeout: 5000 }
+    );
   }
 
   /** Navigate to a route and wait for it to be ready. */
