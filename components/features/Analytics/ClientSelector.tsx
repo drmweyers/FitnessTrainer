@@ -21,7 +21,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
   selectedClientId,
   onClientChange,
 }) => {
-  const { data: clients, isLoading } = useQuery<Client[]>({
+  const { data: clients, isLoading, error } = useQuery<Client[]>({
     queryKey: ['trainer-clients'],
     queryFn: async () => {
       const token = localStorage.getItem('accessToken');
@@ -38,12 +38,21 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
       const json = await response.json();
       return json.data || json;
     },
+    retry: 1,
   });
 
   if (isLoading) {
     return (
       <div className="text-sm text-gray-500">
         Loading clients...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-6 text-sm text-gray-500">
+        Unable to load client list
       </div>
     );
   }

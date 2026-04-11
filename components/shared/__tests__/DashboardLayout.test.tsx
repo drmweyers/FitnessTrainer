@@ -3,12 +3,6 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-jest.mock('@/contexts/AuthContext', () => ({
-  useAuth: () => ({
-    user: { id: '1', email: 'trainer@example.com', role: 'trainer' },
-  }),
-}));
-
 import DashboardLayout from '../DashboardLayout';
 
 describe('DashboardLayout', () => {
@@ -48,14 +42,13 @@ describe('DashboardLayout', () => {
     expect(screen.queryByText('Overview')).not.toBeInTheDocument();
   });
 
-  it('should render user role and email', () => {
+  it('should not render user info (shown in MainNavigation instead)', () => {
     render(
       <DashboardLayout title="Dashboard">
         <div>Content</div>
       </DashboardLayout>
     );
-    expect(screen.getByText('trainer')).toBeInTheDocument();
-    expect(screen.getByText('trainer@example.com')).toBeInTheDocument();
+    expect(screen.queryByText('trainer@example.com')).not.toBeInTheDocument();
   });
 
   it('should render actions when provided', () => {

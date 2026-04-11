@@ -45,9 +45,10 @@ export default function PerformanceTab({ clientId }: PerformanceTabProps) {
     queryFn: () => analyticsApi.getPerformanceMetrics(undefined, clientId || undefined),
   });
 
-  const { data: personalBests, isLoading: bestsLoading } = useQuery<PersonalBest[]>({
+  const { data: personalBests, isLoading: bestsLoading, error: bestsError } = useQuery<PersonalBest[]>({
     queryKey: ['personal-bests', clientId],
     queryFn: () => analyticsApi.getPersonalBests(),
+    retry: 1,
   });
 
   const isLoading = metricsLoading || bestsLoading;
@@ -60,7 +61,7 @@ export default function PerformanceTab({ clientId }: PerformanceTabProps) {
     );
   }
 
-  if (metricsError) {
+  if (metricsError || bestsError) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center">
         <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">

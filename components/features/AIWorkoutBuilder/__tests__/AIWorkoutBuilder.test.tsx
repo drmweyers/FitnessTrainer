@@ -12,47 +12,63 @@ jest.mock('next/navigation', () => ({
 // Mock fetch
 global.fetch = jest.fn();
 
+const exercisesResponse = {
+  exercises: [
+    {
+      id: 'ex-1',
+      name: 'Push Ups',
+      bodyParts: ['chest'],
+      targetMuscles: ['pectorals'],
+      equipment: 'body weight',
+      equipments: ['body weight'],
+      gifUrl: 'pushups.gif',
+      difficulty: 'beginner',
+    },
+    {
+      id: 'ex-2',
+      name: 'Squats',
+      bodyParts: ['upper legs'],
+      targetMuscles: ['quadriceps'],
+      equipment: 'body weight',
+      equipments: ['body weight'],
+      gifUrl: 'squats.gif',
+      difficulty: 'intermediate',
+    },
+    {
+      id: 'ex-3',
+      name: 'Lunges',
+      bodyParts: ['upper legs'],
+      targetMuscles: ['quadriceps'],
+      equipment: 'body weight',
+      equipments: ['body weight'],
+      gifUrl: 'lunges.gif',
+      difficulty: 'intermediate',
+    },
+  ],
+};
+
+const programSaveResponse = {
+  success: true,
+  data: { id: 'prog-1', name: 'Test Program' },
+};
+
 describe('AIWorkoutBuilder', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          exercises: [
-            {
-              id: 'ex-1',
-              name: 'Push Ups',
-              bodyParts: ['chest'],
-              targetMuscles: ['pectorals'],
-              equipment: 'body weight',
-              equipments: ['body weight'],
-              gifUrl: 'pushups.gif',
-              difficulty: 'beginner',
-            },
-            {
-              id: 'ex-2',
-              name: 'Squats',
-              bodyParts: ['upper legs'],
-              targetMuscles: ['quadriceps'],
-              equipment: 'body weight',
-              equipments: ['body weight'],
-              gifUrl: 'squats.gif',
-              difficulty: 'intermediate',
-            },
-            {
-              id: 'ex-3',
-              name: 'Lunges',
-              bodyParts: ['upper legs'],
-              targetMuscles: ['quadriceps'],
-              equipment: 'body weight',
-              equipments: ['body weight'],
-              gifUrl: 'lunges.gif',
-              difficulty: 'intermediate',
-            },
-          ],
-        }),
+    (global.fetch as jest.Mock).mockImplementation((url: string, options?: RequestInit) => {
+      // POST to /api/programs = program save
+      if (options?.method === 'POST') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(programSaveResponse),
+        });
+      }
+      // Default: GET exercises
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(exercisesResponse),
+      });
     });
   });
 
@@ -182,7 +198,7 @@ describe('AIWorkoutBuilder', () => {
 
     // Wait for generation timeout to complete
     await waitFor(() => {
-      expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       expect(screen.getByText('Discard')).toBeInTheDocument();
     }, { timeout: 3000 });
   });
@@ -203,7 +219,7 @@ describe('AIWorkoutBuilder', () => {
     }, { timeout: 3000 });
 
     fireEvent.click(screen.getByText('Discard'));
-    expect(screen.queryByText('Save Workout')).not.toBeInTheDocument();
+    expect(screen.queryByText('Save to My Programs')).not.toBeInTheDocument();
   });
 
   it('saves a generated workout', async () => {
@@ -218,11 +234,14 @@ describe('AIWorkoutBuilder', () => {
     fireEvent.click(screen.getByText('Generate AI Workout'));
 
     await waitFor(() => {
-      expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
     }, { timeout: 3000 });
 
-    fireEvent.click(screen.getByText('Save Workout'));
-    expect(screen.getByText(/Saved Workouts/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Save to My Programs'));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Recently Saved/)).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
   describe('Focus Area and Workout Type Branch Coverage', () => {
@@ -252,7 +271,7 @@ describe('AIWorkoutBuilder', () => {
       fireEvent.click(screen.getByText('Generate AI Workout'));
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       }, { timeout: 3000 });
     }
 
@@ -291,7 +310,7 @@ describe('AIWorkoutBuilder', () => {
       });
       await renderAndGenerate('cardio');
       // Should show workout with cardio focus - the workout name will contain Cardio
-      expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
     });
 
     it('generates workout with cardio type (lines 145-148)', async () => {
@@ -368,7 +387,7 @@ describe('AIWorkoutBuilder', () => {
 
       // Should still generate (falls back to all exercises)
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       }, { timeout: 3000 });
     });
 
@@ -384,20 +403,13 @@ describe('AIWorkoutBuilder', () => {
       // Generate and save a workout
       fireEvent.click(screen.getByText('Generate AI Workout'));
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       }, { timeout: 3000 });
-      fireEvent.click(screen.getByText('Save Workout'));
-      expect(screen.getByText(/Saved Workouts/)).toBeInTheDocument();
+      fireEvent.click(screen.getByText('Save to My Programs'));
 
-      // Delete the saved workout via the trash button
-      const trashButton = screen.getByRole('button', { name: '' });
-      // Find the delete button in the saved workouts section
-      const savedSection = screen.getByText(/Saved Workouts/).closest('div');
-      const deleteBtn = savedSection?.querySelector('button.text-gray-400');
-      if (deleteBtn) {
-        fireEvent.click(deleteBtn);
-        expect(screen.queryByText(/Saved Workouts/)).not.toBeInTheDocument();
-      }
+      await waitFor(() => {
+        expect(screen.getByText(/Recently Saved/)).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
 
     it('toggles equipment removing specific equipment (lines 253-265, 289)', async () => {
@@ -449,7 +461,7 @@ describe('AIWorkoutBuilder', () => {
       fireEvent.click(screen.getByText('Generate AI Workout'));
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       }, { timeout: 3000 });
     }
 
@@ -542,7 +554,7 @@ describe('AIWorkoutBuilder', () => {
       fireEvent.click(screen.getByText('Generate AI Workout'));
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       }, { timeout: 3000 });
 
       // All equipment types can appear
@@ -555,10 +567,10 @@ describe('AIWorkoutBuilder', () => {
 
       // Both dumbbell and bodyweight exercises can appear
       // The workout should have exercises, let's just verify it generated
-      expect(screen.getByText('Save Workout')).toBeInTheDocument();
+      expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
 
       // At least one of each type should be possible
-      const workoutSection = screen.getByText('Save Workout').closest('div');
+      const workoutSection = screen.getByText('Save to My Programs').closest('div');
       expect(workoutSection).toBeInTheDocument();
     });
 
@@ -618,7 +630,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -638,7 +650,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -658,7 +670,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -697,7 +709,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -717,7 +729,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -737,7 +749,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -757,7 +769,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -798,7 +810,7 @@ describe('AIWorkoutBuilder', () => {
 
       // Should still generate workout using fallback logic
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
 
@@ -817,7 +829,7 @@ describe('AIWorkoutBuilder', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Save Workout')).toBeInTheDocument();
+        expect(screen.getByText('Save to My Programs')).toBeInTheDocument();
       });
     });
   });

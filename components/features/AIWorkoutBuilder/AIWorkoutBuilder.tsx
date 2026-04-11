@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Wand2, Loader2, Plus, Trash2, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Wand2, Loader2, Plus, Trash2, Check, ExternalLink } from 'lucide-react'
 import { Exercise } from '@/types/exercise'
+import { createProgram } from '@/lib/api/programs'
+import { ProgramType, DifficultyLevel, WorkoutType, SetType } from '@/types/program'
 
 interface WorkoutPreferences {
   focusArea: string // 'upper body', 'lower body', 'full body', 'core', 'cardio'
@@ -35,9 +38,13 @@ export default function AIWorkoutBuilder() {
     workoutType: 'strength'
   })
 
+  const router = useRouter()
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [savedProgramId, setSavedProgramId] = useState<string | null>(null)
   const [generatedWorkout, setGeneratedWorkout] = useState<GeneratedWorkout | null>(null)
   const [savedWorkouts, setSavedWorkouts] = useState<GeneratedWorkout[]>([])
 
@@ -176,15 +183,90 @@ export default function AIWorkoutBuilder() {
     return workout
   }
 
-  const saveWorkout = () => {
-    if (generatedWorkout) {
+  const mapWorkoutTypeToProgramType = (wt: string): ProgramType => {
+    switch (wt) {
+      case 'strength': return ProgramType.STRENGTH
+      case 'cardio': return ProgramType.ENDURANCE
+      case 'flexibility': return ProgramType.FLEXIBILITY
+      case 'mixed': return ProgramType.GENERAL_FITNESS
+      default: return ProgramType.GENERAL_FITNESS
+    }
+  }
+
+  const saveWorkout = async () => {
+    if (!generatedWorkout) return
+
+    setSaving(true)
+    setSaveError(null)
+    setSavedProgramId(null)
+
+    try {
+      const mapDifficulty = (d: string): DifficultyLevel => {
+        switch (d) {
+          case 'beginner': return DifficultyLevel.BEGINNER
+          case 'intermediate': return DifficultyLevel.INTERMEDIATE
+          case 'advanced': return DifficultyLevel.ADVANCED
+          default: return DifficultyLevel.INTERMEDIATE
+        }
+      }
+
+      const mapWorkoutType = (wt: string): WorkoutType => {
+        switch (wt) {
+          case 'strength': return WorkoutType.STRENGTH
+          case 'cardio': return WorkoutType.CARDIO
+          case 'flexibility': return WorkoutType.FLEXIBILITY
+          case 'mixed': return WorkoutType.MIXED
+          default: return WorkoutType.MIXED
+        }
+      }
+
+      const programData = {
+        name: generatedWorkout.name,
+        description: `AI-generated ${generatedWorkout.focusArea} workout (${generatedWorkout.difficulty})`,
+        programType: mapWorkoutTypeToProgramType(preferences.workoutType),
+        difficultyLevel: mapDifficulty(generatedWorkout.difficulty),
+        durationWeeks: 1,
+        goals: [generatedWorkout.focusArea],
+        equipmentNeeded: preferences.equipmentAvailable,
+        weeks: [{
+          weekNumber: 1,
+          name: 'Week 1',
+          workouts: [{
+            dayNumber: 1,
+            name: generatedWorkout.name,
+            workoutType: mapWorkoutType(preferences.workoutType),
+            estimatedDuration: generatedWorkout.estimatedDuration,
+            exercises: generatedWorkout.exercises.map((item, idx) => ({
+              exerciseId: item.exercise.id,
+              orderIndex: idx,
+              setsConfig: { sets: item.sets, reps: item.reps, rest: item.rest },
+              configurations: Array.from({ length: item.sets }, (_, setIdx) => ({
+                setNumber: setIdx + 1,
+                setType: SetType.WORKING,
+                reps: item.reps,
+                restSeconds: item.rest,
+              })),
+            })),
+          }],
+        }],
+      }
+
+      const created = await createProgram(programData)
+      setSavedProgramId(created.id)
       setSavedWorkouts([...savedWorkouts, generatedWorkout])
       setGeneratedWorkout(null)
+    } catch (err: any) {
+      console.error('Failed to save workout:', err)
+      setSaveError(err.message || 'Failed to save workout. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
   const discardWorkout = () => {
     setGeneratedWorkout(null)
+    setSaveError(null)
+    setSavedProgramId(null)
   }
 
   const equipmentOptions = [
@@ -360,17 +442,34 @@ export default function AIWorkoutBuilder() {
             ))}
           </div>
 
+          {saveError && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-700">{saveError}</p>
+            </div>
+          )}
+
           <div className="mt-4 flex gap-3">
             <button
               onClick={saveWorkout}
-              className="flex-1 bg-green-500 text-white py-2 rounded-md font-medium hover:bg-green-600 flex items-center justify-center"
+              disabled={saving}
+              className="flex-1 bg-green-500 text-white py-2 rounded-md font-medium hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              <Check size={20} className="mr-2" />
-              Save Workout
+              {saving ? (
+                <>
+                  <Loader2 size={20} className="animate-spin mr-2" />
+                  Saving to Programs...
+                </>
+              ) : (
+                <>
+                  <Check size={20} className="mr-2" />
+                  Save to My Programs
+                </>
+              )}
             </button>
             <button
               onClick={discardWorkout}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+              disabled={saving}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50"
             >
               Discard
             </button>
@@ -378,12 +477,31 @@ export default function AIWorkoutBuilder() {
         </div>
       )}
 
-      {/* Saved Workouts */}
+      {/* Success Banner */}
+      {savedProgramId && (
+        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-green-800">Workout saved to My Programs</h4>
+              <p className="text-sm text-green-600 mt-1">You can find it in your Programs page.</p>
+            </div>
+            <button
+              onClick={() => router.push('/programs')}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+            >
+              View Programs
+              <ExternalLink size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Recently Saved Workouts */}
       {savedWorkouts.length > 0 && (
         <div className="mt-6 border-t pt-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Saved Workouts ({savedWorkouts.length})</h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-4">Recently Saved ({savedWorkouts.length})</h3>
           <div className="space-y-3">
-            {savedWorkouts.map((workout, index) => (
+            {savedWorkouts.map((workout) => (
               <div key={workout.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex justify-between items-start">
                   <div>
@@ -391,13 +509,10 @@ export default function AIWorkoutBuilder() {
                     <p className="text-sm text-gray-600">{workout.exercises.length} exercises • ~{workout.estimatedDuration} min</p>
                   </div>
                   <button
-                    onClick={() => {
-                      const updated = savedWorkouts.filter((_, i) => i !== index)
-                      setSavedWorkouts(updated)
-                    }}
-                    className="text-gray-400 hover:text-red-500"
+                    onClick={() => router.push('/programs')}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                   >
-                    <Trash2 size={16} />
+                    View in Programs →
                   </button>
                 </div>
               </div>
