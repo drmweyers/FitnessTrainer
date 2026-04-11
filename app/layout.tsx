@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     title: 'EvoFit',
   },
   icons: {
-    apple: '/logo.svg',
+    apple: '/logo.png',
   },
 }
 
