@@ -95,6 +95,10 @@ export function ExerciseCard({
     if (!exercise.gifUrl || exercise.gifUrl === 'null' || exercise.gifUrl === 'undefined') {
       return null;
     }
+    // Handle gifUrl that already contains a path prefix
+    if (exercise.gifUrl.startsWith('/')) {
+      return exercise.gifUrl;
+    }
     return `/exerciseGifs/${exercise.gifUrl}`;
   }
 
@@ -102,7 +106,7 @@ export function ExerciseCard({
     const gifPath = getGifPath();
     // If no valid GIF path or there's an error, always use placeholder
     if (!gifPath || imageError) {
-      return '/images/exercise-placeholder.jpg';
+      return '/images/exercise-placeholder.svg';
     }
     // Return GIF path for both static and animated (browser handles animation)
     return gifPath;
@@ -129,7 +133,7 @@ export function ExerciseCard({
                 }`}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
-                unoptimized={isGifPlaying} // Allow GIF animation
+                unoptimized // GIFs must bypass Next.js image optimization to animate
               />
               {!imageLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -236,7 +240,7 @@ export function ExerciseCard({
             }`}
             onLoad={() => setImageLoaded(true)}
             onError={() => setImageError(true)}
-            unoptimized={isGifPlaying} // Allow GIF animation
+            unoptimized // GIFs must bypass Next.js image optimization to animate
           />
 
           {/* Loading State */}

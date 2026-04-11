@@ -140,11 +140,14 @@ export default function ExerciseCardMobile({
   }
 
   const getGifPath = () => {
+    if (exercise.gifUrl?.startsWith('/')) {
+      return exercise.gifUrl;
+    }
     return `/exerciseGifs/${exercise.gifUrl}`
   }
 
   const getStaticImagePath = () => {
-    return imageError ? '/images/exercise-placeholder.jpg' : getGifPath()
+    return imageError ? '/images/exercise-placeholder.svg' : getGifPath()
   }
 
   // Auto-play GIF on mobile hover equivalent (long press)
@@ -208,7 +211,7 @@ export default function ExerciseCardMobile({
                   }`}
                   onLoad={() => setImageLoaded(true)}
                   onError={() => setImageError(true)}
-                  unoptimized={isGifPlaying}
+                  unoptimized
                 />
                 {!imageLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -327,7 +330,7 @@ export default function ExerciseCardMobile({
               }`}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
-              unoptimized={isGifPlaying}
+              unoptimized
             />
 
             {/* Loading State */}

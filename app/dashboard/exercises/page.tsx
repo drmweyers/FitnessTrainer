@@ -327,11 +327,11 @@ export default function ExercisesPage() {
                   <div className="aspect-video bg-gray-100 rounded-lg mb-3 overflow-hidden">
                     {exercise.gifUrl ? (
                       <img
-                        src={`/exerciseGifs/${exercise.gifUrl}`}
+                        src={exercise.gifUrl.startsWith('/') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
                         alt={exercise.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/exercise-placeholder.jpg';
+                          (e.target as HTMLImageElement).src = '/images/exercise-placeholder.svg';
                         }}
                       />
                     ) : (

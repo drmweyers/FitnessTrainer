@@ -90,7 +90,7 @@ const nextConfig = {
       },
       {
         // Cache exercise GIFs for longer
-        source: '/gifs/:all*(gif|webp)',
+        source: '/exerciseGifs/:all*(gif|webp)',
         headers: [
           {
             key: 'Cache-Control',

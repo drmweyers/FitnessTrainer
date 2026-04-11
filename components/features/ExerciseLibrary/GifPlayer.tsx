@@ -45,7 +45,9 @@ export function GifPlayer({
 
   // Get the full path to the GIF
   const getGifPath = useCallback(() => {
-    // For now, assume GIFs are in the public/exerciseGifs directory
+    if (gifUrl.startsWith('/')) {
+      return gifUrl;
+    }
     return `/exerciseGifs/${gifUrl}`
   }, [gifUrl])
 

@@ -113,6 +113,9 @@ export default function GifPlayerMobile({
   })
 
   const getGifPath = useCallback(() => {
+    if (gifUrl.startsWith('/')) {
+      return gifUrl;
+    }
     return `/exerciseGifs/${gifUrl}`
   }, [gifUrl])
 
