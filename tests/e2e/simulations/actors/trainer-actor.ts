@@ -217,7 +217,11 @@ export class TrainerActor extends BaseActor {
       return false;
     }, { timeout: 15_000 });
 
-    // Set preferences via the select dropdowns
+    // Small wait for React hydration to complete on selects
+    await this.page.waitForTimeout(1000);
+
+    // Set preferences via the 3 select dropdowns (Focus Area, Difficulty, Workout Type)
+    // Duration is an <input type="number">, not a select
     const selects = this.page.locator('select');
     if (options?.focusArea) {
       await selects.nth(0).selectOption(options.focusArea);
@@ -226,7 +230,7 @@ export class TrainerActor extends BaseActor {
       await selects.nth(1).selectOption(options.difficulty);
     }
     if (options?.workoutType) {
-      await selects.nth(3).selectOption(options.workoutType);
+      await selects.nth(2).selectOption(options.workoutType);
     }
 
     await generateBtn.click();
