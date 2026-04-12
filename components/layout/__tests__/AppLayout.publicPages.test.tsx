@@ -43,8 +43,20 @@ describe('AppLayout - Public Page Detection', () => {
     });
   });
 
+  it('should render landing page (/) with no AppLayout chrome', () => {
+    mockPathname = '/';
+    render(
+      <AppLayout>
+        <div data-testid="page-content">Content</div>
+      </AppLayout>
+    );
+
+    // Landing page renders children only — no nav, no footer
+    expect(screen.getByTestId('page-content')).toBeInTheDocument();
+    expect(screen.queryByTestId('footer')).not.toBeInTheDocument();
+  });
+
   const publicPages = [
-    '/',
     '/login',
     '/register',
     '/auth/login',
@@ -61,13 +73,10 @@ describe('AppLayout - Public Page Detection', () => {
         </AppLayout>
       );
 
-      // Public pages should show navigation without sidebar
+      // Public pages get MainNavigation without sidebar
+      expect(screen.getByTestId('main-navigation')).toBeInTheDocument();
       expect(screen.getByTestId('sidebar-state')).toHaveTextContent('sidebar-off');
-
-      // Content should render
       expect(screen.getByTestId('page-content')).toBeInTheDocument();
-
-      // Footer should NOT render on public pages (they have their own)
       expect(screen.queryByTestId('footer')).not.toBeInTheDocument();
     });
   });

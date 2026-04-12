@@ -21,6 +21,7 @@ jest.mock('@/lib/db/prisma', () => ({
       findFirst: jest.fn(),
     },
     programAssignment: {
+      findFirst: jest.fn().mockResolvedValue(null),
       create: jest.fn(),
     },
   },

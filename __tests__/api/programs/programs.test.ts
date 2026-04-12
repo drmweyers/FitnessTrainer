@@ -24,9 +24,13 @@ jest.mock('@/lib/middleware/auth', () => ({
   authenticate: jest.fn(),
 }));
 
+jest.mock('@/lib/middleware/authorize', () => ({
+  trainerOrAdmin: jest.fn().mockReturnValue(null),
+}));
+
 const { authenticate } = require('@/lib/middleware/auth');
 
-const mockAuthUser = { user: { id: mockTrainerUser.id, email: mockTrainerUser.email, role: 'TRAINER' } };
+const mockAuthUser = { user: { id: mockTrainerUser.id, email: mockTrainerUser.email, role: 'trainer' } };
 
 describe('GET /api/programs', () => {
   beforeEach(() => jest.clearAllMocks());
