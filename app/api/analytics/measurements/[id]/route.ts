@@ -1,5 +1,6 @@
 /**
  * Analytics Measurement by ID API Routes
+ * GET /api/analytics/measurements/[id] - Fetch a body measurement
  * PUT /api/analytics/measurements/[id] - Update a body measurement
  * DELETE /api/analytics/measurements/[id] - Delete a body measurement
  */
@@ -40,6 +41,63 @@ const updateMeasurementSchema = z.object({
 })
 
 const uuidSchema = z.string().uuid('Invalid measurement ID')
+
+/**
+ * GET /api/analytics/measurements/[id]
+ * Fetch a single body measurement owned by the authenticated user
+ */
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const authResult = await authenticate(_request)
+  if (authResult instanceof NextResponse) return authResult
+  const req = authResult as AuthenticatedRequest
+
+  const idValidation = uuidSchema.safeParse(params.id)
+  if (!idValidation.success) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid measurement ID' },
+      { status: 400 }
+    )
+  }
+
+  const userId = req.user!.id
+  const measurementId = params.id
+
+  try {
+    const row = await prisma.userMeasurement.findFirst({
+      where: { id: measurementId, userId },
+    })
+
+    if (!row) {
+      return NextResponse.json(
+        { success: false, error: 'Measurement not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: row.id,
+        userId: row.userId,
+        measurementDate: row.recordedAt,
+        weight: row.weight,
+        height: row.height,
+        bodyFatPercentage: row.bodyFatPercentage,
+        muscleMass: row.muscleMass,
+        measurements: row.measurements,
+      },
+    })
+  } catch (error) {
+    console.error('GET /api/analytics/measurements/[id] error:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch measurement' },
+      { status: 500 }
+    )
+  }
+}
 
 /**
  * PUT /api/analytics/measurements/[id]

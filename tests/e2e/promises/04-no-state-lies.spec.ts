@@ -245,41 +245,74 @@ test('P04-04: exercise collection — add exercise persists to DB', async ({ pag
 // Test 5: Workout session completion persists
 // ────────────────────────────────────────────────────────────
 test('P04-05: workout complete — status persists to DB', async ({ page }) => {
+  // This test must follow the real API contract:
+  //   POST /api/workouts requires { programAssignmentId, workoutId, scheduledDate }
+  //   POST /api/workouts/[id]/complete is *client-only* (clientId === user.id)
+  // so we:
+  //   1. log in as the client to capture their own user id (global-setup seeds
+  //      two clients, and `clients[0]` isn't guaranteed to be the same one the
+  //      'client' account logs in as)
+  //   2. log in as trainer → ensure assignment → create the session for that
+  //      exact clientId
+  //   3. log back in as the client → complete → verify persistence
+  await loginViaAPI(page, 'client');
+  const meRes = await apiGet(page, '/api/profiles/me');
+  const clientId: string = meRes.data?.user?.id ?? meRes.data?.id ?? meRes.user?.id;
+  expect(clientId, `Could not resolve client id from /api/profiles/me: ${JSON.stringify(meRes)}`).toBeTruthy();
+
   await loginViaAPI(page, 'trainer');
 
-  const exRes = await apiGet(page, '/api/exercises?limit=1');
-  const exercises: any[] = exRes.exercises ?? [];
-  expect(exercises.length, 'No exercises in library').toBeGreaterThan(0);
-  const exerciseId: string = exercises[0].id;
+  // Find a trainer program with at least one week+workout
+  const progListRes = await apiGet(page, '/api/programs');
+  const programs: any[] = progListRes.data?.programs ?? progListRes.data ?? [];
+  expect(programs.length, 'No programs seeded').toBeGreaterThan(0);
 
-  // Create workout
-  const workoutRes = await apiPost(page, '/api/workouts', {
-    title: `AdversarialWorkout-${Date.now()}`,
-    startTime: new Date().toISOString(),
-    exercises: [{ exerciseId, sets: 3, reps: 10, weight: 60 }],
+  // Fetch program detail to get weeks[].workouts[]
+  const progDetailRes = await apiGet(page, `/api/programs/${programs[0].id}`);
+  const programDetail = progDetailRes.data ?? progDetailRes;
+  const firstWeek = programDetail.weeks?.[0];
+  expect(firstWeek, 'Program has no weeks').toBeTruthy();
+  const firstWorkout = firstWeek.workouts?.[0];
+  expect(firstWorkout, 'First week has no workouts').toBeTruthy();
+  const programId: string = programs[0].id;
+  const workoutId: string = firstWorkout.id;
+
+  // Ensure program is assigned (may 409 if already assigned — that is fine)
+  const assignRes = await apiPost(page, `/api/programs/${programId}/assign`, {
+    clientId,
+    startDate: new Date().toISOString().split('T')[0],
   });
-  expect(workoutRes.success, `Workout create failed: ${JSON.stringify(workoutRes)}`).toBe(true);
-  const workoutId: string = workoutRes.data?.id;
-  expect(workoutId).toBeTruthy();
+  // On 409, the existing assignment is returned in data. On 201, also in data.
+  const programAssignmentId: string = assignRes.data?.id;
+  expect(programAssignmentId, `Could not resolve programAssignmentId: ${JSON.stringify(assignRes)}`).toBeTruthy();
 
-  // Complete workout
-  const completeRes = await apiPost(page, `/api/workouts/${workoutId}/complete`, {
+  // Create a workout session for today
+  const sessionRes = await apiPost(page, '/api/workouts', {
+    programAssignmentId,
+    workoutId,
+    scheduledDate: new Date().toISOString(),
+    clientId,
+  });
+  expect(sessionRes.success, `Session create failed: ${JSON.stringify(sessionRes)}`).toBe(true);
+  const sessionId: string = sessionRes.data?.id;
+  expect(sessionId).toBeTruthy();
+
+  // Switch to client — complete endpoint checks clientId === user.id
+  await loginViaAPI(page, 'client');
+
+  const completeRes = await apiPost(page, `/api/workouts/${sessionId}/complete`, {
     endTime: new Date().toISOString(),
   });
   expect(completeRes.success, `Workout complete failed: ${JSON.stringify(completeRes)}`).toBe(true);
 
   // Step 2: Raw GET confirms completed status in DB
-  const getRes = await apiGet(page, `/api/workouts/${workoutId}`);
-  expect(getRes.success, `GET workout failed`).toBe(true);
-  const workout = getRes.data;
-  const isComplete = workout.status === 'completed' || workout.completedAt != null;
-  expect(isComplete, `Workout not marked complete. status=${workout.status}, completedAt=${workout.completedAt}`).toBe(true);
+  const getRes = await apiGet(page, `/api/workouts/${sessionId}`);
+  expect(getRes.success, `GET workout failed: ${JSON.stringify(getRes)}`).toBe(true);
+  expect(getRes.data?.status, `Session not marked complete. status=${getRes.data?.status}`).toBe('completed');
 
   // Step 3: Second GET confirms persistence
-  const getRes2 = await apiGet(page, `/api/workouts/${workoutId}`);
-  const workout2 = getRes2.data;
-  const isComplete2 = workout2.status === 'completed' || workout2.completedAt != null;
-  expect(isComplete2, 'Workout completion did not persist on second fetch').toBe(true);
+  const getRes2 = await apiGet(page, `/api/workouts/${sessionId}`);
+  expect(getRes2.data?.status).toBe('completed');
 });
 
 // ────────────────────────────────────────────────────────────
@@ -419,9 +452,27 @@ test('P04-09: appointment status change — persists to DB', async ({ page }) =>
   expect(clients.length, `No clients. Keys: ${JSON.stringify(Object.keys(clientsRes))}`).toBeGreaterThan(0);
   const clientId: string = clients[0].id;
 
-  // Create appointment
-  const startDt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-  const endDt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  // Seed trainer availability for all days of the week, 06:00-22:00.
+  // Appointment create enforces this window, and the seeded trainer
+  // has none by default.
+  await apiPost(page, '/api/schedule/availability', {
+    slots: [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
+      dayOfWeek,
+      startTime: '06:00',
+      endTime: '22:00',
+      isAvailable: true,
+    })),
+  });
+
+  // Build a start/end inside the 06:00-22:00 window. Avoid "Date.now()+1h"
+  // which lands at an odd local-time depending on when the test runs;
+  // pin to tomorrow 10:00-11:00 local.
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(10, 0, 0, 0);
+  const startDt = tomorrow.toISOString();
+  const endAt = new Date(tomorrow.getTime() + 60 * 60 * 1000);
+  const endDt = endAt.toISOString();
   const apptRes = await apiPost(page, '/api/schedule/appointments', {
     clientId,
     title: `AdversarialAppt-${Date.now()}`,
