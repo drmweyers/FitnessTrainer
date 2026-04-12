@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -106,6 +106,27 @@ export function ProgramBuilder({
   ];
 
   const currentStepIndex = steps.findIndex((s) => s.id === currentStep);
+
+  // Auto-scaffold weeks to match durationWeeks when entering the weeks step
+  // with nothing created yet. Trainers told us the prior behavior (disabled Next
+  // until they manually added at least one week) felt like a trap.
+  useEffect(() => {
+    if (currentStep !== 'weeks') return;
+    if (readOnly) return;
+    const desired = program.durationWeeks || 0;
+    const existing = program.weeks?.length || 0;
+    if (desired > 0 && existing === 0) {
+      const scaffolded: ProgramWeek[] = Array.from({ length: desired }, (_, i) => ({
+        id: crypto.randomUUID(),
+        weekNumber: i + 1,
+        name: `Week ${i + 1}`,
+        description: '',
+        isDeload: false,
+        workouts: [],
+      }));
+      setProgram((p) => ({ ...p, weeks: scaffolded }));
+    }
+  }, [currentStep, program.durationWeeks, program.weeks?.length, readOnly]);
 
   const canGoNext = useCallback(() => {
     switch (currentStep) {
@@ -378,7 +399,7 @@ export function ProgramBuilder({
       </Card>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <Button
           variant="outline"
           onClick={handleBack}
@@ -388,17 +409,24 @@ export function ProgramBuilder({
           Back
         </Button>
 
-        {currentStep === 'review' ? (
-          <Button onClick={handleSave} disabled={readOnly}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Program
-          </Button>
-        ) : (
-          <Button onClick={handleNext} disabled={!canGoNext() || readOnly}>
-            Next
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {onCancel && !readOnly && (
+            <Button variant="ghost" onClick={onCancel}>
+              Cancel &amp; Exit
+            </Button>
+          )}
+          {currentStep === 'review' ? (
+            <Button onClick={handleSave} disabled={readOnly}>
+              <Save className="h-4 w-4 mr-2" />
+              Save Program
+            </Button>
+          ) : (
+            <Button onClick={handleNext} disabled={!canGoNext() || readOnly}>
+              Next
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Preview Modal */}

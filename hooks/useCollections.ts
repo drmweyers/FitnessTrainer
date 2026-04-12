@@ -42,7 +42,6 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
       setIsLoading(true)
       setError(null)
 
-      // Fetch collection list
       const listResponse = await fetch('/api/exercises/collections', {
         headers: getAuthHeaders(),
       })
@@ -58,42 +57,16 @@ export function useCollections(options: UseCollectionsOptions = {}): UseCollecti
       const listResult = await listResponse.json()
       const collectionList = listResult.data || []
 
-      // Fetch full details for each collection to get exercise IDs
-      const fullCollections: ExerciseCollection[] = await Promise.all(
-        collectionList.map(async (c: any) => {
-          try {
-            const detailResponse = await fetch(`/api/exercises/collections/${c.id}`, {
-              headers: getAuthHeaders(),
-            })
-            if (detailResponse.ok) {
-              const detailResult = await detailResponse.json()
-              const detail = detailResult.data
-              return {
-                id: detail.id,
-                name: detail.name,
-                description: detail.description || '',
-                userId: detail.userId,
-                exerciseIds: (detail.exercises || []).map((e: any) => e.exerciseId),
-                isPublic: detail.isPublic,
-                createdAt: detail.createdAt,
-                updatedAt: detail.updatedAt,
-              }
-            }
-          } catch {
-            // Fall back to list data without exercise IDs
-          }
-          return {
-            id: c.id,
-            name: c.name,
-            description: c.description || '',
-            userId: '',
-            exerciseIds: [],
-            isPublic: c.isPublic,
-            createdAt: c.createdAt,
-            updatedAt: c.updatedAt,
-          }
-        })
-      )
+      const fullCollections: ExerciseCollection[] = collectionList.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        description: c.description || '',
+        userId: c.userId || '',
+        exerciseIds: c.exerciseIds || [],
+        isPublic: c.isPublic,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+      }))
 
       setCollections(fullCollections)
     } catch (err) {

@@ -67,6 +67,9 @@ export async function PUT(request: NextRequest) {
       timezone,
       preferredUnits,
       isPublic,
+      emergencyContactName,
+      emergencyContactPhone,
+      emergencyContactRelationship,
     } = body
 
     const profile = await prisma.userProfile.upsert({
@@ -81,6 +84,9 @@ export async function PUT(request: NextRequest) {
         timezone: timezone ?? null,
         preferredUnits: preferredUnits ?? 'metric',
         isPublic: isPublic ?? true,
+        emergencyContactName: emergencyContactName ?? null,
+        emergencyContactPhone: emergencyContactPhone ?? null,
+        emergencyContactRelationship: emergencyContactRelationship ?? null,
       },
       update: {
         ...(bio !== undefined && { bio }),
@@ -93,6 +99,9 @@ export async function PUT(request: NextRequest) {
         ...(timezone !== undefined && { timezone }),
         ...(preferredUnits !== undefined && { preferredUnits }),
         ...(isPublic !== undefined && { isPublic }),
+        ...(emergencyContactName !== undefined && { emergencyContactName }),
+        ...(emergencyContactPhone !== undefined && { emergencyContactPhone }),
+        ...(emergencyContactRelationship !== undefined && { emergencyContactRelationship }),
       },
     })
 

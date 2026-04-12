@@ -79,40 +79,52 @@ export default function ProfileEditPage() {
     isPublic: true,
   });
 
+  const applyProfileData = useCallback((p: any) => {
+    setForm({
+      bio: p.bio || '',
+      dateOfBirth: p.dateOfBirth ? p.dateOfBirth.split('T')[0] : '',
+      gender: p.gender || '',
+      phone: p.phone || '',
+      timezone: p.timezone || '',
+      preferredUnits: p.preferredUnits || 'metric',
+      isPublic: p.isPublic ?? true,
+    });
+    setEmergencyContact({
+      name: p.emergencyContactName || '',
+      phone: p.emergencyContactPhone || '',
+      relationship: p.emergencyContactRelationship || '',
+    });
+    if (p.whatsappNumber !== undefined) setWhatsappNumber(p.whatsappNumber || '');
+  }, []);
+
+  const loadProfile = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch('/api/profiles/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      const result = await res.json();
+      if (result.success && result.data?.userProfile) {
+        applyProfileData(result.data.userProfile);
+      }
+    } catch (err) {
+      console.error('Failed to load profile:', err);
+    }
+  }, [applyProfileData]);
+
   useEffect(() => {
     if (isLoading || !user) return;
 
-    const token = localStorage.getItem('accessToken');
-    fetch('/api/profiles/me', {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    })
-      .then(res => res.json())
-      .then(result => {
-        if (result.success && result.data?.userProfile) {
-          const p = result.data.userProfile;
-          setForm({
-            bio: p.bio || '',
-            dateOfBirth: p.dateOfBirth ? p.dateOfBirth.split('T')[0] : '',
-            gender: p.gender || '',
-            phone: p.phone || '',
-            timezone: p.timezone || '',
-            preferredUnits: p.preferredUnits || 'metric',
-            isPublic: p.isPublic ?? true,
-          });
-          if (p.whatsappNumber) setWhatsappNumber(p.whatsappNumber);
-        }
-      })
-      .catch(err => console.error('Failed to load profile:', err))
-      .finally(() => setIsDataLoading(false));
+    loadProfile().finally(() => setIsDataLoading(false));
 
     // Load certifications for trainers
     if (user.role === 'trainer') {
       loadCertifications();
     }
-  }, [isLoading, user]);
+  }, [isLoading, user, loadProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,17 +133,25 @@ export default function ProfileEditPage() {
 
     try {
       const token = localStorage.getItem('accessToken');
+      const payload = {
+        ...form,
+        emergencyContactName: emergencyContact.name || null,
+        emergencyContactPhone: emergencyContact.phone || null,
+        emergencyContactRelationship: emergencyContact.relationship || null,
+      };
       const res = await fetch('/api/profiles/me', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();
       if (result.success) {
+        if (result.data) applyProfileData(result.data);
+        await loadProfile();
         setMessage({ type: 'success', text: 'Profile updated successfully.' });
       } else {
         setMessage({ type: 'error', text: result.error || 'Failed to update profile.' });

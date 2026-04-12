@@ -32,16 +32,21 @@ export async function GET(request: NextRequest) {
         _count: {
           select: { exercises: true },
         },
+        exercises: {
+          select: { exerciseId: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     })
 
     const data = collections.map((c) => ({
       id: c.id,
+      userId: c.userId,
       name: c.name,
       description: c.description,
       isPublic: c.isPublic,
       exerciseCount: c._count.exercises,
+      exerciseIds: c.exercises.map((e) => e.exerciseId),
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }))
