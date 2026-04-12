@@ -83,3 +83,4 @@ nul
 .playwright-cli/
 .worktrees/
 .worktrees/
+.claude/scheduled_tasks.lock
