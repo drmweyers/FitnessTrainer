@@ -146,34 +146,23 @@ describe('Part A — Static Schema Audit', () => {
   });
 
   // ── ClientModal form (app/clients/components/ClientModal.tsx) ─────────────
-  test('ClientModal form: "phone" field is DEAD — never sent to any API', () => {
-    // The form renders a phone <input> in formData.phone, but:
-    //   - createClient() sends { email, firstName, lastName } — no phone
-    //   - updateClient() sends { goals: {...} } — no phone
-    // This is a dead/unmapped input field. We document it as a schema drift bug.
-    //
-    // Expected: the test PASSES (we are documenting a KNOWN BUG, not asserting a fix).
-    // The assertion below confirms the bug exists in the component source.
-
+  test('ClientModal form: phone field must be sent on both create and update (regression)', () => {
+    // Regression guard: ClientModal must pipe the phone input through to
+    // BOTH createClient and updateClient. The original bug shipped because
+    // the field was rendered but silently dropped on every save.
     const componentPath = path.resolve(
       __dirname,
       '../../app/clients/components/ClientModal.tsx'
     );
     const src = fs.readFileSync(componentPath, 'utf8');
 
-    // Confirm phone field IS in formData state
     expect(src).toContain("phone: client?.phone || ''");
 
-    // Confirm phone is NOT sent in createClient call
-    const createClientCall = src.match(/clientsApi\.createClient\(\{[^}]+\}\)/s)?.[0] ?? '';
-    expect(createClientCall).not.toContain('phone');
+    const createClientCall = src.match(/clientsApi\.createClient\(\{[\s\S]+?\}\)/)?.[0] ?? '';
+    expect(createClientCall).toContain('phone');
 
-    // Confirm phone is NOT sent in updateClient call
-    const updateClientCall = src.match(/clientsApi\.updateClient\([^)]+\)/s)?.[0] ?? '';
-    expect(updateClientCall).not.toContain('phone');
-
-    // The test name + "passes" = we caught the bug via static analysis.
-    // Fix: pass phone through to createClient / PATCH /api/clients/[id]/profile
+    const updateClientCall = src.match(/clientsApi\.updateClient\([\s\S]+?\}\)/)?.[0] ?? '';
+    expect(updateClientCall).toContain('phone');
   });
 
   // ── TrainerCertification form (inside profile/edit) ───────────────────────

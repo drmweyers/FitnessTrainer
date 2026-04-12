@@ -36,7 +36,9 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
       }
 
       const json = await response.json();
-      return json.data || json;
+      // /api/clients returns { clients, pagination } — not a bare array.
+      const list = json.clients ?? json.data?.clients ?? json.data ?? json;
+      return Array.isArray(list) ? list : [];
     },
     retry: 1,
   });
