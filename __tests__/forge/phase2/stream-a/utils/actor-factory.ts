@@ -82,7 +82,6 @@ export class ActorFactory {
         email: actor.email,
         passwordHash,
         role: actor.role,
-        fullName: actor.fullName,
         isVerified: actor.isVerified,
         isActive: true,
       },

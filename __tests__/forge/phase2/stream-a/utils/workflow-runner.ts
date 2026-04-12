@@ -228,8 +228,7 @@ export class WorkflowRunner {
     data: Record<string, any> = {},
     context: WorkflowContext
   ): Promise<Record<string, any>> {
-    const profileData = {
-      fullName: data.fullName || context.actor.fullName,
+    const profileData: Record<string, any> = {
       bio: data.bio || '',
       dateOfBirth: data.dateOfBirth,
       gender: data.gender,
@@ -240,7 +239,7 @@ export class WorkflowRunner {
     };
 
     // Calculate completion percentage
-    const requiredFields = ['fullName', 'bio'];
+    const requiredFields = ['bio'];
     const optionalFields = ['dateOfBirth', 'gender', 'phone', 'timezone', 'preferredUnits'];
 
     const requiredComplete = requiredFields.filter(f => profileData[f]).length;

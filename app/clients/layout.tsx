@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import ClientsGuard from './ClientsGuard'
 
 export const metadata: Metadata = {
   title: 'Client Management Dashboard',
@@ -10,5 +11,5 @@ export default function ClientsLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
-} 
+  return <ClientsGuard>{children}</ClientsGuard>
+}
