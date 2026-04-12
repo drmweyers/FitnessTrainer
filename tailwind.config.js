@@ -33,6 +33,8 @@ module.exports = {
 
         // Primary: Trainer blue (replaces sky; was #0ea5e9 → now #2563EB per canonical spec)
         primary: {
+          DEFAULT: '#2563eb',
+          foreground: '#ffffff',
           50: '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
@@ -48,6 +50,8 @@ module.exports = {
 
         // Secondary: Shared orange accent (unchanged hex, rounded to canonical #F97316)
         secondary: {
+          DEFAULT: '#f97316',
+          foreground: '#ffffff',
           50: '#fff7ed',
           100: '#ffedd5',
           200: '#fed7aa',
