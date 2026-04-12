@@ -257,9 +257,11 @@ export class TrainerActor extends BaseActor {
   /** Set availability via API. */
   async setAvailability(dayOfWeek: number, startTime: string, endTime: string): Promise<void> {
     await this.apiCall('POST', '/api/schedule/availability', {
-      dayOfWeek,
-      startTime,
-      endTime,
+      slots: [{
+        dayOfWeek,
+        startTime,
+        endTime,
+      }],
     });
   }
 
@@ -269,9 +271,20 @@ export class TrainerActor extends BaseActor {
     date: string;
     startTime: string;
     endTime: string;
+    title?: string;
     notes?: string;
   }): Promise<string> {
-    const res = await this.apiCall('POST', '/api/schedule/appointments', data);
+    const startDatetime = `${data.date}T${data.startTime}:00.000Z`;
+    const endDatetime = `${data.date}T${data.endTime}:00.000Z`;
+
+    const res = await this.apiCall('POST', '/api/schedule/appointments', {
+      clientId: data.clientId,
+      title: data.title || 'Training Session',
+      appointmentType: 'one_on_one',
+      startDatetime,
+      endDatetime,
+      notes: data.notes,
+    });
     return res.data?.id;
   }
 

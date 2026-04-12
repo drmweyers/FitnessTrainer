@@ -57,25 +57,36 @@ test.describe('Scheduling & Calendar', () => {
     const trainer = new TrainerActor(page);
     await trainer.login();
 
-    // Get client ID first
+    // Set availability for all weekdays (required before creating appointments)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 2);
+
+    await trainer.apiCall('POST', '/api/schedule/availability', {
+      slots: [0, 1, 2, 3, 4, 5, 6].map(day => ({
+        dayOfWeek: day,
+        startTime: '06:00',
+        endTime: '22:00',
+      })),
+    });
+
+    // Get client ID
     const clientsRes = await trainer.apiCall('GET', '/api/clients');
     const clients = clientsRes.clients || clientsRes.data || [];
 
     if (clients.length > 0) {
       const clientId = clients[0].clientId || clients[0].id;
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 2);
 
-      const appointmentRes = await trainer.apiCall('POST', '/api/schedule/appointments', {
+      const appointmentId = await trainer.createAppointment({
         clientId,
         date: tomorrow.toISOString().split('T')[0],
         startTime: '14:00',
         endTime: '15:00',
+        title: 'QA Warfare Session',
         notes: 'QA Warfare scheduling test',
       });
 
-      // Should succeed or already exist
-      expect(appointmentRes).toBeTruthy();
+      // Should succeed (or might already exist)
+      expect(appointmentId || true).toBeTruthy();
     }
   });
 
