@@ -68,7 +68,7 @@ test.describe.serial('14-Day Progressive Simulation', () => {
 
     // Get client ID
     const clientsRes = await trainer.apiCall('GET', '/api/clients');
-    const clients = clientsRes.data || [];
+    const clients = clientsRes.clients || clientsRes.data || [];
     const record = clients.find((c: any) =>
       c.email === SIM_ACCOUNTS.client1.email || c.client?.email === SIM_ACCOUNTS.client1.email
     );

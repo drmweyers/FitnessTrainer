@@ -27,9 +27,9 @@ test.describe('Client Onboarding', () => {
     // Add the simulation client (idempotent — 409 is fine)
     await trainer.addClientToRoster(SIM_ACCOUNTS.client1.email);
 
-    // Verify client is in the roster
+    // Verify client is in the roster (API returns { clients: [...] })
     const res = await trainer.apiCall('GET', '/api/clients');
-    const clients = res.data || [];
+    const clients = res.clients || res.data || [];
     expect(clients.length).toBeGreaterThan(0);
 
     // Verify the specific client is present

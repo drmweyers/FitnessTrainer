@@ -52,7 +52,7 @@ test.describe.serial('Trainer-Client Interaction Loop', () => {
 
     // Verify client appears in client list
     const res = await trainer.apiCall('GET', '/api/clients');
-    const clients = res.data || [];
+    const clients = res.clients || res.data || [];
     const found = clients.some((c: any) =>
       c.email === SIM_ACCOUNTS.client1.email || c.client?.email === SIM_ACCOUNTS.client1.email
     );
@@ -187,7 +187,7 @@ test.describe.serial('Trainer-Client Interaction Loop', () => {
 
     // Clients exist
     const clientsRes = await trainer.apiCall('GET', '/api/clients');
-    expect((clientsRes.data || []).length).toBeGreaterThan(0);
+    expect((clientsRes.clients || clientsRes.data || []).length).toBeGreaterThan(0);
 
     // Client measurements exist (via trainer's view)
     // This is the analytics API that shows trainer can see client data

@@ -59,7 +59,7 @@ test.describe('Scheduling & Calendar', () => {
 
     // Get client ID first
     const clientsRes = await trainer.apiCall('GET', '/api/clients');
-    const clients = clientsRes.data || [];
+    const clients = clientsRes.clients || clientsRes.data || [];
 
     if (clients.length > 0) {
       const clientId = clients[0].clientId || clients[0].id;

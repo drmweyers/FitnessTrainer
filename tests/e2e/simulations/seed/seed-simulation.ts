@@ -135,7 +135,7 @@ export async function seedSimulation(): Promise<void> {
   // Step 5: Assign programs to clients
   console.log('\n[5/10] Assigning programs...');
   const clientsRes = await apiCall('GET', '/api/clients', undefined, trainerToken);
-  const clients = clientsRes.data || [];
+  const clients = clientsRes.clients || clientsRes.data || [];
   const client1Record = clients.find((c: any) =>
     c.email === ACCOUNTS.client1.email || c.client?.email === ACCOUNTS.client1.email
   );
