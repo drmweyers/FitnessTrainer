@@ -20,17 +20,24 @@ test.describe('Client Onboarding', () => {
     expect(res.success || res.data).toBeTruthy();
   });
 
-  test('trainer can add a new client to their roster', async ({ page }) => {
+  test('trainer can add a client to their roster', async ({ page }) => {
     const trainer = new TrainerActor(page);
     await trainer.login();
 
-    // Add the simulation client
+    // Add the simulation client (idempotent — 409 is fine)
     await trainer.addClientToRoster(SIM_ACCOUNTS.client1.email);
 
     // Verify client is in the roster
     const res = await trainer.apiCall('GET', '/api/clients');
     const clients = res.data || [];
     expect(clients.length).toBeGreaterThan(0);
+
+    // Verify the specific client is present
+    const found = clients.some((c: any) =>
+      c.email === SIM_ACCOUNTS.client1.email ||
+      c.client?.email === SIM_ACCOUNTS.client1.email
+    );
+    expect(found).toBeTruthy();
   });
 
   test('client can access their dashboard after registration', async ({ page }) => {

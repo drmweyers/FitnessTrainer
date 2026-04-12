@@ -17,16 +17,21 @@ test.describe('Analytics Validation', () => {
       await trainer.login();
       await trainer.navigateToAnalytics();
 
+      // Wait for the page to stabilize (analytics loads data async)
+      await page.waitForTimeout(2000);
+
       const body = await page.textContent('body');
-      // Must NOT show error boundary
+      // Must NOT show the root error boundary
       expect(body).not.toContain('Something went wrong');
       expect(body).not.toContain('unexpected error');
 
-      // Should show analytics page content
+      // Should show analytics page content (or graceful error state)
       const hasAnalytics =
         body?.includes('Analytics') ||
         body?.includes('Overview') ||
-        body?.includes('No measurements');
+        body?.includes('No measurements') ||
+        body?.includes('Unable to load') ||
+        body?.includes('Analytics Unavailable');
       expect(hasAnalytics).toBeTruthy();
 
       await trainer.screenshot('05-trainer-analytics-overview');

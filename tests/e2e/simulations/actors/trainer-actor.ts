@@ -121,8 +121,10 @@ export class TrainerActor extends BaseActor {
   }
 
   /** Duplicate a program via API. Returns new program ID. */
-  async duplicateProgram(programId: string): Promise<string> {
-    const res = await this.apiCall('POST', `/api/programs/${programId}/duplicate`);
+  async duplicateProgram(programId: string, newName?: string): Promise<string> {
+    const res = await this.apiCall('POST', `/api/programs/${programId}/duplicate`, {
+      name: newName || undefined,
+    });
     return res.data?.id;
   }
 

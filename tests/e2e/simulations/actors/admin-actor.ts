@@ -41,7 +41,7 @@ export class AdminActor extends BaseActor {
     if (filters?.search) params.append('search', filters.search);
 
     const res = await this.apiCall('GET', `/api/admin/users?${params.toString()}`);
-    return res.data || [];
+    return res.data?.users || res.data || [];
   }
 
   /** View a specific user's details via API. */
