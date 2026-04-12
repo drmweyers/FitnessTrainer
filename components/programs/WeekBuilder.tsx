@@ -104,7 +104,10 @@ export function WeekBuilder({ weeks, onUpdate, readOnly = false }: WeekBuilderPr
                 Add Week
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent
+              onEscapeKeyDown={() => setDialogOpen(false)}
+              onInteractOutside={() => setDialogOpen(false)}
+            >
               <DialogHeader>
                 <DialogTitle>Add New Week</DialogTitle>
                 <DialogDescription>

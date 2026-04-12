@@ -96,10 +96,10 @@ export const clientsApi = {
     return handleResponse(response);
   },
 
-  // Update client
+  // Update client — routes to the PATCH /profile sub-route (no PUT /clients/[id] exists)
   async updateClient(id: string, data: UpdateClientData): Promise<Client> {
-    const response = await fetch(`${CLIENT_ENDPOINT}/${id}`, {
-      method: 'PUT',
+    const response = await fetch(`${CLIENT_ENDPOINT}/${id}/profile`, {
+      method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });

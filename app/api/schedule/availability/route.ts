@@ -35,7 +35,22 @@ export async function GET(request: NextRequest) {
     const user = (authResult as AuthenticatedRequest).user!;
 
     const searchParams = request.nextUrl.searchParams;
-    const trainerId = searchParams.get('trainerId') || user.id;
+    const requestedTrainerId = searchParams.get('trainerId');
+
+    // Ownership guard: only the trainer themself or an admin may query a foreign trainerId.
+    // Clients querying without a param always get an empty result (they have no availability).
+    // Without this guard any authenticated user could enumerate any trainer's schedule.
+    let trainerId: string;
+    if (!requestedTrainerId) {
+      trainerId = user.id;
+    } else if (requestedTrainerId === user.id || user.role === 'admin') {
+      trainerId = requestedTrainerId;
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
 
     const slots = await prisma.trainerAvailability.findMany({
       where: { trainerId },

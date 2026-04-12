@@ -164,6 +164,8 @@ export interface CreateClientData {
   email: string;
   firstName?: string;
   lastName?: string;
+  name?: string;
+  phone?: string;
   fitnessLevel?: FitnessLevel;
   goals?: ClientGoals;
   preferences?: ClientPreferences;
@@ -180,6 +182,7 @@ export interface InviteClientData {
 
 export interface UpdateClientData {
   status?: ClientStatus;
+  phone?: string;
   fitnessLevel?: FitnessLevel;
   goals?: ClientGoals;
   preferences?: ClientPreferences;

@@ -192,11 +192,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Persist phone to the client's UserProfile if the trainer supplied one.
+    // The form renders a phone input; prior to this fix the field was silently dropped.
+    if (phone) {
+      await prisma.userProfile.upsert({
+        where: { userId: clientUser.id },
+        create: { userId: clientUser.id, phone },
+        update: { phone },
+      });
+    }
+
     return NextResponse.json(
       {
         id: trainerClient.client.id,
         email: trainerClient.client.email,
         displayName: trainerClient.client.email,
+        phone: phone ?? trainerClient.client.userProfile?.phone ?? null,
         trainerClient: {
           id: trainerClient.id,
           status: trainerClient.status,

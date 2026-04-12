@@ -52,10 +52,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   try {
     const body = await request.json();
-    const { emergencyContactName, emergencyContactPhone, goals, limitations, notes } = body as {
+    const { phone, emergencyContactName, emergencyContactPhone, goals, limitations, notes } = body as {
+      phone?: string;
       emergencyContactName?: string;
       emergencyContactPhone?: string;
-      goals?: string;
+      goals?: { primaryGoal?: string } | string;
       limitations?: string;
       notes?: string;
     };
@@ -66,19 +67,35 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         ? { name: emergencyContactName ?? '', phone: emergencyContactPhone ?? '' }
         : undefined;
 
+    // Phone lives on UserProfile, not ClientProfile
+    if (phone !== undefined) {
+      await prisma.userProfile.upsert({
+        where: { userId: clientId },
+        create: { userId: clientId, phone: phone || null },
+        update: { phone: phone || null },
+      });
+    }
+
+    const normalizedGoals =
+      goals !== undefined
+        ? typeof goals === 'string'
+          ? { primaryGoal: goals }
+          : goals
+        : undefined;
+
     // Upsert ClientProfile with new values
     await prisma.clientProfile.upsert({
       where: { userId: clientId },
       update: {
         ...(emergencyContact !== undefined && { emergencyContact }),
-        ...(goals !== undefined && { goals: { primaryGoal: goals } }),
+        ...(normalizedGoals !== undefined && { goals: normalizedGoals }),
         ...(limitations !== undefined && { injuries: { description: limitations } }),
       },
       create: {
         userId: clientId,
         fitnessLevel: 'beginner',
         ...(emergencyContact !== undefined && { emergencyContact }),
-        ...(goals !== undefined && { goals: { primaryGoal: goals } }),
+        ...(normalizedGoals !== undefined && { goals: normalizedGoals }),
         ...(limitations !== undefined && { injuries: { description: limitations } }),
       },
     });

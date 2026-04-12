@@ -95,7 +95,7 @@ export default function NewProgramPage() {
           {error}
         </div>
       )}
-      <ProgramBuilder onSave={handleSave} onCancel={() => router.back()} />
+      <ProgramBuilder onSave={handleSave} onCancel={() => router.back()} isSaving={saving} />
     </div>
   );
 }

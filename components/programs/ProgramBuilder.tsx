@@ -33,6 +33,7 @@ interface ProgramBuilderProps {
   onSave?: (program: Program) => void;
   onCancel?: () => void;
   readOnly?: boolean;
+  isSaving?: boolean;
 }
 
 type Step = 'info' | 'goals' | 'weeks' | 'review';
@@ -47,6 +48,7 @@ export function ProgramBuilder({
   onSave,
   onCancel,
   readOnly = false,
+  isSaving = false,
 }: ProgramBuilderProps) {
   const [currentStep, setCurrentStep] = useState<Step>('info');
   const [showPreview, setShowPreview] = useState(false);
@@ -416,12 +418,12 @@ export function ProgramBuilder({
             </Button>
           )}
           {currentStep === 'review' ? (
-            <Button onClick={handleSave} disabled={readOnly}>
+            <Button onClick={handleSave} disabled={readOnly || isSaving}>
               <Save className="h-4 w-4 mr-2" />
-              Save Program
+              {isSaving ? 'Saving...' : 'Save Program'}
             </Button>
           ) : (
-            <Button onClick={handleNext} disabled={!canGoNext() || readOnly}>
+            <Button onClick={handleNext} disabled={!canGoNext() || readOnly || isSaving}>
               Next
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>

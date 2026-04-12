@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Client } from '../api/clientsApi'
 import { clientsApi, ApiError } from '@/lib/api/clients'
@@ -31,6 +31,21 @@ export default function ClientModal({ isOpen, onClose, onSuccess, client }: Clie
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Reset form state whenever the modal is opened (for a new or different client).
+  // Without this, the initial useState value is frozen for the component lifetime and
+  // typed-then-cancelled data reappears the next time the modal is opened.
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: client?.name || '',
+        email: client?.email || '',
+        phone: client?.phone || '',
+        goals: client?.goals || [],
+      })
+      setError('')
+    }
+  }, [isOpen, client?.id])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -44,6 +59,7 @@ export default function ClientModal({ isOpen, onClose, onSuccess, client }: Clie
 
       if (client) {
         await clientsApi.updateClient(client.id, {
+          phone: formData.phone || undefined,
           goals: formData.goals?.length
             ? { primaryGoal: formData.goals[0] }
             : undefined,
@@ -53,6 +69,7 @@ export default function ClientModal({ isOpen, onClose, onSuccess, client }: Clie
           email: formData.email,
           firstName,
           lastName,
+          phone: formData.phone || undefined,
         })
       }
       onSuccess()

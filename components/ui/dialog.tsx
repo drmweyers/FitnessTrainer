@@ -2,6 +2,13 @@
 
 import React from 'react'
 
+interface DialogContextValue {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+const DialogContext = React.createContext<DialogContextValue | null>(null)
+
 export interface DialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
@@ -9,18 +16,81 @@ export interface DialogProps {
 }
 
 export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
-  return <>{children}</>
+  const [internalOpen, setInternalOpen] = React.useState(false)
+  const isControlled = open !== undefined
+  const currentOpen = isControlled ? open : internalOpen
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (!isControlled) setInternalOpen(next)
+      onOpenChange?.(next)
+    },
+    [isControlled, onOpenChange]
+  )
+
+  return (
+    <DialogContext.Provider value={{ open: currentOpen, onOpenChange: setOpen }}>
+      {children}
+    </DialogContext.Provider>
+  )
+}
+
+function useDialogCtx() {
+  const ctx = React.useContext(DialogContext)
+  if (!ctx) throw new Error('Dialog subcomponents must be used inside <Dialog>')
+  return ctx
 }
 
 export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
+  onEscapeKeyDown?: (event: KeyboardEvent) => void
+  onInteractOutside?: (event: MouseEvent) => void
 }
 
 export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ className = '', children, ...props }, ref) => {
+  ({ className = '', children, onEscapeKeyDown, onInteractOutside, ...props }, ref) => {
+    const { open, onOpenChange } = useDialogCtx()
+    const contentRef = React.useRef<HTMLDivElement | null>(null)
+
+    React.useImperativeHandle(ref, () => contentRef.current as HTMLDivElement)
+
+    // Close on ESC
+    React.useEffect(() => {
+      if (!open) return
+      const handler = (e: KeyboardEvent) => {
+        if (e.key !== 'Escape') return
+        onEscapeKeyDown?.(e)
+        if (!e.defaultPrevented) onOpenChange(false)
+      }
+      window.addEventListener('keydown', handler)
+      return () => window.removeEventListener('keydown', handler)
+    }, [open, onEscapeKeyDown, onOpenChange])
+
+    // Close on backdrop click
+    const handleOverlayPointerDown = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return
+      const mouseEvent = e.nativeEvent as MouseEvent
+      onInteractOutside?.(mouseEvent)
+      if (!mouseEvent.defaultPrevented) onOpenChange(false)
+    }
+
+    if (!open) return null
+
     return (
-      <div ref={ref} className={`fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 ${className}`} {...props}>
-        {children}
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        onMouseDown={handleOverlayPointerDown}
+        role="presentation"
+      >
+        <div
+          ref={contentRef}
+          role="dialog"
+          aria-modal="true"
+          className={`relative grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-lg ${className}`}
+          onMouseDown={(e) => e.stopPropagation()}
+          {...props}
+        >
+          {children}
+        </div>
       </div>
     )
   }
@@ -78,7 +148,7 @@ DialogDescription.displayName = 'DialogDescription'
 
 export const DialogFooter = ({ className = '', children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 ${className}`} {...props}>
+    <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-4 ${className}`} {...props}>
       {children}
     </div>
   )
@@ -90,12 +160,23 @@ export interface DialogTriggerProps extends React.HTMLAttributes<HTMLButtonEleme
 }
 
 export const DialogTrigger = React.forwardRef<HTMLButtonElement, DialogTriggerProps>(
-  ({ className = '', children, asChild = false, ...props }, ref) => {
-    if (asChild) {
-      return <>{children}</>
+  ({ className = '', children, asChild = false, onClick, ...props }, ref) => {
+    const { onOpenChange } = useDialogCtx()
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      onOpenChange(true)
+      onClick?.(e)
+    }
+
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children as React.ReactElement<any>, {
+        onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+          onOpenChange(true)
+          ;(children as React.ReactElement<any>).props.onClick?.(e)
+        },
+      })
     }
     return (
-      <button ref={ref} className={className} {...props}>
+      <button ref={ref} className={className} onClick={handleClick} {...props}>
         {children}
       </button>
     )
