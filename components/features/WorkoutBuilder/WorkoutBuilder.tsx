@@ -61,7 +61,7 @@ function SortableExerciseItem({ exercise, onRemove }: { exercise: Exercise, onRe
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-md overflow-hidden mr-3">
             <img
-              src={exercise.gifUrl}
+              src={exercise.gifUrl?.startsWith('/') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
               alt={exercise.name}
               className="h-full w-full object-cover"
             />

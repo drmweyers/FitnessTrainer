@@ -440,9 +440,10 @@ export default function AIWorkoutBuilder() {
                 <div className="flex items-start flex-1">
                   <div className="h-16 w-16 rounded-md overflow-hidden mr-4 bg-gray-200">
                     <img
-                      src={item.exercise.gifUrl}
+                      src={item.exercise.gifUrl?.startsWith('/') ? item.exercise.gifUrl : `/exerciseGifs/${item.exercise.gifUrl}`}
                       alt={item.exercise.name}
                       className="h-full w-full object-cover"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                     />
                   </div>
                   <div className="flex-1">

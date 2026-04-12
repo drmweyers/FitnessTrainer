@@ -130,7 +130,7 @@ const ExerciseSubstitution: React.FC<ExerciseSubstitutionProps> = ({
                 >
                   {/* GIF Preview */}
                   <img
-                    src={alt.gifUrl}
+                    src={alt.gifUrl?.startsWith('/') ? alt.gifUrl : `/exerciseGifs/${alt.gifUrl}`}
                     alt={alt.name}
                     className="w-14 h-14 rounded-lg object-cover bg-gray-100 flex-shrink-0"
                   />

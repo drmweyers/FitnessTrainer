@@ -218,7 +218,7 @@ function ExerciseCard({ exercise, isSelected, onToggle }: ExerciseCardProps) {
           {exercise.gifUrl && (
             <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
               <img
-                src={exercise.gifUrl}
+                src={exercise.gifUrl?.startsWith('/') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
                 alt={exercise.name}
                 className="w-full h-full object-cover"
               />

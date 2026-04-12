@@ -494,7 +494,7 @@ export default function ExerciseList({ preloadedExercises }: ExerciseListProps =
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <Image
-                      src={exercise.gifUrl}
+                      src={exercise.gifUrl?.startsWith('/') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
                       alt={exercise.name}
                       width={40}
                       height={40}

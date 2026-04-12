@@ -67,7 +67,7 @@ function ExerciseCard({ exercise, onAdd, isAdded }: ExerciseCardProps) {
         <div className="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
           {exercise.gifUrl && (
             <img
-              src={exercise.gifUrl.startsWith('http') ? exercise.gifUrl : `/exerciseDB/gifs/${exercise.gifUrl}`}
+              src={exercise.gifUrl.startsWith('http') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
               alt={exercise.name}
               className="w-full h-full object-cover"
               onError={(e) => {
@@ -211,7 +211,7 @@ function SelectedExercise({
           <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
             {exerciseData?.gifUrl && (
               <img
-                src={exerciseData.gifUrl.startsWith('http') ? exerciseData.gifUrl : `/exerciseDB/gifs/${exerciseData.gifUrl}`}
+                src={exerciseData.gifUrl.startsWith('http') ? exerciseData.gifUrl : `/exerciseGifs/${exerciseData.gifUrl}`}
                 alt={exerciseData.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
