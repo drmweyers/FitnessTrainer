@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
               email: true,
               userProfile: {
                 select: {
-                  fullName: true,
+                  bio: true,
                 },
               },
             },
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
             email: true,
             userProfile: {
               select: {
-                fullName: true,
+                bio: true,
               },
             },
           },

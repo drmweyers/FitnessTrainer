@@ -37,7 +37,7 @@ export async function GET(
             email: true,
             userProfile: {
               select: {
-                fullName: true,
+                bio: true,
               },
             },
           },
@@ -143,7 +143,7 @@ export async function PUT(
             email: true,
             userProfile: {
               select: {
-                fullName: true,
+                bio: true,
               },
             },
           },

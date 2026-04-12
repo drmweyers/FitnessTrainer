@@ -86,7 +86,7 @@ export async function PUT(
             email: true,
             userProfile: {
               select: {
-                fullName: true,
+                bio: true,
               },
             },
           },
