@@ -173,32 +173,42 @@ test.describe('Promise 05: The UI Never Waits Silently', () => {
   // ── 05. Profile save — loading state + completion ─────────────────────────
   test('05 | Profile save — button disables + shows Saving... within 300ms', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
-    await slowRoute(page, '**/api/profiles/me', 'PUT');
+    // Navigate FIRST, wait for the form to render, THEN install the slow
+    // route. Doing it in the old order made the initial GET /api/profiles/me
+    // compete with dev-server load, and on a busy worker the form loader
+    // sometimes didn't resolve before the 10s button wait timed out.
     await gotoHydrated(page, ROUTES.profileEdit);
+    // Match both the idle text ("Save Changes") AND the pending text
+    // ("Saving...") so the locator keeps resolving while the button's
+    // label changes mid-click.
+    const saveBtn = page.locator('button').filter({ hasText: /save changes|saving/i }).first();
+    await saveBtn.waitFor({ state: 'visible', timeout: 30000 });
 
-    // The WhatsAppSetup component also renders a button labelled "Save", which
-    // `button:has-text("Save")` would match first in DOM order. Pin to the
-    // main form button by its exact visible text.
-    const saveBtn = page.locator('button:has-text("Save Changes")').first();
-    await saveBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await slowRoute(page, '**/api/profiles/me', 'PUT');
     await saveBtn.click();
 
     await expect(saveBtn).toBeDisabled({ timeout: 300 });
     const btnText = await saveBtn.textContent();
     expect(/saving/i.test(btnText ?? '')).toBe(true);
 
-    // After the slow response resolves, verify completion
-    await expect(saveBtn).toBeEnabled({ timeout: 5000 });
+    // After the slow response resolves, verify completion. handleSubmit
+    // awaits loadProfile() after the save, which fires another GET that on
+    // a loaded dev server can take 5-8s — so the re-enable window needs
+    // more headroom than the 1500ms slowRoute delay alone suggests.
+    await expect(saveBtn).toBeEnabled({ timeout: 20000 });
   });
 
   // ── 06. Profile save — error surfaced on 500 ──────────────────────────────
   test('06 | Profile save — error surfaced on 500, button re-enabled', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
-    await failRoute(page, '**/api/profiles/me', 'PUT');
     await gotoHydrated(page, ROUTES.profileEdit);
+    // Match both the idle text ("Save Changes") AND the pending text
+    // ("Saving...") so the locator keeps resolving while the button's
+    // label changes mid-click.
+    const saveBtn = page.locator('button').filter({ hasText: /save changes|saving/i }).first();
+    await saveBtn.waitFor({ state: 'visible', timeout: 30000 });
 
-    const saveBtn = page.locator('button:has-text("Save Changes")').first();
-    await saveBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await failRoute(page, '**/api/profiles/me', 'PUT');
     await saveBtn.click();
 
     await assertErrorState(page, saveBtn);

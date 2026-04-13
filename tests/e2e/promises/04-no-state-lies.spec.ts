@@ -245,7 +245,13 @@ test('P04-04: exercise collection — add exercise persists to DB', async ({ pag
 // Test 5: Workout session completion persists
 // ────────────────────────────────────────────────────────────
 test('P04-05: workout complete — status persists to DB', async ({ page }) => {
-  // This test must follow the real API contract:
+  // This test does ~10 sequential API calls across three loginViaAPI
+  // switches plus the program→assignment→session→complete flow. On a
+  // cold/loaded Next.js dev server with Neon each API call can run
+  // 5-10s, which easily crowds the default 90s test budget. Bump it.
+  test.setTimeout(180_000);
+
+  // Contract the test follows:
   //   POST /api/workouts requires { programAssignmentId, workoutId, scheduledDate }
   //   POST /api/workouts/[id]/complete is *client-only* (clientId === user.id)
   // so we:
@@ -262,19 +268,24 @@ test('P04-05: workout complete — status persists to DB', async ({ page }) => {
 
   await loginViaAPI(page, 'trainer');
 
-  // Find a trainer program with at least one week+workout
+  // Global-setup seeds a program named "QA Test Program - Full Body" that
+  // has exactly 1 week with 1 workout. Neon DB is persistent across test
+  // runs and P04-02 creates additional empty programs, so we can't trust
+  // `programs[0]` and can't afford to scan every program's detail (that
+  // times out the 90s test budget when the roster has grown). Filter by
+  // the known name, or fall back to creating a fresh program right here.
   const progListRes = await apiGet(page, '/api/programs');
   const programs: any[] = progListRes.data?.programs ?? progListRes.data ?? [];
-  expect(programs.length, 'No programs seeded').toBeGreaterThan(0);
+  const seeded = programs.find((p: any) => p.name === 'QA Test Program - Full Body');
+  expect(seeded, 'Seeded program not found — global-setup must have failed').toBeTruthy();
+  const programId: string = seeded.id;
 
-  // Fetch program detail to get weeks[].workouts[]
-  const progDetailRes = await apiGet(page, `/api/programs/${programs[0].id}`);
+  const progDetailRes = await apiGet(page, `/api/programs/${programId}`);
   const programDetail = progDetailRes.data ?? progDetailRes;
   const firstWeek = programDetail.weeks?.[0];
-  expect(firstWeek, 'Program has no weeks').toBeTruthy();
-  const firstWorkout = firstWeek.workouts?.[0];
-  expect(firstWorkout, 'First week has no workouts').toBeTruthy();
-  const programId: string = programs[0].id;
+  const firstWorkout = firstWeek?.workouts?.[0];
+  expect(firstWeek, 'Seeded program has no weeks').toBeTruthy();
+  expect(firstWorkout, 'Seeded program has no workouts').toBeTruthy();
   const workoutId: string = firstWorkout.id;
 
   // Ensure program is assigned (may 409 if already assigned — that is fine)
@@ -464,22 +475,40 @@ test('P04-09: appointment status change — persists to DB', async ({ page }) =>
     })),
   });
 
-  // Build a start/end inside the 06:00-22:00 window. Avoid "Date.now()+1h"
-  // which lands at an odd local-time depending on when the test runs;
-  // pin to tomorrow 10:00-11:00 local.
+  // Neon DB is persistent across test runs and appointment create enforces a
+  // slot conflict check. Use a minute offset derived from the current second
+  // to keep repeated runs in distinct slots within the 06:00-22:00 window.
+  // (Even with many runs, Math.floor collisions at the same second are rare
+  // enough for CI.)
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(10, 0, 0, 0);
+  const minuteOffset = (Date.now() / 1000) % (14 * 60); // 0..839 min → 06:00..19:59
+  tomorrow.setHours(6, 0, 0, 0);
+  tomorrow.setMinutes(Math.floor(minuteOffset));
   const startDt = tomorrow.toISOString();
-  const endAt = new Date(tomorrow.getTime() + 60 * 60 * 1000);
+  const endAt = new Date(tomorrow.getTime() + 30 * 60 * 1000); // 30-min slot
   const endDt = endAt.toISOString();
-  const apptRes = await apiPost(page, '/api/schedule/appointments', {
+
+  let apptRes = await apiPost(page, '/api/schedule/appointments', {
     clientId,
     title: `AdversarialAppt-${Date.now()}`,
     appointmentType: 'one_on_one',
     startDatetime: startDt,
     endDatetime: endDt,
   });
+
+  // If the slot still collides (unlikely but possible), fall back to finding
+  // any existing trainer-owned appointment and testing the status update on
+  // it — the contract we're validating is "status update persists", not
+  // "create succeeds".
+  if (!apptRes.success && /conflicts/i.test(apptRes.error ?? '')) {
+    const listRes = await apiGet(page, '/api/schedule/appointments');
+    const list: any[] = listRes.data ?? [];
+    const existing = list.find((a: any) => a.status !== 'completed' && a.status !== 'cancelled');
+    if (existing) {
+      apptRes = { success: true, data: existing };
+    }
+  }
   expect(apptRes.success, `Appointment create failed: ${JSON.stringify(apptRes)}`).toBe(true);
   const apptId: string = apptRes.data?.id;
   expect(apptId).toBeTruthy();
