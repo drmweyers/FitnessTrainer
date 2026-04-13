@@ -1,14 +1,29 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  rectIntersection,
+} from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext';
 import ProgramForm from './ProgramForm';
 import WeekBuilder from './WeekBuilder';
 import WorkoutBuilder from './WorkoutBuilder';
 import ExerciseSelector from './ExerciseSelector';
 import ProgramPreview from './ProgramPreview';
+import ExerciseLibraryPanel from './ExerciseLibraryPanel';
+import WorkoutCanvas from './WorkoutCanvas';
+import ExerciseConfigDrawer from './ExerciseConfigDrawer';
 import { Save, X } from 'lucide-react';
 import { ProgramData } from '@/types/program';
+import { useExerciseLibrary } from './_stubs';
+import type { WorkoutExerciseDataExtended, LibraryExercise } from './_stubs';
 
 interface ProgramBuilderProps {
   onSave?: (programData: ProgramData, saveAsTemplate: boolean) => Promise<void>;
@@ -20,6 +35,91 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
   onCancel
 }) => {
   const { state, dispatch } = useProgramBuilder();
+  const [isClient, setIsClient] = useState(false);
+  const [configDrawerOpen, setConfigDrawerOpen] = useState(false);
+  const [configExercise, setConfigExercise] = useState<WorkoutExerciseDataExtended | null>(null);
+  const [configWeekIdx, setConfigWeekIdx] = useState(0);
+  const [configWorkoutIdx, setConfigWorkoutIdx] = useState(0);
+  const library = useExerciseLibrary();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over) return;
+
+      const activeType = active.data.current?.type;
+      const exercise = active.data.current?.exercise as LibraryExercise | undefined;
+
+      if (activeType === 'library-exercise' && exercise) {
+        dispatch({
+          type: 'ADD_EXERCISE_TO_WORKOUT' as any,
+          payload: {
+            weekIdx: state.currentWeekIndex,
+            workoutIdx: state.currentWorkoutIndex,
+            exercise: {
+              exerciseId: exercise.id,
+              orderIndex: 0,
+              setsConfig: [],
+              configurations: [
+                { setNumber: 1, setType: 'working', reps: '8', restSeconds: 90 },
+                { setNumber: 2, setType: 'working', reps: '8', restSeconds: 90 },
+                { setNumber: 3, setType: 'working', reps: '8', restSeconds: 90 },
+              ],
+            },
+          },
+        } as any);
+      } else if (activeType === 'workout-exercise') {
+        if (String(over.id) === 'workout-trash') {
+          dispatch({
+            type: 'REMOVE_EXERCISE' as any,
+            payload: active.data.current?.exercise,
+          } as any);
+        } else {
+          dispatch({
+            type: 'MOVE_EXERCISE' as any,
+            payload: { from: active.id, to: over.id },
+          } as any);
+        }
+      }
+    },
+    [dispatch, state.currentWeekIndex, state.currentWorkoutIndex],
+  );
+
+  const handleOpenConfig = (exercise: WorkoutExerciseDataExtended) => {
+    setConfigExercise(exercise);
+    setConfigWeekIdx(state.currentWeekIndex);
+    setConfigWorkoutIdx(state.currentWorkoutIndex);
+    setConfigDrawerOpen(true);
+  };
+
+  const handleAddExercise = (exercise: LibraryExercise) => {
+    dispatch({
+      type: 'ADD_EXERCISE_TO_WORKOUT' as any,
+      payload: {
+        weekIdx: state.currentWeekIndex,
+        workoutIdx: state.currentWorkoutIndex,
+        exercise: {
+          exerciseId: exercise.id,
+          orderIndex: 0,
+          setsConfig: [],
+          configurations: [
+            { setNumber: 1, setType: 'working', reps: '8', restSeconds: 90 },
+            { setNumber: 2, setType: 'working', reps: '8', restSeconds: 90 },
+            { setNumber: 3, setType: 'working', reps: '8', restSeconds: 90 },
+          ],
+        },
+      },
+    } as any);
+  };
 
   // Load draft on mount if exists
   useEffect(() => {
@@ -95,6 +195,41 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
       case 2:
         return <WeekBuilder onNext={handleNext} onPrev={handlePrev} />;
       case 3:
+        if (isClient) {
+          return (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={rectIntersection}
+              onDragEnd={handleDragEnd}
+            >
+              <div
+                className="flex h-[calc(100vh-220px)] overflow-hidden"
+                data-dnd-ready
+              >
+                <ExerciseLibraryPanel
+                  library={library}
+                  onAddExercise={handleAddExercise}
+                />
+                <WorkoutCanvas
+                  weekIdx={state.currentWeekIndex}
+                  workoutIdx={state.currentWorkoutIndex}
+                  onOpenConfig={handleOpenConfig}
+                />
+                {/* OUTLINE — integration step */}
+                <div className="w-64 hidden xl:block" data-outline-placeholder />
+              </div>
+              <ExerciseConfigDrawer
+                exercise={configExercise}
+                exerciseName={configExercise?.exerciseId ?? ''}
+                open={configDrawerOpen}
+                onClose={() => setConfigDrawerOpen(false)}
+                library={library}
+                weekIdx={configWeekIdx}
+                workoutIdx={configWorkoutIdx}
+              />
+            </DndContext>
+          );
+        }
         return <WorkoutBuilder onNext={handleNext} onPrev={handlePrev} />;
       case 4:
         return <ExerciseSelector onNext={handleNext} onPrev={handlePrev} />;
