@@ -96,14 +96,34 @@ jest.mock('../useExerciseLibrary', () => ({
   }),
 }));
 
-jest.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children }: any) => <div>{children}</div>,
-  PointerSensor: class {},
-  KeyboardSensor: class {},
-  useSensor: jest.fn(),
-  useSensors: jest.fn(() => []),
-  rectIntersection: jest.fn(),
+// useTier mock — default starter; tests below override per-case
+const mockHasFeaturePB = jest.fn().mockReturnValue(false);
+jest.mock('@/hooks/useTier', () => ({
+  useTier: () => ({
+    tier: 'starter',
+    level: 1,
+    isStarter: true,
+    isProfessional: false,
+    isEnterprise: false,
+    isLoading: false,
+    canAccess: jest.fn(() => false),
+    hasFeature: mockHasFeaturePB,
+  }),
 }));
+
+jest.mock('@dnd-kit/core', () => {
+  class MockTouchSensorClass {}
+  return {
+    DndContext: ({ children }: any) => <div>{children}</div>,
+    PointerSensor: class MockPointerSensor {},
+    KeyboardSensor: class MockKeyboardSensor {},
+    TouchSensor: MockTouchSensorClass,
+    useSensor: jest.fn(),
+    useSensors: jest.fn(() => []),
+    rectIntersection: jest.fn(),
+    __MockTouchSensor: MockTouchSensorClass,
+  };
+});
 
 jest.mock('@dnd-kit/sortable', () => ({
   sortableKeyboardCoordinates: jest.fn(),
@@ -289,5 +309,42 @@ describe('ProgramBuilder (features)', () => {
     render(<ProgramBuilder onSave={mockOnSave} />);
     fireEvent.click(screen.getByTestId('icon-x').closest('button')!);
     // No error should occur
+  });
+});
+
+// ─── TouchSensor gating tests ────────────────────────────────────────────────
+
+describe('ProgramBuilder — mobile TouchSensor gate', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const dndKit = require('@dnd-kit/core');
+    dndKit.useSensors.mockReturnValue([]);
+    mockState.currentStep = 1;
+    mockState.isDirty = false;
+    mockState.isValid = true;
+  });
+
+  it('Starter: TouchSensor is NOT added to useSensor calls', () => {
+    mockHasFeaturePB.mockReturnValue(false);
+    render(<ProgramBuilder onSave={jest.fn()} onCancel={jest.fn()} />);
+
+    const dndKit = require('@dnd-kit/core');
+    const MockTouchSensorClass = dndKit.__MockTouchSensor;
+    const sensorCalls: any[][] = dndKit.useSensor.mock.calls;
+    const usedSensorClasses = sensorCalls.map((call: any[]) => call[0]);
+    // TouchSensor should NOT appear for starter
+    expect(usedSensorClasses).not.toContain(MockTouchSensorClass);
+  });
+
+  it('Pro user: TouchSensor IS added to useSensor calls', () => {
+    mockHasFeaturePB.mockReturnValue(true);
+    render(<ProgramBuilder onSave={jest.fn()} onCancel={jest.fn()} />);
+
+    const dndKit = require('@dnd-kit/core');
+    const MockTouchSensorClass = dndKit.__MockTouchSensor;
+    const sensorCalls: any[][] = dndKit.useSensor.mock.calls;
+    const usedSensorClasses = sensorCalls.map((call: any[]) => call[0]);
+    // TouchSensor should appear for pro
+    expect(usedSensorClasses).toContain(MockTouchSensorClass);
   });
 });
