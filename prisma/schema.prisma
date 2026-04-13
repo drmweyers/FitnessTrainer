@@ -818,16 +818,17 @@ model ProgramTemplate {
   description String?   @db.Text
   category    String    @db.VarChar(50)
   tags        String[]
-  isPublic    Boolean   @default(false) @map("is_public")
-  useCount    Int       @default(0) @map("use_count")
-  rating      Float?
-  createdBy   String    @map("created_by") @db.Uuid
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
+  isPublic      Boolean   @default(false) @map("is_public")
+  isTeamShared  Boolean   @default(false) @map("is_team_shared")
+  useCount      Int       @default(0) @map("use_count")
+  rating        Float?
+  createdBy     String    @map("created_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime? @updatedAt @map("updated_at")
 
   // Relations
-  program     Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
-  creator     User      @relation("CreatedTemplates", fields: [createdBy], references: [id])
+  program       Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  creator       User      @relation("CreatedTemplates", fields: [createdBy], references: [id])
 
   @@map("program_templates")
 }
