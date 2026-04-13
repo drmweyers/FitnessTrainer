@@ -97,7 +97,29 @@ model User {
   supportTickets      SupportTicket[]      @relation("UserTickets")
   contentReports      ContentReport[]      @relation("UserReports")
 
+  // Relations - Subscription Tier (Stream: tier-infra)
+  subscriptions       TrainerSubscription[]
+
   @@map("users")
+}
+
+// Trainer subscription record — one per purchase/active plan
+model TrainerSubscription {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId              String    @map("trainer_id") @db.Uuid
+  // 1=starter, 2=professional, 3=enterprise — integer kept in sync with TIER_BY_LEVEL
+  tierLevel              Int       @map("tier_level") @db.Integer
+  status                 String    @map("status") @db.VarChar(16) // 'active' | 'inactive'
+  stripePaymentIntentId  String?   @map("stripe_payment_intent_id")
+  stripeSubscriptionId   String?   @map("stripe_subscription_id")
+  amountPaidCents        Int       @map("amount_paid_cents")
+  purchaseDate           DateTime  @default(now()) @map("purchase_date")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime? @updatedAt @map("updated_at")
+
+  trainer                User      @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("trainer_subscriptions")
 }
 
 // Email verification tokens
