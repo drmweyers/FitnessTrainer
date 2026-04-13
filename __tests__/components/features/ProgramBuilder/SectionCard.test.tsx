@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import SectionCard, { CanvasSection } from '@/components/features/ProgramBuilder/SectionCard'
-import type { WorkoutExerciseDataExtended } from '@/components/features/ProgramBuilder/_stubs'
+import type { WorkoutExerciseDataExtended } from '@/types/program'
 import { SetType } from '@/types/program'
 
 jest.mock('@dnd-kit/sortable', () => ({

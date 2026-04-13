@@ -15,8 +15,8 @@ import ExerciseLibraryPanel from '@/components/features/ProgramBuilder/ExerciseL
 import WorkoutCanvas from '@/components/features/ProgramBuilder/WorkoutCanvas'
 import ExerciseConfigDrawer from '@/components/features/ProgramBuilder/ExerciseConfigDrawer'
 import { ProgramBuilderProvider } from '@/components/features/ProgramBuilder/ProgramBuilderContext'
-import { useExerciseLibrary } from '@/components/features/ProgramBuilder/_stubs'
-import type { WorkoutExerciseDataExtended } from '@/components/features/ProgramBuilder/_stubs'
+import { useExerciseLibrary } from '@/components/features/ProgramBuilder/useExerciseLibrary'
+import type { WorkoutExerciseDataExtended } from '@/types/program'
 
 function BuilderPreviewInner() {
   const library = useExerciseLibrary()

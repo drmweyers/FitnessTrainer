@@ -4,7 +4,8 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import ExerciseConfigDrawer from '@/components/features/ProgramBuilder/ExerciseConfigDrawer'
 import { ProgramBuilderProvider } from '@/components/features/ProgramBuilder/ProgramBuilderContext'
-import type { WorkoutExerciseDataExtended, UseExerciseLibraryReturn } from '@/components/features/ProgramBuilder/_stubs'
+import type { WorkoutExerciseDataExtended } from '@/types/program'
+import type { UseExerciseLibraryReturn } from '@/components/features/ProgramBuilder/useExerciseLibrary'
 import { SetType } from '@/types/program'
 
 // Radix Dialog renders in a portal; need jsdom to handle it

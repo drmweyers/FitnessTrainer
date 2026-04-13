@@ -13,7 +13,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import type { SectionType, SectionMetadata, WorkoutExerciseDataExtended } from './_stubs'
+import type { SectionType, SectionMetadata, WorkoutExerciseDataExtended } from '@/types/program'
 
 export interface CanvasSection {
   id: string

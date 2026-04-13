@@ -251,6 +251,9 @@ export interface WorkoutExerciseData {
   configurations?: ExerciseConfigurationData[];
 }
 
+// Alias retained for builder UI that was authored against this name.
+export type WorkoutExerciseDataExtended = WorkoutExerciseData;
+
 export interface ExerciseConfigurationData {
   setNumber: number;
   setType: SetType;

@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import DraggableExerciseCard from './DraggableExerciseCard'
-import type { UseExerciseLibraryReturn, LibraryExercise } from './_stubs'
+import { useExerciseLibrary } from './useExerciseLibrary'
+import type { UseExerciseLibraryReturn, LibraryExercise } from './useExerciseLibrary'
 
 const MUSCLE_GROUPS = [
   'back', 'cardio', 'chest', 'lower arms', 'lower legs',
@@ -26,7 +27,7 @@ const EQUIPMENT_OPTIONS = [
 ]
 
 interface ExerciseLibraryPanelProps {
-  library: UseExerciseLibraryReturn
+  library?: UseExerciseLibraryReturn
   isMobile?: boolean
   onAddExercise: (exercise: LibraryExercise) => void
 }
@@ -38,10 +39,12 @@ const TAB_LABELS: Record<UseExerciseLibraryReturn['tab'], string> = {
 }
 
 const ExerciseLibraryPanel: React.FC<ExerciseLibraryPanelProps> = ({
-  library,
+  library: libraryProp,
   isMobile = false,
   onAddExercise,
 }) => {
+  const hookLibrary = useExerciseLibrary()
+  const library = libraryProp ?? hookLibrary
   const {
     search, setSearch,
     muscleGroup, setMuscleGroup,

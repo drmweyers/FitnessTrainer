@@ -3,7 +3,24 @@ import '@testing-library/jest-dom'
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import ExerciseLibraryPanel from '@/components/features/ProgramBuilder/ExerciseLibraryPanel'
-import type { UseExerciseLibraryReturn, LibraryExercise } from '@/components/features/ProgramBuilder/_stubs'
+import type { UseExerciseLibraryReturn, LibraryExercise } from '@/components/features/ProgramBuilder/useExerciseLibrary'
+
+// Mock the hook so the panel never calls TanStack Query in unit tests.
+jest.mock('@/components/features/ProgramBuilder/useExerciseLibrary', () => ({
+  useExerciseLibrary: () => ({
+    search: '', setSearch: jest.fn(),
+    muscleGroup: null, setMuscleGroup: jest.fn(),
+    equipment: null, setEquipment: jest.fn(),
+    hasVideo: false, setHasVideo: jest.fn(),
+    tab: 'all', setTab: jest.fn(),
+    exercises: [],
+    isLoading: false,
+    error: null,
+    filters: { muscleGroups: [], equipment: [] },
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
+}))
 
 jest.mock('@dnd-kit/core', () => ({
   useDraggable: () => ({

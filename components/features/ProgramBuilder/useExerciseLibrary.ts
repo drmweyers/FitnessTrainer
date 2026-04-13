@@ -4,16 +4,20 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Exercise } from '@/lib/types/exercise'
 
+// Re-export for components that need the library item shape
+export type LibraryExercise = Exercise
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Tab = 'all' | 'favorites' | 'collections'
+export type ExerciseLibraryTab = 'all' | 'favorites' | 'collections'
+type Tab = ExerciseLibraryTab
 
-interface ExerciseLibraryFilters {
+export interface ExerciseLibraryFilters {
   muscleGroups: string[]
   equipment: string[]
 }
 
-interface UseExerciseLibraryReturn {
+export interface UseExerciseLibraryReturn {
   search: string
   setSearch: (_s: string) => void
   muscleGroup: string | null

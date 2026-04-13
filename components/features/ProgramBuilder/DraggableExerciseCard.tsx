@@ -6,7 +6,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Dumbbell, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { LibraryExercise } from './_stubs'
+import type { LibraryExercise } from './useExerciseLibrary'
 
 interface DraggableExerciseCardProps {
   exercise: LibraryExercise

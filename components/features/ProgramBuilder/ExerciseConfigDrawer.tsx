@@ -16,8 +16,9 @@ import {
 } from '@/components/ui/select'
 import PercentageCalculator from './PercentageCalculator'
 import { useProgramBuilder } from './ProgramBuilderContext'
-import { SetType, ExerciseConfigurationData } from '@/types/program'
-import type { WorkoutExerciseDataExtended, UseExerciseLibraryReturn } from './_stubs'
+import { SetType } from '@/types/program'
+import type { ExerciseConfigurationData, WorkoutExerciseDataExtended } from '@/types/program'
+import type { UseExerciseLibraryReturn } from './useExerciseLibrary'
 
 const SET_TYPES: { value: SetType; label: string }[] = [
   { value: SetType.WARMUP, label: 'Warm-up' },
@@ -287,7 +288,7 @@ interface ExerciseConfigDrawerProps {
   exerciseName: string
   open: boolean
   onClose: () => void
-  library: UseExerciseLibraryReturn
+  library?: UseExerciseLibraryReturn
   weekIdx: number
   workoutIdx: number
 }
@@ -297,11 +298,12 @@ const ExerciseConfigDrawer: React.FC<ExerciseConfigDrawerProps> = ({
   exerciseName,
   open,
   onClose,
-  library,
+  library: libraryProp,
   weekIdx,
   workoutIdx,
 }) => {
   const { dispatch } = useProgramBuilder()
+  const library = libraryProp
 
   const initialSets = (): ExerciseConfigurationData[] => {
     if (exercise?.configurations?.length) return [...exercise.configurations]
@@ -445,11 +447,13 @@ const ExerciseConfigDrawer: React.FC<ExerciseConfigDrawerProps> = ({
                     />
                   </div>
 
-                  <AlternatePicker
-                    currentAlternateId={alternateId}
-                    library={library}
-                    onChange={(id) => { setAlternateId(id); setIsDirty(true) }}
-                  />
+                  {library ? (
+                    <AlternatePicker
+                      currentAlternateId={alternateId}
+                      library={library}
+                      onChange={(id) => { setAlternateId(id); setIsDirty(true) }}
+                    />
+                  ) : null}
                 </Tabs.Content>
               </div>
             </Tabs.Root>

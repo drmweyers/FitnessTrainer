@@ -22,8 +22,8 @@ import WorkoutCanvas from './WorkoutCanvas';
 import ExerciseConfigDrawer from './ExerciseConfigDrawer';
 import { Save, X } from 'lucide-react';
 import { ProgramData } from '@/types/program';
-import { useExerciseLibrary } from './_stubs';
-import type { WorkoutExerciseDataExtended, LibraryExercise } from './_stubs';
+import type { LibraryExercise } from './useExerciseLibrary';
+import type { WorkoutExerciseDataExtended } from '@/types/program';
 
 interface ProgramBuilderProps {
   onSave?: (programData: ProgramData, saveAsTemplate: boolean) => Promise<void>;
@@ -40,7 +40,6 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
   const [configExercise, setConfigExercise] = useState<WorkoutExerciseDataExtended | null>(null);
   const [configWeekIdx, setConfigWeekIdx] = useState(0);
   const [configWorkoutIdx, setConfigWorkoutIdx] = useState(0);
-  const library = useExerciseLibrary();
 
   useEffect(() => {
     setIsClient(true);
@@ -78,12 +77,14 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
           },
         } as any);
       } else if (activeType === 'workout-exercise') {
-        if (String(over.id) === 'workout-trash') {
+        const from = active.data.current?.location;
+        if (String(over.id) === 'workout-trash' && from) {
           dispatch({
-            type: 'REMOVE_EXERCISE' as any,
-            payload: active.data.current?.exercise,
-          } as any);
+            type: 'REMOVE_WORKOUT_EXERCISE',
+            payload: from,
+          });
         } else {
+          // Cross-section/reorder: to be wired when section drop targets expose location.
           dispatch({
             type: 'MOVE_EXERCISE' as any,
             payload: { from: active.id, to: over.id },
@@ -206,10 +207,7 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
                 className="flex h-[calc(100vh-220px)] overflow-hidden"
                 data-dnd-ready
               >
-                <ExerciseLibraryPanel
-                  library={library}
-                  onAddExercise={handleAddExercise}
-                />
+                <ExerciseLibraryPanel onAddExercise={handleAddExercise} />
                 <WorkoutCanvas
                   weekIdx={state.currentWeekIndex}
                   workoutIdx={state.currentWorkoutIndex}
@@ -218,15 +216,16 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
                 {/* OUTLINE — integration step */}
                 <div className="w-64 hidden xl:block" data-outline-placeholder />
               </div>
-              <ExerciseConfigDrawer
-                exercise={configExercise}
-                exerciseName={configExercise?.exerciseId ?? ''}
-                open={configDrawerOpen}
-                onClose={() => setConfigDrawerOpen(false)}
-                library={library}
-                weekIdx={configWeekIdx}
-                workoutIdx={configWorkoutIdx}
-              />
+              {configDrawerOpen && (
+                <ExerciseConfigDrawer
+                  exercise={configExercise}
+                  exerciseName={configExercise?.exerciseId ?? ''}
+                  open={configDrawerOpen}
+                  onClose={() => setConfigDrawerOpen(false)}
+                  weekIdx={configWeekIdx}
+                  workoutIdx={configWorkoutIdx}
+                />
+              )}
             </DndContext>
           );
         }

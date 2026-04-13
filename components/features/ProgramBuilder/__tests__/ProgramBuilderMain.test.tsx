@@ -80,16 +80,17 @@ jest.mock('../ExerciseConfigDrawer', () => ({
   default: () => null,
 }));
 
-jest.mock('../_stubs', () => ({
+jest.mock('../useExerciseLibrary', () => ({
   useExerciseLibrary: () => ({
     search: '', setSearch: jest.fn(),
-    muscleGroup: '', setMuscleGroup: jest.fn(),
-    equipment: '', setEquipment: jest.fn(),
+    muscleGroup: null, setMuscleGroup: jest.fn(),
+    equipment: null, setEquipment: jest.fn(),
     hasVideo: false, setHasVideo: jest.fn(),
     tab: 'all', setTab: jest.fn(),
     exercises: [],
     isLoading: false,
     error: null,
+    filters: { muscleGroups: [], equipment: [] },
     hasMore: false,
     loadMore: jest.fn(),
   }),

@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import DraggableExerciseCard from '@/components/features/ProgramBuilder/DraggableExerciseCard'
-import type { LibraryExercise } from '@/components/features/ProgramBuilder/_stubs'
+import type { LibraryExercise } from '@/components/features/ProgramBuilder/useExerciseLibrary'
 
 // Mock @dnd-kit/core useDraggable
 jest.mock('@dnd-kit/core', () => ({

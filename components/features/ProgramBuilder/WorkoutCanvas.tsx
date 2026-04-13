@@ -17,7 +17,7 @@ import type {
   SectionType,
   SectionMetadata,
   WorkoutExerciseDataExtended,
-} from './_stubs'
+} from '@/types/program'
 
 const SECTION_TYPE_OPTIONS: { type: SectionType; label: string }[] = [
   { type: 'regular', label: 'Regular' },
@@ -160,7 +160,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
   const handleRemoveExercise = (exerciseId: string) => {
     const idx = exercises.findIndex((e) => e.exerciseId === exerciseId)
     if (idx !== -1) {
-      dispatch({ type: 'REMOVE_EXERCISE' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, exerciseIdx: idx } } as any)
+      dispatch({ type: 'REMOVE_WORKOUT_EXERCISE', payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, exerciseIdx: idx } })
     }
   }
 
