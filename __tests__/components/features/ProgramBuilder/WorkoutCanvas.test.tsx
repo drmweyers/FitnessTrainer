@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 import '@testing-library/jest-dom'
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import WorkoutCanvas from '@/components/features/ProgramBuilder/WorkoutCanvas'
 import { ProgramBuilderProvider } from '@/components/features/ProgramBuilder/ProgramBuilderContext'
 
@@ -25,6 +25,24 @@ jest.mock('@dnd-kit/sortable', () => ({
 jest.mock('@dnd-kit/utilities', () => ({
   CSS: { Transform: { toString: () => '' } },
 }))
+
+// useTier mock — default starter
+const mockHasFeature = jest.fn().mockReturnValue(false)
+jest.mock('@/hooks/useTier', () => ({
+  useTier: () => ({
+    tier: 'starter',
+    level: 1,
+    isStarter: true,
+    isProfessional: false,
+    isEnterprise: false,
+    isLoading: false,
+    canAccess: jest.fn(() => false),
+    hasFeature: mockHasFeature,
+  }),
+}))
+
+// Mock fetch for AI suggest
+global.fetch = jest.fn()
 
 function renderCanvas(props = {}) {
   return render(
@@ -70,5 +88,80 @@ describe('WorkoutCanvas', () => {
     fireEvent.click(btns[btns.length - 1])
     // Dropdown items should appear
     expect(screen.getByText('Regular')).toBeInTheDocument()
+  })
+})
+
+// ─── AI Suggest button gate tests ─────────────────────────────────────────
+
+describe('WorkoutCanvas — AI Suggest button', () => {
+  beforeEach(() => {
+    mockHasFeature.mockReset()
+    ;(global.fetch as jest.Mock).mockReset()
+  })
+
+  it('Starter user sees the AI Suggest button in locked/upgrade state', () => {
+    // hasFeature returns false → FeatureGate shows locked CTA
+    mockHasFeature.mockReturnValue(false)
+    renderCanvas()
+    // FeatureGate renders "Upgrade Plan" button with locked state for starter
+    // The locked CTA should be present somewhere in the DOM
+    const upgradeBtns = screen.queryAllByText(/upgrade/i)
+    // There's at least one locked FeatureGate rendered
+    expect(upgradeBtns.length).toBeGreaterThan(0)
+  })
+
+  it('Pro user sees the Suggest next exercise button', () => {
+    mockHasFeature.mockReturnValue(true)
+    renderCanvas()
+    expect(screen.getByRole('button', { name: /suggest next exercise/i })).toBeInTheDocument()
+  })
+
+  it('Pro user clicking Suggest button calls /api/programs/suggest-exercise', async () => {
+    mockHasFeature.mockReturnValue(true)
+    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          suggestions: [
+            { id: 'ex-1', name: 'Squat', bodyPart: 'upper legs', targetMuscle: 'quads', equipment: 'barbell', gifUrl: null },
+          ],
+        },
+      }),
+    })
+
+    renderCanvas()
+    const btn = screen.getByRole('button', { name: /suggest next exercise/i })
+    fireEvent.click(btn)
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/programs/suggest-exercise',
+        expect.objectContaining({ method: 'POST' }),
+      )
+    })
+  })
+
+  it('Pro user sees suggestions popover after successful fetch', async () => {
+    mockHasFeature.mockReturnValue(true)
+    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: {
+          suggestions: [
+            { id: 'ex-sq', name: 'Squat', bodyPart: 'upper legs', targetMuscle: 'quads', equipment: 'barbell', gifUrl: null },
+          ],
+        },
+      }),
+    })
+
+    renderCanvas()
+    const btn = screen.getByRole('button', { name: /suggest next exercise/i })
+    fireEvent.click(btn)
+
+    await waitFor(() => {
+      expect(screen.getByText('Squat')).toBeInTheDocument()
+    })
   })
 })
