@@ -1,5 +1,16 @@
 // Program builder types that match backend API
 
+// Section types for workout sections in the canvas builder
+export type SectionType = 'regular' | 'superset' | 'circuit' | 'interval' | 'amrap' | 'timed'
+
+// Client-side section metadata — serialised onto configurations[0].notes as JSON on save
+export interface SectionMetadata {
+  rounds?: number
+  endRest?: number
+  intervalWork?: number
+  intervalRest?: number
+}
+
 export enum ProgramType {
   STRENGTH = 'strength',
   HYPERTROPHY = 'hypertrophy',
@@ -233,6 +244,8 @@ export interface WorkoutExerciseData {
   exerciseId: string;
   orderIndex: number;
   supersetGroup?: string;
+  sectionType?: SectionType;
+  alternateExerciseId?: string;
   setsConfig: any;
   notes?: string;
   configurations?: ExerciseConfigurationData[];
