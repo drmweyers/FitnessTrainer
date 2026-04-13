@@ -176,13 +176,12 @@ test.describe('02 - I Can Always Back Out', () => {
     await expect(weekNameInput).toBeVisible({ timeout: TIMEOUTS.element });
     await weekNameInput.fill('Should Not Appear');
 
-    // Press Cancel in the dialog footer — it's a sibling of the "Add Week" submit button
-    // Radix Dialog content doesn't have role="dialog" in accessibility tree, so scope to
-    // the container that has both "Cancel" and the "Add Week" submit button
-    const addWeekSubmitBtn = page.locator('button:has-text("Add Week")').last();
-    await expect(addWeekSubmitBtn).toBeVisible({ timeout: TIMEOUTS.element });
-    // Cancel is in the same footer as the Add Week submit button
-    const dialogCancelBtn = page.locator('button:has-text("Cancel")').filter({ hasText: 'Cancel' }).last();
+    // The page has multiple buttons named "Cancel" — wizard header, etc.
+    // Scope to the open dialog (the rewritten ui/dialog component sets
+    // role="dialog" + aria-modal so this target is unambiguous).
+    const dialogCancelBtn = page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Cancel', exact: true });
     await expect(dialogCancelBtn).toBeVisible({ timeout: TIMEOUTS.element });
     await dialogCancelBtn.click();
 
@@ -524,35 +523,33 @@ test.describe('02 - I Can Always Back Out', () => {
 
     await navTo(page, ROUTES.analytics);
 
-    const measureTab = page.locator('[role="tab"]:has-text("Measurement"), button:has-text("Measurement"), button:has-text("Body")').first();
-    if (await measureTab.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await measureTab.click();
-      await waitForPageReady(page);
-    }
-
-    const logBtn = page.locator('button:has-text("Log"), button:has-text("Add Measurement"), button:has-text("Record")').first();
-    if (!(await logBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
+    // The analytics page renders a "Record New Measurement" button that
+    // opens MeasurementTracker (a custom modal that always renders an
+    // intercepting overlay when isOpen=true). The previous test logic
+    // clicked a "Measurement"-matching tab AND a "Log/Record"-matching
+    // button, but both selectors actually matched the same Record button —
+    // the modal opened on the first click, and the second click hit the
+    // overlay and timed out.
+    const recordBtn = page.getByRole('button', { name: /record new measurement/i }).first();
+    if (!(await recordBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
       test.skip();
       return;
     }
-    await logBtn.click();
+    await recordBtn.click();
 
-    const weightInput = page.locator('input[placeholder*="weight" i], input[type="number"]').first();
-    if (await weightInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    // The modal now contains a Weight input on the Basic tab
+    const weightInput = page.getByLabel(/weight/i).first();
+    if (await weightInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await weightInput.fill('999');
     }
 
-    const cancelBtn = page.locator('button:has-text("Cancel")').first();
-    if (await cancelBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
-      await cancelBtn.click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
+    // MeasurementTracker has its own Cancel button in the modal footer
+    const cancelBtn = page.getByRole('button', { name: 'Cancel', exact: true });
+    await expect(cancelBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await cancelBtn.click();
 
     const afterCount = await getApiCount(page, API.analyticsMeasurements, token);
-    if (beforeCount >= 0 && afterCount >= 0) {
-      expect(afterCount).toBe(beforeCount);
-    }
+    expect(afterCount).toBe(beforeCount);
   });
 
   // =========================================================================
