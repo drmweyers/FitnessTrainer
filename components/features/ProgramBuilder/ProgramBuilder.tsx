@@ -1,13 +1,34 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Component, ErrorInfo } from 'react';
 import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext';
 import ProgramForm from './ProgramForm';
 import WeekBuilder from './WeekBuilder';
 import WorkoutBuilder from './WorkoutBuilder';
 import ExerciseSelector from './ExerciseSelector';
 import ProgramPreview from './ProgramPreview';
+import ProgramOutline from './ProgramOutline';
 import { Save, X } from 'lucide-react';
+
+interface OutlineBoundaryState { hasError: boolean }
+
+/** Silently swallows render errors in the outline panel so the main builder stays functional. */
+class OutlineBoundary extends Component<{ children: React.ReactNode }, OutlineBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(_error: unknown): OutlineBoundaryState {
+    return { hasError: true };
+  }
+  override componentDidCatch(_error: Error, _info: ErrorInfo) {
+    // Outline is non-critical; fail silently in production.
+  }
+  override render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 import { ProgramData } from '@/types/program';
 
 interface ProgramBuilderProps {
@@ -176,20 +197,27 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
           </div>
         </div>
 
-        {/* Step Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {state.isDirty && (
-            <div className="px-6 pt-6 pb-2">
-              <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-                <Save className="inline h-4 w-4 mr-1" />
-                Draft saved automatically
+        {/* Step Content + Outline Panel */}
+        <div className="flex gap-0 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="flex-1 min-w-0">
+            {state.isDirty && (
+              <div className="px-6 pt-6 pb-2">
+                <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                  <Save className="inline h-4 w-4 mr-1" />
+                  Draft saved automatically
+                </div>
               </div>
+            )}
+
+            <div className={state.isDirty ? "p-6 pt-4" : "p-6"}>
+              {renderStep()}
             </div>
-          )}
-          
-          <div className={state.isDirty ? "p-6 pt-4" : "p-6"}>
-            {renderStep()}
           </div>
+
+          {/* Right Outline Panel (visible on xl+ screens) */}
+          <OutlineBoundary>
+            <ProgramOutline />
+          </OutlineBoundary>
         </div>
       </div>
     </div>
