@@ -570,6 +570,7 @@ model Exercise {
   collectionExercises CollectionExercise[]
   usageHistory      ExerciseUsage[]
   workoutExercises  WorkoutExercise[] @relation("WorkoutExercises")
+  alternateFor      WorkoutExercise[] @relation("AlternateExercises")
   workoutLogs       WorkoutExerciseLog[] @relation("ExerciseWorkoutLogs")
   performanceMetrics PerformanceMetric[] @relation("ExercisePerformanceMetrics")
 
@@ -723,20 +724,23 @@ model ProgramWorkout {
 
 // Workout exercises
 model WorkoutExercise {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workoutId     String    @map("workout_id") @db.Uuid
-  exerciseId    String    @map("exercise_id") @db.Uuid
-  orderIndex    Int       @map("order_index")
-  supersetGroup String?   @map("superset_group") @db.VarChar(10) // A, B, C for grouping
-  setsConfig    Json      @map("sets_config") @db.JsonB // [{type: 'working', count: 3}, {type: 'warmup', count: 2}]
-  notes         String?   @db.Text
-  createdAt     DateTime  @default(now()) @map("created_at")
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId           String    @map("workout_id") @db.Uuid
+  exerciseId          String    @map("exercise_id") @db.Uuid
+  orderIndex          Int       @map("order_index")
+  supersetGroup       String?   @map("superset_group") @db.VarChar(10) // A, B, C for grouping
+  sectionType         String?   @map("section_type") @db.VarChar(20)  // regular|superset|circuit|interval|amrap|timed
+  alternateExerciseId String?   @map("alternate_exercise_id") @db.Uuid
+  setsConfig          Json      @map("sets_config") @db.JsonB // [{type: 'working', count: 3}, {type: 'warmup', count: 2}]
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now()) @map("created_at")
 
   // Relations
-  workout       ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exercise      Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
-  configurations ExerciseConfiguration[]
-  workoutLogs   WorkoutExerciseLog[] @relation("WorkoutExerciseLogs")
+  workout           ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise          Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
+  alternateExercise Exercise?      @relation("AlternateExercises", fields: [alternateExerciseId], references: [id])
+  configurations    ExerciseConfiguration[]
+  workoutLogs       WorkoutExerciseLog[] @relation("WorkoutExerciseLogs")
 
   @@unique([workoutId, orderIndex])
   @@map("workout_exercises")
