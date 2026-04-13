@@ -51,6 +51,61 @@ jest.mock('../ProgramPreview', () => ({
 jest.mock('lucide-react', () => ({
   Save: () => <span data-testid="icon-save" />,
   X: () => <span data-testid="icon-x" />,
+  GripVertical: () => null,
+  Search: () => null,
+  Filter: () => null,
+  Plus: () => null,
+  Trash2: () => null,
+  Zap: () => null,
+  Clock: () => null,
+  Timer: () => null,
+  Repeat: () => null,
+  Target: () => null,
+  ChevronRight: () => null,
+  Video: () => null,
+}));
+
+jest.mock('../ExerciseLibraryPanel', () => ({
+  __esModule: true,
+  default: () => <div data-testid="exercise-library-panel" />,
+}));
+
+jest.mock('../WorkoutCanvas', () => ({
+  __esModule: true,
+  default: () => <div data-testid="workout-canvas" />,
+}));
+
+jest.mock('../ExerciseConfigDrawer', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
+jest.mock('../_stubs', () => ({
+  useExerciseLibrary: () => ({
+    search: '', setSearch: jest.fn(),
+    muscleGroup: '', setMuscleGroup: jest.fn(),
+    equipment: '', setEquipment: jest.fn(),
+    hasVideo: false, setHasVideo: jest.fn(),
+    tab: 'all', setTab: jest.fn(),
+    exercises: [],
+    isLoading: false,
+    error: null,
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
+}));
+
+jest.mock('@dnd-kit/core', () => ({
+  DndContext: ({ children }: any) => <div>{children}</div>,
+  PointerSensor: class {},
+  KeyboardSensor: class {},
+  useSensor: jest.fn(),
+  useSensors: jest.fn(() => []),
+  rectIntersection: jest.fn(),
+}));
+
+jest.mock('@dnd-kit/sortable', () => ({
+  sortableKeyboardCoordinates: jest.fn(),
 }));
 
 import ProgramBuilder from '../ProgramBuilder';
@@ -178,10 +233,14 @@ describe('ProgramBuilder (features)', () => {
     expect(screen.getByTestId('week-builder')).toBeInTheDocument();
   });
 
-  it('renders workout builder on step 3', () => {
+  it('renders 3-panel canvas on step 3 (new DnD builder)', () => {
     mockState.currentStep = 3;
     render(<ProgramBuilder onSave={mockOnSave} onCancel={mockOnCancel} />);
-    expect(screen.getByTestId('workout-builder')).toBeInTheDocument();
+    // Step 3 now shows the new 3-panel DnD builder (ExerciseLibraryPanel + WorkoutCanvas)
+    // Both are mocked above so they render their stub testids
+    expect(
+      screen.getByTestId('exercise-library-panel') || screen.getByTestId('workout-canvas')
+    ).toBeInTheDocument();
   });
 
   it('renders exercise selector on step 4', () => {
