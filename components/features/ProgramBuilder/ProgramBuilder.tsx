@@ -7,17 +7,21 @@ import WeekBuilder from './WeekBuilder';
 import WorkoutBuilder from './WorkoutBuilder';
 import ExerciseSelector from './ExerciseSelector';
 import ProgramPreview from './ProgramPreview';
-import { Save, X } from 'lucide-react';
+import { Download, Save, X } from 'lucide-react';
 import { ProgramData } from '@/types/program';
+import { FeatureGate } from '@/components/subscription/FeatureGate';
 
 interface ProgramBuilderProps {
   onSave?: (programData: ProgramData, saveAsTemplate: boolean) => Promise<void>;
   onCancel?: () => void;
+  /** When provided (after first save), enables the Export PDF button */
+  savedProgramId?: string;
 }
 
 const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
   onSave,
-  onCancel
+  onCancel,
+  savedProgramId,
 }) => {
   const { state, dispatch } = useProgramBuilder();
 
@@ -120,12 +124,36 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">Create Training Program</h1>
-            <button
-              onClick={handleCancel}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              <X className="h-6 w-6" />
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Export PDF — Professional + Enterprise, only when program is saved */}
+              <FeatureGate feature="programBuilder.pdfExport" minimal>
+                <button
+                  onClick={() => {
+                    if (savedProgramId) {
+                      const token = typeof window !== 'undefined'
+                        ? localStorage.getItem('accessToken')
+                        : null;
+                      const url = `/api/programs/${savedProgramId}/export${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+                      window.open(url, '_blank');
+                    }
+                  }}
+                  disabled={!savedProgramId}
+                  title={savedProgramId ? 'Export program as PDF' : 'Save the program first to enable export'}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Export PDF"
+                >
+                  <Download className="h-4 w-4" />
+                  Export PDF
+                </button>
+              </FeatureGate>
+
+              <button
+                onClick={handleCancel}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
           </div>
           
           {/* Progress Steps */}
