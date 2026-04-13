@@ -26,14 +26,14 @@ const bulkAssignSchema = z.object({
 
 async function handler(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  ctx?: unknown,
 ) {
+  const { id: programId } = (ctx as { params: { id: string } }).params;
+
   try {
     const authResult = await authenticate(request);
     if (authResult instanceof NextResponse) return authResult;
     const user = (authResult as AuthenticatedRequest).user!;
-
-    const { id: programId } = params;
 
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(programId)) {

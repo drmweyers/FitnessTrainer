@@ -22,13 +22,14 @@ export const dynamic = 'force-dynamic';
 // ── In-memory LRU cache (10 entries) ──────────────────────────────────────
 
 const CACHE_MAX = 10;
-const cache = new Map<string, Buffer>();
+const cache = new Map<string, string>();
 
 function cacheKey(programId: string, updatedAt: Date): string {
   return `${programId}::${updatedAt.toISOString()}`;
 }
 
-function cacheGet(key: string): Buffer | undefined {
+// Store PDF bytes as base64 strings to avoid TypeScript Uint8Array variance issues.
+function cacheGet(key: string): string | undefined {
   const val = cache.get(key);
   if (val) {
     // Refresh recency: delete + re-insert
@@ -38,13 +39,13 @@ function cacheGet(key: string): Buffer | undefined {
   return val;
 }
 
-function cacheSet(key: string, val: Buffer): void {
+function cacheSet(key: string, b64: string): void {
   if (cache.size >= CACHE_MAX) {
     // Evict least-recently-used (first key in insertion order)
     const lruKey = cache.keys().next().value;
     if (lruKey !== undefined) cache.delete(lruKey);
   }
-  cache.set(key, val);
+  cache.set(key, b64);
 }
 
 // ── HTML template ─────────────────────────────────────────────────────────
@@ -55,14 +56,11 @@ function buildHtml(program: ProgramWithWeeks): string {
       const workoutRows = week.workouts
         .map((wo) => {
           const exerciseList = wo.exercises
-            .map(
-              (ex) =>
-                `<li>${ex.exercise?.name ?? 'Exercise'} — ${
-                  ex.configurations?.[0]
-                    ? `${ex.configurations[0].sets} × ${ex.configurations[0].reps}`
-                    : 'See notes'
-                }</li>`,
-            )
+            .map((ex) => {
+              const cfg = ex.configurations?.[0];
+              const setInfo = cfg ? `${cfg.setNumber} set(s) × ${cfg.reps}` : 'See notes';
+              return `<li>${ex.exercise?.name ?? 'Exercise'} — ${setInfo}</li>`;
+            })
             .join('');
           return `<div class="workout"><strong>${wo.name}</strong><ul>${exerciseList}</ul></div>`;
         })
@@ -114,7 +112,7 @@ interface ProgramWithWeeks {
       name: string;
       exercises: Array<{
         exercise: { name: string } | null;
-        configurations: Array<{ sets: number; reps: number }>;
+        configurations: Array<{ setNumber: number; reps: string }>;
       }>;
     }>;
   }>;
@@ -141,13 +139,13 @@ function checkRateLimit(trainerId: string): number {
 
 async function handler(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  ctx?: unknown,
 ) {
+  const { id: programId } = (ctx as { params: { id: string } }).params;
+
   const authResult = await authenticate(request);
   if (authResult instanceof NextResponse) return authResult;
   const user = (authResult as AuthenticatedRequest).user!;
-
-  const { id: programId } = params;
 
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(programId)) {
@@ -167,7 +165,7 @@ async function handler(
               exercises: {
                 include: {
                   exercise: { select: { name: true } },
-                  configurations: { select: { sets: true, reps: true }, take: 1 },
+                  configurations: { select: { setNumber: true, reps: true }, take: 1 },
                 },
               },
             },
@@ -185,15 +183,23 @@ async function handler(
   const cached = cacheGet(key);
   const rateLimitHeaders = { 'X-RateLimit-Remaining': String(remaining) };
 
-  if (cached) {
-    return new NextResponse(cached, {
+  function makePdfResponse(b64: string, filename: string): NextResponse {
+    // Decode base64 → binary string → Blob
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new NextResponse(bytes.buffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="program-${programId}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
         ...rateLimitHeaders,
       },
     });
+  }
+
+  if (cached) {
+    return makePdfResponse(cached, `program-${programId}.pdf`);
   }
 
   // Generate via puppeteer
@@ -207,18 +213,12 @@ async function handler(
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'networkidle0', timeout: 10_000 });
       const pdfBuffer = await page.pdf({ format: 'A4', printBackground: false });
-      const buf = Buffer.from(pdfBuffer);
+      // Store as base64 in cache
+      const b64 = Buffer.from(pdfBuffer).toString('base64');
 
-      cacheSet(key, buf);
+      cacheSet(key, b64);
 
-      return new NextResponse(buf, {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="program-${programId}.pdf"`,
-          ...rateLimitHeaders,
-        },
-      });
+      return makePdfResponse(b64, `program-${programId}.pdf`);
     } finally {
       await browser.close();
     }
