@@ -36,6 +36,11 @@ describe('POST /api/clients/bulk', () => {
     mockPrisma.trainerClient = {
       findMany: jest.fn(),
       updateMany: jest.fn(),
+      count: jest.fn().mockResolvedValue(0), // used by getEntitlements + reactivation limit check
+    };
+    mockPrisma.trainerSubscription = {
+      // Return Professional tier (unlimited clients) so limit checks are bypassed in bulk tests
+      findFirst: jest.fn().mockResolvedValue({ tierLevel: 2, status: 'active' }),
     };
     mockPrisma.clientTagAssignment = {
       deleteMany: jest.fn(),

@@ -130,7 +130,7 @@ export type ProgramBuilderAction =
     }
   | {
       type: 'UPDATE_EXERCISE_CONFIG'
-      payload: { weekIdx: number; workoutIdx: number; exerciseIdx: number; configurations: ExerciseConfigurationData[] }
+      payload: { weekIdx: number; workoutIdx: number; exerciseIdx: number; configurations: ExerciseConfigurationData[]; notes?: string }
     }
   | { type: 'TOGGLE_EXERCISE_SELECTION'; payload: string }
   | { type: 'CLEAR_SELECTION' }
@@ -662,14 +662,14 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
     }
 
     case 'UPDATE_EXERCISE_CONFIG': {
-      const { weekIdx, workoutIdx, exerciseIdx, configurations } = action.payload
+      const { weekIdx, workoutIdx, exerciseIdx, configurations, notes } = action.payload
       const weeks = state.weeks.map((week, wi) => {
         if (wi !== weekIdx) return week
         const workouts = (week.workouts || []).map((workout, woi) => {
           if (woi !== workoutIdx) return workout
           const exercises = (workout.exercises || []).map((ex, idx) => {
             if (idx !== exerciseIdx) return ex
-            return { ...ex, configurations }
+            return { ...ex, configurations, ...(notes !== undefined ? { notes } : {}) }
           })
           return { ...workout, exercises }
         })

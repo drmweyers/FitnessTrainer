@@ -31,7 +31,10 @@ async function constructEvent(req: NextRequest): Promise<Stripe.Event> {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
-    console.warn('[stripe-webhook] STRIPE_WEBHOOK_SECRET not set — skipping signature verification');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('STRIPE_WEBHOOK_SECRET is required in production — set it in Vercel env vars');
+    }
+    console.warn('[stripe-webhook] STRIPE_WEBHOOK_SECRET not set — skipping verification (dev only)');
     return JSON.parse(rawBody) as Stripe.Event;
   }
 

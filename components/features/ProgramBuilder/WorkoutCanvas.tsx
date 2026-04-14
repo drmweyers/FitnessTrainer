@@ -228,22 +228,19 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
 
   const handleAddSuggested = (exercise: SuggestedExercise) => {
     dispatch({
-      type: 'ADD_EXERCISE_TO_WORKOUT' as any,
+      type: 'ADD_EXERCISE_TO_WORKOUT',
       payload: {
         weekIdx: selectedWeekIdx,
         workoutIdx: selectedWorkoutIdx,
         exercise: {
-          exerciseId: exercise.id,
-          orderIndex: 0,
-          setsConfig: [],
-          configurations: [
-            { setNumber: 1, setType: 'working', reps: '8', restSeconds: 90 },
-            { setNumber: 2, setType: 'working', reps: '8', restSeconds: 90 },
-            { setNumber: 3, setType: 'working', reps: '8', restSeconds: 90 },
-          ],
+          id: exercise.id,
+          name: exercise.name,
+          gifUrl: exercise.gifUrl ?? undefined,
+          targetMuscle: exercise.targetMuscle ?? undefined,
+          equipment: exercise.equipment ?? undefined,
         },
       },
-    } as any)
+    })
     setSuggestOpen(false)
   }
 

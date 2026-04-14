@@ -305,7 +305,15 @@ const ExerciseConfigDrawer: React.FC<ExerciseConfigDrawerProps> = ({
   weekIdx,
   workoutIdx,
 }) => {
-  const { dispatch } = useProgramBuilder()
+  const { dispatch, state } = useProgramBuilder()
+
+  // Resolve exerciseIdx by finding this exercise in the current workout.
+  // Required because the reducer uses positional indexes, not exerciseId lookups.
+  const exerciseIdx = React.useMemo(() => {
+    if (!exercise) return -1
+    const workout = state.weeks[weekIdx]?.workouts?.[workoutIdx]
+    return (workout?.exercises ?? []).findIndex((ex) => ex.exerciseId === exercise.exerciseId)
+  }, [exercise, state.weeks, weekIdx, workoutIdx])
   const library = libraryProp
 
   const initialSets = (): ExerciseConfigurationData[] => {
@@ -346,24 +354,23 @@ const ExerciseConfigDrawer: React.FC<ExerciseConfigDrawerProps> = ({
   }
 
   const handleSave = () => {
-    if (!exercise) return
+    if (!exercise || exerciseIdx === -1) return
     const updatedSets = sets.map((s) => ({ ...s, rpe, rir }))
     dispatch({
-      type: 'UPDATE_EXERCISE_CONFIG' as any,
+      type: 'UPDATE_EXERCISE_CONFIG',
       payload: {
         weekIdx,
         workoutIdx,
-        exerciseId: exercise.exerciseId,
+        exerciseIdx,
         configurations: updatedSets,
         notes,
-        alternateExerciseId: alternateId,
       },
-    } as any)
+    })
     if (alternateId !== exercise.alternateExerciseId) {
       dispatch({
-        type: 'SET_ALTERNATE_EXERCISE' as any,
-        payload: { weekIdx, workoutIdx, exerciseId: exercise.exerciseId, alternateExerciseId: alternateId },
-      } as any)
+        type: 'SET_ALTERNATE_EXERCISE',
+        payload: { weekIdx, workoutIdx, exerciseIdx, alternateExerciseId: alternateId ?? null },
+      })
     }
     setIsDirty(false)
     onClose()

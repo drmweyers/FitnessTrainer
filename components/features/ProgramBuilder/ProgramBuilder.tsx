@@ -95,22 +95,19 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
 
       if (activeType === 'library-exercise' && exercise) {
         dispatch({
-          type: 'ADD_EXERCISE_TO_WORKOUT' as any,
+          type: 'ADD_EXERCISE_TO_WORKOUT',
           payload: {
             weekIdx: state.currentWeekIndex,
             workoutIdx: state.currentWorkoutIndex,
             exercise: {
-              exerciseId: exercise.id,
-              orderIndex: 0,
-              setsConfig: [],
-              configurations: [
-                { setNumber: 1, setType: 'working', reps: '8', restSeconds: 90 },
-                { setNumber: 2, setType: 'working', reps: '8', restSeconds: 90 },
-                { setNumber: 3, setType: 'working', reps: '8', restSeconds: 90 },
-              ],
+              id: exercise.id,
+              name: exercise.name,
+              gifUrl: exercise.gifUrl,
+              targetMuscle: exercise.targetMuscle,
+              equipment: exercise.equipment,
             },
           },
-        } as any);
+        });
       } else if (activeType === 'workout-exercise') {
         const from = active.data.current?.location;
         if (String(over.id) === 'workout-trash' && from) {
@@ -139,22 +136,19 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
 
   const handleAddExercise = (exercise: LibraryExercise) => {
     dispatch({
-      type: 'ADD_EXERCISE_TO_WORKOUT' as any,
+      type: 'ADD_EXERCISE_TO_WORKOUT',
       payload: {
         weekIdx: state.currentWeekIndex,
         workoutIdx: state.currentWorkoutIndex,
         exercise: {
-          exerciseId: exercise.id,
-          orderIndex: 0,
-          setsConfig: [],
-          configurations: [
-            { setNumber: 1, setType: 'working', reps: '8', restSeconds: 90 },
-            { setNumber: 2, setType: 'working', reps: '8', restSeconds: 90 },
-            { setNumber: 3, setType: 'working', reps: '8', restSeconds: 90 },
-          ],
+          id: exercise.id,
+          name: exercise.name,
+          gifUrl: exercise.gifUrl,
+          targetMuscle: exercise.targetMuscle,
+          equipment: exercise.equipment,
         },
       },
-    } as any);
+    });
   };
 
   // Load draft on mount if exists

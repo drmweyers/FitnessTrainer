@@ -96,9 +96,9 @@ describe('EntitlementsService.getEntitlements', () => {
 
     const result = await getEntitlements('trainer-1');
 
-    expect(result.limits.clients.max).toBe(10);
+    expect(result.limits.clients.max).toBe(5); // Starter cap is 5
     expect(result.limits.clients.used).toBe(5);
-    expect(result.limits.clients.percentage).toBe(50);
+    expect(result.limits.clients.percentage).toBe(100);
   });
 
   it('caches the result on a second call', async () => {
@@ -182,8 +182,8 @@ describe('EntitlementsService.checkUsageLimit', () => {
   });
 
   it('allows when within limit', async () => {
-    (mockPrisma.trainerSubscription.findFirst as jest.Mock).mockResolvedValue(null); // starter
-    (mockPrisma.trainerClient.count as jest.Mock).mockResolvedValue(5);
+    (mockPrisma.trainerSubscription.findFirst as jest.Mock).mockResolvedValue(null); // starter: max=5
+    (mockPrisma.trainerClient.count as jest.Mock).mockResolvedValue(4); // 4 < 5 → allowed
     (mockPrisma.program.count as jest.Mock).mockResolvedValue(5);
 
     const result = await checkUsageLimit('trainer-1', 'clients');
@@ -191,8 +191,8 @@ describe('EntitlementsService.checkUsageLimit', () => {
   });
 
   it('denies when at or above limit', async () => {
-    (mockPrisma.trainerSubscription.findFirst as jest.Mock).mockResolvedValue(null); // starter: 10 clients
-    (mockPrisma.trainerClient.count as jest.Mock).mockResolvedValue(10);
+    (mockPrisma.trainerSubscription.findFirst as jest.Mock).mockResolvedValue(null); // starter: max=5
+    (mockPrisma.trainerClient.count as jest.Mock).mockResolvedValue(5); // 5 === max → denied
     (mockPrisma.program.count as jest.Mock).mockResolvedValue(0);
 
     const result = await checkUsageLimit('trainer-1', 'clients');
