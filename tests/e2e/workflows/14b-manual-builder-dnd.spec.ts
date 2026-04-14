@@ -68,8 +68,10 @@ async function fillInfoAndAdvance(
   // Without this, state.weeks stays [] and WeekBuilder's Continue button is disabled.
   const durationInput = page.locator('input#duration-number');
   if (await durationInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await durationInput.fill('3');
-    await durationInput.dispatchEvent('change');
+    // pressSequentially fires keydown/keypress/keyup events React always handles;
+    // fill() may bypass controlled-input onChange in production Next.js builds.
+    await durationInput.click({ clickCount: 3 });
+    await durationInput.pressSequentially('3', { delay: 10 });
   }
 
   // Click "Next Step" — ProgramForm.tsx line 389
