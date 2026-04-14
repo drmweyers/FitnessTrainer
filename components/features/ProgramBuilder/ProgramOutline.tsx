@@ -322,7 +322,7 @@ const ProgramOutline: React.FC = () => {
   );
 
   return (
-    <aside className="w-64 hidden xl:flex flex-col border-l border-gray-200 bg-white">
+    <aside data-testid="program-outline" className="w-64 hidden xl:flex flex-col border-l border-gray-200 bg-white">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-200 flex-shrink-0">
         <span className="text-sm font-semibold text-gray-800">Outline</span>

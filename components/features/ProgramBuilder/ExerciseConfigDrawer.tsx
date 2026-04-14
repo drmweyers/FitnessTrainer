@@ -65,7 +65,7 @@ function SetsTab({ sets, onChange }: SetsTabProps) {
   }
 
   return (
-    <div className="space-y-2 p-3">
+    <div data-testid="config-sets-input" className="space-y-2 p-3">
       <div className="grid grid-cols-[24px_1fr_80px_90px_60px_24px] gap-1 text-xs text-gray-500 font-medium px-1">
         <span>#</span>
         <span>Type</span>
@@ -96,6 +96,7 @@ function SetsTab({ sets, onChange }: SetsTabProps) {
           </Select>
 
           <Input
+            data-testid="config-reps-input"
             className="h-7 text-xs text-center"
             value={set.reps}
             onChange={(e) => updateSet(idx, { reps: e.target.value })}
@@ -123,6 +124,7 @@ function SetsTab({ sets, onChange }: SetsTabProps) {
           </div>
 
           <Input
+            data-testid="config-rest-input"
             className="h-7 text-xs text-center"
             type="number"
             value={set.restSeconds ?? ''}
@@ -188,6 +190,7 @@ function IntensityTab({ rpe, rir, onChange }: IntensityTabProps) {
           <span className="text-sm font-semibold text-blue-700">{rpe ?? '—'}</span>
         </div>
         <Slider.Root
+          data-testid="config-rpe-input"
           className="relative flex items-center select-none touch-none w-full h-5"
           value={rpe !== undefined ? [rpe] : [7]}
           min={1}
@@ -380,6 +383,7 @@ const ExerciseConfigDrawer: React.FC<ExerciseConfigDrawerProps> = ({
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
           <Dialog.Content
+            data-testid="exercise-config-drawer"
             className="fixed right-0 top-0 h-full w-96 max-w-full bg-white shadow-xl z-50 flex flex-col"
             aria-label="Exercise configuration"
           >
@@ -462,7 +466,7 @@ const ExerciseConfigDrawer: React.FC<ExerciseConfigDrawerProps> = ({
               <Button variant="outline" size="sm" onClick={handleAttemptClose}>
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button data-testid="config-drawer-save" size="sm" onClick={handleSave}>
                 Save
               </Button>
             </div>

@@ -59,6 +59,7 @@ function ExerciseRow({
     <div
       ref={setNodeRef}
       style={style}
+      data-testid="workout-exercise-row"
       className={`flex items-center gap-2 px-2 py-1.5 rounded group hover:bg-gray-50 transition-colors ${
         isSelected ? 'bg-blue-50 border border-blue-200' : ''
       }`}
@@ -179,7 +180,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white mb-2">
+    <div data-testid="section-card" className="border border-gray-200 rounded-lg overflow-hidden bg-white mb-2">
       {showHeader && (
         <div className="flex items-center justify-between px-3 py-1.5 bg-gray-50 border-b border-gray-200">
           <div className="flex items-center gap-1.5">

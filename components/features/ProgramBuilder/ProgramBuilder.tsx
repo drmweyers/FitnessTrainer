@@ -76,12 +76,13 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
 
   // Pro/Enterprise: add TouchSensor with tighter activation for mobile drag
   const hasMobileDrag = hasFeature('programBuilder.mobileDragOptimised');
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
+  const keyboardSensor = useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates });
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } });
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-    ...(hasMobileDrag
-      ? [useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })]
-      : []),
+    pointerSensor,
+    keyboardSensor,
+    ...(hasMobileDrag ? [touchSensor] : []),
   );
 
   const handleDragEnd = useCallback(
@@ -240,6 +241,7 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
               <div
                 className="flex h-[calc(100vh-220px)] overflow-hidden"
                 data-dnd-ready
+                data-testid="program-builder-canvas"
               >
                 <ExerciseLibraryPanel onAddExercise={handleAddExercise} />
                 <WorkoutCanvas
@@ -312,6 +314,7 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
               </FeatureGate>
 
               <button
+                data-testid="cancel-program-btn"
                 onClick={handleCancel}
                 className="text-gray-500 hover:text-gray-700 transition-colors"
               >

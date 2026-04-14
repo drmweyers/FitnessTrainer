@@ -58,6 +58,7 @@ function DroppableCanvasBody({ id, children, isEmpty }: DroppableCanvasBodyProps
   return (
     <div
       ref={setNodeRef}
+      data-testid="workout-droppable"
       className={`min-h-48 transition-colors rounded-lg ${
         isEmpty
           ? `border-2 border-dashed flex items-center justify-center ${
@@ -251,7 +252,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-gray-50">
+    <div data-testid="workout-canvas" className="flex-1 flex flex-col min-h-0 bg-gray-50">
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-2 overflow-x-auto flex-shrink-0">
         {weeks.map((week, wIdx) => (
           <div key={wIdx} className="flex items-center gap-1 flex-shrink-0">
@@ -311,7 +312,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
         <div className="mt-3 flex items-center gap-2 flex-wrap">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button data-testid="add-section-btn" variant="outline" size="sm" className="text-xs">
                 <Plus className="w-3.5 h-3.5 mr-1" />
                 Add Section
               </Button>
@@ -330,6 +331,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
 
           {selectedExerciseIds.size > 1 && (
             <Button
+              data-testid="group-superset-btn"
               size="sm"
               variant="outline"
               className="text-xs border-purple-300 text-purple-700 hover:bg-purple-50"

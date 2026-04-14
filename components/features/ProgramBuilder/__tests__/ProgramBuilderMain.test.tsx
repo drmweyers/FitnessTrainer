@@ -321,27 +321,26 @@ describe('ProgramBuilder — mobile TouchSensor gate', () => {
     mockState.isValid = true;
   });
 
-  it('Starter: TouchSensor is NOT added to useSensor calls', () => {
+  it('Starter: TouchSensor is NOT passed to useSensors', () => {
     mockHasFeaturePB.mockReturnValue(false);
     render(<ProgramBuilder onSave={jest.fn()} onCancel={jest.fn()} />);
 
     const dndKit = require('@dnd-kit/core');
-    const MockTouchSensorClass = dndKit.__MockTouchSensor;
-    const sensorCalls: any[][] = dndKit.useSensor.mock.calls;
-    const usedSensorClasses = sensorCalls.map((call: any[]) => call[0]);
-    // TouchSensor should NOT appear for starter
-    expect(usedSensorClasses).not.toContain(MockTouchSensorClass);
+    // useSensors receives the final sensor list — check it has only 2 items (no TouchSensor)
+    const useSensorsCalls: any[][] = dndKit.useSensors.mock.calls;
+    // The last call is from this render — should have 2 sensors (pointer + keyboard)
+    const lastCallArgs = useSensorsCalls[useSensorsCalls.length - 1];
+    expect(lastCallArgs).toHaveLength(2);
   });
 
-  it('Pro user: TouchSensor IS added to useSensor calls', () => {
+  it('Pro user: TouchSensor IS passed to useSensors', () => {
     mockHasFeaturePB.mockReturnValue(true);
     render(<ProgramBuilder onSave={jest.fn()} onCancel={jest.fn()} />);
 
     const dndKit = require('@dnd-kit/core');
-    const MockTouchSensorClass = dndKit.__MockTouchSensor;
-    const sensorCalls: any[][] = dndKit.useSensor.mock.calls;
-    const usedSensorClasses = sensorCalls.map((call: any[]) => call[0]);
-    // TouchSensor should appear for pro
-    expect(usedSensorClasses).toContain(MockTouchSensorClass);
+    // useSensors receives the final sensor list — check it has 3 items (pointer + keyboard + touch)
+    const useSensorsCalls: any[][] = dndKit.useSensors.mock.calls;
+    const lastCallArgs = useSensorsCalls[useSensorsCalls.length - 1];
+    expect(lastCallArgs).toHaveLength(3);
   });
 });

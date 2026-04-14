@@ -80,6 +80,7 @@ const ExerciseLibraryPanel: React.FC<ExerciseLibraryPanelProps> = ({
 
   return (
     <aside
+      data-testid="exercise-library-panel"
       className="w-80 flex-shrink-0 flex flex-col border-r border-gray-200 bg-white"
       aria-label="Exercise library"
     >
@@ -87,6 +88,7 @@ const ExerciseLibraryPanel: React.FC<ExerciseLibraryPanelProps> = ({
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
           <Input
+            data-testid="library-search-input"
             placeholder="Search exercises..."
             className="pl-8 h-8 text-sm"
             value={search}

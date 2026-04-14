@@ -42,6 +42,7 @@ const DraggableExerciseCard: React.FC<DraggableExerciseCardProps> = ({
     <div
       ref={setNodeRef}
       style={style}
+      data-testid="library-exercise-card"
       className={`flex items-center gap-2 p-2 rounded-md border border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 transition-colors group relative ${
         isDragging ? 'cursor-grabbing shadow-md z-50' : 'cursor-grab'
       }`}
