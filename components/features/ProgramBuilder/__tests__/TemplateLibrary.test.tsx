@@ -52,26 +52,18 @@ const mockLocalStorage = {
 };
 Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
 
-// Mock lucide-react
-jest.mock('lucide-react', () => ({
-  Search: () => <span data-testid="search-icon" />,
-  Star: () => <span data-testid="star-icon" />,
-  Filter: () => <span data-testid="filter-icon" />,
-  Copy: () => <span data-testid="copy-icon" />,
-  Eye: () => <span data-testid="eye-icon" />,
-  Users: () => <span data-testid="users-icon" />,
-  Clock: () => <span data-testid="clock-icon" />,
-  Target: () => <span data-testid="target-icon" />,
-  TrendingUp: () => <span data-testid="trending-icon" />,
-  Download: () => <span data-testid="download-icon" />,
-  Share2: () => <span data-testid="share-icon" />,
-  Bookmark: () => <span data-testid="bookmark-icon" />,
-  BookmarkCheck: () => <span data-testid="bookmark-check" />,
-  ChevronDown: () => <span data-testid="chevron-down" />,
-  ChevronUp: () => <span data-testid="chevron-up" />,
-  Award: () => <span data-testid="award-icon" />,
-  X: () => <span data-testid="x-icon" />,
-  Loader2: () => <span data-testid="loader-icon" />,
+// Permissive lucide-react mock — returns a stub component for any icon.
+jest.mock('lucide-react', () => new Proxy({}, {
+  get: (_, prop: string) => {
+    if (prop === '__esModule') return true;
+    return () => <span data-testid={`${String(prop).toLowerCase()}-icon`} />;
+  },
+}));
+
+// FeatureGate mock — unconditionally renders children (test tier logic elsewhere).
+jest.mock('@/components/subscription/FeatureGate', () => ({
+  __esModule: true,
+  FeatureGate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('TemplateLibrary', () => {

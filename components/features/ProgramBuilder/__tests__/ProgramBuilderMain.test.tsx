@@ -48,21 +48,18 @@ jest.mock('../ProgramPreview', () => ({
   default: () => <div data-testid="program-preview">Preview</div>,
 }));
 
-jest.mock('lucide-react', () => ({
-  Save: () => <span data-testid="icon-save" />,
-  X: () => <span data-testid="icon-x" />,
-  GripVertical: () => null,
-  Search: () => null,
-  Filter: () => null,
-  Plus: () => null,
-  Trash2: () => null,
-  Zap: () => null,
-  Clock: () => null,
-  Timer: () => null,
-  Repeat: () => null,
-  Target: () => null,
-  ChevronRight: () => null,
-  Video: () => null,
+jest.mock('lucide-react', () => new Proxy({}, {
+  get: (_, prop: string) => {
+    if (prop === '__esModule') return true;
+    if (prop === 'Save') return () => <span data-testid="icon-save" />;
+    if (prop === 'X') return () => <span data-testid="icon-x" />;
+    return () => null;
+  },
+}));
+
+jest.mock('@/components/subscription/FeatureGate', () => ({
+  __esModule: true,
+  FeatureGate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('../ExerciseLibraryPanel', () => ({
