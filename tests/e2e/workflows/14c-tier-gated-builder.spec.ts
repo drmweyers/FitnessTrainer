@@ -327,25 +327,28 @@ test.describe('14c - Tier-Gated Builder Features: Canvas UI', () => {
     await nextBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
     await nextBtn.click();
 
-    // Step 2: WeekBuilder — "Continue to Workouts" button advances to step 3 (canvas)
-    await page.waitForTimeout(500); // allow state transition
-    const nextBtn2 = page.locator(
-      'button:has-text("Continue to Workouts"), button:has-text("Next"), button:has-text("Build Workouts")'
-    ).first();
-    if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
+    // Wait for WeekBuilder heading to confirm step 2 is rendered before proceeding
+    const weekStep2 = page.locator('h2:has-text("Week Structure"), text="Week Structure"');
+    await weekStep2.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+
+    // Step 2: "Continue to Workouts" is the dedicated WeekBuilder advance button (not "Next")
+    const continueBtn2 = page.locator('button:has-text("Continue to Workouts")').first();
+    if (await continueBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
       // If disabled (no weeks), add one first
-      if (await nextBtn2.isDisabled().catch(() => false)) {
+      if (await continueBtn2.isDisabled().catch(() => false)) {
         const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
         if (await addWeekBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
           await addWeekBtn.click();
           await page.waitForTimeout(400);
         }
       }
-      await nextBtn2.click();
+      if (!(await continueBtn2.isDisabled().catch(() => true))) {
+        await continueBtn2.click();
+      }
     }
 
     // Allow the canvas to hydrate (DndContext + isClient gate)
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
     // The exercise library panel has data-testid="exercise-library-panel"
     const libraryPanel = page.locator('[data-testid="exercise-library-panel"]');
@@ -391,12 +394,13 @@ test.describe('14c - Tier-Gated Builder Features: Canvas UI', () => {
     const nextBtn1 = page.locator('button:has-text("Next Step"), button:has-text("Next")').first();
     await nextBtn1.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
     await nextBtn1.click();
-    await page.waitForTimeout(500);
 
-    // Step 2: WeekBuilder — "Continue to Workouts" advances to canvas
-    const continueBtn = page.locator(
-      'button:has-text("Continue to Workouts"), button:has-text("Next"), button:has-text("Build Workouts")'
-    ).first();
+    // Wait explicitly for WeekBuilder to appear (heading "Week Structure" confirms step 2)
+    const weekBuilderHeading = page.locator('h2:has-text("Week Structure"), text="Week Structure"');
+    await weekBuilderHeading.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+
+    // Step 2: "Continue to Workouts" is the ONLY advance button on WeekBuilder (not "Next")
+    const continueBtn = page.locator('button:has-text("Continue to Workouts")').first();
     if (await continueBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       if (await continueBtn.isDisabled().catch(() => false)) {
         const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
@@ -405,9 +409,11 @@ test.describe('14c - Tier-Gated Builder Features: Canvas UI', () => {
           await page.waitForTimeout(400);
         }
       }
-      await continueBtn.click();
+      if (!(await continueBtn.isDisabled().catch(() => true))) {
+        await continueBtn.click();
+      }
     }
-    await page.waitForTimeout(1200);
+    await page.waitForTimeout(1500);
 
     // data-testid="program-builder-canvas" wraps the DndContext in step 3
     const canvasWrapper = page.locator('[data-testid="program-builder-canvas"]');
