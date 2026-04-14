@@ -123,6 +123,42 @@ export async function GET(request: NextRequest) {
   }
 }
 
+type ExerciseInput = NonNullable<NonNullable<NonNullable<z.infer<typeof createProgramSchema>['weeks']>[0]['workouts']>[0]['exercises']>[0];
+
+function groupExercisesIntoSections(exercises: ExerciseInput[]) {
+  type Group = { sectionType: string; exercises: ExerciseInput[] };
+  const sorted = [...exercises].sort((a, b) => a.orderIndex - b.orderIndex);
+  const groups: Group[] = [];
+
+  for (const ex of sorted) {
+    const type = (ex as any).sectionType ?? 'regular';
+    const sg = (ex as any).supersetGroup ?? null;
+    const last = groups[groups.length - 1];
+    if (last && last.sectionType === type && (last.exercises[0] as any).supersetGroup === sg) {
+      last.exercises.push(ex);
+    } else {
+      groups.push({ sectionType: type, exercises: [ex] });
+    }
+  }
+
+  return groups;
+}
+
+function parseSectionNoteMeta(notesJson: string | null | undefined) {
+  if (!notesJson) return { rounds: null, endRest: null, intervalWork: null, intervalRest: null };
+  try {
+    const p = JSON.parse(notesJson);
+    return {
+      rounds: typeof p.sectionRounds === 'number' ? p.sectionRounds : null,
+      endRest: typeof p.endRest === 'number' ? p.endRest : null,
+      intervalWork: typeof p.intervalWork === 'number' ? p.intervalWork : null,
+      intervalRest: typeof p.intervalRest === 'number' ? p.intervalRest : null,
+    };
+  } catch {
+    return { rounds: null, endRest: null, intervalWork: null, intervalRest: null };
+  }
+}
+
 // POST /api/programs - Create new program (trainers + admins only)
 export async function POST(request: NextRequest) {
   try {
@@ -137,64 +173,131 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = createProgramSchema.parse(body);
 
-    const program = await prisma.program.create({
-      data: {
-        trainerId: user.id,
-        name: data.name,
-        description: data.description,
-        programType: data.programType as any,
-        difficultyLevel: data.difficultyLevel as any,
-        durationWeeks: data.durationWeeks,
-        goals: data.goals || [],
-        equipmentNeeded: data.equipmentNeeded || [],
-        isTemplate: data.isTemplate || false,
-        weeks: data.weeks ? {
-          create: data.weeks.map(week => ({
-            weekNumber: week.weekNumber,
-            name: week.name,
-            description: week.description,
-            isDeload: week.isDeload || false,
-            workouts: week.workouts ? {
-              create: week.workouts.map(workout => ({
-                dayNumber: workout.dayNumber,
-                name: workout.name,
-                description: workout.description,
-                workoutType: workout.workoutType as any,
-                estimatedDuration: workout.estimatedDuration,
-                isRestDay: workout.isRestDay || false,
-                exercises: workout.exercises ? {
-                  create: workout.exercises.map(exercise => ({
-                    exerciseId: exercise.exerciseId,
-                    orderIndex: exercise.orderIndex,
-                    supersetGroup: exercise.supersetGroup,
-                    setsConfig: exercise.setsConfig || {},
-                    notes: exercise.notes,
-                    configurations: exercise.configurations ? {
-                      create: exercise.configurations,
-                    } : undefined,
-                  })),
-                } : undefined,
-              })),
-            } : undefined,
-          })),
-        } : undefined,
-      },
-      include: {
-        weeks: {
-          include: {
-            workouts: {
-              include: {
-                exercises: {
-                  include: {
-                    exercise: true,
-                    configurations: true,
+    const program = await prisma.$transaction(async (tx) => {
+      const created = await tx.program.create({
+        data: {
+          trainerId: user.id,
+          name: data.name,
+          description: data.description,
+          programType: data.programType as any,
+          difficultyLevel: data.difficultyLevel as any,
+          durationWeeks: data.durationWeeks,
+          goals: data.goals || [],
+          equipmentNeeded: data.equipmentNeeded || [],
+          isTemplate: data.isTemplate || false,
+          weeks: data.weeks ? {
+            create: data.weeks.map(week => ({
+              weekNumber: week.weekNumber,
+              name: week.name,
+              description: week.description,
+              isDeload: week.isDeload || false,
+              workouts: week.workouts ? {
+                create: week.workouts.map(workout => ({
+                  dayNumber: workout.dayNumber,
+                  name: workout.name,
+                  description: workout.description,
+                  workoutType: workout.workoutType as any,
+                  estimatedDuration: workout.estimatedDuration,
+                  isRestDay: workout.isRestDay || false,
+                  exercises: workout.exercises ? {
+                    create: workout.exercises.map(exercise => ({
+                      exerciseId: exercise.exerciseId,
+                      orderIndex: exercise.orderIndex,
+                      supersetGroup: exercise.supersetGroup,
+                      setsConfig: exercise.setsConfig || {},
+                      notes: exercise.notes,
+                      configurations: exercise.configurations ? {
+                        create: exercise.configurations,
+                      } : undefined,
+                    })),
+                  } : undefined,
+                })),
+              } : undefined,
+            })),
+          } : undefined,
+        },
+        include: {
+          weeks: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: {
+                    orderBy: { orderIndex: 'asc' },
                   },
                 },
               },
             },
           },
         },
-      },
+      });
+
+      // Create ProgramSection rows for every workout that has exercises.
+      for (const week of (created.weeks ?? [])) {
+        for (const workout of (week.workouts ?? [])) {
+          if (!workout.exercises || workout.exercises.length === 0) continue;
+
+          const inputExercises = data.weeks
+            ?.find(w => w.weekNumber === week.weekNumber)
+            ?.workouts?.find(wo => wo.dayNumber === workout.dayNumber)
+            ?.exercises ?? [];
+
+          const groups = groupExercisesIntoSections(
+            inputExercises.length > 0 ? inputExercises : workout.exercises as any
+          );
+
+          for (let i = 0; i < groups.length; i++) {
+            const group = groups[i];
+            const firstEx = group.exercises[0];
+            const firstConfig = (firstEx as any).configurations?.[0];
+            const meta = parseSectionNoteMeta(firstConfig?.notes ?? null);
+
+            const section = await tx.programSection.create({
+              data: {
+                workoutId: workout.id,
+                orderIndex: i,
+                sectionType: group.sectionType,
+                rounds: meta.rounds,
+                endRest: meta.endRest,
+                intervalWork: meta.intervalWork,
+                intervalRest: meta.intervalRest,
+              },
+            });
+
+            // Link each exercise in the group to its section.
+            for (const inputEx of group.exercises) {
+              const dbEx = workout.exercises.find(
+                e => e.orderIndex === inputEx.orderIndex
+              );
+              if (dbEx) {
+                await tx.workoutExercise.update({
+                  where: { id: dbEx.id },
+                  data: { sectionId: section.id },
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // Re-fetch with sections included for the response.
+      return tx.program.findFirst({
+        where: { id: created.id },
+        include: {
+          weeks: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: {
+                    include: { exercise: true, configurations: true },
+                    orderBy: { orderIndex: 'asc' },
+                  },
+                  sections: { orderBy: { orderIndex: 'asc' } },
+                },
+              },
+            },
+          },
+        },
+      });
     });
 
     return NextResponse.json(
