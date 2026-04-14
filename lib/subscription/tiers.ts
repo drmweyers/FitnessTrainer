@@ -7,8 +7,8 @@ export const TIER_BY_LEVEL = { 1: 'starter', 2: 'professional', 3: 'enterprise' 
 export const LEVEL_BY_TIER = { starter: 1, professional: 2, enterprise: 3 } as const;
 
 export const TIER_LIMITS = {
-  starter:      { clients: 10,  programs: 20, exercisesCustom: 50  },
-  professional: { clients: 50,  programs: -1, exercisesCustom: 500 },
+  starter:      { clients: 5,   programs: 20, exercisesCustom: 50  },
+  professional: { clients: -1,  programs: -1, exercisesCustom: 500 },
   enterprise:   { clients: -1,  programs: -1, exercisesCustom: -1  },
 } as const;
 

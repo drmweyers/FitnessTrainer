@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 import prisma from '@/lib/db/prisma';
+import { checkUsageLimit } from '@/lib/subscription/EntitlementsService';
 
 export const dynamic = 'force-dynamic';
 
@@ -172,6 +173,22 @@ export async function POST(request: NextRequest) {
         { error: 'Conflict', message: 'This client is already in your roster' },
         { status: 409 }
       );
+    }
+
+    // Enforce tier client limit (Starter = 5, Professional/Enterprise = unlimited)
+    if (req.user!.role === 'trainer') {
+      const limitCheck = await checkUsageLimit(req.user!.id, 'clients');
+      if (!limitCheck.allowed) {
+        return NextResponse.json(
+          {
+            error: 'Tier Limit Reached',
+            message: limitCheck.reason,
+            upgradeRequired: true,
+            currentTier: limitCheck.currentTier,
+          },
+          { status: 403 }
+        );
+      }
     }
 
     // Create trainer-client relationship
