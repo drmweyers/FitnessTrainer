@@ -210,7 +210,7 @@ const comparisonCategories = [
     rows: [
       { label: 'AI workout generator (1,344-exercise library)', starter: false, pro: false, ent: false, addon: true },
       { label: 'RPE-based progression suggestions', starter: false, pro: false, ent: false, addon: true },
-      { label: 'Plateau detection + deload suggestions', starter: false, pro: false, ent: false, addon: true },
+      { label: 'Plateau detection + deload suggestions', starter: false, pro: false, ent: false, addon: 'Coming Soon' },
       { label: 'Push notifications + biometric login', starter: false, pro: false, ent: false, addon: true },
     ],
   },

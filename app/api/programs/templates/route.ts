@@ -2,11 +2,15 @@
  * Program Templates API Route
  *
  * GET /api/programs/templates - Get program templates
+ *
+ * Enterprise trainers additionally receive team-shared templates from any
+ * trainer in the same organisation. All other tiers receive only public templates.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
+import { attachEntitlements } from '@/lib/subscription/withTier';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,15 +19,31 @@ export async function GET(request: NextRequest) {
   try {
     const authResult = await authenticate(request);
     if (authResult instanceof NextResponse) return authResult;
+    const user = (authResult as AuthenticatedRequest).user!;
 
     const searchParams = request.nextUrl.searchParams;
     const category = searchParams.get('category');
 
+    // Determine whether this trainer has enterprise team-share access
+    const entitlements = await attachEntitlements(request);
+    const isEnterprise = entitlements?.features?.programBuilder?.teamShareTemplates === true;
+
+    // Build where clause: public templates + team-shared templates for enterprise users
+    const whereClause = isEnterprise
+      ? {
+          OR: [
+            { isPublic: true },
+            { isTeamShared: true },
+          ],
+          ...(category ? { category } : {}),
+        }
+      : {
+          isPublic: true,
+          ...(category ? { category } : {}),
+        };
+
     const templates = await prisma.programTemplate.findMany({
-      where: {
-        isPublic: true,
-        ...(category && { category }),
-      },
+      where: whereClause,
       include: {
         program: {
           include: {

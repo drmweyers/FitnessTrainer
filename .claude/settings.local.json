@@ -84,7 +84,9 @@
       "Bash(npm uninstall:*)",
       "Bash(pkill:*)",
       "mcp__claude_ai_Firecrawl__firecrawl_search",
-      "mcp__claude_ai_Firecrawl__firecrawl_scrape"
+      "mcp__claude_ai_Firecrawl__firecrawl_scrape",
+      "Bash(mkdir -p \"C:\\\\Users\\\\drmwe\\\\.claude\\\\skills\\\\evofit-pricing-audit\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\drmwe\\\\.claude\\\\agents\")"
     ]
   }
 }

@@ -656,20 +656,21 @@ export default function LandingPage() {
             {/* Starter */}
             <motion.div variants={fadeInUp} className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
               <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
-              <p className="text-gray-600 text-sm mb-4">For new trainers getting started</p>
+              <p className="text-gray-600 text-sm mb-4">Perfect for solo trainers just getting started</p>
               <div className="mb-6">
                 <div className="text-3xl font-bold text-gray-900">$199</div>
                 <div className="text-gray-500 text-sm">One-Time</div>
               </div>
               <ul className="space-y-3 mb-8">
-                <li className="text-gray-700">• Up to 9 clients</li>
-                <li className="text-gray-700">• 500-program library access</li>
-                <li className="text-gray-700">• Exercise browser (no downloads)</li>
-                <li className="text-gray-700">• Email support</li>
-                <li className="text-gray-700">• Lifetime updates</li>
+                <li className="text-gray-700">• Up to 5 active clients</li>
+                <li className="text-gray-700">• 1,344 exercises with GIF demos</li>
+                <li className="text-gray-700">• Set-by-set workout logging</li>
+                <li className="text-gray-700">• Automatic PR detection</li>
+                <li className="text-gray-700">• Body composition tracking</li>
+                <li className="text-gray-700">• PWA — works offline on any device</li>
               </ul>
               <Link
-                href="/get-started"
+                href="/starter"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Get Starter Access
@@ -682,21 +683,21 @@ export default function LandingPage() {
                 ⭐ RECOMMENDED
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Professional</h3>
-              <p className="text-gray-600 text-sm mb-4">For established trainers scaling up</p>
+              <p className="text-gray-600 text-sm mb-4">Unlimited clients, full program builder, ACWR analytics</p>
               <div className="mb-6">
                 <div className="text-3xl font-bold text-gray-900">$299</div>
                 <div className="text-gray-500 text-sm">One-Time</div>
               </div>
               <ul className="space-y-3 mb-8">
-                <li className="text-gray-700">• Up to 20 clients</li>
-                <li className="text-gray-700">• 1,500-program library access</li>
-                <li className="text-gray-700">• Custom branding on programs</li>
-                <li className="text-gray-700">• Priority email support</li>
-                <li className="text-gray-700">• Lifetime updates</li>
-                <li className="text-gray-700">• Exercise video downloads</li>
+                <li className="text-gray-700">• Unlimited active clients</li>
+                <li className="text-gray-700">• 8 program types + 7 set types</li>
+                <li className="text-gray-700">• RPE / RIR / Tempo prescriptions</li>
+                <li className="text-gray-700">• ACWR training load monitoring</li>
+                <li className="text-gray-700">• iCal export + calendar subscribe</li>
+                <li className="text-gray-700">• PDF/CSV analytics reports</li>
               </ul>
               <Link
-                href="/get-started"
+                href="/professional"
                 className="block w-full text-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Get Professional Access
@@ -706,21 +707,21 @@ export default function LandingPage() {
             {/* Enterprise */}
             <motion.div variants={fadeInUp} className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
               <h3 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h3>
-              <p className="text-gray-600 text-sm mb-4">For gym owners and large operations</p>
+              <p className="text-gray-600 text-sm mb-4">Admin dashboard, audit logs, and multi-trainer management</p>
               <div className="mb-6">
                 <div className="text-3xl font-bold text-gray-900">$399</div>
                 <div className="text-gray-500 text-sm">One-Time</div>
               </div>
               <ul className="space-y-3 mb-8">
-                <li className="text-gray-700">• Unlimited clients</li>
-                <li className="text-gray-700">• White-label platform</li>
-                <li className="text-gray-700">• API access for integrations</li>
-                <li className="text-gray-700">• Phone + email support</li>
-                <li className="text-gray-700">• Lifetime updates</li>
-                <li className="text-gray-700">• Multi-trainer team access</li>
+                <li className="text-gray-700">• Everything in Professional</li>
+                <li className="text-gray-700">• Admin dashboard + user management</li>
+                <li className="text-gray-700">• Feature flags API</li>
+                <li className="text-gray-700">• Security audit trail</li>
+                <li className="text-gray-700">• Bulk user operations</li>
+                <li className="text-gray-700">• System health monitoring</li>
               </ul>
               <Link
-                href="/get-started"
+                href="/enterprise"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Get Enterprise Access
