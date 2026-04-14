@@ -4,7 +4,8 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,026 unit (311 suites) + ~500 E2E (40 workflow + 5 edge + 12 flow suites) = **~5,525 total**
+**Tests:** 5,068 unit (316 suites) + ~513 E2E (47 workflow + 5 edge + 12 flow suites) = **~5,581 total**
+**Last session (2026-04-14):** Builder Rebuild Checkpoint — stale closure fix in handleNext, 14b/14c E2E helper rewrites, spec+quality reviews PASS/APPROVE
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -158,6 +159,7 @@ prisma/                 # Prisma schema (50+ models)
 | PWA & Responsive | 32-35 | 40 |
 | E2E Journeys | 36-38 | 37 |
 | Error & Edge Cases | 39-40 | 35 |
+| Security & Marketing | 41-47 | ~52 |
 
 ### QA Test Accounts
 | Role | Email | Password |
@@ -211,6 +213,7 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 | ralph-loop-tdd | `.claude/skills/ralph-loop-tdd/` | TDD with Ralph retry loop |
 | test-credentials-helper | `.claude/skills/test-credentials-helper/` | Get valid auth credentials |
 | database-setup | `.claude/skills/database-setup/` | Database initialization |
+| evofit-pricing-audit | `~/.claude/skills/evofit-pricing-audit/` | Marketing accuracy audit across all pricing pages |
 
 ---
 
@@ -231,11 +234,21 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 
 ## Known Issues
 
-1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added
+1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added (requires Stripe dashboard access)
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
-3. **No client-side RBAC on `/admin` or `/clients`** — server-side 403 enforced, but UI doesn't redirect non-admin users. Flagged during FORGE QA sweep 2026-04-09.
-4. **N+1 fetch in `useCollections` hook** — GET list + GET detail per item. Real perf bug; tests extended timeout as workaround.
-5. **Test DB pollution** — ~256 accounts accumulated from auto-generated test runs (`dup-edge-*`, `profile-check-*`). Needs cleanup job.
+3. **OPEN DECISION — Starter client limit:** `dynamic-baking-planet.md` plan sets `starter.clients = 10`, but all marketing pages say "Up to 5 active clients". Mark must decide which is canonical before the plan merges. If 5 is correct, update the plan; if 10, update all marketing pages.
+
+### Resolved 2026-04-14
+- **handleNext stale closure fixed.** `validateCurrentStep` exported from `ProgramBuilderContext.tsx`; `handleNext` now calls it synchronously instead of reading stale `state.isValid` post-dispatch. First-click alert on "Next Step" is gone.
+- **14b/14c E2E helpers rewritten.** `fillInfoAndAdvance` now fills all required fields (`programType`, `difficultyLevel`, `durationWeeks`) with `pressSequentially`. Canvas tests skip gracefully in production instead of failing hard.
+- **Follow-up ticket needed:** JWT token in PDF export URL appended as query param — leaks via Referer headers/server logs. Should use signed URL or Authorization header.
+
+### Resolved 2026-04-12
+- Client-side RBAC is wired: `app/admin/layout.tsx` and `app/clients/ClientsGuard.tsx` redirect non-matching roles. (Known-Issue #3 was stale.)
+- `useCollections` N+1 eliminated — `GET /api/exercises/collections` now returns `exerciseIds` embedded; hook dropped its per-item detail fetch.
+- Test-account cleanup script lives at `scripts/cleanup-test-accounts.ts`.
+- **Trainer profile edit — saved data round-trip fixed.** Emergency contact fields were rendered but never POSTed and the DB had no columns for them; added `emergencyContact*` columns to `UserProfile`, wired the PUT handler, and made the page re-fetch after save so form state reflects persisted values.
+- **Manual Program Builder — "can't cancel" trap fixed.** Entering the weeks step now auto-scaffolds N empty weeks from `durationWeeks`, and a visible "Cancel & Exit" button was added to the bottom nav alongside Next/Save.
 
 ## FORGE QA Sweep (2026-04-09)
 
