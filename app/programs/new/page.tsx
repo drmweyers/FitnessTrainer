@@ -5,17 +5,24 @@
 'use client';
 
 import { useState } from 'react';
-import { ProgramBuilder } from '@/components/programs/ProgramBuilder';
+import ProgramBuilder from '@/components/features/ProgramBuilder/ProgramBuilder';
+import { ProgramBuilderProvider } from '@/components/features/ProgramBuilder/ProgramBuilderContext';
 import { useRouter } from 'next/navigation';
 import { createProgram } from '@/lib/api/programs';
-import type { Program, ProgramData } from '@/types/program';
+import type { ProgramData } from '@/types/program';
 
 export default function NewProgramPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSave = async (program: Program) => {
+  /**
+   * Called by ProgramPreview (step 5) inside the new builder.
+   * The builder already assembles the full ProgramData payload
+   * (weeks → workouts → exercises → configurations), so we pass
+   * it straight through to the API without re-mapping.
+   */
+  const handleSave = async (programData: ProgramData, _saveAsTemplate: boolean): Promise<void> => {
     setSaving(true);
     setError(null);
 
@@ -26,50 +33,7 @@ export default function NewProgramPage() {
         return;
       }
 
-      const programData: ProgramData = {
-        name: program.name,
-        description: program.description,
-        programType: program.programType,
-        difficultyLevel: program.difficultyLevel,
-        durationWeeks: program.durationWeeks,
-        goals: program.goals,
-        equipmentNeeded: program.equipmentNeeded,
-        isTemplate: program.isTemplate,
-        weeks: program.weeks?.map(week => ({
-          weekNumber: week.weekNumber,
-          name: week.name,
-          description: week.description,
-          isDeload: week.isDeload,
-          workouts: week.workouts?.map(workout => ({
-            dayNumber: workout.dayNumber,
-            name: workout.name,
-            description: workout.description,
-            workoutType: workout.workoutType,
-            estimatedDuration: workout.estimatedDuration,
-            isRestDay: workout.isRestDay,
-            exercises: workout.exercises?.map(exercise => ({
-              exerciseId: exercise.exerciseId,
-              orderIndex: exercise.orderIndex,
-              supersetGroup: exercise.supersetGroup,
-              setsConfig: exercise.setsConfig,
-              notes: exercise.notes,
-              configurations: exercise.configurations?.map(config => ({
-                setNumber: config.setNumber,
-                setType: config.setType,
-                reps: config.reps,
-                weightGuidance: config.weightGuidance,
-                restSeconds: config.restSeconds,
-                tempo: config.tempo,
-                rpe: config.rpe,
-                rir: config.rir,
-                notes: config.notes,
-              })),
-            })),
-          })),
-        })),
-      };
-
-      const created = await createProgram(programData, token);
+      await createProgram(programData, token);
       router.push('/programs');
     } catch (err) {
       console.error('Error saving program:', err);
@@ -89,13 +53,18 @@ export default function NewProgramPage() {
   };
 
   return (
-    <div className="container py-8">
+    <div>
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 mx-4 mt-4">
           {error}
         </div>
       )}
-      <ProgramBuilder onSave={handleSave} onCancel={() => router.back()} isSaving={saving} />
+      <ProgramBuilderProvider>
+        <ProgramBuilder
+          onSave={handleSave}
+          onCancel={() => router.back()}
+        />
+      </ProgramBuilderProvider>
     </div>
   );
 }

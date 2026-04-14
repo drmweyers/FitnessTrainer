@@ -48,9 +48,82 @@ jest.mock('../ProgramPreview', () => ({
   default: () => <div data-testid="program-preview">Preview</div>,
 }));
 
-jest.mock('lucide-react', () => ({
-  Save: () => <span data-testid="icon-save" />,
-  X: () => <span data-testid="icon-x" />,
+jest.mock('lucide-react', () => new Proxy({}, {
+  get: (_, prop: string) => {
+    if (prop === '__esModule') return true;
+    if (prop === 'Save') return () => <span data-testid="icon-save" />;
+    if (prop === 'X') return () => <span data-testid="icon-x" />;
+    return () => null;
+  },
+}));
+
+jest.mock('@/components/subscription/FeatureGate', () => ({
+  __esModule: true,
+  FeatureGate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+jest.mock('../ExerciseLibraryPanel', () => ({
+  __esModule: true,
+  default: () => <div data-testid="exercise-library-panel" />,
+}));
+
+jest.mock('../WorkoutCanvas', () => ({
+  __esModule: true,
+  default: () => <div data-testid="workout-canvas" />,
+}));
+
+jest.mock('../ExerciseConfigDrawer', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
+jest.mock('../useExerciseLibrary', () => ({
+  useExerciseLibrary: () => ({
+    search: '', setSearch: jest.fn(),
+    muscleGroup: null, setMuscleGroup: jest.fn(),
+    equipment: null, setEquipment: jest.fn(),
+    hasVideo: false, setHasVideo: jest.fn(),
+    tab: 'all', setTab: jest.fn(),
+    exercises: [],
+    isLoading: false,
+    error: null,
+    filters: { muscleGroups: [], equipment: [] },
+    hasMore: false,
+    loadMore: jest.fn(),
+  }),
+}));
+
+// useTier mock — default starter; tests below override per-case
+const mockHasFeaturePB = jest.fn().mockReturnValue(false);
+jest.mock('@/hooks/useTier', () => ({
+  useTier: () => ({
+    tier: 'starter',
+    level: 1,
+    isStarter: true,
+    isProfessional: false,
+    isEnterprise: false,
+    isLoading: false,
+    canAccess: jest.fn(() => false),
+    hasFeature: mockHasFeaturePB,
+  }),
+}));
+
+jest.mock('@dnd-kit/core', () => {
+  class MockTouchSensorClass {}
+  return {
+    DndContext: ({ children }: any) => <div>{children}</div>,
+    PointerSensor: class MockPointerSensor {},
+    KeyboardSensor: class MockKeyboardSensor {},
+    TouchSensor: MockTouchSensorClass,
+    useSensor: jest.fn(),
+    useSensors: jest.fn(() => []),
+    rectIntersection: jest.fn(),
+    __MockTouchSensor: MockTouchSensorClass,
+  };
+});
+
+jest.mock('@dnd-kit/sortable', () => ({
+  sortableKeyboardCoordinates: jest.fn(),
 }));
 
 import ProgramBuilder from '../ProgramBuilder';
@@ -178,10 +251,14 @@ describe('ProgramBuilder (features)', () => {
     expect(screen.getByTestId('week-builder')).toBeInTheDocument();
   });
 
-  it('renders workout builder on step 3', () => {
+  it('renders 3-panel canvas on step 3 (new DnD builder)', () => {
     mockState.currentStep = 3;
     render(<ProgramBuilder onSave={mockOnSave} onCancel={mockOnCancel} />);
-    expect(screen.getByTestId('workout-builder')).toBeInTheDocument();
+    // Step 3 now shows the new 3-panel DnD builder (ExerciseLibraryPanel + WorkoutCanvas)
+    // Both are mocked above so they render their stub testids
+    expect(
+      screen.getByTestId('exercise-library-panel') || screen.getByTestId('workout-canvas')
+    ).toBeInTheDocument();
   });
 
   it('renders exercise selector on step 4', () => {
@@ -229,5 +306,41 @@ describe('ProgramBuilder (features)', () => {
     render(<ProgramBuilder onSave={mockOnSave} />);
     fireEvent.click(screen.getByTestId('icon-x').closest('button')!);
     // No error should occur
+  });
+});
+
+// ─── TouchSensor gating tests ────────────────────────────────────────────────
+
+describe('ProgramBuilder — mobile TouchSensor gate', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const dndKit = require('@dnd-kit/core');
+    dndKit.useSensors.mockReturnValue([]);
+    mockState.currentStep = 1;
+    mockState.isDirty = false;
+    mockState.isValid = true;
+  });
+
+  it('Starter: TouchSensor is NOT passed to useSensors', () => {
+    mockHasFeaturePB.mockReturnValue(false);
+    render(<ProgramBuilder onSave={jest.fn()} onCancel={jest.fn()} />);
+
+    const dndKit = require('@dnd-kit/core');
+    // useSensors receives the final sensor list — check it has only 2 items (no TouchSensor)
+    const useSensorsCalls: any[][] = dndKit.useSensors.mock.calls;
+    // The last call is from this render — should have 2 sensors (pointer + keyboard)
+    const lastCallArgs = useSensorsCalls[useSensorsCalls.length - 1];
+    expect(lastCallArgs).toHaveLength(2);
+  });
+
+  it('Pro user: TouchSensor IS passed to useSensors', () => {
+    mockHasFeaturePB.mockReturnValue(true);
+    render(<ProgramBuilder onSave={jest.fn()} onCancel={jest.fn()} />);
+
+    const dndKit = require('@dnd-kit/core');
+    // useSensors receives the final sensor list — check it has 3 items (pointer + keyboard + touch)
+    const useSensorsCalls: any[][] = dndKit.useSensors.mock.calls;
+    const lastCallArgs = useSensorsCalls[useSensorsCalls.length - 1];
+    expect(lastCallArgs).toHaveLength(3);
   });
 });

@@ -97,7 +97,29 @@ model User {
   supportTickets      SupportTicket[]      @relation("UserTickets")
   contentReports      ContentReport[]      @relation("UserReports")
 
+  // Relations - Subscription Tier (Stream: tier-infra)
+  subscriptions       TrainerSubscription[]
+
   @@map("users")
+}
+
+// Trainer subscription record — one per purchase/active plan
+model TrainerSubscription {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trainerId              String    @map("trainer_id") @db.Uuid
+  // 1=starter, 2=professional, 3=enterprise — integer kept in sync with TIER_BY_LEVEL
+  tierLevel              Int       @map("tier_level") @db.Integer
+  status                 String    @map("status") @db.VarChar(16) // 'active' | 'inactive'
+  stripePaymentIntentId  String?   @map("stripe_payment_intent_id")
+  stripeSubscriptionId   String?   @map("stripe_subscription_id")
+  amountPaidCents        Int       @map("amount_paid_cents")
+  purchaseDate           DateTime  @default(now()) @map("purchase_date")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime? @updatedAt @map("updated_at")
+
+  trainer                User      @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("trainer_subscriptions")
 }
 
 // Email verification tokens
@@ -570,6 +592,7 @@ model Exercise {
   collectionExercises CollectionExercise[]
   usageHistory      ExerciseUsage[]
   workoutExercises  WorkoutExercise[] @relation("WorkoutExercises")
+  alternateFor      WorkoutExercise[] @relation("AlternateExercises")
   workoutLogs       WorkoutExerciseLog[] @relation("ExerciseWorkoutLogs")
   performanceMetrics PerformanceMetric[] @relation("ExercisePerformanceMetrics")
 
@@ -723,20 +746,23 @@ model ProgramWorkout {
 
 // Workout exercises
 model WorkoutExercise {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workoutId     String    @map("workout_id") @db.Uuid
-  exerciseId    String    @map("exercise_id") @db.Uuid
-  orderIndex    Int       @map("order_index")
-  supersetGroup String?   @map("superset_group") @db.VarChar(10) // A, B, C for grouping
-  setsConfig    Json      @map("sets_config") @db.JsonB // [{type: 'working', count: 3}, {type: 'warmup', count: 2}]
-  notes         String?   @db.Text
-  createdAt     DateTime  @default(now()) @map("created_at")
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId           String    @map("workout_id") @db.Uuid
+  exerciseId          String    @map("exercise_id") @db.Uuid
+  orderIndex          Int       @map("order_index")
+  supersetGroup       String?   @map("superset_group") @db.VarChar(10) // A, B, C for grouping
+  sectionType         String?   @map("section_type") @db.VarChar(20)  // regular|superset|circuit|interval|amrap|timed
+  alternateExerciseId String?   @map("alternate_exercise_id") @db.Uuid
+  setsConfig          Json      @map("sets_config") @db.JsonB // [{type: 'working', count: 3}, {type: 'warmup', count: 2}]
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now()) @map("created_at")
 
   // Relations
-  workout       ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exercise      Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
-  configurations ExerciseConfiguration[]
-  workoutLogs   WorkoutExerciseLog[] @relation("WorkoutExerciseLogs")
+  workout           ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise          Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
+  alternateExercise Exercise?      @relation("AlternateExercises", fields: [alternateExerciseId], references: [id])
+  configurations    ExerciseConfiguration[]
+  workoutLogs       WorkoutExerciseLog[] @relation("WorkoutExerciseLogs")
 
   @@unique([workoutId, orderIndex])
   @@map("workout_exercises")
@@ -796,16 +822,17 @@ model ProgramTemplate {
   description String?   @db.Text
   category    String    @db.VarChar(50)
   tags        String[]
-  isPublic    Boolean   @default(false) @map("is_public")
-  useCount    Int       @default(0) @map("use_count")
-  rating      Float?
-  createdBy   String    @map("created_by") @db.Uuid
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
+  isPublic      Boolean   @default(false) @map("is_public")
+  isTeamShared  Boolean   @default(false) @map("is_team_shared")
+  useCount      Int       @default(0) @map("use_count")
+  rating        Float?
+  createdBy     String    @map("created_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime? @updatedAt @map("updated_at")
 
   // Relations
-  program     Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
-  creator     User      @relation("CreatedTemplates", fields: [createdBy], references: [id])
+  program       Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  creator       User      @relation("CreatedTemplates", fields: [createdBy], references: [id])
 
   @@map("program_templates")
 }

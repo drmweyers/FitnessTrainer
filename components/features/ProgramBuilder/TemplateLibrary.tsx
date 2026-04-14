@@ -23,12 +23,19 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { FeatureGate } from '@/components/subscription/FeatureGate';
 import { ProgramType, DifficultyLevel, ProgramData } from '@/types/program';
 import { getTemplates } from '@/lib/api/programs';
 
 interface TemplateLibraryProps {
   onSelectTemplate: (template: ProgramTemplate) => void;
   onClose?: () => void;
+  /** Enterprise only: whether the template is shared with the trainer's team */
+  isTeamShared?: boolean;
+  /** Enterprise only: called when the team-shared toggle changes */
+  onTeamSharedChange?: (value: boolean) => void;
 }
 
 interface ProgramTemplate {
@@ -62,7 +69,9 @@ const CATEGORIES = ['All Categories', 'Strength Training', 'Bodybuilding', 'Powe
 
 const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   onSelectTemplate,
-  onClose
+  onClose,
+  isTeamShared = false,
+  onTeamSharedChange,
 }) => {
   const [templates, setTemplates] = useState<ProgramTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -172,6 +181,21 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           </p>
         </div>
         <div className="flex items-center space-x-3">
+          {/* Enterprise only: share this template with the entire training team */}
+          <FeatureGate feature="programBuilder.teamShareTemplates" minimal>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="team-share-toggle"
+                aria-label="Share with team"
+                checked={isTeamShared}
+                onCheckedChange={(checked) => onTeamSharedChange?.(checked)}
+              />
+              <Label htmlFor="team-share-toggle" className="text-sm font-medium cursor-pointer">
+                Share with team
+              </Label>
+            </div>
+          </FeatureGate>
+
           <Button variant="outline" leftIcon={<Share2 size={16} />}>
             Share Library
           </Button>

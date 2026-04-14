@@ -1,14 +1,20 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
-import { 
-  ProgramType, 
-  DifficultyLevel, 
-  WorkoutType,
+import type {
   ProgramData,
   ProgramWeekData,
   ProgramWorkoutData,
-  WorkoutExerciseData 
+  WorkoutExerciseData,
+  ExerciseConfigurationData,
+  SectionType,
+  SectionMetadata,
+} from '@/types/program'
+import {
+  ProgramType,
+  DifficultyLevel,
+  WorkoutType,
+  SetType,
 } from '@/types/program'
 
 // Program builder state
@@ -40,6 +46,9 @@ export interface ProgramBuilderState {
   // UI State
   isLoading: boolean
   errors: Record<string, string>
+
+  // Canvas multi-selection (for superset grouping)
+  selectedExerciseIds: Set<string>
 }
 
 // Actions
@@ -69,6 +78,62 @@ export type ProgramBuilderAction =
   | { type: 'RESET_STATE' }
   | { type: 'LOAD_FROM_STORAGE' }
   | { type: 'VALIDATE_CURRENT_STEP' }
+  // Canvas builder actions (Stream B)
+  | {
+      type: 'ADD_EXERCISE_TO_WORKOUT'
+      payload: {
+        weekIdx: number
+        workoutIdx: number
+        sectionType?: SectionType
+        exercise: { id: string; name: string; gifUrl?: string; targetMuscle?: string; equipment?: string }
+        atIndex?: number
+      }
+    }
+  | {
+      type: 'MOVE_EXERCISE'
+      payload: {
+        from: { weekIdx: number; workoutIdx: number; exerciseIdx: number }
+        to: { weekIdx: number; workoutIdx: number; exerciseIdx: number }
+      }
+    }
+  | {
+      // Canvas variant — distinct from legacy REMOVE_EXERCISE (payload: number) to avoid union collision.
+      // Stream C: dispatch({ type: 'REMOVE_WORKOUT_EXERCISE', payload: { weekIdx, workoutIdx, exerciseIdx } })
+      type: 'REMOVE_WORKOUT_EXERCISE'
+      payload: { weekIdx: number; workoutIdx: number; exerciseIdx: number }
+    }
+  | {
+      type: 'GROUP_AS_SUPERSET'
+      payload: {
+        weekIdx: number
+        workoutIdx: number
+        exerciseIdxs: number[]
+        sharedSets?: number
+        endRest?: number
+      }
+    }
+  | {
+      type: 'UNGROUP_SUPERSET'
+      payload: { weekIdx: number; workoutIdx: number; supersetGroup: string }
+    }
+  | {
+      type: 'ADD_SECTION'
+      payload: { weekIdx: number; workoutIdx: number; sectionType: SectionType }
+    }
+  | {
+      type: 'SET_SECTION_METADATA'
+      payload: { weekIdx: number; workoutIdx: number; supersetGroup: string; metadata: SectionMetadata }
+    }
+  | {
+      type: 'SET_ALTERNATE_EXERCISE'
+      payload: { weekIdx: number; workoutIdx: number; exerciseIdx: number; alternateExerciseId: string | null }
+    }
+  | {
+      type: 'UPDATE_EXERCISE_CONFIG'
+      payload: { weekIdx: number; workoutIdx: number; exerciseIdx: number; configurations: ExerciseConfigurationData[]; notes?: string }
+    }
+  | { type: 'TOGGLE_EXERCISE_SELECTION'; payload: string }
+  | { type: 'CLEAR_SELECTION' }
 
 // Initial state
 const initialState: ProgramBuilderState = {
@@ -87,7 +152,8 @@ const initialState: ProgramBuilderState = {
   isValid: false,
   isDirty: false,
   isLoading: false,
-  errors: {}
+  errors: {},
+  selectedExerciseIds: new Set<string>(),
 }
 
 // Create initial weeks based on duration
@@ -375,6 +441,256 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
         console.error('Failed to load from storage:', error)
       }
       return state
+
+    // ─── Canvas Builder Actions (Stream B) ───────────────────────────────────
+
+    case 'ADD_EXERCISE_TO_WORKOUT': {
+      const { weekIdx, workoutIdx, sectionType = 'regular', exercise, atIndex } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          const exercises = [...(workout.exercises || [])]
+          const orderIndex = atIndex !== undefined ? atIndex : exercises.length
+          const newExercise: WorkoutExerciseData = {
+            exerciseId: exercise.id,
+            orderIndex,
+            sectionType,
+            supersetGroup: undefined,
+            alternateExerciseId: undefined,
+            setsConfig: [{ type: 'working', count: 1 }],
+            notes: undefined,
+            configurations: [
+              {
+                setNumber: 1,
+                setType: SetType.WORKING,
+                reps: '8',
+                restSeconds: 90,
+              },
+            ],
+          }
+          if (atIndex !== undefined) {
+            exercises.splice(atIndex, 0, newExercise)
+          } else {
+            exercises.push(newExercise)
+          }
+          // Re-index orderIndex
+          const reindexed = exercises.map((ex, idx) => ({ ...ex, orderIndex: idx }))
+          return { ...workout, exercises: reindexed }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'MOVE_EXERCISE': {
+      const { from, to } = action.payload
+      let exerciseToMove: WorkoutExerciseData | null = null
+      // Extract from source
+      let weeks = state.weeks.map((week, wi) => {
+        if (wi !== from.weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== from.workoutIdx) return workout
+          const exercises = [...(workout.exercises || [])]
+          const [removed] = exercises.splice(from.exerciseIdx, 1)
+          exerciseToMove = removed
+          return { ...workout, exercises: exercises.map((ex, idx) => ({ ...ex, orderIndex: idx })) }
+        })
+        return { ...week, workouts }
+      })
+      if (!exerciseToMove) return state
+      // Insert into destination
+      weeks = weeks.map((week, wi) => {
+        if (wi !== to.weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== to.workoutIdx) return workout
+          const exercises = [...(workout.exercises || [])]
+          exercises.splice(to.exerciseIdx, 0, exerciseToMove as WorkoutExerciseData)
+          return { ...workout, exercises: exercises.map((ex, idx) => ({ ...ex, orderIndex: idx })) }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'REMOVE_WORKOUT_EXERCISE': {
+      const { weekIdx, workoutIdx, exerciseIdx } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          const exercises = (workout.exercises || [])
+            .filter((_, idx) => idx !== exerciseIdx)
+            .map((ex, idx) => ({ ...ex, orderIndex: idx }))
+          return { ...workout, exercises }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'GROUP_AS_SUPERSET': {
+      const { weekIdx, workoutIdx, exerciseIdxs, sharedSets, endRest } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          // Find next unused superset letter
+          const usedLetters = new Set(
+            (workout.exercises || [])
+              .map(ex => ex.supersetGroup)
+              .filter((g): g is string => Boolean(g))
+          )
+          let nextLetter = 'A'
+          while (usedLetters.has(nextLetter)) {
+            nextLetter = String.fromCharCode(nextLetter.charCodeAt(0) + 1)
+          }
+          const exercises = (workout.exercises || []).map((ex, idx) => {
+            if (!exerciseIdxs.includes(idx)) return ex
+            const updatedEx: WorkoutExerciseData = {
+              ...ex,
+              supersetGroup: nextLetter,
+              sectionType: 'superset' as SectionType,
+            }
+            // Resize configurations if sharedSets provided
+            if (sharedSets !== undefined && updatedEx.configurations) {
+              const template = updatedEx.configurations[0]
+              updatedEx.configurations = Array.from({ length: sharedSets }, (_, si) => ({
+                ...template,
+                setNumber: si + 1,
+              }))
+            }
+            return updatedEx
+          })
+          // Store endRest on the first grouped exercise's configurations[0].notes
+          if (endRest !== undefined) {
+            const firstIdx = exerciseIdxs[0]
+            if (firstIdx !== undefined && exercises[firstIdx]?.configurations?.[0]) {
+              const firstEx = exercises[firstIdx]
+              exercises[firstIdx] = {
+                ...firstEx,
+                configurations: [
+                  { ...firstEx.configurations![0], notes: JSON.stringify({ endRest }) },
+                  ...(firstEx.configurations!.slice(1)),
+                ],
+              }
+            }
+          }
+          return { ...workout, exercises }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'UNGROUP_SUPERSET': {
+      const { weekIdx, workoutIdx, supersetGroup } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          const exercises = (workout.exercises || []).map(ex => {
+            if (ex.supersetGroup !== supersetGroup) return ex
+            return { ...ex, supersetGroup: undefined, sectionType: 'regular' as SectionType }
+          })
+          return { ...workout, exercises }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'ADD_SECTION': {
+      const { weekIdx, workoutIdx, sectionType } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          const exercises = [...(workout.exercises || [])]
+          const placeholder: WorkoutExerciseData = {
+            exerciseId: '__section_header__',
+            orderIndex: exercises.length,
+            sectionType,
+            supersetGroup: undefined,
+            setsConfig: [],
+            configurations: [],
+          }
+          exercises.push(placeholder)
+          return { ...workout, exercises: exercises.map((ex, idx) => ({ ...ex, orderIndex: idx })) }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'SET_SECTION_METADATA': {
+      const { weekIdx, workoutIdx, supersetGroup, metadata } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          let found = false
+          const exercises = (workout.exercises || []).map(ex => {
+            if (found || ex.supersetGroup !== supersetGroup) return ex
+            found = true
+            if (!ex.configurations || ex.configurations.length === 0) return ex
+            const firstConfig = { ...ex.configurations[0], notes: JSON.stringify(metadata) }
+            return { ...ex, configurations: [firstConfig, ...(ex.configurations.slice(1))] }
+          })
+          return { ...workout, exercises }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'SET_ALTERNATE_EXERCISE': {
+      const { weekIdx, workoutIdx, exerciseIdx, alternateExerciseId } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          const exercises = (workout.exercises || []).map((ex, idx) => {
+            if (idx !== exerciseIdx) return ex
+            return { ...ex, alternateExerciseId: alternateExerciseId ?? undefined }
+          })
+          return { ...workout, exercises }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'UPDATE_EXERCISE_CONFIG': {
+      const { weekIdx, workoutIdx, exerciseIdx, configurations, notes } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = (week.workouts || []).map((workout, woi) => {
+          if (woi !== workoutIdx) return workout
+          const exercises = (workout.exercises || []).map((ex, idx) => {
+            if (idx !== exerciseIdx) return ex
+            return { ...ex, configurations, ...(notes !== undefined ? { notes } : {}) }
+          })
+          return { ...workout, exercises }
+        })
+        return { ...week, workouts }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
+
+    case 'TOGGLE_EXERCISE_SELECTION': {
+      const id = action.payload
+      const next = new Set(state.selectedExerciseIds)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return { ...state, selectedExerciseIds: next }
+    }
+
+    case 'CLEAR_SELECTION':
+      return { ...state, selectedExerciseIds: new Set<string>() }
 
     default:
       return state

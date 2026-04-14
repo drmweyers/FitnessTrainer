@@ -10,10 +10,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 import prisma from '@/lib/db/prisma';
+import { getEntitlements } from '@/lib/subscription/EntitlementsService';
 
 export const dynamic = 'force-dynamic';
 
-const VALID_ACTIONS = ['update-status', 'assign-tags'] as const;
+const VALID_ACTIONS = ['update-status', 'assign-tags', 'remove-tag'] as const;
 type BulkAction = (typeof VALID_ACTIONS)[number];
 
 const VALID_STATUSES = ['active', 'inactive', 'onboarding', 'paused', 'archived'] as const;
@@ -72,11 +73,15 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'update-status') {
-      return await handleUpdateStatus(req.user!.id, clientIds, value as string);
+      return await handleUpdateStatus(req.user!.id, req.user!.role, clientIds, value as string);
     }
 
     if (action === 'assign-tags') {
       return await handleAssignTags(clientIds, value);
+    }
+
+    if (action === 'remove-tag') {
+      return await handleRemoveTag(clientIds, value as string);
     }
 
     // Unreachable but TypeScript needs it
@@ -95,6 +100,7 @@ export async function POST(request: NextRequest) {
  */
 async function handleUpdateStatus(
   trainerId: string,
+  role: string,
   clientIds: string[],
   status: string
 ): Promise<NextResponse> {
@@ -103,6 +109,37 @@ async function handleUpdateStatus(
       { error: 'Validation Error', message: 'value (status) is required for update-status action' },
       { status: 400 }
     );
+  }
+
+  if (!VALID_STATUSES.includes(status as any)) {
+    return NextResponse.json(
+      { error: 'Validation Error', message: `status must be one of: ${VALID_STATUSES.join(', ')}` },
+      { status: 400 }
+    );
+  }
+
+  // Enforce client tier limit when a trainer bulk-reactivates archived clients.
+  // This prevents bypassing the Starter (5-client) cap by archiving + reactivating.
+  if (status === 'active' && role === 'trainer') {
+    const entitlements = await getEntitlements(trainerId);
+    const { max, used } = entitlements.limits.clients;
+    if (max !== -1) {
+      // Count how many of the targeted clients are NOT currently active (they'd be newly activated)
+      const currentlyInactive = await prisma.trainerClient.count({
+        where: { trainerId, clientId: { in: clientIds }, status: { not: 'active' } },
+      });
+      if (used + currentlyInactive > max) {
+        return NextResponse.json(
+          {
+            error: 'Tier Limit Reached',
+            message: `Cannot reactivate ${currentlyInactive} clients — would exceed your ${max}-client limit (currently ${used} active). Upgrade to Professional for unlimited clients.`,
+            upgradeRequired: true,
+            currentTier: entitlements.tier,
+          },
+          { status: 403 }
+        );
+      }
+    }
   }
 
   const result = await prisma.trainerClient.updateMany({
@@ -116,6 +153,27 @@ async function handleUpdateStatus(
   return NextResponse.json({
     success: true,
     data: { updatedCount: result.count },
+  });
+}
+
+/**
+ * Removes a single tag from all specified clients.
+ */
+async function handleRemoveTag(clientIds: string[], tagId: string): Promise<NextResponse> {
+  if (!tagId) {
+    return NextResponse.json(
+      { error: 'Validation Error', message: 'value (tagId) is required for remove-tag action' },
+      { status: 400 }
+    );
+  }
+
+  const result = await prisma.clientTagAssignment.deleteMany({
+    where: { clientId: { in: clientIds }, tagId },
+  });
+
+  return NextResponse.json({
+    success: true,
+    data: { removedCount: result.count },
   });
 }
 

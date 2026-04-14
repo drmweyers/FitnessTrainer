@@ -4,7 +4,7 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,026 unit (311 suites) + 461 E2E (40 Playwright suites) = **5,487 total**
+**Tests:** 5,068 unit (316 suites) + ~513 E2E (47 workflow + 5 edge + 12 flow suites) = **~5,581 total**
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -158,6 +158,7 @@ prisma/                 # Prisma schema (50+ models)
 | PWA & Responsive | 32-35 | 40 |
 | E2E Journeys | 36-38 | 37 |
 | Error & Edge Cases | 39-40 | 35 |
+| Security & Marketing | 41-47 | ~52 |
 
 ### QA Test Accounts
 | Role | Email | Password |
@@ -211,6 +212,7 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 | ralph-loop-tdd | `.claude/skills/ralph-loop-tdd/` | TDD with Ralph retry loop |
 | test-credentials-helper | `.claude/skills/test-credentials-helper/` | Get valid auth credentials |
 | database-setup | `.claude/skills/database-setup/` | Database initialization |
+| evofit-pricing-audit | `~/.claude/skills/evofit-pricing-audit/` | Marketing accuracy audit across all pricing pages |
 
 ---
 
@@ -231,9 +233,24 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 
 ## Known Issues
 
-1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added
+1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added (requires Stripe dashboard access)
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
-3. **3 page errors for QA user** — /analytics, /profile, /programs show errors (missing data relationships). Works for demo users.
+3. **OPEN DECISION — Starter client limit:** `dynamic-baking-planet.md` plan sets `starter.clients = 10`, but all marketing pages say "Up to 5 active clients". Mark must decide which is canonical before the plan merges. If 5 is correct, update the plan; if 10, update all marketing pages.
+
+### Resolved 2026-04-12
+- Client-side RBAC is wired: `app/admin/layout.tsx` and `app/clients/ClientsGuard.tsx` redirect non-matching roles. (Known-Issue #3 was stale.)
+- `useCollections` N+1 eliminated — `GET /api/exercises/collections` now returns `exerciseIds` embedded; hook dropped its per-item detail fetch.
+- Test-account cleanup script lives at `scripts/cleanup-test-accounts.ts`.
+- **Trainer profile edit — saved data round-trip fixed.** Emergency contact fields were rendered but never POSTed and the DB had no columns for them; added `emergencyContact*` columns to `UserProfile`, wired the PUT handler, and made the page re-fetch after save so form state reflects persisted values.
+- **Manual Program Builder — "can't cancel" trap fixed.** Entering the weeks step now auto-scaffolds N empty weeks from `durationWeeks`, and a visible "Cancel & Exit" button was added to the bottom nav alongside Next/Save.
+
+## FORGE QA Sweep (2026-04-09)
+
+Full-spectrum sweep ran across trainer/client/admin workflows. Results:
+- **Real app bugs fixed:** global-setup exercise-shape mismatch, `POST /api/programs` missing role guard, missing `/api/auth/refresh` endpoint, `POST /api/programs/[id]/assign` 500-on-duplicate, favorites-page loading-state heading, service-worker blocking Next.js dev chunks.
+- **Test infrastructure fixes:** 46 `networkidle` → `domcontentloaded` replacements, `waitForPageReady` → best-effort, hydration waits added to suites 07 + 10, global-setup Step 10 wrapped in try/catch.
+- **New edge suites added (`tests/e2e/edge/`):** E01 trainer-deactivation-cascade, E02 program-assignment-cascade, E03 concurrent-workout-complete, E06 permission-leak, E07 jwt-refresh-mid-workflow (38 new tests).
+- **Baseline:** 356/54/17/34 (passed/failed/flaky/did-not-run). **After sweep:** all hotspot suites green, flakes are dev-server cold-compile artifacts.
 
 ---
 

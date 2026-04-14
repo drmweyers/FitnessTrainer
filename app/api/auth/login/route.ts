@@ -13,6 +13,11 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/db/prisma';
 import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
+import {
+  checkAccountLockout,
+  recordFailedAttempt,
+  clearLockout,
+} from '@/lib/auth/lockout';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +48,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = loginSchema.parse(body);
     const { email, password, rememberMe } = validatedData;
+
+    // Check account lockout BEFORE hitting the DB for the user record
+    const lockoutStatus = await checkAccountLockout(email);
+    if (lockoutStatus.locked) {
+      const mins = lockoutStatus.minutesRemaining ?? 1;
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Account temporarily locked. Try again in ${mins} minute${mins === 1 ? '' : 's'}.`,
+        },
+        { status: 429 }
+      );
+    }
 
     // Find user by email
     const user = await prisma.user.findUnique({
@@ -97,6 +115,8 @@ export async function POST(request: NextRequest) {
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
+      // Record failure and potentially lock the account
+      await recordFailedAttempt(email);
       return NextResponse.json(
         {
           success: false,
@@ -106,6 +126,22 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Check email verification. QA accounts are pre-verified via global-setup;
+    // this gate only affects newly registered users who haven't clicked their link.
+    if (!user.isVerified) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Please verify your email before logging in.',
+          message: 'Email not verified',
+        },
+        { status: 403 }
+      );
+    }
+
+    // Successful login — clear any accumulated lockout record
+    await clearLockout(email);
 
     // Generate tokens
     const accessToken = tokenService.generateAccessToken({

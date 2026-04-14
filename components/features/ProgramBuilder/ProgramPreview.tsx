@@ -583,6 +583,7 @@ export default function ProgramPreview({ onPrev, onSave }: ProgramPreviewProps) 
           </Button>
           
           <Button
+            data-testid="save-program-btn"
             onClick={handleSave}
             disabled={!isReadyToSave || isSaving}
             leftIcon={isSaving ? undefined : <Save size={16} />}

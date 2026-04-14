@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ProgramCard from './ProgramCard'
 import BulkAssignmentModal from './BulkAssignmentModal'
+import { BulkAssignDialog } from '@/components/features/ProgramBuilder/BulkAssignDialog'
 import { 
   Program, 
   ProgramFilters as ProgramFiltersType,
@@ -318,29 +319,39 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {sortedPrograms.map((program) => (
-            <ProgramCard
-              key={program.id}
-              program={program}
-              viewMode="grid"
-              onEdit={handleEdit}
-              onDuplicate={handleDuplicate}
-              onDelete={handleDelete}
-              onAssign={handleAssign}
-            />
+            <div key={program.id} className="relative">
+              <ProgramCard
+                program={program}
+                viewMode="grid"
+                onEdit={handleEdit}
+                onDuplicate={handleDuplicate}
+                onDelete={handleDelete}
+                onAssign={handleAssign}
+              />
+              {/* Enterprise: Bulk Assign — shown for enterprise tier, locked for others */}
+              <div className="mt-2">
+                <BulkAssignDialog programId={program.id} />
+              </div>
+            </div>
           ))}
         </div>
       ) : (
         <div className="space-y-4">
           {sortedPrograms.map((program) => (
-            <ProgramCard
-              key={program.id}
-              program={program}
-              viewMode="list"
-              onEdit={handleEdit}
-              onDuplicate={handleDuplicate}
-              onDelete={handleDelete}
-              onAssign={handleAssign}
-            />
+            <div key={program.id} className="flex items-center gap-2">
+              <div className="flex-1">
+                <ProgramCard
+                  program={program}
+                  viewMode="list"
+                  onEdit={handleEdit}
+                  onDuplicate={handleDuplicate}
+                  onDelete={handleDelete}
+                  onAssign={handleAssign}
+                />
+              </div>
+              {/* Enterprise: Bulk Assign */}
+              <BulkAssignDialog programId={program.id} />
+            </div>
           ))}
         </div>
       )}

@@ -232,6 +232,12 @@ const mockPrismaClient: any = {
     update: jest.fn(),
     upsert: jest.fn(),
   },
+  accountLockout: {
+    findFirst: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    deleteMany: jest.fn(),
+  },
   passwordReset: {
     findFirst: jest.fn(),
     findUnique: jest.fn(),

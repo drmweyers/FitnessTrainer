@@ -14,6 +14,10 @@ import { tokenService } from '@/lib/services/tokenService';
 import { handleApiError } from '@/lib/middleware/error-handler';
 import { registerSchema } from '@/lib/types/auth';
 import { logClientSignup } from '@/lib/services/activity.service';
+import {
+  createVerificationToken,
+  sendVerificationEmail,
+} from '@/lib/auth/email-verification';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +38,8 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json();
     const validatedData = registerSchema.parse(body);
-    const { email, password, role, trainerId } = validatedData;
+    // trainerId is part of the schema but not used in this route (used by trainer invitation flow)
+    const { email, password, role } = validatedData;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -56,14 +61,14 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user (isVerified starts false — user must click the verification email)
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
         passwordHash,
         role: role || 'client',
         isActive: true,
-        isVerified: true, // Auto-verify for MVP (add email verification later)
+        isVerified: false,
       },
       select: {
         id: true,
@@ -99,6 +104,14 @@ export async function POST(request: NextRequest) {
       deviceInfo,
       ipAddress,
     });
+
+    // Send verification email (fire-and-forget; registration succeeds regardless)
+    try {
+      const verificationToken = await createVerificationToken(user.id);
+      await sendVerificationEmail(user.email, verificationToken);
+    } catch (emailError: any) {
+      console.warn('[register] Failed to send verification email:', emailError?.message);
+    }
 
     // Log signup activity (fire-and-forget)
     try {
@@ -174,3 +187,4 @@ function detectOS(userAgent?: string): string {
 
   return 'Unknown';
 }
+

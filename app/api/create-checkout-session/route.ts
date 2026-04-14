@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +43,13 @@ interface CheckoutRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // Resolve authenticated trainerId for metadata (optional — unauthenticated checkout still works)
+    let trainerId: string | undefined;
+    const authResult = await authenticate(request);
+    if (!(authResult instanceof NextResponse) && (authResult as AuthenticatedRequest).user) {
+      trainerId = (authResult as AuthenticatedRequest).user!.id;
+    }
+
     const body: CheckoutRequest = await request.json();
     const { priceId, tier, saas, saasPriceId } = body;
 
@@ -102,6 +110,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         tier,
         saas: saas ? 'true' : 'false',
+        ...(trainerId ? { trainerId } : {}),
       },
     };
 

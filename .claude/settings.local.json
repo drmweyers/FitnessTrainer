@@ -82,7 +82,11 @@
       "Bash(cmd /c \"mkdir \"\"C:\\\\Users\\\\drmwe\\\\claude_Code_Workspace\\\\EvoFitTrainer\\\\app\\\\workouts\\\\builder\"\"\")",
       "Bash(npm uninstall @prisma/client prisma)",
       "Bash(npm uninstall:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "mcp__claude_ai_Firecrawl__firecrawl_search",
+      "mcp__claude_ai_Firecrawl__firecrawl_scrape",
+      "Bash(mkdir -p \"C:\\\\Users\\\\drmwe\\\\.claude\\\\skills\\\\evofit-pricing-audit\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\drmwe\\\\.claude\\\\agents\")"
     ]
   }
 }

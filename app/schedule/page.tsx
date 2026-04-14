@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/layout/AppLayout';
 import { CalendarExport } from '@/components/schedule/CalendarExport';
+import { CalendarView } from '@/components/features/Schedule/CalendarView';
 import {
   Calendar,
+  LayoutGrid,
   Plus,
   ChevronLeft,
   ChevronRight,
@@ -89,6 +91,7 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [pageSection, setPageSection] = useState<'calendar' | 'grid'>('calendar');
 
   const weekDates = getWeekDates(currentDate);
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -244,6 +247,44 @@ export default function SchedulePage() {
           </div>
         </div>
 
+        {/* Section Tabs */}
+        <div data-testid="schedule-section-tabs" className="flex items-center gap-1 mb-5 border-b border-gray-200">
+          <button
+            onClick={() => setPageSection('calendar')}
+            data-testid="tab-calendar"
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              pageSection === 'calendar'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+            Calendar
+          </button>
+          <button
+            onClick={() => setPageSection('grid')}
+            data-testid="tab-timed-grid"
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              pageSection === 'grid'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Calendar className="h-4 w-4" />
+            Timed Grid
+          </button>
+        </div>
+
+        {/* Calendar View Section */}
+        {pageSection === 'calendar' && (
+          <div className="mb-6">
+            <CalendarView onAppointmentClick={(appt) => setSelectedAppointment(appt as Appointment)} />
+          </div>
+        )}
+
+        {/* Timed Grid Section (week/day) */}
+        {pageSection === 'grid' && (
+          <>
         {/* Navigation Bar */}
         <div className="flex items-center justify-between mb-4 bg-white rounded-lg border border-gray-200 p-3">
           <div className="flex items-center gap-2">
@@ -416,6 +457,8 @@ export default function SchedulePage() {
             </div>
           ))}
         </div>
+          </>
+        )}
       </div>
 
       {/* Appointment Detail Modal */}

@@ -1,25 +1,155 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback, Component, ErrorInfo } from 'react';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  rectIntersection,
+} from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { useTier } from '@/hooks/useTier';
 import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext';
 import ProgramForm from './ProgramForm';
 import WeekBuilder from './WeekBuilder';
 import WorkoutBuilder from './WorkoutBuilder';
 import ExerciseSelector from './ExerciseSelector';
 import ProgramPreview from './ProgramPreview';
-import { Save, X } from 'lucide-react';
+import ExerciseLibraryPanel from './ExerciseLibraryPanel';
+import WorkoutCanvas from './WorkoutCanvas';
+import ExerciseConfigDrawer from './ExerciseConfigDrawer';
+import ProgramOutline from './ProgramOutline';
+import { Download, Save, X } from 'lucide-react';
 import { ProgramData } from '@/types/program';
+import type { LibraryExercise } from './useExerciseLibrary';
+import type { WorkoutExerciseDataExtended } from '@/types/program';
+import { FeatureGate } from '@/components/subscription/FeatureGate';
+import { Button } from '@/components/ui/button';
+
+interface OutlineBoundaryState { hasError: boolean }
+
+/** Silently swallows render errors in the outline panel so the main builder stays functional. */
+class OutlineBoundary extends Component<{ children: React.ReactNode }, OutlineBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(_error: unknown): OutlineBoundaryState {
+    return { hasError: true };
+  }
+  override componentDidCatch(_error: Error, _info: ErrorInfo) {
+    // Outline is non-critical; fail silently in production.
+  }
+  override render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 
 interface ProgramBuilderProps {
   onSave?: (programData: ProgramData, saveAsTemplate: boolean) => Promise<void>;
   onCancel?: () => void;
+  /** When provided (after first save), enables the Export PDF button */
+  savedProgramId?: string;
 }
 
 const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
   onSave,
-  onCancel
+  onCancel,
+  savedProgramId,
 }) => {
   const { state, dispatch } = useProgramBuilder();
+  const { hasFeature } = useTier();
+  const [isClient, setIsClient] = useState(false);
+  const [configDrawerOpen, setConfigDrawerOpen] = useState(false);
+  const [configExercise, setConfigExercise] = useState<WorkoutExerciseDataExtended | null>(null);
+  const [configWeekIdx, setConfigWeekIdx] = useState(0);
+  const [configWorkoutIdx, setConfigWorkoutIdx] = useState(0);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Pro/Enterprise: add TouchSensor with tighter activation for mobile drag
+  const hasMobileDrag = hasFeature('programBuilder.mobileDragOptimised');
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
+  const keyboardSensor = useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates });
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } });
+  const sensors = useSensors(
+    pointerSensor,
+    keyboardSensor,
+    ...(hasMobileDrag ? [touchSensor] : []),
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over) return;
+
+      const activeType = active.data.current?.type;
+      const exercise = active.data.current?.exercise as LibraryExercise | undefined;
+
+      if (activeType === 'library-exercise' && exercise) {
+        dispatch({
+          type: 'ADD_EXERCISE_TO_WORKOUT',
+          payload: {
+            weekIdx: state.currentWeekIndex,
+            workoutIdx: state.currentWorkoutIndex,
+            exercise: {
+              id: exercise.id,
+              name: exercise.name,
+              gifUrl: exercise.gifUrl,
+              targetMuscle: exercise.targetMuscle,
+              equipment: exercise.equipment,
+            },
+          },
+        });
+      } else if (activeType === 'workout-exercise') {
+        const from = active.data.current?.location;
+        if (String(over.id) === 'workout-trash' && from) {
+          dispatch({
+            type: 'REMOVE_WORKOUT_EXERCISE',
+            payload: from,
+          });
+        } else {
+          // Cross-section/reorder: to be wired when section drop targets expose location.
+          dispatch({
+            type: 'MOVE_EXERCISE' as any,
+            payload: { from: active.id, to: over.id },
+          } as any);
+        }
+      }
+    },
+    [dispatch, state.currentWeekIndex, state.currentWorkoutIndex],
+  );
+
+  const handleOpenConfig = (exercise: WorkoutExerciseDataExtended) => {
+    setConfigExercise(exercise);
+    setConfigWeekIdx(state.currentWeekIndex);
+    setConfigWorkoutIdx(state.currentWorkoutIndex);
+    setConfigDrawerOpen(true);
+  };
+
+  const handleAddExercise = (exercise: LibraryExercise) => {
+    dispatch({
+      type: 'ADD_EXERCISE_TO_WORKOUT',
+      payload: {
+        weekIdx: state.currentWeekIndex,
+        workoutIdx: state.currentWorkoutIndex,
+        exercise: {
+          id: exercise.id,
+          name: exercise.name,
+          gifUrl: exercise.gifUrl,
+          targetMuscle: exercise.targetMuscle,
+          equipment: exercise.equipment,
+        },
+      },
+    });
+  };
 
   // Load draft on mount if exists
   useEffect(() => {
@@ -95,6 +225,40 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
       case 2:
         return <WeekBuilder onNext={handleNext} onPrev={handlePrev} />;
       case 3:
+        if (isClient) {
+          return (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={rectIntersection}
+              onDragEnd={handleDragEnd}
+            >
+              <div
+                className="flex h-[calc(100vh-220px)] overflow-hidden"
+                data-dnd-ready
+                data-testid="program-builder-canvas"
+              >
+                <ExerciseLibraryPanel onAddExercise={handleAddExercise} />
+                <WorkoutCanvas
+                  weekIdx={state.currentWeekIndex}
+                  workoutIdx={state.currentWorkoutIndex}
+                  onOpenConfig={handleOpenConfig}
+                />
+                {/* OUTLINE — integration step */}
+                <div className="w-64 hidden xl:block" data-outline-placeholder />
+              </div>
+              {configDrawerOpen && (
+                <ExerciseConfigDrawer
+                  exercise={configExercise}
+                  exerciseName={configExercise?.exerciseId ?? ''}
+                  open={configDrawerOpen}
+                  onClose={() => setConfigDrawerOpen(false)}
+                  weekIdx={configWeekIdx}
+                  workoutIdx={configWorkoutIdx}
+                />
+              )}
+            </DndContext>
+          );
+        }
         return <WorkoutBuilder onNext={handleNext} onPrev={handlePrev} />;
       case 4:
         return <ExerciseSelector onNext={handleNext} onPrev={handlePrev} />;
@@ -120,12 +284,37 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">Create Training Program</h1>
-            <button
-              onClick={handleCancel}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              <X className="h-6 w-6" />
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Export PDF — Professional + Enterprise, only when program is saved */}
+              <FeatureGate feature="programBuilder.pdfExport" minimal>
+                <button
+                  onClick={() => {
+                    if (savedProgramId) {
+                      const token = typeof window !== 'undefined'
+                        ? localStorage.getItem('accessToken')
+                        : null;
+                      const url = `/api/programs/${savedProgramId}/export${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+                      window.open(url, '_blank');
+                    }
+                  }}
+                  disabled={!savedProgramId}
+                  title={savedProgramId ? 'Export program as PDF' : 'Save the program first to enable export'}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Export PDF"
+                >
+                  <Download className="h-4 w-4" />
+                  Export PDF
+                </button>
+              </FeatureGate>
+
+              <button
+                data-testid="cancel-program-btn"
+                onClick={handleCancel}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
           </div>
           
           {/* Progress Steps */}
@@ -176,20 +365,27 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
           </div>
         </div>
 
-        {/* Step Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          {state.isDirty && (
-            <div className="px-6 pt-6 pb-2">
-              <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-                <Save className="inline h-4 w-4 mr-1" />
-                Draft saved automatically
+        {/* Step Content + Outline Panel */}
+        <div className="flex gap-0 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="flex-1 min-w-0">
+            {state.isDirty && (
+              <div className="px-6 pt-6 pb-2">
+                <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                  <Save className="inline h-4 w-4 mr-1" />
+                  Draft saved automatically
+                </div>
               </div>
+            )}
+
+            <div className={state.isDirty ? "p-6 pt-4" : "p-6"}>
+              {renderStep()}
             </div>
-          )}
-          
-          <div className={state.isDirty ? "p-6 pt-4" : "p-6"}>
-            {renderStep()}
           </div>
+
+          {/* Right Outline Panel (visible on xl+ screens) */}
+          <OutlineBoundary>
+            <ProgramOutline />
+          </OutlineBoundary>
         </div>
       </div>
     </div>
