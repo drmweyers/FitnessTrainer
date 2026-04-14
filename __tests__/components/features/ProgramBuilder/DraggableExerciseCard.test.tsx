@@ -20,6 +20,21 @@ jest.mock('@dnd-kit/utilities', () => ({
   CSS: { Translate: { toString: () => '' } },
 }))
 
+// useTier mock — default starter; individual tests can override
+const mockHasFeature = jest.fn()
+jest.mock('@/hooks/useTier', () => ({
+  useTier: () => ({
+    tier: 'starter',
+    level: 1,
+    isStarter: true,
+    isProfessional: false,
+    isEnterprise: false,
+    isLoading: false,
+    canAccess: jest.fn(() => false),
+    hasFeature: mockHasFeature,
+  }),
+}))
+
 const mockExercise: LibraryExercise = {
   id: 'ex-001',
   name: 'Bench Press',
@@ -78,5 +93,44 @@ describe('DraggableExerciseCard', () => {
   it('does not render add button in desktop mode', () => {
     render(<DraggableExerciseCard exercise={mockExercise} />)
     expect(screen.queryByRole('button', { name: /add bench press/i })).toBeNull()
+  })
+})
+
+// ─── Video preview gate tests (Pro-gated feature) ─────────────────────────
+
+const exerciseWithGif: LibraryExercise = {
+  ...mockExercise,
+  gifUrl: 'http://example.com/bench.gif',
+}
+
+describe('DraggableExerciseCard — video preview gate', () => {
+  beforeEach(() => {
+    mockHasFeature.mockReset()
+  })
+
+  it('Starter user does NOT see enlarged preview overlay', () => {
+    // hasFeature returns false → starter
+    mockHasFeature.mockReturnValue(false)
+    const { container } = render(<DraggableExerciseCard exercise={exerciseWithGif} />)
+    const preview = container.querySelector('[data-testid="video-preview-overlay"]')
+    expect(preview).toBeNull()
+  })
+
+  it('Pro user sees enlarged preview overlay on hover when gifUrl is set', () => {
+    // hasFeature returns true → pro/enterprise
+    mockHasFeature.mockReturnValue(true)
+    const { container } = render(<DraggableExerciseCard exercise={exerciseWithGif} />)
+    // Hover the card to trigger isHovered state
+    const card = container.firstElementChild as HTMLElement
+    fireEvent.mouseEnter(card)
+    const preview = container.querySelector('[data-testid="video-preview-overlay"]')
+    expect(preview).not.toBeNull()
+  })
+
+  it('Pro user does not see preview overlay when exercise has no gifUrl', () => {
+    mockHasFeature.mockReturnValue(true)
+    const { container } = render(<DraggableExerciseCard exercise={{ ...exerciseWithGif, gifUrl: '' }} />)
+    const preview = container.querySelector('[data-testid="video-preview-overlay"]')
+    expect(preview).toBeNull()
   })
 })

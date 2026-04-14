@@ -61,6 +61,34 @@ jest.mock('../ProgramPreview', () => {
   };
 });
 
+// Mock useTier so ProgramBuilder doesn't need a QueryClientProvider
+jest.mock('@/hooks/useTier', () => ({
+  useTier: () => ({
+    tier: 'starter',
+    level: 1,
+    isStarter: true,
+    isProfessional: false,
+    isEnterprise: false,
+    isLoading: false,
+    canAccess: jest.fn(() => false),
+    hasFeature: jest.fn(() => false),
+  }),
+}));
+
+// Mock dnd-kit to avoid sensor/sortable setup overhead in this test file
+jest.mock('@dnd-kit/core', () => ({
+  DndContext: ({ children }: any) => <div>{children}</div>,
+  PointerSensor: class {},
+  KeyboardSensor: class {},
+  TouchSensor: class {},
+  useSensor: jest.fn(),
+  useSensors: jest.fn(() => []),
+  rectIntersection: jest.fn(),
+}));
+jest.mock('@dnd-kit/sortable', () => ({
+  sortableKeyboardCoordinates: jest.fn(),
+}));
+
 // Mock window.confirm and window.alert
 global.confirm = jest.fn(() => true);
 global.alert = jest.fn();

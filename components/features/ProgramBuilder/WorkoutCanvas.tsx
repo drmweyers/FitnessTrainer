@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { Plus, Zap } from 'lucide-react'
+import { Plus, Sparkles, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,6 +11,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { FeatureGate } from '@/components/subscription/FeatureGate'
 import SectionCard, { CanvasSection } from './SectionCard'
 import { useProgramBuilder } from './ProgramBuilderContext'
 import type {
@@ -18,6 +24,16 @@ import type {
   SectionMetadata,
   WorkoutExerciseDataExtended,
 } from '@/types/program'
+
+// Shape returned by the suggest-exercise API
+interface SuggestedExercise {
+  id: string
+  name: string
+  bodyPart: string | null
+  targetMuscle: string | null
+  equipment: string | null
+  gifUrl: string | null
+}
 
 const SECTION_TYPE_OPTIONS: { type: SectionType; label: string }[] = [
   { type: 'regular', label: 'Regular' },
@@ -128,6 +144,9 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
   const { state, dispatch } = useProgramBuilder()
   const [selectedWeekIdx, setSelectedWeekIdx] = useState(weekIdx)
   const [selectedWorkoutIdx, setSelectedWorkoutIdx] = useState(workoutIdx)
+  const [suggestions, setSuggestions] = useState<SuggestedExercise[]>([])
+  const [suggestOpen, setSuggestOpen] = useState(false)
+  const [isSuggesting, setIsSuggesting] = useState(false)
 
   const weeks = state.weeks
   const currentWeek = weeks[selectedWeekIdx]
@@ -184,6 +203,47 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
 
   const handleAddSection = (type: SectionType) => {
     dispatch({ type: 'ADD_SECTION' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, sectionType: type } } as any)
+  }
+
+  const handleAiSuggest = async () => {
+    setIsSuggesting(true)
+    try {
+      const currentExerciseIds = exercises.map((e) => e.exerciseId)
+      const res = await fetch('/api/programs/suggest-exercise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentExerciseIds }),
+      })
+      if (!res.ok) return
+      const json = await res.json()
+      if (json.success && Array.isArray(json.data?.suggestions)) {
+        setSuggestions(json.data.suggestions)
+        setSuggestOpen(true)
+      }
+    } finally {
+      setIsSuggesting(false)
+    }
+  }
+
+  const handleAddSuggested = (exercise: SuggestedExercise) => {
+    dispatch({
+      type: 'ADD_EXERCISE_TO_WORKOUT' as any,
+      payload: {
+        weekIdx: selectedWeekIdx,
+        workoutIdx: selectedWorkoutIdx,
+        exercise: {
+          exerciseId: exercise.id,
+          orderIndex: 0,
+          setsConfig: [],
+          configurations: [
+            { setNumber: 1, setType: 'working', reps: '8', restSeconds: 90 },
+            { setNumber: 2, setType: 'working', reps: '8', restSeconds: 90 },
+            { setNumber: 3, setType: 'working', reps: '8', restSeconds: 90 },
+          ],
+        },
+      },
+    } as any)
+    setSuggestOpen(false)
   }
 
   const handleGroupAsSuperset = () => {
@@ -248,7 +308,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
           </DroppableCanvasBody>
         </SortableContext>
 
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2 flex-wrap">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="text-xs">
@@ -279,6 +339,43 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
               Group as Superset ({selectedExerciseIds.size})
             </Button>
           )}
+
+          {/* Pro-gated AI suggest button */}
+          <FeatureGate feature="programBuilder.aiSuggest">
+            <Popover open={suggestOpen} onOpenChange={setSuggestOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs border-blue-300 text-blue-700 hover:bg-blue-50"
+                  onClick={handleAiSuggest}
+                  disabled={isSuggesting}
+                  aria-label="Suggest next exercise"
+                >
+                  <Sparkles className="w-3.5 h-3.5 mr-1" />
+                  {isSuggesting ? 'Thinking...' : 'Suggest next exercise'}
+                </Button>
+              </PopoverTrigger>
+              {suggestions.length > 0 && (
+                <PopoverContent align="start" className="w-64 p-2 space-y-1">
+                  <p className="text-xs font-medium text-gray-500 mb-2">Suggested exercises</p>
+                  {suggestions.map((ex) => (
+                    <button
+                      key={ex.id}
+                      type="button"
+                      className="w-full text-left text-sm px-2 py-1.5 rounded hover:bg-blue-50 transition-colors"
+                      onClick={() => handleAddSuggested(ex)}
+                    >
+                      <span className="font-medium">{ex.name}</span>
+                      {ex.targetMuscle && (
+                        <span className="ml-1 text-xs text-gray-400">· {ex.targetMuscle}</span>
+                      )}
+                    </button>
+                  ))}
+                </PopoverContent>
+              )}
+            </Popover>
+          </FeatureGate>
         </div>
 
         <div id="workout-trash" className="mt-4 border-2 border-dashed border-red-200 rounded-lg p-2 text-center text-xs text-red-400 hover:border-red-300 hover:text-red-500 transition-colors">

@@ -6,11 +6,13 @@ import {
   DragEndEvent,
   PointerSensor,
   KeyboardSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   rectIntersection,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { useTier } from '@/hooks/useTier';
 import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext';
 import ProgramForm from './ProgramForm';
 import WeekBuilder from './WeekBuilder';
@@ -56,6 +58,7 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
   onCancel
 }) => {
   const { state, dispatch } = useProgramBuilder();
+  const { hasFeature } = useTier();
   const [isClient, setIsClient] = useState(false);
   const [configDrawerOpen, setConfigDrawerOpen] = useState(false);
   const [configExercise, setConfigExercise] = useState<WorkoutExerciseDataExtended | null>(null);
@@ -66,9 +69,14 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
     setIsClient(true);
   }, []);
 
+  // Pro/Enterprise: add TouchSensor with tighter activation for mobile drag
+  const hasMobileDrag = hasFeature('programBuilder.mobileDragOptimised');
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    ...(hasMobileDrag
+      ? [useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })]
+      : []),
   );
 
   const handleDragEnd = useCallback(
