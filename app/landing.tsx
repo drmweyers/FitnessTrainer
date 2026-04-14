@@ -663,7 +663,7 @@ export default function LandingPage() {
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="text-gray-700">• Up to 5 active clients</li>
-                <li className="text-gray-700">• 1,344 exercises with GIF demos</li>
+                <li className="text-gray-700">• 1,324 exercises with GIF demos</li>
                 <li className="text-gray-700">• Set-by-set workout logging</li>
                 <li className="text-gray-700">• Automatic PR detection</li>
                 <li className="text-gray-700">• Body composition tracking</li>

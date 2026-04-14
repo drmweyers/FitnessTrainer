@@ -155,7 +155,7 @@ export default function StarterSalesPage() {
             className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-3xl mx-auto mb-10 leading-relaxed"
           >
             Stop paying $80/month for software you don&apos;t fully use. Get the essentials —{' '}
-            <span className="text-white font-semibold">1,344 exercises</span>, client tracking,
+            <span className="text-white font-semibold">1,324 exercises</span>, client tracking,
             workout logging — and{' '}
             <span className="text-white font-semibold">own it forever</span>.
           </motion.p>
@@ -292,7 +292,7 @@ export default function StarterSalesPage() {
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
             <ValueStackItem
               icon={Dumbbell}
-              label="1,344 Exercises with Animated GIF Demos"
+              label="1,324 Exercises with Animated GIF Demos"
               value="$600/yr"
               delay={0}
             />
@@ -405,7 +405,7 @@ export default function StarterSalesPage() {
                 <div className="aspect-video bg-gradient-to-br from-blue-900/30 to-blue-800/10 flex items-center justify-center relative overflow-hidden">
                   <img
                     src="/images/marketing/exercises-library.png"
-                    alt="Exercise Library — 1,344 exercises with animated GIF demonstrations"
+                    alt="Exercise Library — 1,324 exercises with animated GIF demonstrations"
                     className="w-full h-full object-cover object-top"
                     onError={(e) => {
                       const t = e.target as HTMLImageElement
@@ -420,7 +420,7 @@ export default function StarterSalesPage() {
                 <div className="p-6">
                   <h3 className="text-white font-bold text-lg mb-2">Exercise Library</h3>
                   <p className="text-white/60 text-sm">
-                    1,344 exercises with animated GIF demos. Filter by body part, equipment, muscle
+                    1,324 exercises with animated GIF demos. Filter by body part, equipment, muscle
                     group, and difficulty simultaneously.
                   </p>
                 </div>
@@ -631,7 +631,7 @@ export default function StarterSalesPage() {
           <div className="space-y-4">
             <FAQItem
               question="I'm brand new to personal training. Is Starter enough to get started?"
-              answer="Absolutely. Starter was designed for trainers with 1-5 clients. You get the full exercise library (1,344 exercises with animated demos), workout logging, client management, progress tracking, and a PWA-installable mobile experience. It's everything you need in year one — without paying year-one subscription prices."
+              answer="Absolutely. Starter was designed for trainers with 1-5 clients. You get the full exercise library (1,324 exercises with animated demos), workout logging, client management, progress tracking, and a PWA-installable mobile experience. It's everything you need in year one — without paying year-one subscription prices."
             />
             <FAQItem
               question="What does 'one-time payment' mean? Are there hidden fees?"

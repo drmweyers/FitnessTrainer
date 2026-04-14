@@ -103,6 +103,42 @@ export default function AnalyticsPage() {
     setIsTrackerOpen(true);
   };
 
+  /**
+   * Trigger a CSV download from the analytics export endpoint.
+   * Available for all authenticated users.
+   */
+  const handleExportCSV = async () => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      const endDate = new Date().toISOString().split('T')[0];
+      const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+      const response = await fetch(
+        `/api/analytics/reports/export?format=csv&startDate=${startDate}&endDate=${endDate}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!response.ok) {
+        showError('Export Failed', 'Could not generate CSV report. Please try again.');
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `evofit-report-${endDate}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      success('Export Ready', 'Your CSV report is downloading.');
+    } catch (err) {
+      console.error('CSV export error:', err);
+      showError('Export Failed', 'An unexpected error occurred.');
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -207,6 +243,13 @@ export default function AnalyticsPage() {
               </p>
             </div>
             <div className="flex space-x-2">
+              <button
+                onClick={handleExportCSV}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                data-testid="export-csv-btn"
+              >
+                Export CSV
+              </button>
               <button
                 onClick={() => setIsReportOpen(true)}
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"

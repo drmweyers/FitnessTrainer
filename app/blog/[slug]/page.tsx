@@ -134,7 +134,7 @@ export default function BlogPostPage({ params }: Props) {
             Ready to build better programs?
           </h3>
           <p className="text-gray-600 text-sm mb-4">
-            EvoFit Trainer gives you a 1,344-exercise library, multi-week program builder, and
+            EvoFit Trainer gives you a 1,324-exercise library, multi-week program builder, and
             client management — all in one platform.
           </p>
           <Link
