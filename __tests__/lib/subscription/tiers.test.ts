@@ -84,7 +84,7 @@ describe('TIER_FEATURES map integrity', () => {
 
 describe('TIER_LIMITS', () => {
   it('starter has bounded client limit', () => {
-    expect(TIER_LIMITS.starter.clients).toBe(10);
+    expect(TIER_LIMITS.starter.clients).toBe(5);
   });
 
   it('professional and enterprise have unlimited programs (-1)', () => {

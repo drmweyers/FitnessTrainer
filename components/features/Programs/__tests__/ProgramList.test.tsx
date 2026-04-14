@@ -56,6 +56,12 @@ jest.mock('../BulkAssignmentModal', () => ({
     ) : null,
 }));
 
+// Stream F BulkAssignDialog uses useTier → TanStack Query. Stub it.
+jest.mock('@/components/features/ProgramBuilder/BulkAssignDialog', () => ({
+  __esModule: true,
+  BulkAssignDialog: () => null,
+}));
+
 const mockFetchPrograms = jest.fn();
 const mockDeleteProgram = jest.fn();
 const mockDuplicateProgram = jest.fn();
