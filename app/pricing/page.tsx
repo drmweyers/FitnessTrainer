@@ -866,7 +866,7 @@ export default function PricingPage() {
             </motion.div>
 
             <motion.p variants={fadeInUp} className="text-blue-300 text-sm mt-6">
-              Professional tier · $3$39$199 one-time · 14-day money-back guarantee · Secure checkout via Stripe
+              Professional tier · $299 one-time · 14-day money-back guarantee · Secure checkout via Stripe
             </motion.p>
           </motion.div>
         </div>
