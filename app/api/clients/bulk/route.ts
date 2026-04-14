@@ -13,7 +13,7 @@ import prisma from '@/lib/db/prisma';
 
 export const dynamic = 'force-dynamic';
 
-const VALID_ACTIONS = ['update-status', 'assign-tags'] as const;
+const VALID_ACTIONS = ['update-status', 'assign-tags', 'remove-tag'] as const;
 type BulkAction = (typeof VALID_ACTIONS)[number];
 
 const VALID_STATUSES = ['active', 'inactive', 'onboarding', 'paused', 'archived'] as const;
@@ -79,6 +79,10 @@ export async function POST(request: NextRequest) {
       return await handleAssignTags(clientIds, value);
     }
 
+    if (action === 'remove-tag') {
+      return await handleRemoveTag(clientIds, value as string);
+    }
+
     // Unreachable but TypeScript needs it
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (error) {
@@ -116,6 +120,27 @@ async function handleUpdateStatus(
   return NextResponse.json({
     success: true,
     data: { updatedCount: result.count },
+  });
+}
+
+/**
+ * Removes a single tag from all specified clients.
+ */
+async function handleRemoveTag(clientIds: string[], tagId: string): Promise<NextResponse> {
+  if (!tagId) {
+    return NextResponse.json(
+      { error: 'Validation Error', message: 'value (tagId) is required for remove-tag action' },
+      { status: 400 }
+    );
+  }
+
+  const result = await prisma.clientTagAssignment.deleteMany({
+    where: { clientId: { in: clientIds }, tagId },
+  });
+
+  return NextResponse.json({
+    success: true,
+    data: { removedCount: result.count },
   });
 }
 
