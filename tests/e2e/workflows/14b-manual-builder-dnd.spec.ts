@@ -27,8 +27,17 @@ import { loginViaAPI, getAuthToken, takeScreenshot, waitForPageReady } from '../
 // ---------------------------------------------------------------------------
 
 /**
- * Fill the program info step and advance to the next step.
- * Returns true if the Next button was found and clicked successfully.
+ * Fill the program info step (step 1) and advance to step 2 (WeekBuilder).
+ *
+ * Fixed selectors based on ProgramForm.tsx:
+ *  - name input:       input#name
+ *  - program type:     select#programType
+ *  - difficulty level: input[name="difficultyLevel"][value="beginner"]
+ *  - duration input:   input#duration-number  (changed from default 4 → 3 to trigger
+ *                       createInitialWeeks in ProgramBuilderContext reducer)
+ *  - next button:      button containing "Next Step"  (NOT "Next")
+ *
+ * Returns true if navigation to step 2 succeeded.
  */
 async function fillInfoAndAdvance(
   page: import('@playwright/test').Page,
@@ -38,14 +47,45 @@ async function fillInfoAndAdvance(
   const nameVisible = await nameInput.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
   if (!nameVisible) return false;
 
-  await nameInput.fill(programName);
+  // Fill name — use pressSequentially to reliably trigger React onChange
+  await nameInput.click();
+  await nameInput.pressSequentially(programName, { delay: 15 });
 
-  const nextBtn = page.locator('button:has-text("Next")').first();
+  // Select program type (required)
+  const programTypeSelect = page.locator('select#programType');
+  if (await programTypeSelect.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await programTypeSelect.selectOption('strength');
+  }
+
+  // Select difficulty level (required — click the Beginner radio label)
+  const beginnerRadio = page.locator('input[name="difficultyLevel"][value="beginner"]');
+  if (await beginnerRadio.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await beginnerRadio.click();
+  }
+
+  // Change durationWeeks from the default (4) to a different value so the
+  // ProgramBuilderContext reducer calls createInitialWeeks and pre-populates weeks.
+  // Without this, state.weeks stays [] and WeekBuilder's Continue button is disabled.
+  const durationInput = page.locator('input#duration-number');
+  if (await durationInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await durationInput.fill('3');
+    await durationInput.dispatchEvent('change');
+  }
+
+  // Click "Next Step" — ProgramForm.tsx line 389
+  const nextBtn = page.locator('button:has-text("Next Step")').first();
   const nextVisible = await nextBtn.isVisible({ timeout: 3000 }).catch(() => false);
-  if (!nextVisible) return false;
+  if (!nextVisible) {
+    // Fallback: older button text variant
+    const fallbackBtn = page.locator('button:has-text("Next")').first();
+    if (!(await fallbackBtn.isVisible({ timeout: 1500 }).catch(() => false))) return false;
+    if (await fallbackBtn.isDisabled().catch(() => true)) return false;
+    await fallbackBtn.click();
+    await page.waitForTimeout(600);
+    return true;
+  }
 
-  const isDisabled = await nextBtn.isDisabled().catch(() => true);
-  if (isDisabled) return false;
+  if (await nextBtn.isDisabled().catch(() => true)) return false;
 
   await nextBtn.click();
   await page.waitForTimeout(600);
@@ -53,8 +93,44 @@ async function fillInfoAndAdvance(
 }
 
 /**
+ * Advance through the WeekBuilder step (step 2) to step 3 (canvas).
+ *
+ * WeekBuilder's advance button is "Continue to Workouts" — NOT "Next".
+ * It is disabled when state.weeks.length === 0. If weeks were not auto-scaffolded
+ * (i.e. durationWeeks was not changed in step 1), this clicks "Add Another Week"
+ * once as a fallback, then proceeds.
+ *
+ * Returns true if the Continue button was clicked.
+ */
+async function advanceFromWeekBuilder(page: import('@playwright/test').Page): Promise<boolean> {
+  const continueBtn = page.locator('button:has-text("Continue to Workouts")').first();
+  const btnVisible = await continueBtn.isVisible({ timeout: 4000 }).catch(() => false);
+  if (!btnVisible) return false;
+
+  // If the button is disabled, weeks weren't pre-created — add one manually
+  const isDisabled = await continueBtn.isDisabled().catch(() => true);
+  if (isDisabled) {
+    const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
+    if (await addWeekBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await addWeekBtn.click();
+      await page.waitForTimeout(400);
+    }
+    // Re-check disabled state
+    if (await continueBtn.isDisabled().catch(() => true)) return false;
+  }
+
+  await continueBtn.click();
+  await page.waitForTimeout(800);
+  return true;
+}
+
+/**
  * Advance through steps until the target testid is visible or max steps reached.
- * Used to navigate past goals/weeks steps to reach canvas-like views.
+ *
+ * Step button mapping:
+ *  - Step 1 → 2:  "Next Step"  (ProgramForm)
+ *  - Step 2 → 3:  "Continue to Workouts"  (WeekBuilder)
+ *  - Step 3+:     "Next" variants
  */
 async function advanceToStep(
   page: import('@playwright/test').Page,
@@ -65,7 +141,33 @@ async function advanceToStep(
     const target = page.locator(`[data-testid="${targetTestId}"]`);
     if (await target.isVisible({ timeout: 1500 }).catch(() => false)) return true;
 
-    const nextBtn = page.locator('button:has-text("Next")').first();
+    // Try WeekBuilder's "Continue to Workouts" button first (step 2 → 3)
+    const continueBtn = page.locator('button:has-text("Continue to Workouts")').first();
+    if (await continueBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+      const disabled = await continueBtn.isDisabled().catch(() => true);
+      if (!disabled) {
+        await continueBtn.click();
+        await page.waitForTimeout(800);
+        continue;
+      }
+      // Disabled — try adding a week, then retry
+      const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
+      if (await addWeekBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+        await addWeekBtn.click();
+        await page.waitForTimeout(400);
+        if (!(await continueBtn.isDisabled().catch(() => true))) {
+          await continueBtn.click();
+          await page.waitForTimeout(800);
+          continue;
+        }
+      }
+      break; // Cannot advance from week builder
+    }
+
+    // Generic next button fallback ("Next Step", "Next", etc.)
+    const nextBtn = page.locator(
+      'button:has-text("Next Step"), button:has-text("Next")'
+    ).first();
     if (!(await nextBtn.isVisible({ timeout: 1500 }).catch(() => false))) break;
     if (await nextBtn.isDisabled().catch(() => true)) break;
 
@@ -796,12 +898,24 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
         await page.waitForTimeout(500);
       }
     } else {
-      // Advance through remaining steps (goals → weeks → review)
-      for (let i = 0; i < 3; i++) {
-        const nextBtn = page.locator('button:has-text("Next")').first();
-        if (!(await nextBtn.isVisible({ timeout: 2000 }).catch(() => false))) break;
-        if (await nextBtn.isDisabled().catch(() => true)) break;
-        await nextBtn.click();
+      // Advance through remaining steps: step 2 uses "Continue to Workouts",
+      // later steps use "Next" variants.
+      for (let i = 0; i < 4; i++) {
+        const anyAdvanceBtn = page.locator(
+          'button:has-text("Continue to Workouts"), button:has-text("Next Step"), button:has-text("Next")'
+        ).first();
+        if (!(await anyAdvanceBtn.isVisible({ timeout: 2000 }).catch(() => false))) break;
+        if (await anyAdvanceBtn.isDisabled().catch(() => true)) {
+          // Disabled "Continue to Workouts" = no weeks; add one first
+          const addWeek = page.locator('button:has-text("Add Another Week")').first();
+          if (await addWeek.isVisible({ timeout: 1000 }).catch(() => false)) {
+            await addWeek.click();
+            await page.waitForTimeout(400);
+          } else {
+            break;
+          }
+        }
+        await anyAdvanceBtn.click();
         await page.waitForTimeout(500);
       }
     }
@@ -880,12 +994,23 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
 
       expect(hasValidation || redirected).toBeTruthy();
     } else {
-      // Multi-step builder: advance through all steps to reach Save
-      for (let i = 0; i < 3; i++) {
-        const nextBtn = page.locator('button:has-text("Next")').first();
-        if (!(await nextBtn.isVisible({ timeout: 2000 }).catch(() => false))) break;
-        if (await nextBtn.isDisabled().catch(() => true)) break;
-        await nextBtn.click();
+      // Multi-step builder: advance through all steps to reach Save.
+      // Step 2 uses "Continue to Workouts", later steps use "Next" variants.
+      for (let i = 0; i < 4; i++) {
+        const anyAdvanceBtn = page.locator(
+          'button:has-text("Continue to Workouts"), button:has-text("Next Step"), button:has-text("Next")'
+        ).first();
+        if (!(await anyAdvanceBtn.isVisible({ timeout: 2000 }).catch(() => false))) break;
+        if (await anyAdvanceBtn.isDisabled().catch(() => true)) {
+          const addWeek = page.locator('button:has-text("Add Another Week")').first();
+          if (await addWeek.isVisible({ timeout: 1000 }).catch(() => false)) {
+            await addWeek.click();
+            await page.waitForTimeout(400);
+          } else {
+            break;
+          }
+        }
+        await anyAdvanceBtn.click();
         await page.waitForTimeout(500);
       }
 

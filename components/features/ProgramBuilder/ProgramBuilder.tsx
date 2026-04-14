@@ -13,7 +13,7 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useTier } from '@/hooks/useTier';
-import { useProgramBuilder, programBuilderHelpers } from './ProgramBuilderContext';
+import { useProgramBuilder, programBuilderHelpers, validateCurrentStep } from './ProgramBuilderContext';
 import ProgramForm from './ProgramForm';
 import WeekBuilder from './WeekBuilder';
 import WorkoutBuilder from './WorkoutBuilder';
@@ -163,8 +163,11 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
   }, [dispatch]);
 
   const handleNext = () => {
-    dispatch({ type: 'VALIDATE_CURRENT_STEP' });
-    if (state.isValid) {
+    // Compute validity from current state synchronously — do NOT use state.isValid
+    // which is stale in the closure until the next render after VALIDATE_CURRENT_STEP dispatch.
+    const isCurrentlyValid = validateCurrentStep(state);
+    dispatch({ type: 'VALIDATE_CURRENT_STEP' }); // keeps state.isValid in sync for derived UI
+    if (isCurrentlyValid) {
       dispatch({ type: 'NEXT_STEP' });
     } else {
       // Simple validation feedback without toast dependency

@@ -745,6 +745,10 @@ export function useProgramBuilder() {
   return context
 }
 
+// Export validator so ProgramBuilder can compute validity synchronously
+// instead of relying on the stale `state.isValid` closure in handleNext.
+export { validateCurrentStep }
+
 // Helper functions
 export const programBuilderHelpers = {
   // Convert state to API format

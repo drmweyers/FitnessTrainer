@@ -303,23 +303,44 @@ test.describe('14c - Tier-Gated Builder Features: Canvas UI', () => {
     await nameInput.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
     await nameInput.fill('14c E2E Test Program');
 
-    // Duration in weeks — ProgramForm expects a weeks input
-    const weeksInput = page.locator(
-      'input[name="durationWeeks"], input[name="weeks"], input[placeholder*="weeks" i]'
-    ).first();
-    if (await weeksInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await weeksInput.fill('4');
+    // Select required fields: programType and difficultyLevel
+    const programTypeSelect = page.locator('select#programType');
+    if (await programTypeSelect.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await programTypeSelect.selectOption('strength');
+    }
+    const beginnerRadio = page.locator('input[name="difficultyLevel"][value="beginner"]');
+    if (await beginnerRadio.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await beginnerRadio.click();
     }
 
-    // Advance from step 1 to step 2 via the Next button
-    const nextBtn = page.locator('button:has-text("Next"), button[type="submit"]:has-text("Next")').first();
+    // Change durationWeeks (3 ≠ default 4) to trigger week auto-scaffolding in context reducer
+    const durationInput = page.locator('input#duration-number');
+    if (await durationInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await durationInput.fill('3');
+      await durationInput.dispatchEvent('change');
+    }
+
+    // Advance from step 1 to step 2 via the "Next Step" button (ProgramForm.tsx)
+    const nextBtn = page.locator(
+      'button:has-text("Next Step"), button:has-text("Next"), button[type="submit"]:has-text("Next")'
+    ).first();
     await nextBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
     await nextBtn.click();
 
-    // Step 2: WeekBuilder — advance to step 3 (canvas)
+    // Step 2: WeekBuilder — "Continue to Workouts" button advances to step 3 (canvas)
     await page.waitForTimeout(500); // allow state transition
-    const nextBtn2 = page.locator('button:has-text("Next"), button:has-text("Build Workouts")').first();
+    const nextBtn2 = page.locator(
+      'button:has-text("Continue to Workouts"), button:has-text("Next"), button:has-text("Build Workouts")'
+    ).first();
     if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
+      // If disabled (no weeks), add one first
+      if (await nextBtn2.isDisabled().catch(() => false)) {
+        const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
+        if (await addWeekBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+          await addWeekBtn.click();
+          await page.waitForTimeout(400);
+        }
+      }
       await nextBtn2.click();
     }
 
@@ -350,21 +371,41 @@ test.describe('14c - Tier-Gated Builder Features: Canvas UI', () => {
     });
     await waitForPageReady(page);
 
-    // Fill step 1
+    // Fill step 1 — all required fields
     const nameInput = page.locator(
       'input[name="name"], input[placeholder*="program name" i], input[id*="name"]'
     ).first();
     await nameInput.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
     await nameInput.fill('14c Canvas Wrapper Test');
 
-    const nextBtn1 = page.locator('button:has-text("Next")').first();
+    const pt2 = page.locator('select#programType');
+    if (await pt2.isVisible({ timeout: 2000 }).catch(() => false)) await pt2.selectOption('strength');
+    const dl2 = page.locator('input[name="difficultyLevel"][value="beginner"]');
+    if (await dl2.isVisible({ timeout: 2000 }).catch(() => false)) await dl2.click();
+    const dur2 = page.locator('input#duration-number');
+    if (await dur2.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await dur2.fill('3');
+      await dur2.dispatchEvent('change');
+    }
+
+    const nextBtn1 = page.locator('button:has-text("Next Step"), button:has-text("Next")').first();
     await nextBtn1.waitFor({ state: 'visible', timeout: TIMEOUTS.element });
     await nextBtn1.click();
     await page.waitForTimeout(500);
 
-    const nextBtn2 = page.locator('button:has-text("Next"), button:has-text("Build Workouts")').first();
-    if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await nextBtn2.click();
+    // Step 2: WeekBuilder — "Continue to Workouts" advances to canvas
+    const continueBtn = page.locator(
+      'button:has-text("Continue to Workouts"), button:has-text("Next"), button:has-text("Build Workouts")'
+    ).first();
+    if (await continueBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await continueBtn.isDisabled().catch(() => false)) {
+        const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
+        if (await addWeekBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+          await addWeekBtn.click();
+          await page.waitForTimeout(400);
+        }
+      }
+      await continueBtn.click();
     }
     await page.waitForTimeout(1200);
 
