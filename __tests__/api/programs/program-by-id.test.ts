@@ -128,6 +128,83 @@ describe('GET /api/programs/[id]', () => {
     expect(body.success).toBe(false);
     expect(body.error).toBe('Failed to fetch program');
   });
+
+  it('includes sections array in each workout of the response', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const program = {
+      id: validId,
+      name: 'My Program',
+      trainerId: mockTrainerUser.id,
+      weeks: [
+        {
+          weekNumber: 1,
+          workouts: [
+            {
+              id: 'w1',
+              dayNumber: 1,
+              exercises: [
+                { id: 'e1', orderIndex: 0, sectionId: 'sec1', exercise: {}, configurations: [], createdAt: new Date() },
+              ],
+              sections: [
+                { id: 'sec1', workoutId: 'w1', orderIndex: 0, sectionType: 'regular', rounds: null, endRest: null, intervalWork: null, intervalRest: null, createdAt: new Date(), updatedAt: null },
+              ],
+            },
+          ],
+        },
+      ],
+      assignments: [],
+    };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(program);
+
+    const request = createMockRequest(`/api/programs/${validId}`);
+    const response = await GET(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    const workout = body.data.weeks[0].workouts[0];
+    expect(workout.sections).toBeDefined();
+    expect(Array.isArray(workout.sections)).toBe(true);
+    expect(workout.sections[0].sectionType).toBe('regular');
+    expect(workout.sections[0].exercises).toBeDefined();
+  });
+
+  it('keeps legacy exercises flat array in response for backward compat', async () => {
+    authenticate.mockResolvedValue(mockAuthUser);
+
+    const program = {
+      id: validId,
+      name: 'My Program',
+      trainerId: mockTrainerUser.id,
+      weeks: [
+        {
+          weekNumber: 1,
+          workouts: [
+            {
+              id: 'w1',
+              dayNumber: 1,
+              exercises: [
+                { id: 'e1', orderIndex: 0, sectionId: null, exercise: {}, configurations: [], createdAt: new Date() },
+              ],
+              sections: [],
+            },
+          ],
+        },
+      ],
+      assignments: [],
+    };
+    (prisma.program.findFirst as jest.Mock).mockResolvedValue(program);
+
+    const request = createMockRequest(`/api/programs/${validId}`);
+    const response = await GET(request, params);
+    const { status, body } = await parseJsonResponse(response);
+
+    expect(status).toBe(200);
+    const workout = body.data.weeks[0].workouts[0];
+    expect(Array.isArray(workout.exercises)).toBe(true);
+    expect(workout.exercises).toHaveLength(1);
+  });
 });
 
 describe('PUT /api/programs/[id]', () => {

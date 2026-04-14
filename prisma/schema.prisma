@@ -738,6 +738,7 @@ model ProgramWorkout {
   // Relations
   week              ProgramWeek  @relation(fields: [programWeekId], references: [id], onDelete: Cascade)
   exercises         WorkoutExercise[]
+  sections          ProgramSection[]
   workoutSessions   WorkoutSession[]
 
   @@unique([programWeekId, dayNumber])
@@ -753,19 +754,41 @@ model WorkoutExercise {
   supersetGroup       String?   @map("superset_group") @db.VarChar(10) // A, B, C for grouping
   sectionType         String?   @map("section_type") @db.VarChar(20)  // regular|superset|circuit|interval|amrap|timed
   alternateExerciseId String?   @map("alternate_exercise_id") @db.Uuid
+  sectionId           String?   @map("section_id") @db.Uuid
   setsConfig          Json      @map("sets_config") @db.JsonB // [{type: 'working', count: 3}, {type: 'warmup', count: 2}]
   notes               String?   @db.Text
   createdAt           DateTime  @default(now()) @map("created_at")
 
   // Relations
-  workout           ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exercise          Exercise       @relation("WorkoutExercises", fields: [exerciseId], references: [id])
-  alternateExercise Exercise?      @relation("AlternateExercises", fields: [alternateExerciseId], references: [id])
+  workout           ProgramWorkout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise          Exercise        @relation("WorkoutExercises", fields: [exerciseId], references: [id])
+  alternateExercise Exercise?       @relation("AlternateExercises", fields: [alternateExerciseId], references: [id])
+  section           ProgramSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
   configurations    ExerciseConfiguration[]
   workoutLogs       WorkoutExerciseLog[] @relation("WorkoutExerciseLogs")
 
   @@unique([workoutId, orderIndex])
   @@map("workout_exercises")
+}
+
+// Dedicated section rows — replaces configurations[0].notes JSON hack for section metadata
+model ProgramSection {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId     String         @map("workout_id") @db.Uuid
+  orderIndex    Int            @map("order_index")
+  sectionType   String         @map("section_type") @db.VarChar(20)
+  rounds        Int?
+  endRest       Int?           @map("end_rest")
+  intervalWork  Int?           @map("interval_work")
+  intervalRest  Int?           @map("interval_rest")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime?      @updatedAt @map("updated_at")
+
+  workout       ProgramWorkout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercises     WorkoutExercise[]
+
+  @@unique([workoutId, orderIndex])
+  @@map("program_sections")
 }
 
 // Exercise configurations (sets/reps/weight)

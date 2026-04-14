@@ -62,6 +62,10 @@ export async function GET(
                     exercise: true,
                     configurations: true,
                   },
+                  orderBy: { orderIndex: 'asc' },
+                },
+                sections: {
+                  orderBy: { orderIndex: 'asc' },
                 },
               },
             },
@@ -96,7 +100,54 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ success: true, data: program });
+    // Shape workouts so each section carries its exercises grouped by sectionId.
+    // The legacy `exercises` flat array is preserved for one release of backward compat.
+    const shaped = {
+      ...program,
+      weeks: program.weeks.map(week => ({
+        ...week,
+        workouts: week.workouts.map(workout => {
+          const exercisesBySection = new Map<string | null, typeof workout.exercises>();
+          for (const ex of workout.exercises) {
+            const key = (ex as any).sectionId ?? null;
+            if (!exercisesBySection.has(key)) exercisesBySection.set(key, []);
+            exercisesBySection.get(key)!.push(ex);
+          }
+
+          const sectionsWithExercises = workout.sections.map(section => ({
+            ...section,
+            exercises: exercisesBySection.get(section.id) ?? [],
+          }));
+
+          // Exercises that have no sectionId are placed in a synthetic default section.
+          const unsectioned = exercisesBySection.get(null) ?? [];
+          if (unsectioned.length > 0) {
+            sectionsWithExercises.push({
+              id: null as any,
+              workoutId: workout.id,
+              orderIndex: sectionsWithExercises.length,
+              sectionType: 'regular',
+              rounds: null,
+              endRest: null,
+              intervalWork: null,
+              intervalRest: null,
+              createdAt: workout.exercises[0]?.createdAt ?? new Date(),
+              updatedAt: null,
+              exercises: unsectioned,
+            });
+          }
+
+          return {
+            ...workout,
+            sections: sectionsWithExercises,
+            // Legacy flat array — deprecated, will be removed in the next release.
+            exercises: workout.exercises,
+          };
+        }),
+      })),
+    };
+
+    return NextResponse.json({ success: true, data: shaped });
   } catch (error: any) {
     console.error('Error fetching program:', error);
     return NextResponse.json(
