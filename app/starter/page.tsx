@@ -2,6 +2,26 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
+
+const STARTER_PRICE_ID = 'price_1TEwpaGo4HHYDfDVyvecwfMc'
+
+async function handleCheckout() {
+  try {
+    const res = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: STARTER_PRICE_ID }),
+    })
+    const data = await res.json()
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      window.location.href = '/auth/register'
+    }
+  } catch {
+    window.location.href = '/auth/register'
+  }
+}
 import { motion, useInView } from 'framer-motion'
 import {
   Dumbbell,
@@ -166,13 +186,13 @@ export default function StarterSalesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <Link
-              href="/register"
+            <button
+              onClick={handleCheckout}
               className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
               Get Started for $199
               <ArrowRight className="w-5 h-5" />
-            </Link>
+            </button>
             <p className="mt-4 text-white/40 text-sm">
               One-time payment. No monthly fees. Ever.
             </p>
@@ -698,13 +718,13 @@ export default function StarterSalesPage() {
               $199. One time. No subscriptions. Start serving clients today.
             </p>
 
-            <Link
-              href="/register"
+            <button
+              onClick={handleCheckout}
               className="inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl rounded-xl shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
             >
               Get Starter for $199
               <ArrowRight className="w-6 h-6" />
-            </Link>
+            </button>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-white/40 text-sm">
               <div className="flex items-center gap-2">
