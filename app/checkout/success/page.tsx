@@ -104,44 +104,44 @@ const STARTER_OTO: OtoConfig = {
     'This upgrade price is only available on this page, right now. Once you click through to login, it disappears and the only way back in is at full price.',
   stack: [
     {
-      feature: 'Unlimited Active Clients',
-      value: '$297/yr saved',
-      description: 'Lift the 5-client cap. Scale your roster without ever bumping a wall.',
+      feature: 'Unlimited Active Clients — No Roster Cap, Ever',
+      value: '$1,200/yr value',
+      description: 'Lift the 5-client cap permanently. Scale your roster without ever hitting a wall again.',
     },
     {
-      feature: 'AI Exercise Suggestions',
-      value: '$197 value',
-      description: '"Suggest next exercise" button — programs built in half the time.',
+      feature: 'Full Program Builder — 8 Program Types, 7 Set Types',
+      value: '$800/yr value',
+      description: 'Strength, Hypertrophy, Powerlifting, Rehabilitation + more. Drop Sets, AMRAP, Pyramid, Cluster, Rest-Pause + more.',
     },
     {
-      feature: 'PDF Program Export',
-      value: '$97 value',
-      description: 'Branded, client-ready PDFs they can print or save offline.',
+      feature: 'RPE, RIR & Tempo Prescriptions Per Set',
+      value: '$400/yr value',
+      description: 'The elite S&C programming language — write programs the way Olympic coaches do.',
     },
     {
-      feature: 'ACWR Training Load Analytics',
-      value: '$147 value',
-      description: 'The same overload-vs-injury science used by pro sports teams.',
+      feature: 'ACWR Training Load Monitoring',
+      value: '$600/yr value',
+      description: 'The same overload-vs-injury science used by NFL and NBA teams. Built in automatically.',
     },
     {
-      feature: 'Video Preview in Exercise Library',
-      value: '$67 value',
-      description: 'See every movement before you drag it into a program.',
+      feature: 'Analytics Reports — PDF & CSV (Weekly, Monthly, Quarterly)',
+      value: '$500/yr value',
+      description: 'Professional reports your clients can see. Justify your rates. Retain clients longer.',
     },
     {
-      feature: 'Mobile Drag-Optimized Canvas',
-      value: '$47 value',
-      description: 'Build full programs from your phone between sessions.',
+      feature: 'iCal Export + Subscribable Calendar Feed',
+      value: '$200/yr value',
+      description: 'Clients sync your schedule directly to Google Calendar or Apple Calendar.',
     },
     {
-      feature: 'CSV Export Format',
-      value: '$47 value',
-      description: 'Hand off data to spreadsheets, accountants, or other tools instantly.',
+      feature: 'Bulk Program Assignment + Unlimited Tags',
+      value: '$300/yr value',
+      description: 'Push a program to an entire tag group in one click instead of one-by-one.',
     },
   ],
-  totalValue: '$899',
+  totalValue: '$4,000',
   hormoziPitch:
-    "You just invested $199. Unlimited Clients alone pays that back the moment your 6th client signs up — and then every client after that is pure profit. The math isn't close.",
+    "You just invested $199. Unlimited clients alone pays that back the moment your 6th client signs up — and then every client after that is pure profit. Professional trainers on Everfit pay $1,800/year for less. You're getting it for $299. Once.",
   ctaLabel: 'Yes — Upgrade to Professional for $299',
   declineLabel: "No thanks, I'm happy with 5 clients for now",
 }
@@ -152,43 +152,48 @@ const PROFESSIONAL_OTO: OtoConfig = {
   toTier: 'Enterprise',
   toPriceId: 'price_1TEwpeGo4HHYDfDVe7M1XZTD',
   toPrice: 399,
-  headline: 'WAIT — One Special Offer Before You Log In',
+  headline: 'WAIT — $100 More Gets You Total Platform Control',
   subhead:
-    "Professional is the perfect fit for solo trainers. But if you've ever thought about hiring a second coach, training a team, or licensing your programs — read this first.",
+    "Professional gives you the coaching tools. Enterprise gives you the admin layer — full platform visibility, user management, and audit logs. For $100 more, right now.",
   urgency:
-    'This Enterprise upgrade is only $100 more from this page. Once you click through to login, the upgrade goes back to its standard $399 entry price with no on-ramp.',
+    'This Enterprise upgrade is only $100 more from this page. The $399 direct price has no on-ramp discount. This is the only path to getting Enterprise at the upgrade price.',
   stack: [
     {
-      feature: 'Team Template Sharing',
-      value: '$297 value',
-      description: 'Build once, share across every coach on your team. Brand consistency on autopilot.',
+      feature: 'Admin Dashboard — Platform-Wide Stats & Growth Trends',
+      value: '$800/yr value',
+      description: 'See every user, session, and activity signal across your entire platform in real time.',
     },
     {
-      feature: 'Bulk Program Assignment',
-      value: '$197 value',
-      description: 'Push a program to 20 clients in a single click instead of 20.',
+      feature: 'Full User Management — Activate, Deactivate, Change Roles',
+      value: '$600/yr value',
+      description: 'Search, filter, and manage every account. Add trainers, adjust roles, lock accounts.',
     },
     {
-      feature: 'Full API Access',
-      value: '$497 value',
-      description: 'Plug EvoFit into your CRM, your website, your custom dashboards. No restrictions.',
+      feature: 'Feature Flags API — Enable Features Per User Without Code',
+      value: '$500/yr value',
+      description: 'Roll out capabilities to specific users or groups without touching a line of code.',
     },
     {
-      feature: 'Excel Export Format',
-      value: '$67 value',
-      description: 'For the data-driven coach who lives in spreadsheets.',
+      feature: 'Security Audit Trail — Every Login, Role Change, and Event',
+      value: '$400/yr value',
+      description: 'IP address, device, timestamp for every platform action. The accountability layer.',
     },
     {
-      feature: 'Unlimited Custom Exercises',
-      value: '$197 value',
-      description: 'No 500-exercise cap — build out your full proprietary library.',
+      feature: 'Bulk User Operations — Activate, Deactivate, Re-Role at Scale',
+      value: '$300/yr value',
+      description: 'Manage 50 users in one action instead of 50. The operator efficiency unlock.',
+    },
+    {
+      feature: 'System Health Monitoring — PostgreSQL, Redis, API Status',
+      value: '$300/yr value',
+      description: 'Know before your clients do. Real-time infrastructure status in your admin panel.',
     },
   ],
-  totalValue: '$1,255',
+  totalValue: '$2,900',
   hormoziPitch:
-    'You just invested $299. Bulk assignment alone saves you 30+ minutes per program drop — that\'s 25 hours back this year. At $80/hr that\'s $2,000 of your time recovered for $100.',
+    "Platforms charge $500+/year for admin dashboards alone. You're getting the full Enterprise admin layer — audit logs, user management, feature flags, system health — for $100 more. One time. Forever. The math is embarrassingly obvious.",
   ctaLabel: 'Yes — Upgrade to Enterprise for $399',
-  declineLabel: "No thanks, I don't need team features right now",
+  declineLabel: "No thanks, Professional is enough for now",
 }
 
 // ---------- Components ----------
@@ -314,7 +319,7 @@ function OtoSection({ oto, onAccept, onDecline, loading }: {
             )}
           </button>
           <p className="text-center text-xs text-gray-500 mt-3">
-            One-time payment. No subscriptions. Lifetime upgrade. 30-day money-back guarantee.
+            One-time payment. No subscriptions. Lifetime upgrade. 14-day money-back guarantee.
           </p>
 
           <div className="text-center mt-5">

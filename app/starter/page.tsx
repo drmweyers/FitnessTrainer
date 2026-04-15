@@ -667,9 +667,67 @@ export default function StarterSalesPage() {
             />
             <FAQItem
               question="What happens when I hit 5 clients and want to grow?"
-              answer="Upgrade to Professional ($3$39$199 one-time) for unlimited clients, the full Program Builder, ACWR analytics, and scheduling features. Your Starter data migrates seamlessly. You pay the difference — not the full price again. Growing your business shouldn't mean rebuilding your platform."
+              answer="Upgrade to Professional ($299 one-time) for unlimited clients, the full Program Builder, ACWR analytics, and scheduling features. Your Starter data migrates seamlessly. You pay the difference — not the full price again. Growing your business shouldn't mean rebuilding your platform."
             />
           </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+          SECTION 7B: PROFESSIONAL UPSELL
+          ════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0F] via-[#0a1030] to-[#0A0A0F]" />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <div className="bg-gradient-to-br from-blue-600/15 to-blue-800/10 border-2 border-blue-500/30 rounded-2xl p-8 sm:p-10">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-blue-600/30 flex items-center justify-center shrink-0">
+                  <TrendingUp className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <span className="text-blue-400 font-bold text-sm tracking-widest uppercase">
+                    Growing Past 5 Clients?
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white mt-2">
+                    Here&apos;s What Professional Unlocks for $100 More
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                {[
+                  { icon: Users, text: 'Unlimited active clients — no roster cap, ever' },
+                  { icon: Activity, text: '8 program types + 7 set types including AMRAP, Drop Sets, Pyramid' },
+                  { icon: Target, text: 'RPE, RIR, and tempo prescriptions per set — elite S&C language' },
+                  { icon: BarChart3, text: 'ACWR training load monitoring — used by NFL, NBA, and Olympic teams' },
+                  { icon: Clock, text: 'iCal export + subscribable calendar — clients sync to Google/Apple Calendar' },
+                  { icon: Timer, text: 'Analytics reports in PDF and CSV — weekly, monthly, quarterly' },
+                  { icon: Star, text: 'Bulk program assignment to entire tag groups in one click' },
+                  { icon: Shield, text: 'Trainer feedback on client sessions with review tools' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                    <span className="text-white/80 text-sm leading-relaxed">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <p className="text-white/50 text-sm mb-4">
+                  The competition charges $1,800/year for this. EvoFit Professional: $299. Once.
+                </p>
+                <Link
+                  href="/professional"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-base rounded-xl shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all duration-300 transform hover:scale-105"
+                >
+                  Upgrade to Professional — $299
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <p className="mt-3 text-white/30 text-xs">Pay the difference. Data migrates. No rebuilding.</p>
+              </div>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 

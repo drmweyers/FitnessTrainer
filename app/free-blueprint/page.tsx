@@ -239,14 +239,22 @@ export default function FreeBlueprintPage() {
                   </h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-6">
                     Check your inbox at <span className="text-white font-medium">{email}</span>.
-                    While you wait — explore EvoFit Trainer, the platform built around this exact
-                    framework.
+                    The blueprint covers ACWR, periodization, and RPE — EvoFit Enterprise has all of
+                    this built in. Admin dashboard, audit trail, feature flags, and every coaching
+                    tool — $399, once.
                   </p>
-                  <Link href="/get-started">
-                    <button className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all">
-                      See EvoFit Trainer <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </Link>
+                  <div className="flex flex-col gap-3">
+                    <Link href="/enterprise">
+                      <button className="w-full inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-lg shadow-orange-500/25">
+                        Get Enterprise — $399 One-Time <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </Link>
+                    <Link href="/pricing">
+                      <button className="w-full inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 text-white/70 font-semibold text-sm px-6 py-3 rounded-xl transition-all">
+                        Compare All Tiers
+                      </button>
+                    </Link>
+                  </div>
                 </motion.div>
               )}
             </motion.div>
@@ -438,18 +446,26 @@ export default function FreeBlueprintPage() {
 
             <p className="text-gray-400 text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
               Everything in the blueprint — ACWR monitoring, RPE prescriptions, periodization
-              blocks, deload weeks — is built into EvoFit Trainer. Start for $199, own it forever.
+              blocks, deload weeks — is built into EvoFit Trainer. Enterprise adds the admin layer
+              platforms charge $500+/year for. Own it all for $399, once.
             </p>
 
-            <Link href="/get-started">
-              <button className="group inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-base sm:text-lg px-8 py-4 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.02]">
-                See EvoFit Trainer
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/enterprise">
+                <button className="group inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-base sm:text-lg px-8 py-4 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.02]">
+                  Get Enterprise — $399
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <Link href="/pricing">
+                <button className="inline-flex items-center gap-2 border border-white/20 text-white/70 hover:bg-white/8 font-semibold text-base sm:text-lg px-8 py-4 rounded-xl transition-all duration-300">
+                  Compare All Tiers
+                </button>
+              </Link>
+            </div>
 
             <p className="mt-4 text-xs text-gray-600">
-              No monthly fees · Pay once · Own forever
+              No monthly fees · Pay once · Own forever · 14-day money-back guarantee
             </p>
           </motion.div>
         </div>

@@ -444,7 +444,7 @@ function FeaturesSection() {
       icon: BarChart3,
       title: 'Progress Analytics',
       description:
-        'ACWR training load monitoring, 8 metric types, AI-powered insights, milestone achievements, and PDF/CSV export reports.',
+        'ACWR training load monitoring, 8 metric types, milestone achievements, PDF/CSV export reports, and AI-powered coaching insights (Coming Soon).',
       screenshot: '/images/marketing/analytics-overview.png',
       color: 'from-indigo-600/20 to-indigo-600/5',
       accent: 'text-indigo-400',
@@ -532,10 +532,10 @@ function TierComparisonSection() {
       price: '$199',
       tagline: 'Own your platform forever.',
       description: 'Perfect for solo trainers and coaches just getting started.',
-      href: '/pricing',
+      href: '/starter',
       color: 'border-gray-700',
       badge: null,
-      cta: 'Get Started',
+      cta: 'See Starter Details',
       ctaStyle: 'bg-white/10 hover:bg-white/20 text-white border border-white/20',
       highlights: [
         'Up to 5 active clients',
@@ -551,10 +551,10 @@ function TierComparisonSection() {
       price: '$299',
       tagline: 'Run a real coaching business.',
       description: 'Unlimited clients, full program builder, ACWR analytics.',
-      href: '/pricing',
+      href: '/professional',
       color: 'border-blue-500/60',
       badge: 'Most Popular',
-      cta: 'Go Professional',
+      cta: 'See Professional Details',
       ctaStyle:
         'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50',
       highlights: [
@@ -569,14 +569,14 @@ function TierComparisonSection() {
     {
       name: 'Enterprise',
       price: '$399',
-      tagline: 'Platform control for operators.',
-      description: 'Admin dashboard, audit logs, and multi-trainer management.',
-      href: '/pricing',
-      color: 'border-orange-500/40',
-      badge: null,
-      cta: 'Get Enterprise',
+      tagline: 'Total platform control.',
+      description: 'Everything in Professional + admin dashboard, audit logs, feature flags.',
+      href: '/enterprise',
+      color: 'border-orange-500/60',
+      badge: 'Best Value',
+      cta: 'Get Enterprise — $399',
       ctaStyle:
-        'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50',
+        'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/40 hover:shadow-orange-500/60',
       highlights: [
         'Everything in Professional',
         'Admin dashboard + user management',
@@ -847,7 +847,7 @@ function FAQSection() {
     },
     {
       q: 'Is there a free trial?',
-      a: "You can register for free and explore the platform. The Starter tier at $199 is backed by a 30-day money-back guarantee — if you're unsatisfied within 30 days, contact support for a full refund.",
+      a: "All tiers are backed by a 14-day money-back guarantee — if you're unsatisfied within 14 days, contact support for a full refund, no questions asked.",
     },
   ]
 
@@ -921,25 +921,28 @@ function FinalCTA() {
             Stop Paying Monthly.
             <br />
             <span className="bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
-              Start Owning Forever.
+              Own the Whole Platform.
             </span>
           </h2>
 
-          <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">
-            Start at $199. Upgrade any time. Your clients, your programs, your platform — no
-            subscription strings attached.
+          <p className="text-gray-400 text-xl mb-4 max-w-xl mx-auto">
+            Enterprise includes every Professional feature plus the admin layer — user management, audit logs, feature flags, system health. Platforms charge $500+/year for this. You own it for $399. Once.
+          </p>
+
+          <p className="text-gray-500 text-base mb-10 max-w-lg mx-auto">
+            Or start at $199 with Starter. Upgrade any time — pay the difference, data migrates.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/pricing">
+            <Link href="/enterprise">
               <button className="group inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-10 py-4 rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-300 hover:scale-[1.02]">
-                Get Lifetime Access
+                Get Enterprise — $399
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
-            <Link href="/free-blueprint">
+            <Link href="/pricing">
               <button className="inline-flex items-center gap-2 border border-white/20 text-white hover:bg-white/8 font-semibold text-lg px-8 py-4 rounded-xl transition-all duration-300">
-                Free Programming Blueprint
+                Compare All Tiers
               </button>
             </Link>
           </div>

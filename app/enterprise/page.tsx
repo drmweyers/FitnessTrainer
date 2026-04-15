@@ -144,7 +144,7 @@ export default function EnterpriseSalesPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-300 text-sm font-bold mb-8"
           >
             <Building2 className="w-4 h-4" />
-            ENTERPRISE — FOR GYM OWNERS &amp; TEAMS
+            ENTERPRISE — TOTAL PLATFORM CONTROL
           </motion.div>
 
           {/* Headline */}
@@ -154,9 +154,9 @@ export default function EnterpriseSalesPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 tracking-tight"
           >
-            Platform-Level Control for{' '}
+            Own the Platform.{' '}
             <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-orange-400 bg-clip-text text-transparent">
-              Gym Owners &amp; Studio Operators.
+              Control Every Layer.
             </span>
           </motion.h1>
 
@@ -167,10 +167,9 @@ export default function EnterpriseSalesPage() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-3xl mx-auto mb-10 leading-relaxed"
           >
-            Admin dashboard, feature flags, audit logs, and multi-trainer oversight — everything
-            you need to{' '}
-            <span className="text-white font-semibold">manage a team and a platform</span>, not
-            just your own clients.
+            Admin dashboard, feature flags, audit logs, and full user management. The oversight
+            layer platforms charge $500+/year for —{' '}
+            <span className="text-white font-semibold">yours for $399, once.</span>
           </motion.p>
 
           {/* CTA */}
@@ -634,10 +633,10 @@ export default function EnterpriseSalesPage() {
           <AnimatedSection>
             <div className="text-center mb-12">
               <span className="text-blue-400 font-semibold text-sm tracking-widest uppercase">
-                Objection Handler
+                The Real Question
               </span>
               <h2 className="text-3xl sm:text-4xl font-black mt-4">
-                &ldquo;I&apos;m just one trainer. Do I need Enterprise?&rdquo;
+                &ldquo;Is Enterprise Worth $100 More Than Professional?&rdquo;
               </h2>
             </div>
           </AnimatedSection>
@@ -650,18 +649,22 @@ export default function EnterpriseSalesPage() {
                 </div>
                 <div>
                   <p className="text-white/70 leading-relaxed text-lg">
-                    Probably not today. Enterprise is designed for operators managing multiple
-                    trainers or users who need administrative visibility. If you&apos;re flying solo
-                    with clients,{' '}
-                    <Link href="/professional" className="text-blue-400 underline hover:text-blue-300">
-                      Professional
-                    </Link>{' '}
-                    is the right fit and you can always upgrade to Enterprise later as your business
-                    grows.
+                    Yes. Here&apos;s why: the admin dashboard, audit trail, and feature flags are tools
+                    platforms charge $500+/year for — the kind of oversight layer that used to require
+                    enterprise SaaS contracts. With Enterprise, you own it for $100 more. Once.
                   </p>
                   <p className="text-white/70 leading-relaxed text-lg mt-4">
-                    The upgrade path is pay the difference: Professional ($299) → Enterprise ($399)
-                    = $100 to upgrade. Your data, clients, and programs stay intact.
+                    Even solo trainers use the{' '}
+                    <span className="text-white font-semibold">security audit trail</span> to monitor
+                    client account activity, the{' '}
+                    <span className="text-white font-semibold">feature flags API</span> to stage
+                    feature rollouts, and the{' '}
+                    <span className="text-white font-semibold">admin dashboard</span> to track
+                    platform-wide growth signals. This isn&apos;t just for gym owners — it&apos;s for
+                    anyone who wants total control of their platform.
+                  </p>
+                  <p className="text-white font-semibold text-lg mt-4">
+                    The $100 step from Professional to Enterprise is the best-value jump in this entire funnel.
                   </p>
                 </div>
               </div>
@@ -751,14 +754,14 @@ export default function EnterpriseSalesPage() {
           <AnimatedSection>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-300 text-sm font-bold mb-8">
               <Building2 className="w-4 h-4" />
-              FOR GYM OWNERS &amp; STUDIO OPERATORS
+              ENTERPRISE — TOTAL PLATFORM CONTROL
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight">
-              Ready to Run Your Gym on{' '}
-              <span className="text-blue-400">One Platform</span>?
+              Ready to Own{' '}
+              <span className="text-blue-400">Every Layer</span>?
             </h2>
             <p className="text-xl text-white/60 mb-10 max-w-xl mx-auto">
-              $399. One time. Full admin access. Every trainer. Every client.
+              $399. One time. Admin dashboard, audit trail, feature flags, user management — and every Professional feature. This is what the platforms charge $500+/year for.
             </p>
 
             <Link

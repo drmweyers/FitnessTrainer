@@ -413,7 +413,7 @@ export default function PricingPage() {
             <motion.div variants={fadeInUp} className="mb-4">
               <span className="inline-flex items-center gap-2 bg-white/20 border border-white/30 text-white text-sm font-medium px-4 py-1.5 rounded-full">
                 <Shield className="h-4 w-4" />
-                30-Day Money-Back Guarantee on All Plans
+                14-Day Money-Back Guarantee on All Plans
               </span>
             </motion.div>
 
@@ -669,6 +669,41 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* ── 4B. POST-TABLE ENTERPRISE CTA ──────────────────────────────────── */}
+      <section className="py-10 md:py-12 bg-white border-t border-gray-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={fadeInUp}
+            className="bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          >
+            <div>
+              <p className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-2">Best Value — $100 More Than Professional</p>
+              <h3 className="text-xl md:text-2xl font-extrabold text-gray-900 mb-2">
+                Enterprise: Total Platform Control for $399
+              </h3>
+              <p className="text-gray-600 text-sm max-w-xl">
+                Admin dashboard, feature flags API, security audit trail, bulk user operations, and system health monitoring — the tools platforms charge $500+/year for. Yours forever for $100 more than Professional.
+              </p>
+            </div>
+            <div className="flex-shrink-0 flex flex-col gap-3 text-center">
+              <button
+                onClick={() => handleCheckout('enterprise')}
+                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+              >
+                Get Enterprise — $399
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <Link href="/enterprise" className="text-xs text-gray-400 hover:text-gray-600 underline">
+                See full Enterprise details →
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── 5. COMPETITOR COMPARISON ────────────────────────────────────────── */}
       <section className="py-16 md:py-24 bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -836,14 +871,21 @@ export default function PricingPage() {
               className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4"
             >
               Stop Paying Monthly.{' '}
-              <span className="text-blue-200">Start Owning Forever.</span>
+              <span className="text-blue-200">Own the Whole Platform.</span>
             </motion.h2>
 
             <motion.p
               variants={fadeInUp}
-              className="text-blue-100 text-lg md:text-xl mb-8 max-w-xl mx-auto"
+              className="text-blue-100 text-lg md:text-xl mb-4 max-w-xl mx-auto"
             >
-              1,324 exercises · unlimited clients · ACWR analytics · offline-first PWA · all in one platform, one payment, forever.
+              Enterprise — $399 once — gives you every Professional feature plus the admin layer platforms charge $500+/year for. Total control. No subscriptions. Forever.
+            </motion.p>
+
+            <motion.p
+              variants={fadeInUp}
+              className="text-blue-200/70 text-base mb-8 max-w-lg mx-auto"
+            >
+              Or start at Starter ($199) or Professional ($299) — upgrade any time, pay the difference, data migrates.
             </motion.p>
 
             <motion.div
@@ -851,22 +893,22 @@ export default function PricingPage() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <button
-                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-white text-blue-700 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
+                onClick={() => handleCheckout('enterprise')}
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold bg-orange-500 hover:bg-orange-600 text-white rounded-xl transition-colors shadow-lg"
               >
-                See All Plans
+                Get Enterprise — $399
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
-              <Link
-                href="/auth/register"
+              <button
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold border-2 border-white/30 text-white rounded-xl hover:bg-white/10 transition-colors"
               >
-                Create Free Account
-              </Link>
+                See All Plans
+              </button>
             </motion.div>
 
             <motion.p variants={fadeInUp} className="text-blue-300 text-sm mt-6">
-              Professional tier · $299 one-time · 14-day money-back guarantee · Secure checkout via Stripe
+              14-day money-back guarantee · Secure checkout via Stripe · No monthly fees, ever
             </motion.p>
           </motion.div>
         </div>

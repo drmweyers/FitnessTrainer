@@ -695,6 +695,69 @@ export default function ProfessionalSalesPage() {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
+          SECTION 7B: ENTERPRISE UPSELL
+          ════════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0F] via-[#0a1030] to-[#0A0A0F]" />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection>
+            <div className="bg-gradient-to-br from-orange-600/15 to-orange-800/10 border-2 border-orange-500/30 rounded-2xl p-8 sm:p-10">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-orange-500/30 flex items-center justify-center shrink-0">
+                  <Crown className="w-6 h-6 text-orange-400" />
+                </div>
+                <div>
+                  <span className="text-orange-400 font-bold text-sm tracking-widest uppercase">
+                    Running a Gym or Studio?
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white mt-2">
+                    For $100 More, Enterprise Gives You Total Control
+                  </h2>
+                </div>
+              </div>
+
+              <p className="text-white/60 text-base leading-relaxed mb-6">
+                Professional is the complete coaching platform. Enterprise adds the admin layer — the tools platforms charge $500+/year for. You own it for $399, once.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                {[
+                  'Admin dashboard — platform-wide user, session, and growth stats',
+                  'Full user management — search, filter, activate/deactivate, change roles',
+                  'Feature flags API — enable features per user without code deploys',
+                  'Security audit trail — IP, device, timestamp for every action',
+                  'Bulk user operations — change roles or status for multiple users at once',
+                  'System health monitoring — PostgreSQL, Redis, and API status in real time',
+                  'Content moderation tools + support ticket management in-platform',
+                  'Account lockout controls from admin panel — security without code changes',
+                ].map((text, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+                    <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
+                    <span className="text-white/80 text-sm leading-relaxed">{text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <p className="text-white/50 text-sm mb-4">
+                  The $100 step from Professional to Enterprise is the best-value jump in the whole funnel.
+                  Admin dashboards alone cost $500+/year on competing platforms.
+                </p>
+                <Link
+                  href="/enterprise"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-base rounded-xl shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:shadow-[0_0_50px_rgba(249,115,22,0.5)] transition-all duration-300 transform hover:scale-105"
+                >
+                  Get Enterprise Access — $399
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <p className="mt-3 text-white/30 text-xs">Pay the $100 difference. Every Professional feature carries over.</p>
+              </div>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
           SECTION 8: FAQ
           ════════════════════════════════════════════════════════════════ */}
       <section className="py-20 sm:py-28 relative">
