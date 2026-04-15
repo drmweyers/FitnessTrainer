@@ -32,7 +32,7 @@ export default function MainNavigation({
           <div className="flex items-center gap-4">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="h-8 w-8 bg-orange-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">E</span>
               </div>
               <span className="font-bold text-xl text-gray-900 hidden sm:inline">
@@ -56,7 +56,7 @@ export default function MainNavigation({
             {isAuthenticated && (
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 aria-label="Open navigation menu"
               >
                 <Menu size={20} className="text-gray-600" />
@@ -67,7 +67,7 @@ export default function MainNavigation({
             {showSidebar && isAuthenticated && onToggleCollapse && (
               <button
                 onClick={onToggleCollapse}
-                className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 <Menu size={20} className="text-gray-600" />
@@ -76,7 +76,7 @@ export default function MainNavigation({
 
             {/* Logo and Brand */}
             <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-200">
-              <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="h-8 w-8 bg-orange-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">E</span>
               </div>
               <span className="font-bold text-xl text-gray-900 hidden sm:inline">
@@ -106,7 +106,7 @@ export default function MainNavigation({
               <>
                 {/* Notifications */}
                 <button
-                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   aria-label="View notifications"
                 >
                   <Bell size={20} className="text-gray-600" />
@@ -128,7 +128,7 @@ export default function MainNavigation({
                 </Link>
                 <Link
                   href="/get-started"
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 >
                   Get Started
                 </Link>
@@ -150,7 +150,7 @@ export default function MainNavigation({
       {showSidebar && isAuthenticated && (
         <aside
           className={`
-            hidden lg:block fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 transition-all duration-300 ease-in-out z-30
+            hidden lg:block fixed left-0 top-16 h-[calc(100vh-4rem)] bg-[#0F172A] border-r border-[#1E293B] transition-all duration-300 ease-in-out z-30
             ${isCollapsed ? 'w-16' : 'w-64'}
           `}
         >

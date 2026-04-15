@@ -114,11 +114,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="flex items-center space-x-2">
-            <div className="bg-primary-600 p-2 rounded-lg">
+            <div className="bg-orange-500 p-2 rounded-lg">
               <Dumbbell className="h-8 w-8 text-white" />
             </div>
             <span className="text-2xl font-bold text-gray-900">EvoFit</span>
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                   onClick={() => setFormData({ ...formData, role: 'client' })}
                   className={`py-3 px-4 border rounded-md text-sm font-medium transition-colors ${
                     formData.role === 'client'
-                      ? 'border-primary-500 bg-primary-50 text-primary-700 ring-2 ring-primary-500'
+                      ? 'border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-500'
                       : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -242,7 +242,7 @@ export default function RegisterPage() {
                   onClick={() => setFormData({ ...formData, role: 'trainer' })}
                   className={`py-3 px-4 border rounded-md text-sm font-medium transition-colors ${
                     formData.role === 'trainer'
-                      ? 'border-primary-500 bg-primary-50 text-primary-700 ring-2 ring-primary-500'
+                      ? 'border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-500'
                       : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -344,7 +344,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? (
                 <>

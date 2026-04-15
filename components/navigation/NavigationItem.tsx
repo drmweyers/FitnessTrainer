@@ -41,12 +41,12 @@ export default function NavigationItem({
     <>
       {/* Icon */}
       <div className="flex-shrink-0">
-        <IconComponent 
-          size={18} 
+        <IconComponent
+          size={18}
           className={`${
-            isActive 
-              ? 'text-blue-600' 
-              : 'text-gray-600 group-hover:text-gray-900'
+            isActive
+              ? 'text-white'
+              : 'text-slate-400 group-hover:text-slate-100'
           }`}
         />
       </div>
@@ -88,9 +88,9 @@ export default function NavigationItem({
           onClick={handleClick}
           className={`
             group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-            ${isActive 
-              ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
-              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+            ${isActive
+              ? 'bg-orange-500 text-white rounded-lg'
+              : 'text-slate-400 hover:bg-[#1E293B] hover:text-slate-100'
             }
             ${isCollapsed ? 'justify-center px-2' : ''}
           `}
@@ -104,9 +104,9 @@ export default function NavigationItem({
           onClick={handleClick}
           className={`
             group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-            ${isActive 
-              ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
-              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+            ${isActive
+              ? 'bg-orange-500 text-white rounded-lg'
+              : 'text-slate-400 hover:bg-[#1E293B] hover:text-slate-100'
             }
             ${isCollapsed ? 'justify-center px-2' : ''}
           `}
@@ -149,9 +149,9 @@ export default function NavigationItem({
                   onClick={onMobileClick}
                   className={`
                     flex items-center gap-3 px-3 py-2 text-sm transition-colors duration-200
-                    ${childIsActive 
-                      ? 'bg-blue-50 text-blue-700' 
-                      : 'text-gray-700 hover:bg-gray-100'
+                    ${childIsActive
+                      ? 'bg-orange-500 text-white'
+                      : 'text-slate-700 hover:bg-slate-100'
                     }
                   `}
                 >

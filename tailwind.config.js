@@ -21,6 +21,25 @@ module.exports = {
       // EvoFit Canonical Brand Colors (v2 — matches canonical spec + trainer lead magnets)
       // See: C:\Users\drmwe\Claude\brand-audit\CANONICAL-BRAND.md
       colors: {
+        // EvoFit Design System — brand + sidebar tokens
+        brand: {
+          orange:       '#F97316',
+          'orange-dark':'#EA6E04',
+          navy:         '#0F172A',
+          'navy-card':  '#1E293B',
+          'navy-hover': '#334155',
+        },
+        sidebar: {
+          DEFAULT:                'hsl(var(--sidebar-background))',
+          foreground:             'hsl(var(--sidebar-foreground))',
+          primary:                'hsl(var(--sidebar-primary))',
+          'primary-foreground':   'hsl(var(--sidebar-primary-foreground))',
+          accent:                 'hsl(var(--sidebar-accent))',
+          'accent-foreground':    'hsl(var(--sidebar-accent-foreground))',
+          border:                 'hsl(var(--sidebar-border))',
+          ring:                   'hsl(var(--sidebar-ring))',
+        },
+
         // Brand neutrals (shared with meals via canonical spec)
         'brand-dark': '#0A0A0F',
         'brand-dark-card': '#141420',

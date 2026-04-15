@@ -43,7 +43,7 @@ const NavItem = ({
 		<Link
 			href={href}
 			className={`flex items-center px-4 py-2 text-sm rounded-md mb-1 ${
-				active ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100"
+				active ? "bg-orange-500 text-white" : "text-slate-400 hover:bg-[#1E293B] hover:text-slate-100"
 			}`}
 			onClick={(e) => {
 				if (onClick) onClick();
@@ -115,7 +115,7 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 				lg:translate-x-0
 				fixed inset-0 lg:inset-auto lg:relative
 				w-[280px] lg:w-60 h-screen
-				bg-white border-r border-gray-200
+				bg-[#0F172A]
 				flex flex-col
 				transition-transform duration-300 ease-in-out
 				z-40
@@ -140,27 +140,27 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 					/>
 
 					{expandedItems.exercises && (
-						<div className="ml-7 border-l border-gray-200 pl-3 mb-2">
+						<div className="ml-7 border-l border-[#1E293B] pl-3 mb-2">
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="All Exercises"
 								href="/exercises"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Strength"
 								href="/exercises/strength"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Cardio"
 								href="/exercises/cardio"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Flexibility"
 								href="/exercises/flexibility"
 								onMobileClick={isMobile ? () => onClose() : undefined}
@@ -215,33 +215,33 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 					/>
 
 					{expandedItems.clientManagement && (
-						<div className="ml-7 border-l border-gray-200 pl-3 mb-2">
+						<div className="ml-7 border-l border-[#1E293B] pl-3 mb-2">
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="All Clients"
 								href="/clients"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Active Clients"
 								href="/clients?status=active"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Inactive Clients"
 								href="/clients?status=inactive"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Pending Clients"
 								href="/clients?status=pending"
 								onMobileClick={isMobile ? () => onClose() : undefined}
 							/>
 							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-gray-400" />}
+								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
 								label="Archived Clients"
 								href="/clients?status=archived"
 								onMobileClick={isMobile ? () => onClose() : undefined}
@@ -249,7 +249,7 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 						</div>
 					)}
 
-					<div className="border-t border-gray-200 mt-3 pt-3">
+					<div className="border-t border-[#1E293B] mt-3 pt-3">
 						<NavItem
 							icon={<UserCircle size={18} />}
 							label="My Profile"

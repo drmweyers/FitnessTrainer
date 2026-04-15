@@ -23,10 +23,10 @@ export default function StatCard({
   // Color configurations
   const colorClasses = {
     blue: {
-      bg: 'bg-blue-50',
-      icon: 'text-blue-600',
-      text: 'text-blue-900',
-      border: 'border-blue-200'
+      bg: 'bg-orange-50',
+      icon: 'text-orange-600',
+      text: 'text-slate-900',
+      border: 'border-orange-200'
     },
     green: {
       bg: 'bg-green-50',
@@ -47,16 +47,16 @@ export default function StatCard({
       border: 'border-red-200'
     },
     purple: {
-      bg: 'bg-purple-50',
-      icon: 'text-purple-600',
-      text: 'text-purple-900',
-      border: 'border-purple-200'
+      bg: 'bg-orange-50',
+      icon: 'text-orange-600',
+      text: 'text-slate-900',
+      border: 'border-orange-200'
     },
     indigo: {
-      bg: 'bg-indigo-50',
-      icon: 'text-indigo-600',
-      text: 'text-indigo-900',
-      border: 'border-indigo-200'
+      bg: 'bg-orange-50',
+      icon: 'text-orange-600',
+      text: 'text-slate-900',
+      border: 'border-orange-200'
     }
   };
 
@@ -70,7 +70,7 @@ export default function StatCard({
   }[change.type] : '';
 
   return (
-    <div className={`bg-white rounded-lg border ${colors.border} p-6 shadow-sm hover:shadow-md transition-shadow ${className}`}>
+    <div className={`bg-white rounded-xl border ${colors.border} p-6 shadow-sm hover:shadow-md transition-shadow ${className}`}>
       <div className="flex items-center">
         <div className={`flex-shrink-0 p-3 rounded-lg ${colors.bg}`}>
           <div className={`h-6 w-6 ${colors.icon}`}>
