@@ -16,8 +16,12 @@ interface EntitlementsData {
 }
 
 async function fetchEntitlements(): Promise<EntitlementsData> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
   const res = await fetch('/api/entitlements', {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
   });
   if (!res.ok) {
     // Silently default to starter so the UI never hard-crashes on auth errors
