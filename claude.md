@@ -5,7 +5,7 @@
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
 **Tests:** 5,078 unit (317 suites) + ~521 E2E (48 workflow + 5 edge + 12 flow suites) = **~5,599 total**
-**Last session (2026-04-15):** Bug Reporting System — BugReport Prisma model, 6 API routes, ReportBugButton UI, admin /bugs page, BCI Command Centre endpoint, 10 unit tests + 8 E2E tests (all pass)
+**Last session (2026-04-15):** 5 new tier-gated features — Analytics Pro+ gate, Outline drag-reorder (Pro+), Excel export (Enterprise), API key management (Enterprise), WhatsApp Business Link (all tiers). Bug fix: `useTier` hook missing Bearer token → all tier gates defaulted to Starter. All 5 features verified on production via Playwright.
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -238,6 +238,13 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
 3. **OPEN DECISION — Starter client limit:** `dynamic-baking-planet.md` plan sets `starter.clients = 10`, but all marketing pages say "Up to 5 active clients". Mark must decide which is canonical before the plan merges. If 5 is correct, update the plan; if 10, update all marketing pages.
 4. **Bug reporting env vars** (new, not yet set in Vercel) — `GITHUB_TOKEN`, `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME` (optional — GitHub issue creation), `HAL_API_KEY` (HAL polling /api/bugs/pending), `COMMAND_CENTRE_API_KEY` (BCI status endpoint). All features degrade gracefully without them.
+
+### Resolved 2026-04-15
+- **5 tier-gated features shipped:** Analytics Pro+ gate, Outline drag-reorder (Pro+), Excel export (Enterprise), API key management (Enterprise), WhatsApp Business Link (all tiers). All verified on production.
+- **`useTier` hook Bearer token bug fixed:** `fetchEntitlements` was calling `/api/entitlements` without an Authorization header — JWT stored in localStorage wasn't being sent, so server returned 401 → silently defaulted to Starter tier, blocking Pro/Enterprise users from all gated features. Fixed by reading `accessToken` from localStorage and including it as `Bearer` token.
+- **`whatsapp_link` column added to production DB** via one-time ALTER TABLE migration endpoint (now removed).
+- **Exercise UUID display in Program Builder fixed:** name stored at drag time (`ADD_EXERCISE_TO_WORKOUT` reducer) and preserved through `exerciseNames` map in WorkoutCanvas.
+- **Tier QA accounts seeded:** `qa-starter@evofit.io`, `qa-professional@evofit.io`, `qa-enterprise@evofit.io` — all with appropriate TrainerSubscription rows in production DB.
 
 ### Resolved 2026-04-14
 - **handleNext stale closure fixed.** `validateCurrentStep` exported from `ProgramBuilderContext.tsx`; `handleNext` now calls it synchronously instead of reading stale `state.isValid` post-dispatch. First-click alert on "Next Step" is gone.
