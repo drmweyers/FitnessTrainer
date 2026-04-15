@@ -86,41 +86,31 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Run side effects inline with a 4s timeout — reliable on Vercel serverless
-    try {
-      const ghResult = await Promise.race([
-        createGitHubIssue({
-          id: bug.id,
-          category: bug.category,
-          priority: bug.priority,
-          description: bug.description,
-          context: bug.context as Record<string, unknown> | null,
-          reporterEmail: bug.reporter?.email,
-        }),
-        new Promise<null>(resolve => setTimeout(() => resolve(null), 4000)),
-      ])
-
-      if (ghResult) {
+    // Return immediately — side effects run after response is sent
+    // Vercel Node.js runtime keeps the function alive for async work after the response
+    createGitHubIssue({
+      id: bug.id,
+      category: bug.category,
+      priority: bug.priority,
+      description: bug.description,
+      context: bug.context as Record<string, unknown> | null,
+      reporterEmail: bug.reporter?.email,
+    }).then(async (ghResult) => {
+      if (!ghResult) return
+      try {
         await prisma.bugReport.update({
           where: { id: bug.id },
-          data: {
-            githubIssueUrl: ghResult.url,
-            githubIssueNumber: ghResult.number,
-          },
+          data: { githubIssueUrl: ghResult.url, githubIssueNumber: ghResult.number },
         })
-      }
+      } catch { /* silent */ }
+    }).catch(() => {})
 
-      // Hal bridge: log to Vercel function logs (filesystem is read-only on serverless)
-      appendBugToHalBridge({
-        id: bug.id,
-        category: bug.category,
-        priority: bug.priority,
-        description: bug.description,
-        githubIssueUrl: ghResult?.url,
-      }).catch(() => {})
-    } catch {
-      // Side effects never block the user response
-    }
+    appendBugToHalBridge({
+      id: bug.id,
+      category: bug.category,
+      priority: bug.priority,
+      description: bug.description,
+    }).catch(() => {})
 
     return NextResponse.json({ success: true, data: { id: bug.id } }, { status: 201 })
   } catch (err) {

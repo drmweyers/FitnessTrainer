@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Bug, X, Loader2, Paperclip } from 'lucide-react'
+import { Bug, CheckCircle, AlertCircle, Loader2, Paperclip } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Dialog,
@@ -41,6 +41,8 @@ interface FormState {
   screenshotBase64: string | null
 }
 
+type SubmitState = 'idle' | 'submitting' | 'success' | 'error'
+
 export default function ReportBugButton() {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
@@ -50,22 +52,24 @@ export default function ReportBugButton() {
     screenshotBase64: null,
   })
   const [errors, setErrors] = useState<{ category?: string; description?: string }>({})
-  const [submitting, setSubmitting] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
+  const [submitState, setSubmitState] = useState<SubmitState>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   if (!user) return null
 
-  const showToast = (msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(null), 4000)
+  const resetForm = () => {
+    setForm({ category: '', description: '', screenshotBase64: null })
+    setErrors({})
+    setSubmitState('idle')
+    setErrorMessage('')
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Compress to JPEG 0.6 quality, max 1200px
     const img = new Image()
     const url = URL.createObjectURL(file)
     img.onload = () => {
@@ -86,8 +90,7 @@ export default function ReportBugButton() {
       const ctx = canvas.getContext('2d')
       if (!ctx) return
       ctx.drawImage(img, 0, 0, width, height)
-      const base64 = canvas.toDataURL('image/jpeg', 0.6)
-      setForm((prev) => ({ ...prev, screenshotBase64: base64 }))
+      setForm((prev) => ({ ...prev, screenshotBase64: canvas.toDataURL('image/jpeg', 0.6) }))
       URL.revokeObjectURL(url)
     }
     img.src = url
@@ -107,7 +110,7 @@ export default function ReportBugButton() {
     e.preventDefault()
     if (!validate()) return
 
-    setSubmitting(true)
+    setSubmitState('submitting')
     const token = localStorage.getItem('accessToken')
 
     try {
@@ -136,28 +139,25 @@ export default function ReportBugButton() {
         throw new Error(
           typeof data.message === 'string' ? data.message
           : typeof data.error === 'string' ? data.error
-          : 'Submission failed'
+          : 'Submission failed — please try again'
         )
       }
 
-      setOpen(false)
-      setForm({ category: '', description: '', screenshotBase64: null })
-      setErrors({})
-      showToast('Report submitted — thank you!')
+      // Show success screen inside the dialog, then auto-close after 2.5s
+      setSubmitState('success')
+      setTimeout(() => {
+        setOpen(false)
+        resetForm()
+      }, 2500)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Submission failed'
-      showToast(`Error: ${msg}`)
-    } finally {
-      setSubmitting(false)
+      setSubmitState('error')
+      setErrorMessage(err instanceof Error ? err.message : 'Submission failed — please try again')
     }
   }
 
   const handleOpenChange = (val: boolean) => {
     setOpen(val)
-    if (!val) {
-      setForm({ category: '', description: '', screenshotBase64: null })
-      setErrors({})
-    }
+    if (!val) resetForm()
   }
 
   return (
@@ -172,129 +172,145 @@ export default function ReportBugButton() {
         <span className="hidden sm:inline">Report a Problem</span>
       </button>
 
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-20 right-6 z-50 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-xl text-sm flex items-center gap-3 max-w-xs">
-          <span>{toast}</span>
-          <button onClick={() => setToast(null)} aria-label="Close" className="text-gray-400 hover:text-white">
-            <X size={14} />
-          </button>
-        </div>
-      )}
-
-      {/* Dialog */}
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-gray-900">
-              <Bug size={18} className="text-purple-600" />
-              Report a Problem
-            </DialogTitle>
-          </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-            {/* Category */}
-            <div className="space-y-1.5">
-              <Label htmlFor="bug-category">Category</Label>
-              <Select
-                value={form.category}
-                onValueChange={(val: string) =>
-                  setForm((prev) => ({ ...prev, category: val as Category }))
-                }
-              >
-                <SelectTrigger id="bug-category" aria-label="Category">
-                  <SelectValue placeholder="Select a category…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>
-                      {c.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.category && (
-                <p className="text-red-500 text-xs">{errors.category}</p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-1.5">
-              <Label htmlFor="bug-description">Description</Label>
-              <Textarea
-                id="bug-description"
-                placeholder="Describe the issue in detail…"
-                rows={5}
-                value={form.description}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, description: e.target.value }))
-                }
-                maxLength={5000}
-              />
-              {errors.description && (
-                <p className="text-red-500 text-xs">{errors.description}</p>
-              )}
-              <p className="text-gray-400 text-xs text-right">
-                {form.description.length}/5000
-              </p>
-            </div>
-
-            {/* Screenshot */}
-            <div className="space-y-1.5">
-              <Label>Screenshot (optional)</Label>
-              <div className="flex items-center gap-3">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  aria-label="Attach screenshot"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-1.5"
-                >
-                  <Paperclip size={14} />
-                  Attach Screenshot
-                </Button>
-                {form.screenshotBase64 && (
-                  <span className="text-xs text-green-600 font-medium">
-                    Screenshot attached
-                  </span>
-                )}
+          {/* Success screen */}
+          {submitState === 'success' ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
+              <CheckCircle size={48} className="text-green-500" />
+              <div>
+                <p className="text-lg font-semibold text-gray-900">Report submitted!</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Thank you — we'll look into it shortly.
+                </p>
               </div>
             </div>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-gray-900">
+                  <Bug size={18} className="text-orange-500" />
+                  Report a Problem
+                </DialogTitle>
+              </DialogHeader>
 
-            {/* Actions */}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleOpenChange(false)}
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 size={14} className="animate-spin mr-1.5" />
-                    Submitting…
-                  </>
-                ) : (
-                  'Submit Report'
-                )}
-              </Button>
-            </div>
-          </form>
+              {/* Inline error banner */}
+              {submitState === 'error' && (
+                <div className="flex items-start gap-2 rounded-md bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-700">
+                  <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+                {/* Category */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="bug-category">Category</Label>
+                  <Select
+                    value={form.category}
+                    onValueChange={(val: string) => {
+                      setErrors((prev) => ({ ...prev, category: undefined }))
+                      setForm((prev) => ({ ...prev, category: val as Category }))
+                    }}
+                  >
+                    <SelectTrigger id="bug-category" aria-label="Category">
+                      <SelectValue placeholder="Select a category…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>
+                          {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && (
+                    <p className="text-red-500 text-xs">{errors.category}</p>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="bug-description">Description</Label>
+                  <Textarea
+                    id="bug-description"
+                    placeholder="Describe the issue in detail…"
+                    rows={5}
+                    value={form.description}
+                    onChange={(e) => {
+                      setErrors((prev) => ({ ...prev, description: undefined }))
+                      setForm((prev) => ({ ...prev, description: e.target.value }))
+                    }}
+                    maxLength={5000}
+                  />
+                  {errors.description && (
+                    <p className="text-red-500 text-xs">{errors.description}</p>
+                  )}
+                  <p className="text-gray-400 text-xs text-right">
+                    {form.description.length}/5000
+                  </p>
+                </div>
+
+                {/* Screenshot */}
+                <div className="space-y-1.5">
+                  <Label>Screenshot (optional)</Label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      aria-label="Attach screenshot"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-1.5"
+                    >
+                      <Paperclip size={14} />
+                      Attach Screenshot
+                    </Button>
+                    {form.screenshotBase64 && (
+                      <span className="text-xs text-green-600 font-medium">
+                        Screenshot attached
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleOpenChange(false)}
+                    disabled={submitState === 'submitting'}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={submitState === 'submitting'}
+                    className="bg-orange-500 hover:bg-orange-600 text-white min-w-[120px]"
+                  >
+                    {submitState === 'submitting' ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin mr-1.5" />
+                        Submitting…
+                      </>
+                    ) : (
+                      'Submit Report'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+
         </DialogContent>
       </Dialog>
     </>
