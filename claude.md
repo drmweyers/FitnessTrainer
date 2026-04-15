@@ -4,8 +4,8 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,068 unit (316 suites) + ~513 E2E (47 workflow + 5 edge + 12 flow suites) = **~5,581 total**
-**Last session (2026-04-14):** Builder Rebuild Checkpoint — stale closure fix in handleNext, 14b/14c E2E helper rewrites, spec+quality reviews PASS/APPROVE
+**Tests:** 5,078 unit (317 suites) + ~521 E2E (48 workflow + 5 edge + 12 flow suites) = **~5,599 total**
+**Last session (2026-04-15):** Bug Reporting System — BugReport Prisma model, 6 API routes, ReportBugButton UI, admin /bugs page, BCI Command Centre endpoint, 10 unit tests + 8 E2E tests (all pass)
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -237,6 +237,7 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added (requires Stripe dashboard access)
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
 3. **OPEN DECISION — Starter client limit:** `dynamic-baking-planet.md` plan sets `starter.clients = 10`, but all marketing pages say "Up to 5 active clients". Mark must decide which is canonical before the plan merges. If 5 is correct, update the plan; if 10, update all marketing pages.
+4. **Bug reporting env vars** (new, not yet set in Vercel) — `GITHUB_TOKEN`, `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME` (optional — GitHub issue creation), `HAL_API_KEY` (HAL polling /api/bugs/pending), `COMMAND_CENTRE_API_KEY` (BCI status endpoint). All features degrade gracefully without them.
 
 ### Resolved 2026-04-14
 - **handleNext stale closure fixed.** `validateCurrentStep` exported from `ProgramBuilderContext.tsx`; `handleNext` now calls it synchronously instead of reading stale `state.isValid` post-dispatch. First-click alert on "Next Step" is gone.

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Users,
   Activity,
+  Bug,
   ArrowLeft,
 } from 'lucide-react'
 
@@ -16,6 +17,7 @@ const adminNavItems = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'System Health', href: '/admin/system', icon: Activity },
+  { label: 'Bug Reports', href: '/admin/bugs', icon: Bug },
 ]
 
 export default function AdminLayout({

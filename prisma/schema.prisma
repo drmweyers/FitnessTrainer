@@ -96,6 +96,7 @@ model User {
   // Relations - Support & Reports (Epics 009, 012)
   supportTickets      SupportTicket[]      @relation("UserTickets")
   contentReports      ContentReport[]      @relation("UserReports")
+  bugReports          BugReport[]          @relation("UserBugReports")
 
   // Relations - Subscription Tier (Stream: tier-infra)
   subscriptions       TrainerSubscription[]
@@ -1286,6 +1287,63 @@ model SupportTicket {
   @@index([userId])
   @@index([status])
   @@map("support_tickets")
+}
+
+// Bug Reports
+enum BugReportCategory {
+  ui_issue
+  data_accuracy
+  feature_request
+  performance
+  sync_issue
+  auth_access
+  notification
+  integration
+  crash
+  other
+}
+
+enum BugReportStatus {
+  open
+  triaged
+  in_progress
+  resolved
+  closed
+}
+
+enum BugReportPriority {
+  low
+  medium
+  high
+  critical
+}
+
+model BugReport {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reporterId        String?            @map("reporter_id") @db.Uuid
+  category          BugReportCategory  @default(other)
+  priority          BugReportPriority  @default(medium)
+  status            BugReportStatus    @default(open)
+  title             String             @db.VarChar(255)
+  description       String
+  screenshotBase64  String?            @map("screenshot_base64")
+  context           Json?
+  githubIssueUrl    String?            @map("github_issue_url") @db.VarChar(500)
+  githubIssueNumber Int?               @map("github_issue_number")
+  assignedToHal     Boolean            @default(false) @map("assigned_to_hal")
+  assignedAt        DateTime?          @map("assigned_at")
+  resolvedAt        DateTime?          @map("resolved_at")
+  adminNotes        String?            @map("admin_notes")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  reporter User? @relation("UserBugReports", fields: [reporterId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([category])
+  @@index([reporterId])
+  @@index([createdAt])
+  @@map("bug_reports")
 }
 
 // Content Reports

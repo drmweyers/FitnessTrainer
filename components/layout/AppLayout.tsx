@@ -8,7 +8,8 @@ import Footer from './Footer';
 import OfflineIndicator from '@/components/shared/OfflineIndicator';
 import InstallPrompt from '@/components/shared/InstallPrompt';
 import UpdateAvailable from '@/components/shared/UpdateAvailable';
-import SyncStatus from '@/components/shared/SyncStatus';
+import SyncStatus from '@/components/shared/SyncStatus'
+import ReportBugButton from '@/components/ReportBugButton';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -54,7 +55,7 @@ export default function AppLayout({
   // If on public pages, render minimal layout
   if (isPublicPage) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#F8FAFC]">
         <MainNavigation showSidebar={false} />
         <main className="flex-1">
           {children}
@@ -72,12 +73,13 @@ export default function AppLayout({
   const shouldShowSidebar = showSidebar && isAuthenticated;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* PWA: Offline indicator, install prompt, update toast, sync status */}
       <OfflineIndicator />
       <InstallPrompt />
       <UpdateAvailable />
       <SyncStatus />
+      {isAuthenticated && <ReportBugButton />}
 
       {/* Navigation */}
       <MainNavigation
