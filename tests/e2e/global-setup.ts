@@ -165,6 +165,39 @@ async function globalSetup() {
 
   console.log('  ✓ Trainer, Client, Client2, Admin accounts ready');
 
+  // ─── Tier-locked accounts (Starter / Professional / Enterprise) ───────────
+  // The internal endpoint creates the users + correct subscription rows in one call.
+  // Falls back to ensureAccount registration if the secret is not configured.
+  const internalSecret = process.env.INTERNAL_API_SECRET;
+  if (internalSecret) {
+    try {
+      const seedRes = await api.post(`${BASE}/api/internal/seed-tier`, {
+        headers: { 'Content-Type': 'application/json', 'x-internal-secret': internalSecret },
+        timeout: 30000,
+      });
+      if (seedRes.ok()) {
+        const body = await seedRes.json();
+        console.log('  ✓ Tier accounts seeded:', JSON.stringify(body.results));
+      } else {
+        console.log(`  ⚠ Tier seed endpoint returned ${seedRes.status()} — falling back to ensureAccount`);
+        await ensureAccount(api, TEST_ACCOUNTS.starter.email, TEST_ACCOUNTS.starter.password, 'trainer');
+        await ensureAccount(api, TEST_ACCOUNTS.professional.email, TEST_ACCOUNTS.professional.password, 'trainer');
+        await ensureAccount(api, TEST_ACCOUNTS.enterprise.email, TEST_ACCOUNTS.enterprise.password, 'trainer');
+      }
+    } catch (e: any) {
+      console.log(`  ⚠ Tier seed failed: ${e.message} — falling back`);
+      await ensureAccount(api, TEST_ACCOUNTS.starter.email, TEST_ACCOUNTS.starter.password, 'trainer');
+      await ensureAccount(api, TEST_ACCOUNTS.professional.email, TEST_ACCOUNTS.professional.password, 'trainer');
+      await ensureAccount(api, TEST_ACCOUNTS.enterprise.email, TEST_ACCOUNTS.enterprise.password, 'trainer');
+    }
+  } else {
+    await ensureAccount(api, TEST_ACCOUNTS.starter.email, TEST_ACCOUNTS.starter.password, 'trainer');
+    await ensureAccount(api, TEST_ACCOUNTS.professional.email, TEST_ACCOUNTS.professional.password, 'trainer');
+    await ensureAccount(api, TEST_ACCOUNTS.enterprise.email, TEST_ACCOUNTS.enterprise.password, 'trainer');
+    console.log('  ⚠ INTERNAL_API_SECRET not set — tier accounts registered but subscriptions not seeded');
+  }
+  console.log('  ✓ Starter, Professional, Enterprise tier accounts ready');
+
   // ─── Step 2: Trainer adds clients to roster ───────────────────────────────
   console.log('Step 2: Adding clients to trainer roster...');
   try {

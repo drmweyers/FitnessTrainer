@@ -33,6 +33,25 @@ export const TEST_ACCOUNTS = {
     name: 'QA Client 2',
     role: 'client',
   },
+  // Tier-locked accounts — one per subscription level
+  starter: {
+    email: 'qa-starter@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Starter Trainer',
+    role: 'trainer',
+  },
+  professional: {
+    email: 'qa-professional@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Professional Trainer',
+    role: 'trainer',
+  },
+  enterprise: {
+    email: 'qa-enterprise@evofit.io',
+    password: 'QaTest2026!',
+    name: 'QA Enterprise Trainer',
+    role: 'trainer',
+  },
   // Legacy accounts (still in production DB)
   legacyTrainer: {
     email: 'coach.sarah@evofittrainer.com',
