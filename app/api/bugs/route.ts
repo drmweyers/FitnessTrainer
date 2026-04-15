@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import { z } from 'zod'
 import { prisma } from '@/lib/db/prisma'
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
@@ -86,8 +87,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Fire-and-forget side effects
-    void (async () => {
+    // waitUntil keeps the Vercel function alive until side effects complete
+    waitUntil((async () => {
       try {
         const ghResult = await createGitHubIssue({
           id: bug.id,
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       } catch {
         // Silent
       }
-    })()
+    })())
 
     return NextResponse.json({ success: true, data: { id: bug.id } }, { status: 201 })
   } catch (err) {

@@ -53,6 +53,7 @@
     "@types/uuid": "^10.0.0",
     "@types/web-push": "^3.6.4",
     "@upstash/redis": "^1.36.1",
+    "@vercel/functions": "^3.4.3",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.5.0",
@@ -80,6 +81,7 @@
     "typescript": "^5.6.3",
     "uuid": "^9.0.1",
     "web-push": "^3.6.7",
+    "xlsx": "^0.18.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
