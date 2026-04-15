@@ -55,6 +55,45 @@ export async function authenticate(
   request: NextRequest
 ): Promise<AuthenticatedRequest | NextResponse> {
   try {
+    // Check for API key authentication first (X-API-Key header)
+    const apiKeyHeader = request.headers.get('X-API-Key');
+    if (apiKeyHeader) {
+      const crypto = await import('crypto');
+      const hash = crypto.createHash('sha256').update(apiKeyHeader).digest('hex');
+      const token = await prisma.apiToken.findUnique({
+        where: { tokenHash: hash },
+        include: { user: true },
+      });
+      if (token && token.user && token.user.isActive && !token.user.deletedAt) {
+        // Check expiry
+        if (token.expiresAt && token.expiresAt < new Date()) {
+          return NextResponse.json(
+            createError(401, 'API key expired', 'API_KEY_EXPIRED'),
+            { status: 401 }
+          );
+        }
+        // Update lastUsedAt (fire-and-forget)
+        prisma.apiToken.update({
+          where: { id: token.id },
+          data: { lastUsedAt: new Date() },
+        }).catch(() => {/* ignore update errors */});
+
+        const req = request as AuthenticatedRequest;
+        req.user = {
+          id: token.user.id,
+          email: token.user.email,
+          role: token.user.role as 'trainer' | 'client' | 'admin',
+          isActive: token.user.isActive,
+          isVerified: token.user.isVerified,
+        };
+        return req;
+      }
+      return NextResponse.json(
+        createError(401, 'Invalid API key', 'INVALID_API_KEY'),
+        { status: 401 }
+      );
+    }
+
     // Extract Authorization header
     const authHeader = request.headers.get('authorization');
 
