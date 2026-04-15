@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { waitUntil } from '@vercel/functions'
 import { z } from 'zod'
 import { prisma } from '@/lib/db/prisma'
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
@@ -87,39 +86,41 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // waitUntil keeps the Vercel function alive until side effects complete
-    waitUntil((async () => {
-      try {
-        const ghResult = await createGitHubIssue({
+    // Run side effects inline with a 4s timeout — reliable on Vercel serverless
+    try {
+      const ghResult = await Promise.race([
+        createGitHubIssue({
           id: bug.id,
           category: bug.category,
           priority: bug.priority,
           description: bug.description,
           context: bug.context as Record<string, unknown> | null,
           reporterEmail: bug.reporter?.email,
-        })
+        }),
+        new Promise<null>(resolve => setTimeout(() => resolve(null), 4000)),
+      ])
 
-        if (ghResult) {
-          await prisma.bugReport.update({
-            where: { id: bug.id },
-            data: {
-              githubIssueUrl: ghResult.url,
-              githubIssueNumber: ghResult.number,
-            },
-          })
-        }
-
-        await appendBugToHalBridge({
-          id: bug.id,
-          category: bug.category,
-          priority: bug.priority,
-          description: bug.description,
-          githubIssueUrl: ghResult?.url,
+      if (ghResult) {
+        await prisma.bugReport.update({
+          where: { id: bug.id },
+          data: {
+            githubIssueUrl: ghResult.url,
+            githubIssueNumber: ghResult.number,
+          },
         })
-      } catch {
-        // Silent
       }
-    })())
+
+      // Hal bridge: log to Vercel function logs (filesystem is read-only on serverless)
+      appendBugToHalBridge({
+        id: bug.id,
+        category: bug.category,
+        priority: bug.priority,
+        description: bug.description,
+        githubIssueUrl: ghResult?.url,
+      }).catch(() => {})
+    } catch {
+      // Side effects never block the user response
+    }
 
     return NextResponse.json({ success: true, data: { id: bug.id } }, { status: 201 })
   } catch (err) {
