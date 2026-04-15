@@ -242,6 +242,8 @@ export interface ProgramWorkoutData {
 
 export interface WorkoutExerciseData {
   exerciseId: string;
+  /** Display name stored at time of addition so the canvas can show it without a lookup. */
+  name?: string;
   orderIndex: number;
   supersetGroup?: string;
   sectionType?: SectionType;

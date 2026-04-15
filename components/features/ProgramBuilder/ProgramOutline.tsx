@@ -110,7 +110,7 @@ const SupersetGroup: React.FC<SupersetGroupProps> = ({ label, exercises }) => (
       {exercises.map((ex) => (
         <ExerciseLeaf
           key={ex.exerciseId}
-          name={ex.exercise?.name ?? ex.exerciseId}
+          name={ex.exercise?.name ?? ex.name ?? ex.exerciseId}
         />
       ))}
     </ul>
@@ -181,7 +181,7 @@ const WorkoutNode: React.FC<WorkoutNodeProps> = ({
             ) : (
               <ExerciseLeaf
                 key={`ex-${group.exercises[0].exerciseId}-${gi}`}
-                name={group.exercises[0].exercise?.name ?? group.exercises[0].exerciseId}
+                name={group.exercises[0].exercise?.name ?? group.exercises[0].name ?? group.exercises[0].exerciseId}
               />
             )
           )

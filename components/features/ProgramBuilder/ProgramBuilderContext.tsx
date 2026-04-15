@@ -485,6 +485,7 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
           const orderIndex = atIndex !== undefined ? atIndex : exercises.length
           const newExercise: WorkoutExerciseData = {
             exerciseId: exercise.id,
+            name: exercise.name,
             orderIndex,
             sectionType,
             supersetGroup: undefined,

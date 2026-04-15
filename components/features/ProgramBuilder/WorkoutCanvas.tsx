@@ -141,13 +141,15 @@ function groupExercisesIntoSections(exercises: WorkoutExerciseDataExtended[]): C
   return sections
 }
 
-const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOpenConfig }) => {
+const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workoutIdx: _workoutIdx, onOpenConfig }) => {
   const { state, dispatch } = useProgramBuilder()
-  const [selectedWeekIdx, setSelectedWeekIdx] = useState(weekIdx)
-  const [selectedWorkoutIdx, setSelectedWorkoutIdx] = useState(workoutIdx)
   const [suggestions, setSuggestions] = useState<SuggestedExercise[]>([])
   const [suggestOpen, setSuggestOpen] = useState(false)
   const [isSuggesting, setIsSuggesting] = useState(false)
+
+  // Read week/workout selection from global context so outline navigation stays in sync.
+  const selectedWeekIdx = state.currentWeekIndex
+  const selectedWorkoutIdx = state.currentWorkoutIndex
 
   const weeks = state.weeks
   const currentWeek = weeks[selectedWeekIdx]
@@ -164,7 +166,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
   const exerciseNames = useMemo(() => {
     const map: Record<string, string> = {}
     exercises.forEach((e) => {
-      map[e.exerciseId] = e.exerciseId
+      map[e.exerciseId] = e.name ?? e.exerciseId
     })
     return map
   }, [exercises])
@@ -256,8 +258,6 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
             <button
               type="button"
               onClick={() => {
-                setSelectedWeekIdx(wIdx)
-                setSelectedWorkoutIdx(0)
                 dispatch({ type: 'SET_CURRENT_WEEK', payload: wIdx })
                 dispatch({ type: 'SET_CURRENT_WORKOUT', payload: 0 })
               }}
@@ -280,7 +280,6 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
               key={wkIdx}
               type="button"
               onClick={() => {
-                setSelectedWorkoutIdx(wkIdx)
                 dispatch({ type: 'SET_CURRENT_WORKOUT', payload: wkIdx })
               }}
               className={`text-xs px-3 py-1 rounded border transition-colors flex-shrink-0 ${

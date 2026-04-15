@@ -252,7 +252,7 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
               {configDrawerOpen && (
                 <ExerciseConfigDrawer
                   exercise={configExercise}
-                  exerciseName={configExercise?.exerciseId ?? ''}
+                  exerciseName={configExercise?.name ?? configExercise?.exerciseId ?? ''}
                   open={configDrawerOpen}
                   onClose={() => setConfigDrawerOpen(false)}
                   weekIdx={configWeekIdx}
