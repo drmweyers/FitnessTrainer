@@ -134,6 +134,8 @@ export type ProgramBuilderAction =
     }
   | { type: 'TOGGLE_EXERCISE_SELECTION'; payload: string }
   | { type: 'CLEAR_SELECTION' }
+  | { type: 'REORDER_WEEKS'; payload: { from: number; to: number } }
+  | { type: 'REORDER_WORKOUTS'; payload: { weekIdx: number; from: number; to: number } }
 
 // Initial state
 const initialState: ProgramBuilderState = {
@@ -723,6 +725,28 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
 
     case 'CLEAR_SELECTION':
       return { ...state, selectedExerciseIds: new Set<string>() }
+
+    case 'REORDER_WEEKS': {
+      const { from, to } = action.payload
+      const weeks = [...state.weeks]
+      const [moved] = weeks.splice(from, 1)
+      weeks.splice(to, 0, moved)
+      // Re-number weekNumber fields so they stay sequential after the reorder
+      const renumbered = weeks.map((w, i) => ({ ...w, weekNumber: i + 1 }))
+      return { ...state, weeks: renumbered, isDirty: true }
+    }
+
+    case 'REORDER_WORKOUTS': {
+      const { weekIdx, from, to } = action.payload
+      const weeks = state.weeks.map((week, wi) => {
+        if (wi !== weekIdx) return week
+        const workouts = [...(week.workouts || [])]
+        const [moved] = workouts.splice(from, 1)
+        workouts.splice(to, 0, moved)
+        return { ...week, workouts: workouts.map((w, i) => ({ ...w, dayNumber: i + 1 })) }
+      })
+      return { ...state, weeks, isDirty: true }
+    }
 
     default:
       return state

@@ -11,8 +11,23 @@ import {
   Timer,
   Repeat,
   Target,
+  GripVertical,
 } from 'lucide-react';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { FeatureGate } from '@/components/subscription/FeatureGate';
 import { useProgramBuilder } from './ProgramBuilderContext';
 import { WorkoutType, ProgramWeekData, ProgramWorkoutData, WorkoutExerciseData } from '@/types/program';
 
@@ -198,8 +213,15 @@ interface WeekNodeProps {
   activeWorkoutIndex: number;
   onNavigateWorkout: (_weekIdx: number, _workoutIdx: number) => void;
   onNavigateWeek: (_weekIdx: number) => void;
+  /** When true a drag handle icon is shown (Pro+ tier only). */
+  showDragHandle?: boolean;
 }
 
+/**
+ * WeekNode renders a collapsible week row in the outline tree.
+ * When `showDragHandle` is true (Pro+ tier), a GripVertical handle is shown
+ * and `useSortable` wires up the drag-and-drop behaviour via @dnd-kit/sortable.
+ */
 const WeekNode: React.FC<WeekNodeProps> = ({
   week,
   weekIndex,
@@ -207,9 +229,19 @@ const WeekNode: React.FC<WeekNodeProps> = ({
   activeWorkoutIndex,
   onNavigateWorkout,
   onNavigateWeek,
+  showDragHandle = false,
 }) => {
   const [expanded, setExpanded] = useState(true);
   const workouts = week.workouts ?? [];
+
+  // useSortable is always called (React hooks rule), but attributes/listeners are
+  // only applied to the DOM when showDragHandle is true.
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: weekIndex.toString() });
+
+  const style: React.CSSProperties = showDragHandle
+    ? { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
+    : {};
 
   const handleWeekClick = () => {
     onNavigateWeek(weekIndex);
@@ -222,6 +254,8 @@ const WeekNode: React.FC<WeekNodeProps> = ({
 
   return (
     <li
+      ref={showDragHandle ? setNodeRef : undefined}
+      style={style}
       data-week-index={weekIndex}
       className={`mb-1 rounded transition-colors ${
         isActiveWeek ? 'bg-blue-50' : ''
@@ -245,6 +279,19 @@ const WeekNode: React.FC<WeekNodeProps> = ({
           }
         }}
       >
+        {/* Drag handle — Pro+ only; hidden for Starter via FeatureGate fallback={<></>} */}
+        <FeatureGate feature="programBuilder.outlineDragReorder" fallback={<></>}>
+          <button
+            type="button"
+            aria-label="Drag to reorder week"
+            className="flex-shrink-0 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing p-0.5 rounded"
+            onClick={(e) => e.stopPropagation()}
+            {...(showDragHandle ? { ...attributes, ...listeners } : {})}
+          >
+            <GripVertical className="h-3.5 w-3.5" />
+          </button>
+        </FeatureGate>
+
         {/* Chevron toggle */}
         <button
           type="button"
@@ -306,6 +353,30 @@ const ProgramOutline: React.FC = () => {
 
   const totalExercises = countTotalExercises(weeks);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      // Require a 5px drag distance before activating to avoid accidental drags on click
+      activationConstraint: { distance: 5 },
+    })
+  );
+
+  /**
+   * Handles drag-end from DndContext. Dispatches REORDER_WEEKS when the
+   * dragged week lands in a different position.
+   */
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+      const from = parseInt(active.id as string, 10);
+      const to = parseInt(over.id as string, 10);
+      if (!isNaN(from) && !isNaN(to)) {
+        dispatch({ type: 'REORDER_WEEKS', payload: { from, to } });
+      }
+    },
+    [dispatch]
+  );
+
   const handleNavigateWorkout = useCallback(
     (weekIdx: number, workoutIdx: number) => {
       dispatch({ type: 'SET_CURRENT_WEEK', payload: weekIdx });
@@ -338,23 +409,31 @@ const ProgramOutline: React.FC = () => {
             Add your first week and workout to get started
           </p>
         ) : (
-          <ul
-            role="tree"
-            aria-label="Program structure"
-            className="p-2 space-y-0.5"
-          >
-            {weeks.map((week, wi) => (
-              <WeekNode
-                key={`week-${wi}`}
-                week={week}
-                weekIndex={wi}
-                isActiveWeek={currentWeekIndex === wi}
-                activeWorkoutIndex={currentWorkoutIndex}
-                onNavigateWorkout={handleNavigateWorkout}
-                onNavigateWeek={handleNavigateWeek}
-              />
-            ))}
-          </ul>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={weeks.map((_, i) => i.toString())}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul
+                role="tree"
+                aria-label="Program structure"
+                className="p-2 space-y-0.5"
+              >
+                {weeks.map((week, wi) => (
+                  <WeekNode
+                    key={`week-${wi}`}
+                    week={week}
+                    weekIndex={wi}
+                    isActiveWeek={currentWeekIndex === wi}
+                    activeWorkoutIndex={currentWorkoutIndex}
+                    onNavigateWorkout={handleNavigateWorkout}
+                    onNavigateWeek={handleNavigateWeek}
+                    showDragHandle={true}
+                  />
+                ))}
+              </ul>
+            </SortableContext>
+          </DndContext>
         )}
       </ScrollArea>
     </aside>

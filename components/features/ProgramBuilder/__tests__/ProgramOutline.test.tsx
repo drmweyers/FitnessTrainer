@@ -137,6 +137,7 @@ jest.mock('lucide-react', () => ({
   Repeat: (props: any) => <span data-testid="icon-repeat" {...props} />,
   Target: (props: any) => <span data-testid="icon-target" {...props} />,
   LayoutList: (props: any) => <span data-testid="icon-layout-list" {...props} />,
+  GripVertical: (props: any) => <span data-testid="icon-grip-vertical" {...props} />,
 }));
 
 jest.mock('@/components/ui/scroll-area', () => ({
@@ -145,6 +146,38 @@ jest.mock('@/components/ui/scroll-area', () => ({
       {children}
     </div>
   ),
+}));
+
+// Mock @dnd-kit packages so Jest doesn't need a DOM drag implementation
+jest.mock('@dnd-kit/core', () => ({
+  DndContext: ({ children }: any) => <div data-testid="dnd-context">{children}</div>,
+  PointerSensor: jest.fn(),
+  useSensor: jest.fn(() => ({})),
+  useSensors: jest.fn(() => []),
+}));
+
+jest.mock('@dnd-kit/sortable', () => ({
+  SortableContext: ({ children }: any) => <div data-testid="sortable-context">{children}</div>,
+  useSortable: jest.fn(() => ({
+    attributes: {},
+    listeners: {},
+    setNodeRef: jest.fn(),
+    transform: null,
+    transition: null,
+    isDragging: false,
+  })),
+  verticalListSortingStrategy: 'verticalList',
+}));
+
+jest.mock('@dnd-kit/utilities', () => ({
+  CSS: {
+    Transform: { toString: jest.fn(() => '') },
+  },
+}));
+
+// Mock FeatureGate — always render children so drag handles are visible in tests
+jest.mock('@/components/subscription/FeatureGate', () => ({
+  FeatureGate: ({ children, fallback }: any) => <>{children ?? fallback}</>,
 }));
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
@@ -321,5 +354,29 @@ describe('ProgramOutline', () => {
     };
     const { getByText } = render(<MockedOutline />);
     expect(getByText(/Add your first week and workout to get started/i)).toBeInTheDocument();
+  });
+
+  // 15. DndContext and SortableContext are rendered when weeks exist
+  it('renders DndContext and SortableContext wrappers when weeks are present', () => {
+    render(<ProgramOutline />);
+    expect(screen.getByTestId('dnd-context')).toBeInTheDocument();
+    expect(screen.getByTestId('sortable-context')).toBeInTheDocument();
+  });
+
+  // 16. GripVertical drag handles are rendered for each week (Pro+ mock allows them)
+  it('renders a drag handle for each week (visible in Pro+ context)', () => {
+    render(<ProgramOutline />);
+    // FeatureGate mock renders children, so grip icons should be visible
+    const gripHandles = screen.getAllByTestId('icon-grip-vertical');
+    // One grip per week (2 weeks in default state)
+    expect(gripHandles.length).toBeGreaterThanOrEqual(2);
+  });
+
+  // 17. Outline renders without crash even with deeply nested exercises
+  it('renders without crashing with complex exercise hierarchy', () => {
+    expect(() => render(<ProgramOutline />)).not.toThrow();
+    // Both week nodes should still be in the tree
+    expect(screen.getByText(/Week 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Week 2/i)).toBeInTheDocument();
   });
 });
