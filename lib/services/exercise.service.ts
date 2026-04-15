@@ -17,6 +17,18 @@ import {
 
 const prisma = new PrismaClient();
 
+/**
+ * Normalize a gifUrl stored in the DB.
+ * Exercises imported via import-exercises.ts store the bare filename (e.g. "2gPfomN.gif").
+ * Exercises imported via import-gif-exercises.ts correctly store "/exercises/gifs/2gPfomN.gif".
+ * This handles both so the browser always gets a valid absolute path.
+ */
+function normalizeExerciseGifUrl<T extends { gifUrl: string }>(exercise: T): T {
+  const { gifUrl } = exercise
+  if (!gifUrl || gifUrl.startsWith('http') || gifUrl.startsWith('/')) return exercise
+  return { ...exercise, gifUrl: `/exercises/gifs/${gifUrl}` }
+}
+
 export class ExerciseService {
   /**
    * Get list of exercises with filtering and pagination
@@ -81,7 +93,7 @@ export class ExerciseService {
     const filters = await this.getFilterOptions();
 
     return {
-      exercises: exercises as Exercise[],
+      exercises: exercises.map(normalizeExerciseGifUrl) as Exercise[],
       pagination: {
         total,
         page,

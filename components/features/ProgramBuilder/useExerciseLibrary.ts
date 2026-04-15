@@ -58,7 +58,9 @@ async function fetchExercisePage(
     if (res.status === 401) throw Object.assign(new Error('Unauthorized'), { status: 401 })
     if (!res.ok) throw new Error('Failed to fetch favorites')
     const json = await res.json()
-    const all: Exercise[] = json.data ?? json.exercises ?? []
+    // API returns ExerciseFavorite[] with nested exercise — unwrap to Exercise[]
+    const raw: any[] = json.data ?? json.exercises ?? []
+    const all: Exercise[] = raw.map((item) => item.exercise ?? item).filter(Boolean)
     // Favorites endpoint returns all; do client-side pagination
     const offset = (page - 1) * PAGE_SIZE
     const slice = all.slice(offset, offset + PAGE_SIZE)

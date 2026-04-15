@@ -255,7 +255,12 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
           <div key={wIdx} className="flex items-center gap-1 flex-shrink-0">
             <button
               type="button"
-              onClick={() => { setSelectedWeekIdx(wIdx); setSelectedWorkoutIdx(0) }}
+              onClick={() => {
+                setSelectedWeekIdx(wIdx)
+                setSelectedWorkoutIdx(0)
+                dispatch({ type: 'SET_CURRENT_WEEK', payload: wIdx })
+                dispatch({ type: 'SET_CURRENT_WORKOUT', payload: 0 })
+              }}
               className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${
                 selectedWeekIdx === wIdx
                   ? 'bg-blue-600 text-white'
@@ -274,7 +279,10 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx, workoutIdx, onOp
             <button
               key={wkIdx}
               type="button"
-              onClick={() => setSelectedWorkoutIdx(wkIdx)}
+              onClick={() => {
+                setSelectedWorkoutIdx(wkIdx)
+                dispatch({ type: 'SET_CURRENT_WORKOUT', payload: wkIdx })
+              }}
               className={`text-xs px-3 py-1 rounded border transition-colors flex-shrink-0 ${
                 selectedWorkoutIdx === wkIdx
                   ? 'bg-blue-50 border-blue-300 text-blue-700 font-medium'

@@ -390,11 +390,36 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
         currentStep: Math.max(1, Math.min(5, action.payload))
       }
 
-    case 'NEXT_STEP':
-      return { 
-        ...state, 
-        currentStep: Math.min(5, state.currentStep + 1)
+    case 'NEXT_STEP': {
+      const nextStep = Math.min(5, state.currentStep + 1)
+      const nextState = { ...state, currentStep: nextStep }
+
+      // Step 1→2: auto-scaffold weeks if none created yet (user never changed duration slider)
+      if (state.currentStep === 1 && nextState.weeks.length === 0) {
+        nextState.weeks = createInitialWeeks(state.durationWeeks)
+        nextState.isDirty = true
       }
+
+      // Step 2→3: ensure each week has at least one workout so drag-drop works immediately
+      if (state.currentStep === 2) {
+        const defaultWorkout: ProgramWorkoutData = {
+          dayNumber: 1,
+          name: 'Day 1',
+          description: '',
+          workoutType: WorkoutType.STRENGTH,
+          estimatedDuration: 60,
+          isRestDay: false,
+          exercises: [],
+        }
+        nextState.weeks = nextState.weeks.map(week => ({
+          ...week,
+          workouts: week.workouts && week.workouts.length > 0 ? week.workouts : [defaultWorkout],
+        }))
+        nextState.isDirty = true
+      }
+
+      return nextState
+    }
 
     case 'PREV_STEP':
       return { 
@@ -435,7 +460,13 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
         const savedState = localStorage.getItem('programBuilderDraft')
         if (savedState) {
           const parsed = JSON.parse(savedState)
-          return { ...state, ...parsed, isLoading: false }
+          const restored = { ...state, ...parsed, isLoading: false }
+          // Defensive: if draft has us on step 2+ with no weeks, scaffold them.
+          // This happens when a draft was saved before the auto-scaffold fix landed.
+          if (restored.currentStep >= 2 && (!restored.weeks || restored.weeks.length === 0)) {
+            restored.weeks = createInitialWeeks(restored.durationWeeks || 4)
+          }
+          return restored
         }
       } catch (error) {
         console.error('Failed to load from storage:', error)

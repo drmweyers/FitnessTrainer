@@ -168,8 +168,22 @@ const ExerciseLibraryPanel: React.FC<ExerciseLibraryPanelProps> = ({
           ) : exercises.length === 0 ? (
             <div className="py-8 text-center space-y-2">
               <Filter className="w-8 h-8 text-gray-300 mx-auto" />
-              <p className="text-sm text-gray-500">No exercises match.</p>
-              <p className="text-xs text-gray-400">Try clearing filters.</p>
+              {tab === 'favorites' ? (
+                <>
+                  <p className="text-sm text-gray-500">No favorites yet.</p>
+                  <p className="text-xs text-gray-400">Star exercises in the Exercise Library to add them here.</p>
+                </>
+              ) : tab === 'collections' ? (
+                <>
+                  <p className="text-sm text-gray-500">No collections yet.</p>
+                  <p className="text-xs text-gray-400">Create collections in the Exercise Library to organize exercises.</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-gray-500">No exercises match.</p>
+                  <p className="text-xs text-gray-400">Try clearing filters.</p>
+                </>
+              )}
             </div>
           ) : (
             exercises.map((exercise) => (
