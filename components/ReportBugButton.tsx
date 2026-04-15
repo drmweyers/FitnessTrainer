@@ -162,7 +162,7 @@ export default function ReportBugButton() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Report a Problem"
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-full shadow-lg transition-colors text-sm font-medium"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-full shadow-lg transition-colors text-sm font-medium"
       >
         <Bug size={16} />
         <span className="hidden sm:inline">Report a Problem</span>
