@@ -11,18 +11,33 @@ interface CompletionData {
   healthInfo: boolean;
   goalsSet: boolean;
   measurements: boolean;
+  certifications: boolean;
 }
 
-const CHECKLIST_ITEMS = [
+type ChecklistItem = {
+  key: keyof CompletionData;
+  label: string;
+  href: string;
+  description: string;
+};
+
+const TRAINER_CHECKLIST: ChecklistItem[] = [
+  { key: 'basicInfo', label: 'Professional Info', href: '/profile/edit', description: 'Add bio, specialties and contact info' },
+  { key: 'profilePhoto', label: 'Profile Photo', href: '/profile/edit', description: 'Upload a professional headshot' },
+  { key: 'certifications', label: 'Certifications', href: '/profile/edit', description: 'Add your fitness certifications and credentials' },
+];
+
+const CLIENT_CHECKLIST: ChecklistItem[] = [
   { key: 'basicInfo', label: 'Basic Information', href: '/profile/edit', description: 'Add bio, date of birth, gender' },
   { key: 'profilePhoto', label: 'Profile Photo', href: '/profile/edit', description: 'Upload a profile picture' },
   { key: 'healthInfo', label: 'Health Information', href: '/profile/health', description: 'Add medical history and health data' },
   { key: 'goalsSet', label: 'Fitness Goals', href: '/analytics', description: 'Set your fitness goals' },
   { key: 'measurements', label: 'Body Measurements', href: '/analytics', description: 'Record your first measurement' },
-] as const;
+];
 
 export default function ProfileCompletionWidget() {
   const [completion, setCompletion] = useState<CompletionData | null>(null);
+  const [role, setRole] = useState<'trainer' | 'client' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -37,6 +52,7 @@ export default function ProfileCompletionWidget() {
       .then(result => {
         if (result.success && result.data?.profileCompletion) {
           setCompletion(result.data.profileCompletion);
+          setRole(result.data.role ?? null);
         }
       })
       .catch(err => console.error('Failed to load profile completion:', err))
@@ -52,8 +68,10 @@ export default function ProfileCompletionWidget() {
     return null;
   }
 
+  const CHECKLIST_ITEMS = role === 'trainer' ? TRAINER_CHECKLIST : CLIENT_CHECKLIST;
+
   const missingItems = CHECKLIST_ITEMS.filter(
-    item => !completion[item.key as keyof CompletionData]
+    item => !completion[item.key]
   );
 
   const progressColor = completion.completionPercentage >= 75
@@ -106,12 +124,12 @@ export default function ProfileCompletionWidget() {
         )}
 
         {/* Completed Items */}
-        {CHECKLIST_ITEMS.filter(item => completion[item.key as keyof CompletionData]).length > 0 && (
+        {CHECKLIST_ITEMS.filter(item => completion[item.key]).length > 0 && (
           <div className="mt-3 pt-3 border-t border-gray-100">
             <p className="text-xs text-gray-400 mb-2">Completed</p>
             <div className="flex flex-wrap gap-2">
               {CHECKLIST_ITEMS
-                .filter(item => completion[item.key as keyof CompletionData])
+                .filter(item => completion[item.key])
                 .map(item => (
                   <span
                     key={item.key}
