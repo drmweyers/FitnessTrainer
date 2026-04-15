@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import AppLayout from '@/components/layout/AppLayout';
 import { CalendarExport } from '@/components/schedule/CalendarExport';
 import { CalendarView } from '@/components/features/Schedule/CalendarView';
 import {
@@ -203,18 +202,16 @@ export default function SchedulePage() {
 
   if (isLoading) {
     return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-        </div>
-      </AppLayout>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      </div>
     );
   }
 
   const today = new Date();
 
   return (
-    <AppLayout breadcrumbItems={[{ label: 'Schedule', href: '/schedule' }]}>
+    <>
       <div className="p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -612,7 +609,7 @@ export default function SchedulePage() {
           }}
         />
       )}
-    </AppLayout>
+    </>
   );
 }
 

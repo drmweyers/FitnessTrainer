@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import AppLayout from '@/components/layout/AppLayout';
 import { Clock, Save, Trash2, Plus, ArrowLeft } from 'lucide-react';
 
 interface AvailabilitySlot {
@@ -165,21 +164,14 @@ export default function AvailabilityPage() {
 
   if (isLoading || loading) {
     return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-        </div>
-      </AppLayout>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      </div>
     );
   }
 
   return (
-    <AppLayout
-      breadcrumbItems={[
-        { label: 'Schedule', href: '/schedule' },
-        { label: 'Availability', href: '/schedule/availability' },
-      ]}
-    >
+    <>
       <div className="p-6 max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -336,6 +328,6 @@ export default function AvailabilityPage() {
           </button>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
