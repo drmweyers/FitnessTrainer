@@ -479,19 +479,77 @@ export default function EnterpriseSalesPage() {
               </div>
               <ValueStackItem
                 icon={Users}
-                label="Unlimited Clients + Full Program Builder + ACWR Analytics + Scheduling"
-                value="$8,500/yr"
+                label="Unlimited Clients + Full Program Builder + ACWR + All Professional Bonuses"
+                value="$11,976"
                 delay={0.45}
                 isHighlight
               />
             </div>
 
+            {/* Enterprise Exclusive Bonuses */}
+            <div className="mt-6 pt-6 border-t border-orange-500/30">
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="w-5 h-5 text-orange-400" />
+                <span className="text-orange-400 font-bold text-sm tracking-widest uppercase">
+                  ENTERPRISE EXCLUSIVE BONUSES
+                </span>
+              </div>
+              <ValueStackItem
+                icon={Shield}
+                label="Lifetime Platform Updates — Every New Feature & Improvement, Forever"
+                value="$997"
+                delay={0.5}
+              />
+              <ValueStackItem
+                icon={Activity}
+                label="Trainer Toolkit — 8 Pro Calculators (1RM, TDEE, Body Fat, BMI, BMR, HR Zones, Wilks, Recovery) — Delivered to Your Account"
+                value="$297"
+                delay={0.55}
+              />
+              <ValueStackItem
+                icon={Star}
+                label="Trainer Business Vault — Check-In Scripts, Social Templates, Acquisition Playbook — Delivered to Your Account"
+                value="$497"
+                delay={0.6}
+              />
+              <ValueStackItem
+                icon={Dumbbell}
+                label="ALL Specialty Program Drops as Released — Powerlifting, Sports Performance, Rehab, Competition Prep, Seniors, 12+/Year"
+                value="$997"
+                delay={0.65}
+              />
+              <ValueStackItem
+                icon={TrendingUp}
+                label="Advanced Client Acquisition Templates + Ad Copy Swipe File + Referral Playbook — Delivered to Your Account"
+                value="$497"
+                delay={0.7}
+              />
+              <ValueStackItem
+                icon={ClipboardList}
+                label="Custom Workout Program Template Request (1/Year) — You Submit the Brief, We Build It"
+                value="$1,997"
+                delay={0.75}
+              />
+              <ValueStackItem
+                icon={Building2}
+                label="Gym & Studio Business SOPs — Staff Onboarding Kit, Trainer Management Templates — Delivered to Your Account"
+                value="$997"
+                delay={0.8}
+              />
+              <ValueStackItem
+                icon={Settings}
+                label="White-Labeled Trainer Toolkit — All 8 Calculators Embeddable on Your Domain with Your Branding"
+                value="$597"
+                delay={0.85}
+              />
+            </div>
+
             {/* Total */}
-            <AnimatedSection delay={0.5}>
+            <AnimatedSection delay={0.9}>
               <div className="mt-8 pt-8 border-t border-white/20 text-center">
-                <div className="text-white/50 text-lg mb-2">Total Annual Value</div>
+                <div className="text-white/50 text-lg mb-2">Total Value</div>
                 <div className="text-4xl sm:text-5xl font-black text-white/30 line-through mb-4">
-                  $12,000/yr
+                  $17,976
                 </div>
                 <div className="text-sm text-white/50 mb-2">YOUR ONE-TIME PRICE</div>
                 <div className="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">

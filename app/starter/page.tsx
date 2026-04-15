@@ -370,7 +370,7 @@ export default function StarterSalesPage() {
               <div className="flex items-center gap-2 mb-4">
                 <Star className="w-5 h-5 text-orange-400" />
                 <span className="text-orange-400 font-bold text-sm tracking-widest uppercase">
-                  FREE BONUS
+                  FREE BONUSES INCLUDED
                 </span>
               </div>
               <ValueStackItem
@@ -379,14 +379,38 @@ export default function StarterSalesPage() {
                 value="$300/yr"
                 delay={0.45}
               />
+              <ValueStackItem
+                icon={Shield}
+                label="Lifetime Platform Updates — Every New Feature & Improvement, Forever"
+                value="$997"
+                delay={0.5}
+              />
+              <ValueStackItem
+                icon={Activity}
+                label="Trainer Toolkit — 8 Pro Calculators (1RM, TDEE, Body Fat, BMI, BMR, HR Zones, Wilks, Recovery) — Delivered to Your Account"
+                value="$297"
+                delay={0.55}
+              />
+              <ValueStackItem
+                icon={Star}
+                label="Trainer Business Vault — 10 Check-In Email Scripts, 20 Social Templates, Progress Report Templates, Client Acquisition Playbook — Delivered to Your Account"
+                value="$497"
+                delay={0.6}
+              />
+              <ValueStackItem
+                icon={Dumbbell}
+                label="2 Specialty Workout Program Packs/Year — Strength + Hypertrophy (Delivered Annually)"
+                value="$197"
+                delay={0.65}
+              />
             </div>
 
             {/* Total */}
-            <AnimatedSection delay={0.5}>
+            <AnimatedSection delay={0.7}>
               <div className="mt-8 pt-8 border-t border-white/20 text-center">
-                <div className="text-white/50 text-lg mb-2">Total Annual Value</div>
+                <div className="text-white/50 text-lg mb-2">Total Value</div>
                 <div className="text-4xl sm:text-5xl font-black text-white/30 line-through mb-4">
-                  $3,200/yr
+                  $5,188
                 </div>
                 <div className="text-sm text-white/50 mb-2">YOUR ONE-TIME PRICE</div>
                 <div className="text-5xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">

@@ -537,6 +537,7 @@ function TierComparisonSection() {
       badge: null,
       cta: 'See Starter Details',
       ctaStyle: 'bg-white/10 hover:bg-white/20 text-white border border-white/20',
+      valueTotal: '$5,188',
       highlights: [
         'Up to 5 active clients',
         '1,344 exercises with GIF demos',
@@ -544,6 +545,8 @@ function TierComparisonSection() {
         'Automatic PR detection',
         'Body composition tracking',
         'PWA — add to home screen',
+        'Lifetime platform updates',
+        'Trainer Toolkit (8 calculators)',
       ],
     },
     {
@@ -557,6 +560,7 @@ function TierComparisonSection() {
       cta: 'See Professional Details',
       ctaStyle:
         'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50',
+      valueTotal: '$11,976',
       highlights: [
         'Unlimited active clients',
         '8 program types + 7 set types',
@@ -564,6 +568,8 @@ function TierComparisonSection() {
         'ACWR training load monitoring',
         'iCal export + calendar subscribe',
         'PDF/CSV analytics reports',
+        'All specialty program drops (12+/yr)',
+        'Trainer Business Vault',
       ],
     },
     {
@@ -577,6 +583,7 @@ function TierComparisonSection() {
       cta: 'Get Enterprise — $399',
       ctaStyle:
         'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/40 hover:shadow-orange-500/60',
+      valueTotal: '$17,976',
       highlights: [
         'Everything in Professional',
         'Admin dashboard + user management',
@@ -584,6 +591,8 @@ function TierComparisonSection() {
         'Security audit trail',
         'Bulk user operations',
         'System health monitoring',
+        'Custom program template/year',
+        'White-labeled Trainer Toolkit',
       ],
     },
   ]
@@ -642,6 +651,10 @@ function TierComparisonSection() {
                     </li>
                   ))}
                 </ul>
+                <div className="text-center text-sm text-gray-400 mb-3">
+                  Total value: <span className="font-bold text-white">{tier.valueTotal}</span> — yours for{' '}
+                  <span className="font-bold text-white">{tier.price}</span>
+                </div>
                 <Link href={tier.href}>
                   <button
                     className={`w-full py-3 rounded-xl font-bold text-base transition-all duration-200 hover:scale-[1.02] ${tier.ctaStyle}`}
@@ -673,6 +686,10 @@ function CompetitorTable() {
     { label: 'Offline workout logging', evofit: true, everfit: false, truecoach: false, trainheroic: false },
     { label: 'AI progression suggestions', evofit: 'Add-on', everfit: false, truecoach: false, trainheroic: 'Manual' },
     { label: 'Monthly cost', evofit: '$0', everfit: '$80-199', truecoach: '$19-150', trainheroic: '$35-75' },
+    { label: 'Lifetime Updates Included', evofit: true, everfit: false, truecoach: false, trainheroic: false },
+    { label: 'Trainer Business Vault (Marketing)', evofit: true, everfit: false, truecoach: false, trainheroic: false },
+    { label: 'Fitness Calculator Toolkit', evofit: true, everfit: false, truecoach: false, trainheroic: false },
+    { label: 'Specialty Program Drops', evofit: true, everfit: false, truecoach: false, trainheroic: false },
   ]
 
   function Cell({ value }: { value: boolean | string }) {

@@ -668,7 +668,11 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Automatic PR detection</li>
                 <li className="text-gray-700">• Body composition tracking</li>
                 <li className="text-gray-700">• PWA — works offline on any device</li>
+                <li className="text-gray-700">• Lifetime platform updates</li>
+                <li className="text-gray-700">• Trainer Toolkit (8 calculators)</li>
+                <li className="text-gray-700">• Trainer Business Vault</li>
               </ul>
+              <div className="text-center text-sm text-gray-500 mb-3">Total value: <span className="font-bold text-gray-900">$5,188</span> — yours for <span className="font-bold text-gray-900">$199</span></div>
               <Link
                 href="/starter"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
@@ -695,7 +699,10 @@ export default function LandingPage() {
                 <li className="text-gray-700">• ACWR training load monitoring</li>
                 <li className="text-gray-700">• iCal export + calendar subscribe</li>
                 <li className="text-gray-700">• PDF/CSV analytics reports</li>
+                <li className="text-gray-700">• All specialty program drops (12+/yr)</li>
+                <li className="text-gray-700">• Advanced business templates</li>
               </ul>
+              <div className="text-center text-sm text-gray-500 mb-3">Total value: <span className="font-bold text-gray-900">$11,976</span> — yours for <span className="font-bold text-gray-900">$299</span></div>
               <Link
                 href="/professional"
                 className="block w-full text-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
@@ -719,7 +726,10 @@ export default function LandingPage() {
                 <li className="text-gray-700">• Security audit trail</li>
                 <li className="text-gray-700">• Bulk user operations</li>
                 <li className="text-gray-700">• System health monitoring</li>
+                <li className="text-gray-700">• Custom program template/year</li>
+                <li className="text-gray-700">• White-labeled Trainer Toolkit</li>
               </ul>
+              <div className="text-center text-sm text-gray-500 mb-3">Total value: <span className="font-bold text-gray-900">$17,976</span> — yours for <span className="font-bold text-gray-900">$399</span></div>
               <Link
                 href="/enterprise"
                 className="block w-full text-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"

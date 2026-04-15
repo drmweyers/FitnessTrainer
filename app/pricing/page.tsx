@@ -59,6 +59,10 @@ const tiers = [
       '2 active fitness goals with progress bars',
       'PWA-installable — works offline on any device',
       'Offline workout logging via IndexedDB',
+      'Lifetime platform updates — every new feature, forever',
+      'Trainer Toolkit — 8 professional calculators (1RM, TDEE, Body Fat, and more) — delivered to your account',
+      'Trainer Business Vault — check-in scripts, social templates, acquisition playbook — delivered to your account',
+      '2 specialty workout program packs/year — strength + hypertrophy',
     ],
   },
   {
@@ -86,6 +90,8 @@ const tiers = [
       'Analytics reports in PDF and CSV (weekly, monthly, quarterly)',
       'Bulk program assignment to tag groups in one click',
       'Unlimited custom color tags for roster segmentation',
+      'ALL specialty program drops — powerlifting, rehab, sports performance, 12+/year — delivered to your account',
+      'Advanced client acquisition templates + ad copy swipe file — delivered to your account',
     ],
   },
   {
@@ -109,6 +115,9 @@ const tiers = [
       'System health monitoring: PostgreSQL, Redis, and API status in real time',
       'Content moderation tools and support ticket management',
       'Account lockout controls from the admin panel',
+      'Custom workout program template request (1/year) — you submit the brief, we build it',
+      'Gym & studio business SOPs — staff onboarding kit, trainer management templates — delivered to your account',
+      'White-labeled Trainer Toolkit for your domain — all 8 calculators with your branding',
     ],
   },
 ]
