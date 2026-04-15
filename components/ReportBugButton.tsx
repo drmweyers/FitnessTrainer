@@ -133,7 +133,11 @@ export default function ReportBugButton() {
 
       const data = await res.json()
       if (!res.ok || !data.success) {
-        throw new Error(data.error ?? 'Submission failed')
+        throw new Error(
+          typeof data.message === 'string' ? data.message
+          : typeof data.error === 'string' ? data.error
+          : 'Submission failed'
+        )
       }
 
       setOpen(false)
