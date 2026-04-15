@@ -79,6 +79,8 @@ export interface UserProfile {
   dateOfBirth?: string;
   gender?: string;
   phone?: string;
+  whatsappNumber?: string | null;
+  whatsappLink?: string | null;
   timezone?: string;
   preferredUnits: 'metric' | 'imperial';
   profilePhotoUrl?: string;

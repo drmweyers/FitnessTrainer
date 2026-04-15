@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
             userProfile: {
               select: {
                 whatsappNumber: true,
+                whatsappLink: true,
                 phone: true,
               },
             },
@@ -52,6 +53,7 @@ export async function GET(request: NextRequest) {
         email: trainer.email,
         name,
         whatsappNumber: trainer.userProfile?.whatsappNumber || null,
+        whatsappLink: trainer.userProfile?.whatsappLink || null,
         phone: trainer.userProfile?.phone || null,
       },
     });

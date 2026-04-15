@@ -291,6 +291,7 @@ model UserProfile {
   gender          String?        @db.VarChar(20)
   phone           String?        @db.VarChar(20)
   whatsappNumber  String?        @map("whatsapp_number") @db.VarChar(20)
+  whatsappLink    String?        @map("whatsapp_link") @db.VarChar(255)
   timezone        String?        @db.VarChar(50)
   preferredUnits  PreferredUnits @default(metric) @map("preferred_units")
   profilePhotoUrl String?        @map("profile_photo_url") @db.VarChar(500)

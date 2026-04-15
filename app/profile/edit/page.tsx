@@ -61,6 +61,7 @@ export default function ProfileEditPage() {
   const [isCertSaving, setIsCertSaving] = useState(false);
 
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
 
   // Emergency contact state
   const [emergencyContact, setEmergencyContact] = useState({
@@ -95,6 +96,7 @@ export default function ProfileEditPage() {
       relationship: p.emergencyContactRelationship || '',
     });
     if (p.whatsappNumber !== undefined) setWhatsappNumber(p.whatsappNumber || '');
+    if (p.whatsappLink !== undefined) setWhatsappLink(p.whatsappLink ?? null);
   }, []);
 
   const loadProfile = useCallback(async () => {
@@ -138,6 +140,7 @@ export default function ProfileEditPage() {
         emergencyContactName: emergencyContact.name || null,
         emergencyContactPhone: emergencyContact.phone || null,
         emergencyContactRelationship: emergencyContact.relationship || null,
+        whatsappLink: whatsappLink || null,
       };
       const res = await fetch('/api/profiles/me', {
         method: 'PUT',
@@ -589,6 +592,37 @@ export default function ProfileEditPage() {
               setWhatsappNumber(number);
             }}
           />
+        )}
+
+        {/* WhatsApp Business Link (trainers only) */}
+        {user?.role === 'trainer' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">WhatsApp Business Link</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-gray-600">
+                Set your WhatsApp Business short link so clients can tap to contact you directly.
+                Use your full Business link or a wa.me link.
+              </p>
+              <p className="text-xs text-gray-500">
+                Format:{' '}
+                <code className="bg-gray-100 px-1 rounded">wa.me/15551234567</code>
+                {' '}or{' '}
+                <code className="bg-gray-100 px-1 rounded">https://wa.me/15551234567?text=Hi%20I%27m%20interested</code>
+              </p>
+              <div>
+                <Label htmlFor="whatsappLink">Business Link</Label>
+                <Input
+                  id="whatsappLink"
+                  type="url"
+                  placeholder="https://wa.me/15551234567"
+                  value={whatsappLink ?? ''}
+                  onChange={(e) => setWhatsappLink(e.target.value)}
+                />
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Actions */}
