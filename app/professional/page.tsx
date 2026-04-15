@@ -413,7 +413,7 @@ export default function ProfessionalSalesPage() {
               </div>
               <ValueStackItem
                 icon={Dumbbell}
-                label="1,324 Exercises with GIFs + All Starter Features"
+                label="1,344 Exercises with GIFs + All Starter Features"
                 value="$3,200/yr"
                 delay={0.55}
                 isHighlight

@@ -49,7 +49,7 @@ const tiers = [
     highlighted: false,
     learnMoreHref: '/starter',
     features: [
-      '1,324 exercises with animated GIF demonstrations',
+      '1,344 exercises with animated GIF demonstrations',
       'Up to 5 active clients with 5-status lifecycle tracking',
       'Set-by-set workout logging with automatic PR detection',
       'PR confetti celebration + personal best tracking',
@@ -116,7 +116,7 @@ const tiers = [
 const stackItems = [
   {
     icon: Dumbbell,
-    label: '1,324 Exercise Library with GIF Demos',
+    label: '1,344 Exercise Library with GIF Demos',
     value: '$2,400/yr',
   },
   {
@@ -150,7 +150,7 @@ const comparisonCategories = [
   {
     name: 'Exercise Library',
     rows: [
-      { label: '1,324 exercises with GIF demos', starter: true, pro: true, ent: true, addon: null },
+      { label: '1,344 exercises with GIF demos', starter: true, pro: true, ent: true, addon: null },
       { label: 'Full-text search + multi-filter stacking', starter: true, pro: true, ent: true, addon: null },
       { label: 'Exercise favorites + custom collections', starter: '3 max', pro: 'Unlimited', ent: 'Unlimited', addon: null },
       { label: 'Collection sharing (public/private)', starter: false, pro: true, ent: true, addon: null },
@@ -208,7 +208,7 @@ const comparisonCategories = [
   {
     name: 'AI Features',
     rows: [
-      { label: 'AI workout generator (1,324-exercise library)', starter: false, pro: false, ent: false, addon: 'Coming Soon' },
+      { label: 'AI workout generator (1,344-exercise library)', starter: false, pro: false, ent: false, addon: 'Coming Soon' },
       { label: 'RPE-based progression suggestions', starter: false, pro: false, ent: false, addon: true },
       { label: 'Plateau detection + deload suggestions', starter: false, pro: false, ent: false, addon: 'Coming Soon' },
       { label: 'Push notifications + biometric login', starter: false, pro: false, ent: false, addon: true },

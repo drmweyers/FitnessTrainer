@@ -340,7 +340,7 @@ export default function LandingPage() {
                 </motion.li>
                 <motion.li variants={fadeInUp} className="flex items-start gap-3">
                   <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-lg text-gray-200">500+ pre-loaded exercises with video demonstrations</span>
+                  <span className="text-lg text-gray-200">1,344 pre-loaded exercises with video demonstrations</span>
                 </motion.li>
                 <motion.li variants={fadeInUp} className="flex items-start gap-3">
                   <CheckCircle2 className="h-6 w-6 text-secondary-500 mt-0.5 flex-shrink-0" />
@@ -539,7 +539,7 @@ export default function LandingPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-16"
           >
             <motion.div variants={fadeInUp}>
-              <div className="text-3xl md:text-4xl font-bold text-secondary-500 mb-1">500+</div>
+              <div className="text-3xl md:text-4xl font-bold text-secondary-500 mb-1">1,344</div>
               <div className="text-gray-400">Exercises</div>
             </motion.div>
             <motion.div variants={fadeInUp}>
@@ -663,7 +663,7 @@ export default function LandingPage() {
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="text-gray-700">• Up to 5 active clients</li>
-                <li className="text-gray-700">• 1,324 exercises with GIF demos</li>
+                <li className="text-gray-700">• 1,344 exercises with GIF demos</li>
                 <li className="text-gray-700">• Set-by-set workout logging</li>
                 <li className="text-gray-700">• Automatic PR detection</li>
                 <li className="text-gray-700">• Body composition tracking</li>

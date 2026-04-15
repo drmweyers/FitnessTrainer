@@ -177,7 +177,7 @@ function HeroSection() {
           className="mt-16 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg mx-auto"
         >
           {[
-            { value: '1,324', label: 'Exercises' },
+            { value: '1,344', label: 'Exercises' },
             { value: '$199', label: 'One-time' },
             { value: '0', label: 'Monthly fees' },
           ].map((stat) => (
@@ -307,7 +307,7 @@ function SolutionSection() {
             </p>
             <ul className="space-y-3">
               {[
-                '1,324 exercises with animated GIF demonstrations',
+                '1,344 exercises with animated GIF demonstrations',
                 'Build programs with RPE, tempo, and 7 set types',
                 'Manage unlimited clients with CRM-level organization',
                 'ACWR training load monitoring used by pro sports teams',
@@ -354,7 +354,7 @@ function SolutionSection() {
    STATS COUNTER SECTION
 ═══════════════════════════════════════════════════ */
 function StatsSection() {
-  const exercises = useCounter(1324)
+  const exercises = useCounter(1344)
   const muscles = useCounter(26)
   const programTypes = useCounter(8)
   const setTypes = useCounter(7)
@@ -404,7 +404,7 @@ function FeaturesSection() {
       icon: Dumbbell,
       title: 'Exercise Library',
       description:
-        '1,324 exercises with animated GIF demonstrations, 29 equipment filters, 26 target muscles, and instant full-text search.',
+        '1,344 exercises with animated GIF demonstrations, 29 equipment filters, 26 target muscles, and instant full-text search.',
       screenshot: '/images/marketing/exercises-library.png',
       color: 'from-blue-600/20 to-blue-600/5',
       accent: 'text-blue-400',
@@ -539,7 +539,7 @@ function TierComparisonSection() {
       ctaStyle: 'bg-white/10 hover:bg-white/20 text-white border border-white/20',
       highlights: [
         'Up to 5 active clients',
-        '1,324 exercises with GIF demos',
+        '1,344 exercises with GIF demos',
         'Set-by-set workout logging',
         'Automatic PR detection',
         'Body composition tracking',
@@ -666,7 +666,7 @@ function CompetitorTable() {
   const features = [
     { label: 'One-time pricing', evofit: true, everfit: false, truecoach: false, trainheroic: false },
     { label: 'No per-client fee', evofit: true, everfit: false, truecoach: false, trainheroic: 'Varies' },
-    { label: 'Exercise library', evofit: '1,324', everfit: '~1,000', truecoach: '~1,000', trainheroic: '~7,000*' },
+    { label: 'Exercise library', evofit: '1,344', everfit: '~1,000', truecoach: '~1,000', trainheroic: '~7,000*' },
     { label: 'ACWR training load', evofit: true, everfit: 'Optional', truecoach: false, trainheroic: true },
     { label: 'RPE + RIR + Tempo', evofit: true, everfit: true, truecoach: 'Partial', trainheroic: true },
     { label: 'iCal / calendar export', evofit: true, everfit: 'Partial', truecoach: false, trainheroic: false },

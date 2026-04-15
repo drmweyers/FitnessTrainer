@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticate, AuthenticatedRequest } from '@/lib/middleware/auth'
+import { withTier } from '@/lib/subscription/withTier'
 import { prisma } from '@/lib/db/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -33,7 +34,7 @@ function csvRow(values: (string | number | null | undefined)[]): string {
  *   startDate=YYYY-MM-DD (optional, default 30 days ago)
  *   endDate=YYYY-MM-DD   (optional, default today)
  */
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   const authResult = await authenticate(request)
   if (authResult instanceof NextResponse) return authResult
   const req = authResult as AuthenticatedRequest
@@ -188,3 +189,5 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export const GET = withTier({ feature: 'analytics' })(handler)
