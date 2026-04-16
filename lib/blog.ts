@@ -20,21 +20,43 @@ function parseFrontmatter(raw: string): { frontmatter: Record<string, unknown>; 
   if (!match) return { frontmatter: {}, body: raw };
 
   const frontmatter: Record<string, unknown> = {};
-  for (const line of match[1].split("\n")) {
+  const lines = match[1].split("\n");
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
     const colonIdx = line.indexOf(":");
-    if (colonIdx === -1) continue;
+    if (colonIdx === -1) { i++; continue; }
     const key = line.slice(0, colonIdx).trim();
     const val = line.slice(colonIdx + 1).trim();
 
-    // Handle arrays like [tag1, tag2]
+    // Nested object block (e.g. SmartSocial's `author:\n  name: "..."`)
+    if (val === "" && i + 1 < lines.length && lines[i + 1].startsWith("  ")) {
+      const sub: Record<string, string> = {};
+      i++;
+      while (i < lines.length && lines[i].startsWith("  ")) {
+        const subColon = lines[i].indexOf(":");
+        if (subColon !== -1) {
+          const subKey = lines[i].slice(0, subColon).trim();
+          const subVal = lines[i].slice(subColon + 1).trim().replace(/^['"]|['"]$/g, "");
+          sub[subKey] = subVal;
+        }
+        i++;
+      }
+      frontmatter[key] = sub;
+      continue;
+    }
+
+    // Array: [tag1, tag2] or ["tag1", "tag2"]
     if (val.startsWith("[") && val.endsWith("]")) {
       frontmatter[key] = val
         .slice(1, -1)
         .split(",")
-        .map((s) => s.trim());
+        .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
+        .filter(Boolean);
     } else {
       frontmatter[key] = val.replace(/^['"]|['"]$/g, "");
     }
+    i++;
   }
 
   return { frontmatter, body: match[2] };
@@ -50,14 +72,24 @@ export function getAllPosts(): BlogPost[] {
       const raw = fs.readFileSync(path.join(BLOG_DIR, file), "utf-8");
       const { frontmatter, body } = parseFrontmatter(raw);
 
+      // Support both flat `author: "Name"` and SmartSocial nested `author: { name: "Name" }`
+      const rawAuthor = frontmatter.author;
+      const author =
+        typeof rawAuthor === "object" && rawAuthor !== null
+          ? ((rawAuthor as Record<string, string>).name ?? "EvoFit Team")
+          : (rawAuthor as string) || "EvoFit Team";
+
+      // Support both `date:` and SmartSocial's `published_at:`
+      const date = String(frontmatter.date || frontmatter.published_at || "").slice(0, 10);
+
       return {
         slug: (frontmatter.slug as string) || file.replace(".md", ""),
         title: (frontmatter.title as string) || "",
         excerpt: (frontmatter.excerpt as string) || "",
         content: body,
-        author: (frontmatter.author as string) || "EvoFit Team",
-        date: String(frontmatter.date || ""),
-        category: (frontmatter.category as string) || "General",
+        author,
+        date,
+        category: (frontmatter.category as string) || "Fitness",
         tags: (frontmatter.tags as string[]) || [],
         readTime: Number(frontmatter.readTime) || 5,
       } as BlogPost;
