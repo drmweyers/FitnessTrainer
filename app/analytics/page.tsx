@@ -326,12 +326,10 @@ export default function AnalyticsPage() {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
-  // Tier gate: Analytics is a Pro+ feature. Starter users see AnalyticsLockedView.
-  // FeatureGate with minTier="professional" renders the fallback for Starter users
-  // and children for Professional/Enterprise users.
-  return (
-    <FeatureGate minTier="professional" fallback={<AnalyticsLockedView />}>
-      <div className="min-h-screen bg-gray-50">
+  // Tier gate: Analytics is a Pro+ feature for trainers. Starter trainers see AnalyticsLockedView.
+  // Clients always bypass the gate — their trainer owns the subscription tier, not them.
+  const analyticsContent = (
+    <div className="min-h-screen bg-gray-50">
         {/* Page Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -676,6 +674,11 @@ export default function AnalyticsPage() {
         {/* Toast Notifications */}
         <ToastContainer toasts={toasts} onClose={removeToast} />
       </div>
+  );
+
+  return user?.role === 'client' ? analyticsContent : (
+    <FeatureGate minTier="professional" fallback={<AnalyticsLockedView />}>
+      {analyticsContent}
     </FeatureGate>
   );
 }

@@ -69,45 +69,64 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const includeTemplates = searchParams.get('includeTemplates') === 'true';
 
-    const programs = await prisma.program.findMany({
-      where: {
-        trainerId: user.id,
-        isTemplate: includeTemplates ? undefined : false,
-      },
-      include: {
-        weeks: {
-          include: {
-            workouts: {
-              include: {
-                exercises: {
-                  include: {
-                    exercise: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        assignments: {
-          include: {
-            client: {
-              select: {
-                id: true,
-                email: true,
-                userProfile: {
-                  select: {
-                    bio: true,
-                  },
+    // Shared include structure so ProgramCard renders correctly for both roles
+    const programInclude = {
+      weeks: {
+        include: {
+          workouts: {
+            include: {
+              exercises: {
+                include: {
+                  exercise: true,
                 },
               },
             },
           },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
+      assignments: {
+        include: {
+          client: {
+            select: {
+              id: true,
+              email: true,
+              userProfile: {
+                select: {
+                  bio: true,
+                },
+              },
+            },
+          },
+        },
       },
-    });
+    };
+
+    let programs;
+    if (user.role === 'client') {
+      // Return programs assigned to this client via ProgramAssignment
+      const assignments = await prisma.programAssignment.findMany({
+        where: { clientId: user.id },
+        include: {
+          program: {
+            include: programInclude,
+          },
+        },
+        orderBy: { assignedAt: 'desc' },
+      });
+      programs = assignments.map((a) => a.program);
+    } else {
+      // Trainer / admin: return their own programs
+      programs = await prisma.program.findMany({
+        where: {
+          trainerId: user.id,
+          isTemplate: includeTemplates ? undefined : false,
+        },
+        include: programInclude,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,

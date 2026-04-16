@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+import { useAuth } from '@/contexts/AuthContext'
 import { WorkoutHistory } from '@/components/workouts/WorkoutHistory'
 import { Dumbbell, Plus, Clock, TrendingUp, History } from 'lucide-react'
 import Link from 'next/link'
 
 export default function WorkoutsPage() {
   const router = useRouter()
+  const { user } = useAuth()
   const [activeWorkouts, setActiveWorkouts] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -53,30 +55,56 @@ export default function WorkoutsPage() {
             <p className="text-gray-600 mt-1">Track, build, and review your workout sessions</p>
           </div>
           <div className="flex gap-3">
-            <Link
-              href="/workouts/builder"
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={20} className="mr-2" />
-              AI-Generated Workout
-            </Link>
+            {user?.role !== 'client' && (
+              <Link
+                href="/workouts/builder"
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus size={20} className="mr-2" />
+                AI-Generated Workout
+              </Link>
+            )}
+            {user?.role === 'client' && (
+              <Link
+                href="/workout-tracker"
+                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Plus size={20} className="mr-2" />
+                Start a Workout
+              </Link>
+            )}
           </div>
         </div>
 
         {/* Quick Links */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <Link
-            href="/workouts/builder"
-            className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all"
-          >
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Dumbbell size={20} className="text-blue-600" />
-            </div>
-            <div>
-              <p className="font-medium text-gray-900">AI-Generated Workout</p>
-              <p className="text-sm text-gray-500">Build with AI assistance</p>
-            </div>
-          </Link>
+          {user?.role !== 'client' ? (
+            <Link
+              href="/workouts/builder"
+              className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all"
+            >
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <Dumbbell size={20} className="text-blue-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">AI-Generated Workout</p>
+                <p className="text-sm text-gray-500">Build with AI assistance</p>
+              </div>
+            </Link>
+          ) : (
+            <Link
+              href="/programs"
+              className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-sm transition-all"
+            >
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <Dumbbell size={20} className="text-purple-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">My Programs</p>
+                <p className="text-sm text-gray-500">View assigned programs</p>
+              </div>
+            </Link>
+          )}
 
           <Link
             href="/workouts/history"

@@ -201,10 +201,10 @@ export default function ClientDashboard() {
       ]}
       actions={
         <div className="flex space-x-2">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+          <button onClick={() => router.push('/workout-tracker')} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
             Start Workout
           </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <button onClick={() => router.push('/analytics')} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
             Log Progress
           </button>
         </div>
