@@ -5,7 +5,7 @@
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
 **Tests:** 5,078 unit (317 suites) + ~521 E2E (48 workflow + 5 edge + 12 flow suites) = **~5,599 total**
-**Last session (2026-04-15):** 5 new tier-gated features — Analytics Pro+ gate, Outline drag-reorder (Pro+), Excel export (Enterprise), API key management (Enterprise), WhatsApp Business Link (all tiers). Bug fix: `useTier` hook missing Bearer token → all tier gates defaulted to Starter. All 5 features verified on production via Playwright.
+**Last session (2026-04-15):** Full client role UX fix — 6 files, 6 issues resolved. Client dashboard buttons wired (Start Workout/Log Progress). Analytics FeatureGate bypassed for clients (clients don't own tiers). Programs page/API split by role (clients see assigned programs). Schedule hides New Appointment for clients. Workouts shows client-appropriate UI. 22/22 Bowser QA checks passed, 35 E2E tests green on production. Commit `c428944`.
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -238,6 +238,9 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
 3. **OPEN DECISION — Starter client limit:** `dynamic-baking-planet.md` plan sets `starter.clients = 10`, but all marketing pages say "Up to 5 active clients". Mark must decide which is canonical before the plan merges. If 5 is correct, update the plan; if 10, update all marketing pages.
 4. **Bug reporting env vars** (new, not yet set in Vercel) — `GITHUB_TOKEN`, `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME` (optional — GitHub issue creation), `HAL_API_KEY` (HAL polling /api/bugs/pending), `COMMAND_CENTRE_API_KEY` (BCI status endpoint). All features degrade gracefully without them.
+
+### Resolved 2026-04-15 (Session 2)
+- **Full client role UX fix (6 pages/APIs):** All client-facing pages now show client-appropriate content. Root causes: dead buttons (no onClick), wrong API filter for clients (was `trainerId=clientId`), FeatureGate blocking clients from their own analytics, trainer-only modals exposed to clients. All fixed and verified via Bowser QA (22/22) + 35 Playwright E2E green on production.
 
 ### Resolved 2026-04-15
 - **5 tier-gated features shipped:** Analytics Pro+ gate, Outline drag-reorder (Pro+), Excel export (Enterprise), API key management (Enterprise), WhatsApp Business Link (all tiers). All verified on production.
