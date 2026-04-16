@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Download, Search, Users, UserPlus } from 'lucide-react';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
@@ -47,6 +47,16 @@ export default function ClientManagementPage() {
   const [showClientForm, setShowClientForm] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
+
+  // Auto-open add-client form when navigated from dashboard with ?addClient=1
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('addClient') === '1') {
+        setShowClientForm(true);
+      }
+    }
+  }, []);
 
   // Search and filter handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
