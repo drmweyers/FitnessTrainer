@@ -538,7 +538,7 @@ export default function EnterpriseSalesPage() {
               />
               <ValueStackItem
                 icon={Settings}
-                label="White-Labeled Trainer Toolkit — All 8 Calculators Embeddable on Your Domain with Your Branding"
+                label="White-Labeled Trainer Toolkit — All 8 Calculators Embeddable on Your Domain with Your Branding (on roadmap)"
                 value="$597"
                 delay={0.85}
               />
