@@ -55,7 +55,14 @@ async function handler(req: NextRequest): Promise<NextResponse> {
 
   // Defensive in-process filter in case the DB layer didn't honour `notIn`
   // (e.g. in test environments with mock Prisma clients)
-  const candidates = raw.filter((e) => !selectedSet.has(e.id));
+  const candidates = raw
+    .filter((e) => !selectedSet.has(e.id))
+    .map((e) => ({
+      ...e,
+      gifUrl: e.gifUrl && !e.gifUrl.startsWith('http') && !e.gifUrl.startsWith('/')
+        ? `/exerciseGifs/${e.gifUrl}`
+        : e.gifUrl,
+    }));
 
   // Muscle-balance scoring: derive body-part counts from the requested targetMuscle
   // or by inferring from exercise IDs (lightweight heuristic — no extra DB round-trip)

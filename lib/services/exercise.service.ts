@@ -26,7 +26,7 @@ const prisma = new PrismaClient();
 function normalizeExerciseGifUrl<T extends { gifUrl: string }>(exercise: T): T {
   const { gifUrl } = exercise
   if (!gifUrl || gifUrl.startsWith('http') || gifUrl.startsWith('/')) return exercise
-  return { ...exercise, gifUrl: `/exercises/gifs/${gifUrl}` }
+  return { ...exercise, gifUrl: `/exerciseGifs/${gifUrl}` }
 }
 
 export class ExerciseService {
