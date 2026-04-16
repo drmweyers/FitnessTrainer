@@ -22,7 +22,6 @@ async function openCollectionsPanel(page: import('@playwright/test').Page): Prom
     return false;
   }
   await collectionsButton.click();
-  await page.waitForTimeout(600);
   return true;
 }
 
@@ -39,7 +38,10 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    // Wait for the exercise library page to finish initial render
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     const opened = await openCollectionsPanel(page);
     if (!opened) {
@@ -53,13 +55,13 @@ test.describe('13 - Exercise Collections', () => {
       return;
     }
 
-    // CollectionManager heading may appear — tolerate either heading or any panel content
+    // CollectionManager heading or panel content must be visible after opening the panel
     const heading = page.locator('h2:has-text("Your Collections"), h2:has-text("Collections"), h3:has-text("Collections")').first();
     const panelContent = page.locator('[data-panel="collections"], .collections-panel, [aria-label*="Collections" i]').first();
     const headingVisible = await heading.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
     const panelVisible = await panelContent.isVisible({ timeout: 2000 }).catch(() => false);
 
-    // If neither specific element found, API availability is sufficient
+    // If neither specific element found, API availability confirms feature is wired
     if (!headingVisible && !panelVisible) {
       const token = await getAuthToken(page, 'trainer');
       const res = await page.request.get(`${BASE_URL}${API.exerciseCollections}`, {
@@ -77,7 +79,9 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     await openCollectionsPanel(page);
 
@@ -86,8 +90,8 @@ test.describe('13 - Exercise Collections', () => {
       .first();
 
     const isVisible = await newCollectionButton.isVisible({ timeout: 5000 }).catch(() => false);
-    // If the panel isn't available, fall back to an API check
     if (!isVisible) {
+      // Panel not available in this build — verify via API instead
       const token = await getAuthToken(page, 'trainer');
       const res = await page.request.get(`${BASE_URL}${API.exerciseCollections}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -97,7 +101,8 @@ test.describe('13 - Exercise Collections', () => {
       return;
     }
 
-    expect(isVisible).toBeTruthy();
+    // Button is visible — assert it directly
+    await expect(newCollectionButton).toBeVisible();
   });
 
   test('clicking "New Collection" opens the create modal', async ({ page }) => {
@@ -105,7 +110,9 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     await openCollectionsPanel(page);
 
@@ -114,21 +121,17 @@ test.describe('13 - Exercise Collections', () => {
       .first();
 
     if (!(await newCollectionButton.isVisible({ timeout: 5000 }).catch(() => false))) {
+      test.fixme(true, 'KNOWN: New Collection button not found in collections panel');
       return;
     }
 
     await newCollectionButton.click();
-    await page.waitForTimeout(500);
 
-    // The modal should appear with a name input
-    const modal = page.locator('[role="dialog"], .fixed.inset-0').first();
+    // The modal must appear with a name input after clicking
     const nameInput = page.locator('input#collection-name, input[placeholder*="Collection name" i]').first();
+    const modal = page.locator('[role="dialog"], .fixed.inset-0').first();
 
-    const hasModal =
-      (await modal.isVisible({ timeout: 3000 }).catch(() => false)) ||
-      (await nameInput.isVisible({ timeout: 3000 }).catch(() => false));
-
-    expect(hasModal).toBeTruthy();
+    await expect(nameInput.or(modal).first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '13-create-modal-open.png');
   });
@@ -138,7 +141,9 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     await openCollectionsPanel(page);
 
@@ -160,10 +165,9 @@ test.describe('13 - Exercise Collections', () => {
     }
 
     await newCollectionButton.click();
-    await page.waitForTimeout(500);
 
     const nameInput = page.locator('input#collection-name, input[placeholder*="Collection name" i]').first();
-    if (!(await nameInput.isVisible({ timeout: 3000 }).catch(() => false))) return;
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
 
     const uniqueName = `E2E Collection ${Date.now()}`;
     await nameInput.fill(uniqueName);
@@ -179,7 +183,8 @@ test.describe('13 - Exercise Collections', () => {
       .first();
     if (await createButton.isVisible({ timeout: 3000 }).catch(() => false)) {
       await createButton.click();
-      await page.waitForTimeout(1500);
+      // Wait for modal to close after creation
+      await expect(nameInput).not.toBeVisible({ timeout: TIMEOUTS.apiCall });
     }
 
     await takeScreenshot(page, '13-collection-created.png');
@@ -199,19 +204,24 @@ test.describe('13 - Exercise Collections', () => {
     });
 
     if (!createRes.ok() && createRes.status() !== 201) {
-      return; // API not available — skip gracefully
+      test.fixme(true, 'KNOWN: Collections API not available');
+      return;
     }
 
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     await openCollectionsPanel(page);
 
-    // Wait briefly for collection data to load after panel opens
-    await page.waitForTimeout(1000);
+    // Wait for collection data to load after panel opens
+    await expect(
+      page.locator('button:has-text("New Collection"), button:has-text("Create Collection"), text=/your collections/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const pageText = await page.textContent('body');
     // If the collection is not visible in the UI panel, fall back to API verification
@@ -255,7 +265,9 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     await openCollectionsPanel(page);
 
@@ -358,22 +370,17 @@ test.describe('13 - Exercise Collections', () => {
       timeout: PAGE_LOAD_EXT,
     });
 
-    // Poll for the page to reach a ready state — either the add-exercises link
-    // or any heading/h1 on the page becomes visible once the client finishes loading.
-    // Fall back to API verification if the UI never renders (the detail page's
-    // useCollections hook makes N+1 fetches which can be slow on the dev server).
-    try {
-      await expect(async () => {
-        const addLink = page
-          .locator('a:has-text("Add Exercises"), a:has-text("Add Exercise"), a[href*="addToCollection"]')
-          .first();
-        const heading = page.locator('h1, h2').first();
-        const addLinkVisible = await addLink.isVisible().catch(() => false);
-        const headingVisible = await heading.isVisible().catch(() => false);
-        expect(addLinkVisible || headingVisible).toBeTruthy();
-      }).toPass({ timeout: PAGE_LOAD_EXT });
-    } catch {
-      // Fall back: verify the collection exists via API
+    // Poll for the page to finish loading — heading must appear first
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: PAGE_LOAD_EXT });
+
+    // Then check for the "Add Exercises" link; if absent, verify via API
+    const addLink = page
+      .locator('a:has-text("Add Exercises"), a:has-text("Add Exercise"), a[href*="addToCollection"]')
+      .first();
+    const addLinkVisible = await addLink.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
+
+    if (!addLinkVisible) {
+      // "Add Exercises" not in UI — verify the collection page at least loaded correctly
       const verifyRes = await page.request.get(
         `${BASE_URL}${API.exerciseCollections}/${collectionId}`,
         {
@@ -382,6 +389,8 @@ test.describe('13 - Exercise Collections', () => {
         }
       );
       expect(verifyRes.ok()).toBeTruthy();
+    } else {
+      await expect(addLink).toBeVisible();
     }
 
     await takeScreenshot(page, '13-add-exercises-button.png');
@@ -432,15 +441,14 @@ test.describe('13 - Exercise Collections', () => {
       }
     );
 
-    // Accept 200, 201, or 204; also tolerate 404 if the nested route doesn't exist
-    expect([200, 201, 204, 404]).toContain(addRes.status());
+    // Accept 200, 201, or 204 (success) — NOT 404 which means the route is missing
+    expect([200, 201, 204]).toContain(addRes.status());
 
     await page.goto(`${BASE_URL}${ROUTES.exerciseCollection(collectionId)}`, {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: PAGE_LOAD_EXT });
 
     await takeScreenshot(page, '13-exercise-added-to-collection.png');
   });
@@ -490,14 +498,12 @@ test.describe('13 - Exercise Collections', () => {
       }
     );
 
-    // Navigate and check the detail page renders
+    // Navigate and check the detail page renders with the collection heading
     await page.goto(`${BASE_URL}${ROUTES.exerciseCollection(collectionId)}`, {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
-
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: PAGE_LOAD_EXT });
 
     await takeScreenshot(page, '13-collection-exercise-visible.png');
   });
@@ -549,7 +555,7 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: PAGE_LOAD_EXT });
 
     // Look for a remove / trash button on an exercise card
     const removeButton = page
@@ -561,7 +567,8 @@ test.describe('13 - Exercise Collections', () => {
       // Dismiss the confirm dialog automatically
       page.on('dialog', (dialog) => dialog.accept());
       await removeButton.click();
-      await page.waitForTimeout(1500);
+      // Wait for the remove action to complete
+      await expect(removeButton).not.toBeVisible({ timeout: TIMEOUTS.apiCall });
     }
 
     // Page should still be on the collection detail
@@ -594,7 +601,9 @@ test.describe('13 - Exercise Collections', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     await openCollectionsPanel(page);
 
@@ -606,7 +615,6 @@ test.describe('13 - Exercise Collections', () => {
     if (await collectionCard.isVisible({ timeout: 5000 }).catch(() => false)) {
       // Hover to reveal the delete button
       await collectionCard.hover();
-      await page.waitForTimeout(300);
 
       const deleteButton = page
         .locator(
@@ -615,10 +623,8 @@ test.describe('13 - Exercise Collections', () => {
         .first();
       if (await deleteButton.isVisible({ timeout: 3000 }).catch(() => false)) {
         await deleteButton.click();
-        await page.waitForTimeout(1500);
-
-        const pageText = await page.textContent('body');
-        expect(pageText).not.toContain(uniqueName);
+        // Wait for the card to disappear from the list
+        await expect(collectionCard).not.toBeVisible({ timeout: TIMEOUTS.apiCall });
       }
     } else {
       // Delete via API as fallback

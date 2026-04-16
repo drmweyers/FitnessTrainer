@@ -23,9 +23,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Dashboard must load at the correct URL
     expect(page.url()).toContain('/dashboard');
+    // Verify client-appropriate heading is present
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-01-client-dashboard.png');
   });
@@ -39,13 +40,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    const hasProgramContent =
-      pageText?.toLowerCase().includes('program') ||
-      pageText?.toLowerCase().includes('training') ||
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('no programs');
-    expect(hasProgramContent).toBeTruthy();
+    // Client programs page should have a recognisable heading
+    await expect(
+      page.locator('h1:has-text("Programs"), h1:has-text("Training"), h1:has-text("My Programs")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Should NOT see "Create Program" (trainer-only)
     await expect(
@@ -59,20 +57,18 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
   test('54.03 client can view assigned program details', async ({ page }) => {
     await loginViaAPI(page, 'client');
 
-    // Get assigned programs via API
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
     const res = await page.request.get(`${BASE_URL}${API.programs}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     if (!res.ok()) {
-      // API unavailable — verify programs page loads
+      // API unavailable — verify programs page loads with its heading
       await page.goto(`${BASE_URL}${ROUTES.programs}`, {
         waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+      await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
 
@@ -80,13 +76,12 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     const programs = body.data || body.programs || (Array.isArray(body) ? body : []);
 
     if (!programs.length) {
-      // No assigned programs — verify page loads cleanly
+      // No assigned programs — verify page loads cleanly with empty state
       await page.goto(`${BASE_URL}${ROUTES.programs}`, {
         waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+      await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '54-03-no-assigned-programs.png');
       return;
     }
@@ -98,8 +93,8 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Program detail must show a heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-03-client-program-details.png');
   });
@@ -114,7 +109,7 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
 
     if (!res.ok()) {
-      test.skip();
+      test.skip(true, 'API unavailable');
       return;
     }
 
@@ -122,7 +117,7 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     const programs = body.data || body.programs || (Array.isArray(body) ? body : []);
 
     if (!programs.length) {
-      test.skip();
+      test.skip(true, 'No assigned programs in test data');
       return;
     }
 
@@ -133,13 +128,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    // Should mention weeks or days
-    const hasStructure =
-      pageText?.toLowerCase().includes('week') ||
-      pageText?.toLowerCase().includes('day') ||
-      pageText?.toLowerCase().includes('workout');
-    expect(hasStructure || pageText!.length > 200).toBeTruthy();
+    // Program detail should mention weeks or days explicitly
+    await expect(
+      page.locator('text=/week|day|workout/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 5. Client goes to /workouts — sees "Start a Workout" not AI builder
@@ -177,14 +169,12 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'a[href="/workout-tracker"], button:has-text("Start a Workout"), a:has-text("Start a Workout")'
     ).first();
 
-    if (await startBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
-      await startBtn.click();
-      await page.waitForTimeout(1500);
-      await waitForPageReady(page);
-    }
+    await expect(startBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await startBtn.click();
+    await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // After clicking, must be on a workout execution page with a heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-06-workout-execution.png');
   });
@@ -198,13 +188,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    const hasExerciseContent =
-      pageText?.toLowerCase().includes('exercise') ||
-      pageText?.toLowerCase().includes('set') ||
-      pageText?.toLowerCase().includes('rep') ||
-      pageText?.toLowerCase().includes('workout');
-    expect(hasExerciseContent || pageText!.length > 100).toBeTruthy();
+    // Workout tracker must show exercise or empty-state content
+    await expect(
+      page.locator('text=/exercise|set|rep|workout|start|no workout/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 8. Client logs a set for Exercise 1
@@ -224,15 +211,15 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'input[placeholder*="weight" i], input[aria-label*="weight" i], input[name*="weight" i]'
     ).first();
 
-    if (await repsInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await repsInput.isVisible({ timeout: 5000 })) {
       await repsInput.fill('10');
     }
-    if (await weightInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await weightInput.isVisible({ timeout: 3000 })) {
       await weightInput.fill('50');
     }
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Page heading must still be present (page didn't crash)
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 9. Client logs a second set for Exercise 1
@@ -262,13 +249,12 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'button:has-text("Add Set"), button:has-text("+ Set")'
     ).first();
 
-    if (await addSetBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await addSetBtn.isVisible({ timeout: 3000 })) {
+      const setsBefore = await repsInputs.count();
       await addSetBtn.click();
-      await page.waitForTimeout(500);
+      // A new set row should appear
+      await expect(repsInputs).toHaveCount(setsBefore + 1, { timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 10. Client marks Exercise 1 complete
@@ -284,13 +270,12 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'button:has-text("Complete"), button:has-text("Done"), input[type="checkbox"][aria-label*="complete" i]'
     ).first();
 
-    if (await completeBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await completeBtn.isVisible({ timeout: 5000 })) {
       await completeBtn.click();
-      await page.waitForTimeout(500);
+      // After clicking, the button state or page content should change
+      // Assert page is still functional with a heading
+      await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 12. Client completes workout — completion screen shows
@@ -307,18 +292,14 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'button:has-text("Finish Workout"), button:has-text("Complete Workout"), button:has-text("End Workout")'
     ).first();
 
-    if (await finishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await finishBtn.isVisible({ timeout: 5000 })) {
       await finishBtn.click();
-      await page.waitForTimeout(2000);
       await waitForPageReady(page);
 
-      const pageText = await page.textContent('body');
-      const hasCompletionContent =
-        pageText?.toLowerCase().includes('complete') ||
-        pageText?.toLowerCase().includes('finish') ||
-        pageText?.toLowerCase().includes('great') ||
-        pageText?.toLowerCase().includes('workout');
-      expect(hasCompletionContent || pageText!.length > 100).toBeTruthy();
+      // Completion screen must show a completion-related heading
+      await expect(
+        page.locator('text=/complete|finish|great job|done/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
 
     await takeScreenshot(page, '54-12-workout-complete.png');
@@ -336,13 +317,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     // Client analytics should show personal overview, not trainer KPI
     await expect(page.locator('text="Total Clients"')).not.toBeVisible();
 
-    const pageText = await page.textContent('body');
-    const hasAnalyticsContent =
-      pageText?.toLowerCase().includes('overview') ||
-      pageText?.toLowerCase().includes('progress') ||
-      pageText?.toLowerCase().includes('measurement') ||
-      pageText?.toLowerCase().includes('analytics');
-    expect(hasAnalyticsContent).toBeTruthy();
+    // Client analytics heading must be present
+    await expect(
+      page.locator('h1:has-text("Progress"), h1:has-text("Analytics"), h1:has-text("Overview")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-13-client-analytics.png');
   });
@@ -360,15 +338,14 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'button:has-text("Record New Measurement"), button:has-text("Add Measurement"), button:has-text("New Measurement")'
     ).first();
 
-    if (await recordBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await recordBtn.isVisible({ timeout: TIMEOUTS.element })) {
       await recordBtn.click();
-      await page.waitForTimeout(500);
 
       const weightInput = page.locator(
         'input[id*="weight" i], input[name*="weight" i], input[type="number"]:near(:text("Weight"))'
       ).first();
 
-      if (await weightInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await weightInput.isVisible({ timeout: 3000 })) {
         await weightInput.fill('74');
       }
 
@@ -376,14 +353,14 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
         'button[type="submit"], button:has-text("Save"), button:has-text("Save Measurement")'
       ).first();
 
-      if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await saveBtn.isVisible({ timeout: 3000 })) {
         await saveBtn.click();
-        await page.waitForTimeout(1500);
+        // Success toast or confirmation must appear
+        await expect(
+          page.locator('text=/saved|success|measurement/i').first()
+        ).toBeVisible({ timeout: TIMEOUTS.element });
       }
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
 
     await takeScreenshot(page, '54-14-client-measurement.png');
   });
@@ -401,13 +378,13 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'button:has-text("History"), [role="tab"]:has-text("History")'
     ).first();
 
-    if (await historyTab.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await historyTab.isVisible({ timeout: 5000 })) {
       await historyTab.click();
-      await page.waitForTimeout(800);
+      // After clicking, the History tab content must be visible
+      await expect(
+        page.locator('text=/history|measurement|no measurements/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 16. Client navigates to /schedule — no "New Appointment" button
@@ -424,8 +401,8 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       page.locator('button:has-text("New Appointment"), a:has-text("New Appointment")')
     ).not.toBeVisible();
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Schedule page must have a heading
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-16-client-schedule.png');
   });
@@ -440,8 +417,7 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/profile');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-17-client-profile.png');
   });
@@ -464,10 +440,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'input[name*="weight" i], input[id*="weight" i], input[placeholder*="weight" i]'
     ).first();
 
-    if (await heightInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await heightInput.isVisible({ timeout: 5000 })) {
       await heightInput.fill('175');
     }
-    if (await weightInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await weightInput.isVisible({ timeout: 3000 })) {
       await weightInput.fill('75');
     }
 
@@ -475,13 +451,13 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       'button[type="submit"], button:has-text("Save"), button:has-text("Update")'
     ).first();
 
-    if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await saveBtn.isVisible({ timeout: 3000 })) {
       await saveBtn.click();
-      await page.waitForTimeout(1500);
+      // After save, toast or confirmation must appear
+      await expect(
+        page.locator('text=/saved|updated|success/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 19. Trainer sees client's workout data
@@ -493,8 +469,8 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    expect(page.url()).toContain('/dashboard');
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-19-trainer-dashboard-client-data.png');
   });
@@ -513,8 +489,7 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
         waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+      await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
 
@@ -526,8 +501,7 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
         waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+      await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
 
@@ -538,8 +512,7 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-20-trainer-client-profile.png');
   });
@@ -554,9 +527,8 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/analytics');
-    // Trainer sees analytics (either upgrade wall or client dashboard)
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Trainer analytics page must have a heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-21-trainer-analytics.png');
   });
@@ -570,13 +542,10 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    const hasHistoryContent =
-      pageText?.toLowerCase().includes('history') ||
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('session') ||
-      pageText?.toLowerCase().includes('no workouts');
-    expect(hasHistoryContent || pageText!.length > 100).toBeTruthy();
+    // History page must have a heading
+    await expect(
+      page.locator('h1:has-text("History"), h1:has-text("Workout"), h2:has-text("History")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '54-27-workout-history.png');
   });
@@ -591,8 +560,9 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/clients');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
 
     await takeScreenshot(page, '54-28-trainer-clients-list.png');
   });
@@ -606,15 +576,13 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    expect(res.status()).toBeLessThan(500);
-    if (res.ok()) {
-      const body = await res.json();
-      expect(body).toHaveProperty('success');
-    }
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body).toHaveProperty('success');
   });
 
   // 30. Trainer generates analytics report for client
-  test('54.30 trainer can generate analytics report', async ({ page }) => {
+  test('54.30 trainer can generate analytics reports page', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
       waitUntil: 'domcontentloaded',
@@ -622,17 +590,20 @@ test.describe('54 - Multi-Day Client Workout Execution', () => {
     });
     await waitForPageReady(page);
 
+    // Analytics page must be accessible with a heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+
     const generateBtn = page.locator(
       'button:has-text("Generate Report"), button:has-text("Export"), button:has-text("Download")'
     ).first();
 
-    if (await generateBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await generateBtn.isVisible({ timeout: 5000 })) {
       await generateBtn.click();
-      await page.waitForTimeout(2000);
+      // After clicking, a modal, download, or toast must appear
+      await expect(
+        page.locator('[role="dialog"], [class*="toast"], text=/generating|report|download/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
 
     await takeScreenshot(page, '54-30-trainer-report.png');
   });

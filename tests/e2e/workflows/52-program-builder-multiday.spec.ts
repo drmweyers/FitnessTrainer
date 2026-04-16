@@ -39,43 +39,34 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     });
     await waitForPageReady(page);
 
-    // Fill name
+    // Fill name — required for step advancement
     const nameInput = page.locator(
       'input#name, input[placeholder*="strength" i], input[placeholder*="program name" i]'
     ).first();
-    if (await nameInput.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
-      await nameInput.fill('QA Multi-Day Program');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('QA Multi-Day Program');
 
     // Fill program type
     const typeSelect = page.locator('select#programType, select[name*="type" i]').first();
-    if (await typeSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await typeSelect.isVisible({ timeout: 3000 })) {
       await typeSelect.selectOption('strength');
-    } else {
-      // Might be a custom dropdown
-      const typeBtn = page.locator('button:has-text("Program Type"), [data-field="programType"]').first();
-      if (await typeBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await typeBtn.click();
-        await page.locator('text="Strength"').first().click().catch(() => {});
-      }
     }
 
     // Fill difficulty
     const diffSelect = page.locator('select#difficultyLevel, select[name*="difficulty" i]').first();
-    if (await diffSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await diffSelect.isVisible({ timeout: 3000 })) {
       await diffSelect.selectOption('intermediate');
     }
 
     // Click Next
     const nextBtn = page.locator('button:has-text("Next"), button:has-text("Continue")').first();
-    if (await nextBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
-      await nextBtn.click();
-      await page.waitForTimeout(1000);
-    }
+    await expect(nextBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await nextBtn.click();
 
-    // Should have advanced (URL changed or step indicator changed)
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Should have advanced — step indicator or next form section should be visible
+    await expect(
+      page.locator('text=/week|duration|structure|step 2/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-02-program-form-filled.png');
   });
@@ -90,22 +81,17 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
 
     // Fill and advance through step 1
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Week Structure Test');
-      const nextBtn = page.locator('button:has-text("Next")').first();
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nextBtn.click();
-        await page.waitForTimeout(1000);
-      }
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Week Structure Test');
+
+    const nextBtn = page.locator('button:has-text("Next")').first();
+    await expect(nextBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await nextBtn.click();
 
     // Should see Week or Weeks content
-    const pageText = await page.textContent('body');
-    const hasWeekContent =
-      pageText?.toLowerCase().includes('week') ||
-      pageText?.toLowerCase().includes('duration') ||
-      pageText?.toLowerCase().includes('structure');
-    expect(hasWeekContent).toBeTruthy();
+    await expect(
+      page.locator('text=/week|duration|structure/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 4. Can add Week 2 via "Add Week" button
@@ -116,33 +102,28 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     });
     await waitForPageReady(page);
 
-    // Advance to week structure step
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Add Week Test');
-      const nextBtn = page.locator('button:has-text("Next")').first();
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nextBtn.click();
-        await page.waitForTimeout(1000);
-      }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Add Week Test');
+
+    const nextBtn = page.locator('button:has-text("Next")').first();
+    if (await nextBtn.isVisible({ timeout: 3000 })) {
+      await nextBtn.click();
     }
 
     const addWeekBtn = page.locator(
       'button:has-text("Add Week"), button:has-text("+ Week"), button[aria-label*="add week" i]'
     ).first();
 
-    if (await addWeekBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await addWeekBtn.isVisible({ timeout: 5000 })) {
       await addWeekBtn.click();
-      await page.waitForTimeout(500);
       // Should show Week 2
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.includes('Week 2') || pageText?.toLowerCase().includes('week')
-      ).toBeTruthy();
+      await expect(
+        page.locator('text="Week 2"').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
-      // Week structure might be via duration input
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // Week structure via duration input — verify page is still functional
+      await expect(page.locator('text=/week|duration/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -154,28 +135,26 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     });
     await waitForPageReady(page);
 
-    // Fill name
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('3 Week Program');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('3 Week Program');
 
     // Set duration weeks to 3
     const weeksInput = page.locator(
       'input#durationWeeks, input[name*="duration" i], select#durationWeeks'
     ).first();
 
-    if (await weeksInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await weeksInput.isVisible({ timeout: 3000 })) {
       const tagName = await weeksInput.evaluate((el) => el.tagName.toLowerCase());
       if (tagName === 'select') {
         await (weeksInput as any).selectOption('3');
       } else {
         await weeksInput.fill('3');
       }
+      // Verify value was set
+      const val = await weeksInput.inputValue().catch(() => '');
+      expect(val).toBe('3');
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 6. Advance to step 3 (Workouts) — sees Day 1 scaffolded for Week 1
@@ -187,26 +166,21 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Day Scaffold Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Day Scaffold Test');
 
     // Click Next twice to get to workout step
     const nextBtn = page.locator('button:has-text("Next"), button:has-text("Continue")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
-    const pageText = await page.textContent('body');
     // Should see Day or Workout content
-    const hasWorkoutContent =
-      pageText?.toLowerCase().includes('day') ||
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('training');
-    expect(hasWorkoutContent || pageText!.length > 100).toBeTruthy();
+    await expect(
+      page.locator('text=/day|workout|training/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 7. "Add Training Day" button is visible
@@ -217,17 +191,14 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     });
     await waitForPageReady(page);
 
-    // Navigate through steps
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Add Day Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Add Day Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -235,14 +206,7 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'button:has-text("Add Training Day"), button:has-text("Add Day"), button:has-text("+ Day")'
     ).first();
 
-    const hasAddDay = await addDayBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    if (hasAddDay) {
-      await expect(addDayBtn).toBeVisible();
-    } else {
-      // May be in a different step — verify page loaded
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
-    }
+    await expect(addDayBtn).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-07-add-training-day-btn.png');
   });
@@ -256,15 +220,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Day Count Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Day Count Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -272,17 +234,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'button:has-text("Add Training Day"), button:has-text("Add Day"), button:has-text("+ Day")'
     ).first();
 
-    if (await addDayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addDayBtn.click();
-      await page.waitForTimeout(500);
-      // Should now show Day 2
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.includes('Day 2') ||
-        pageText?.toLowerCase().includes('day') ||
-        pageText!.length > 200
-      ).toBeTruthy();
-    }
+    await expect(addDayBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await addDayBtn.click();
+
+    // Should now show Day 2
+    await expect(
+      page.locator('text="Day 2"').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 9. Click "Add Training Day" again — Day 3 appears
@@ -294,15 +252,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Day 3 Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Day 3 Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -310,14 +266,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'button:has-text("Add Training Day"), button:has-text("Add Day")'
     ).first();
 
-    if (await addDayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addDayBtn.click();
-      await page.waitForTimeout(400);
-      await addDayBtn.click();
-      await page.waitForTimeout(400);
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
-    }
+    await expect(addDayBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await addDayBtn.click();
+    await addDayBtn.click();
+
+    await expect(
+      page.locator('text="Day 3"').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 10. Can switch between Day 1, Day 2, Day 3 tabs
@@ -329,15 +284,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Day Tabs Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Day Tabs Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -345,28 +298,25 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     const addDayBtn = page.locator(
       'button:has-text("Add Training Day"), button:has-text("Add Day")'
     ).first();
-    if (await addDayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addDayBtn.click();
-      await page.waitForTimeout(500);
+    await expect(addDayBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await addDayBtn.click();
 
-      // Try to click Day 1 and Day 2 tabs
-      const day1Tab = page.locator(
-        '[role="tab"]:has-text("Day 1"), button:has-text("Day 1")'
-      ).first();
-      const day2Tab = page.locator(
-        '[role="tab"]:has-text("Day 2"), button:has-text("Day 2")'
-      ).first();
+    // Day 2 tab should appear and be clickable
+    const day2Tab = page.locator(
+      '[role="tab"]:has-text("Day 2"), button:has-text("Day 2")'
+    ).first();
+    await expect(day2Tab).toBeVisible({ timeout: TIMEOUTS.element });
+    await day2Tab.click();
 
-      if (await day2Tab.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await day2Tab.click();
-        await page.waitForTimeout(300);
-        await day1Tab.click();
-        await page.waitForTimeout(300);
-      }
-    }
+    // Day 1 tab should still be visible and clickable
+    const day1Tab = page.locator(
+      '[role="tab"]:has-text("Day 1"), button:has-text("Day 1")'
+    ).first();
+    await expect(day1Tab).toBeVisible({ timeout: TIMEOUTS.element });
+    await day1Tab.click();
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // After switching back to Day 1, Day 1 tab should be active
+    await expect(day1Tab).toHaveAttribute('aria-selected', 'true');
   });
 
   // 11. Edit Day 1 workout name
@@ -378,15 +328,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Workout Name Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Workout Name Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -395,16 +343,12 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'input[placeholder*="workout" i], input[placeholder*="day" i], input[aria-label*="workout name" i]'
     ).first();
 
-    if (await workoutNameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await workoutNameInput.fill('Chest & Triceps');
-      await expect(workoutNameInput).toHaveValue('Chest & Triceps');
-    }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(workoutNameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await workoutNameInput.fill('Chest & Triceps');
+    await expect(workoutNameInput).toHaveValue('Chest & Triceps');
   });
 
-  // 12-13. Week 2 tabs and independence
+  // 12. Week 2 can have its own training days
   test('52.12 Week 2 can have its own training days', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
       waitUntil: 'domcontentloaded',
@@ -413,15 +357,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Week 2 Days Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Week 2 Days Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -430,22 +372,20 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       '[role="tab"]:has-text("Week 2"), button:has-text("Week 2")'
     ).first();
 
-    if (await week2Tab.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await week2Tab.isVisible({ timeout: 5000 })) {
       await week2Tab.click();
-      await page.waitForTimeout(500);
 
       const addDayBtn = page.locator(
         'button:has-text("Add Training Day"), button:has-text("Add Day")'
       ).first();
+      await expect(addDayBtn).toBeVisible({ timeout: TIMEOUTS.element });
+      await addDayBtn.click();
 
-      if (await addDayBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await addDayBtn.click();
-        await page.waitForTimeout(500);
-      }
+      // Day 1 should appear under Week 2
+      await expect(
+        page.locator('text="Day 1"').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 14. Advance to exercise step — sees exercise library panel
@@ -457,25 +397,21 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Exercise Panel Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Exercise Panel Test');
 
     // Navigate through all steps to reach exercise selection
     const nextBtn = page.locator('button:has-text("Next"), button:has-text("Continue")').first();
     for (let i = 0; i < 3; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
 
-    const pageText = await page.textContent('body');
-    const hasExerciseContent =
-      pageText?.toLowerCase().includes('exercise') ||
-      pageText?.toLowerCase().includes('library') ||
-      pageText?.toLowerCase().includes('search');
-    expect(hasExerciseContent || pageText!.length > 200).toBeTruthy();
+    // Exercise library panel should show search input
+    await expect(
+      page.locator('input[type="search"], input[placeholder*="Search" i], input[placeholder*="exercise" i]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-14-exercise-panel.png');
   });
@@ -489,15 +425,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Search Panel Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Search Panel Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 3; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
 
@@ -505,14 +439,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'input[type="search"], input[placeholder*="Search" i], input[placeholder*="exercise" i]'
     ).first();
 
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('bench press');
-      await page.waitForTimeout(1500);
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('bench') || pageText!.length > 200
-      ).toBeTruthy();
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('bench press');
+
+    // Results should contain bench or no-results indicator
+    await expect(
+      page.locator('text=/bench|no exercises|no results/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 16. Muscle group filter in exercise panel
@@ -524,15 +457,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Muscle Filter Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Muscle Filter Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 3; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
 
@@ -541,20 +472,20 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'select[name*="bodyPart" i], select[name*="muscle" i], button:has-text("Muscle"), button:has-text("Body Part")'
     ).first();
 
-    if (await muscleFilter.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await muscleFilter.isVisible({ timeout: 5000 })) {
       const tagName = await muscleFilter.evaluate((el) => el.tagName.toLowerCase());
       if (tagName === 'select') {
         await (muscleFilter as any).selectOption({ index: 1 }).catch(() => {});
       } else {
         await muscleFilter.click();
-        await page.waitForTimeout(500);
         await page.locator('text="Chest"').first().click().catch(() => {});
       }
-      await page.waitForTimeout(1000);
-    }
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+      // Verify filter is applied by checking some exercise content is shown
+      await expect(
+        page.locator('text=/exercise|chest|no exercises/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   // 17. Equipment filter in exercise panel
@@ -566,15 +497,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Equipment Filter Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Equipment Filter Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 3; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
 
@@ -582,19 +511,18 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'select[name*="equipment" i], button:has-text("Equipment")'
     ).first();
 
-    if (await equipmentFilter.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await equipmentFilter.isVisible({ timeout: 5000 })) {
       const tagName = await equipmentFilter.evaluate((el) => el.tagName.toLowerCase());
       if (tagName === 'select') {
         await (equipmentFilter as any).selectOption('barbell').catch(() => {});
       } else {
         await equipmentFilter.click();
-        await page.waitForTimeout(500);
       }
-      await page.waitForTimeout(1000);
-    }
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+      await expect(
+        page.locator('text=/exercise|barbell|no exercises/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   // 18. Add exercise to Day 1 via "+" button or drag
@@ -606,35 +534,38 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Add Exercise Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Add Exercise Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 3; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
+
+    // Wait for exercise panel to load
+    await expect(
+      page.locator('input[type="search"], input[placeholder*="exercise" i]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Look for "+" or "Add" button next to an exercise
     const addExerciseBtn = page.locator(
       'button[aria-label*="add" i]:not(:has-text("Day")):not(:has-text("Week")), button:has-text("Add to Workout")'
     ).first();
 
-    if (await addExerciseBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addExerciseBtn.click();
-      await page.waitForTimeout(800);
-    }
+    await expect(addExerciseBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await addExerciseBtn.click();
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // After adding, the exercise should appear in the workout day panel
+    await expect(
+      page.locator('[class*="workout"] [class*="exercise"], [data-testid*="exercise"], [class*="day"] li').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-18-add-exercise.png');
   });
 
-  // 19-20. Add exercise to Day 2
+  // 19. Switch day tabs and add exercise to Day 2
   test('52.19 can switch day tabs and add exercise to Day 2', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
       waitUntil: 'domcontentloaded',
@@ -643,15 +574,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Day 2 Exercise Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Day 2 Exercise Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 2; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(800);
       }
     }
 
@@ -659,21 +588,18 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     const addDayBtn = page.locator(
       'button:has-text("Add Training Day"), button:has-text("Add Day")'
     ).first();
-    if (await addDayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addDayBtn.click();
-      await page.waitForTimeout(500);
-    }
+    await expect(addDayBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await addDayBtn.click();
 
+    // Day 2 tab should now be visible
     const day2Tab = page.locator(
       '[role="tab"]:has-text("Day 2"), button:has-text("Day 2")'
     ).first();
-    if (await day2Tab.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await day2Tab.click();
-      await page.waitForTimeout(500);
-    }
+    await expect(day2Tab).toBeVisible({ timeout: TIMEOUTS.element });
+    await day2Tab.click();
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Day 2 tab should be selected
+    await expect(day2Tab).toHaveAttribute('aria-selected', 'true');
   });
 
   // 21. "Suggest next exercise" button visible for enterprise trainer
@@ -686,14 +612,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Suggest Test Enterprise');
-      const nextBtn = page.locator('button:has-text("Next")').first();
-      for (let i = 0; i < 3; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn.click();
-          await page.waitForTimeout(1000);
-        }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Suggest Test Enterprise');
+
+    const nextBtn = page.locator('button:has-text("Next")').first();
+    for (let i = 0; i < 3; i++) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
+        await nextBtn.click();
       }
     }
 
@@ -701,16 +626,11 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest"), button[aria-label*="suggest" i]'
     ).first();
 
-    // Enterprise should see the button (or the page should at least load correctly)
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
-
-    if (await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(suggestBtn).toBeVisible();
-    }
+    // Enterprise should see the button
+    await expect(suggestBtn).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
-  // 22. Week/Day outline panel shows exercise counts
+  // 22. Week/Day outline panel shows exercise information
   test('52.22 week day outline panel shows exercise information', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
       waitUntil: 'domcontentloaded',
@@ -719,15 +639,13 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Outline Panel Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Outline Panel Test');
 
     const nextBtn = page.locator('button:has-text("Next")').first();
     for (let i = 0; i < 3; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
 
@@ -736,9 +654,7 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       '[class*="outline"], [class*="sidebar"], [class*="structure"]'
     ).first();
 
-    const hasOutline = await outlinePanel.isVisible({ timeout: 5000 }).catch(() => false);
-    const pageText = await page.textContent('body');
-    expect(hasOutline || pageText!.length > 200).toBeTruthy();
+    await expect(outlinePanel).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 23. Advance to preview step — sees program summary
@@ -750,30 +666,24 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill('Preview Step Test');
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill('Preview Step Test');
 
     const nextBtn = page.locator('button:has-text("Next"), button:has-text("Continue")').first();
     // Click through up to 5 times to reach preview
     for (let i = 0; i < 5; i++) {
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 3000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
         // Stop if we see Preview or Save
-        const pageText = await page.textContent('body');
-        if (
-          pageText?.toLowerCase().includes('preview') ||
-          pageText?.toLowerCase().includes('review') ||
-          pageText?.toLowerCase().includes('save program')
-        ) {
-          break;
-        }
+        const previewText = await page.locator('text=/preview|review|save program/i').first().isVisible({ timeout: 1000 }).catch(() => false);
+        if (previewText) break;
       }
     }
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Preview step must show summary content
+    await expect(
+      page.locator('text=/preview|review|save program/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-23-preview-step.png');
   });
@@ -786,24 +696,25 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
     });
     await waitForPageReady(page);
 
+    const programName = `E2E Save Test ${Date.now()}`;
+
     // Fill required fields
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await nameInput.fill(`E2E Save Test ${Date.now()}`);
-    }
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.fill(programName);
 
     const typeSelect = page.locator('select#programType').first();
-    if (await typeSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await typeSelect.isVisible({ timeout: 3000 })) {
       await typeSelect.selectOption('strength');
     }
 
     const diffSelect = page.locator('select#difficultyLevel').first();
-    if (await diffSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await diffSelect.isVisible({ timeout: 3000 })) {
       await diffSelect.selectOption('beginner');
     }
 
     const weeksInput = page.locator('input#durationWeeks, select#durationWeeks').first();
-    if (await weeksInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await weeksInput.isVisible({ timeout: 3000 })) {
       const tagName = await weeksInput.evaluate((el) => el.tagName.toLowerCase());
       if (tagName === 'select') {
         await (weeksInput as any).selectOption('4');
@@ -817,17 +728,19 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       'button:has-text("Save Program"), button:has-text("Save"), button[type="submit"]:has-text("Save")'
     ).first();
 
-    if (await saveBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await saveBtn.click();
-      // Wait for redirect to /programs
-      await page.waitForURL(
-        (url) => url.pathname === '/programs' || url.pathname.startsWith('/programs/'),
-        { timeout: 15000 }
-      ).catch(() => {});
-    }
+    await expect(saveBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await saveBtn.click();
 
-    const finalUrl = page.url();
-    expect(finalUrl).toContain('/program');
+    // Wait for redirect to /programs
+    await page.waitForURL(
+      (url) => url.pathname === '/programs' || url.pathname.startsWith('/programs/'),
+      { timeout: 15000 }
+    );
+
+    // Verify we are on /programs
+    expect(page.url()).toContain('/programs');
+    // Heading must be visible
+    await expect(page.locator('h1:has-text("Training Programs")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-24-program-saved.png');
   });
@@ -844,8 +757,10 @@ test.describe('52 - Program Builder Multi-Day Multi-Week', () => {
       timeout: TIMEOUTS.element,
     });
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // At least one program card or empty state must be visible
+    await expect(
+      page.locator('[class*="card"], [class*="program"], text=/no programs/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '52-25-programs-list-saved.png');
   });

@@ -14,6 +14,7 @@ test.describe('39 - Error Handling & Edge Cases', () => {
   test.beforeEach(async ({ page }) => {
     page.setDefaultTimeout(60000);
   });
+
   /**
    * Test 1: Invalid login — wrong password shows error message.
    */
@@ -26,16 +27,16 @@ test.describe('39 - Error Handling & Edge Cases', () => {
       .fill('WrongPassword999!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForTimeout(3000);
-
-    const url = page.url();
-    const hasError = await page
+    // Must show an error message — not just stay on the page silently
+    const errorVisible = await page
       .locator('text=/invalid|incorrect|wrong|error|failed|credentials|password/i')
       .isVisible({ timeout: TIMEOUTS.apiCall })
       .catch(() => false);
 
-    // Either stays on login page or shows an error
-    expect(url.includes('login') || url.includes('auth') || hasError).toBeTruthy();
+    // Either error message shown OR stayed on login page (no silent redirect)
+    const url = page.url();
+    expect(url.includes('login') || url.includes('auth')).toBeTruthy();
+    expect(errorVisible).toBeTruthy();
 
     await takeScreenshot(page, '39-01-wrong-password-error.png');
   });
@@ -52,15 +53,13 @@ test.describe('39 - Error Handling & Edge Cases', () => {
       .fill('TestPass2026!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForTimeout(3000);
-
-    const url = page.url();
-    const hasError = await page
+    // Must show an error message for non-existent email
+    const errorVisible = await page
       .locator('text=/invalid|not found|no account|error|credentials|email/i')
       .isVisible({ timeout: TIMEOUTS.apiCall })
       .catch(() => false);
 
-    expect(url.includes('login') || url.includes('auth') || hasError).toBeTruthy();
+    expect(errorVisible).toBeTruthy();
 
     await takeScreenshot(page, '39-02-nonexistent-email-error.png');
   });
@@ -79,11 +78,14 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     const url = page.url();
     const body = await page.textContent('body').catch(() => '');
 
-    // FORGE QA: Validate app handled the request gracefully (did not crash).
-    // Exact RBAC behavior (redirect vs forbidden message) is not asserted —
-    // just that the app responded with SOMETHING and the browser is still usable.
-    const didNotCrash = body !== null && body !== undefined;
-    expect(didNotCrash).toBeTruthy();
+    // Client must NOT reach the admin dashboard — must be redirected or shown forbidden
+    const wasRedirected = !url.includes('/admin') || url.includes('login') || url.includes('dashboard') && !url.includes('/admin');
+    const showsForbidden = body?.toLowerCase().includes('forbidden') ||
+      body?.toLowerCase().includes('unauthorized') ||
+      body?.toLowerCase().includes('access denied') ||
+      body?.toLowerCase().includes('not allowed');
+
+    expect(wasRedirected || showsForbidden).toBeTruthy();
 
     await takeScreenshot(page, '39-03-client-admin-access.png');
   });
@@ -102,17 +104,14 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     const url = page.url();
     const body = await page.textContent('body');
 
-    expect(
-      !url.includes('/clients') ||
-      body?.toLowerCase().includes('forbidden') ||
+    // Client must not land on /clients — must be redirected or blocked
+    const wasRedirected = !url.includes('/clients') || url.includes('dashboard') || url.includes('login');
+    const showsAccessError = body?.toLowerCase().includes('forbidden') ||
       body?.toLowerCase().includes('unauthorized') ||
       body?.toLowerCase().includes('access') ||
-      body?.toLowerCase().includes('not allowed') ||
-      url.includes('dashboard') ||
-      url.includes('login') ||
-      // App rendered a page without crashing (non-trivial body content)
-      (body && body.length > 50)
-    ).toBeTruthy();
+      body?.toLowerCase().includes('not allowed');
+
+    expect(wasRedirected || showsAccessError).toBeTruthy();
 
     await takeScreenshot(page, '39-04-client-trainer-page-access.png');
   });
@@ -129,13 +128,11 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     await waitForPageReady(page);
 
     const body = await page.textContent('body');
-    // Next.js should show 404 page or redirect to a valid page
+    // Next.js must show 404 page or redirect (not a blank or crashed page)
     expect(
       body?.includes('404') ||
       body?.toLowerCase().includes('not found') ||
-      body?.toLowerCase().includes('page') ||
-      // Or redirect happened to a valid page
-      body && body.length > 50
+      body?.toLowerCase().includes('page')
     ).toBeTruthy();
 
     await takeScreenshot(page, '39-05-404-page.png');
@@ -153,12 +150,12 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     await waitForPageReady(page);
 
     const body = await page.textContent('body');
+    // Must show error or 404 — not a crashed page with no content
     expect(
       body?.includes('404') ||
       body?.toLowerCase().includes('not found') ||
       body?.toLowerCase().includes('error') ||
-      body?.toLowerCase().includes('workout') ||
-      body && body.length > 50 // Page rendered without crash
+      body?.toLowerCase().includes('workout')
     ).toBeTruthy();
 
     await takeScreenshot(page, '39-06-invalid-workout-uuid.png');
@@ -176,12 +173,12 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     await waitForPageReady(page);
 
     const body = await page.textContent('body');
+    // Must show error or 404 — not a crashed page
     expect(
       body?.includes('404') ||
       body?.toLowerCase().includes('not found') ||
       body?.toLowerCase().includes('error') ||
-      body?.toLowerCase().includes('client') ||
-      body && body.length > 50 // Page rendered without crash
+      body?.toLowerCase().includes('client')
     ).toBeTruthy();
 
     await takeScreenshot(page, '39-07-invalid-client-uuid.png');
@@ -198,8 +195,13 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
+    // Programs page heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /program/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Either shows program list OR a meaningful empty state
     const body = await page.textContent('body');
-    // Should show programs list OR an empty state message
     expect(
       body?.toLowerCase().includes('program') ||
       body?.toLowerCase().includes('create') ||
@@ -222,15 +224,10 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    // Should show page content without crashing, even with no data
-    expect(
-      body?.toLowerCase().includes('workout') ||
-      body?.toLowerCase().includes('no workout') ||
-      body?.toLowerCase().includes('empty') ||
-      body?.toLowerCase().includes('start') ||
-      body && body.length > 50
-    ).toBeTruthy();
+    // Workouts heading must be visible even with no data
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /workout/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '39-09-empty-workouts.png');
   });
@@ -246,15 +243,10 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    // Page should render without crashing (empty state or data)
-    expect(
-      body?.toLowerCase().includes('analytics') ||
-      body?.toLowerCase().includes('no data') ||
-      body?.toLowerCase().includes('overview') ||
-      body?.toLowerCase().includes('progress') ||
-      body && body.length > 50
-    ).toBeTruthy();
+    // Analytics heading must be visible even with no data
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /analytics|progress/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '39-10-empty-analytics.png');
   });
@@ -285,7 +277,6 @@ test.describe('39 - Error Handling & Edge Cases', () => {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    // No auth header should result in 401 Unauthorized
     expect(response.status()).toBe(401);
   });
 
@@ -321,7 +312,6 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
     const specialBio = `O'Brien & "quotes" <script>alert('xss')</script>`;
 
-    // Attempt to update profile with special characters via API
     const response = await page.request.put(`${BASE_URL}${API.profileMe}`, {
       data: { bio: specialBio },
       headers: {
@@ -330,15 +320,13 @@ test.describe('39 - Error Handling & Edge Cases', () => {
       },
     });
 
-    // Should either accept (200) or reject with validation error (400/422)
     // Must NOT cause a server error (5xx)
     expect(response.status()).toBeLessThan(500);
 
     if (response.ok()) {
-      // Verify the response doesn't echo back un-escaped content that would cause XSS
       const body = await response.json();
       const returnedBio = body.data?.bio || body.bio || '';
-      // The bio may be stored as-is server-side (safe), rendered escaped on client
+      // Returned bio must be a string (not crash or corrupt the response)
       expect(typeof returnedBio).toBe('string');
     }
   });
@@ -366,7 +354,7 @@ test.describe('39 - Error Handling & Edge Cases', () => {
       },
     });
 
-    // Should be accepted (200/201) or rejected with a validation error (400/422)
+    // Must be accepted (200/201) or rejected with validation error (400/422)
     // Must NOT cause a server crash (5xx)
     expect(response.status()).toBeLessThan(500);
   });
@@ -387,28 +375,31 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     const searchInput = page.locator(
       'input[type="search"], input[placeholder*="search" i], input[placeholder*="exercise" i]'
     );
-    const hasSearch = await searchInput.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(searchInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-    if (hasSearch) {
-      await searchInput.first().fill(xssPayload);
-      await page.waitForTimeout(1000);
+    // Set up dialog listener BEFORE filling
+    let alertFired = false;
+    page.on('dialog', async (dialog) => {
+      alertFired = true;
+      await dialog.dismiss();
+    });
 
-      // Verify no alert dialog appeared (XSS would trigger window.alert)
-      let alertFired = false;
-      page.on('dialog', async (dialog) => {
-        alertFired = true;
-        await dialog.dismiss();
-      });
+    await searchInput.first().fill(xssPayload);
 
-      await page.waitForTimeout(500);
-      expect(alertFired).toBe(false);
+    // Trigger any XSS by pressing Enter (causes search/submit)
+    await page.keyboard.press('Enter');
 
-      await takeScreenshot(page, '39-16-xss-search.png');
-    }
+    // Wait for any potential XSS dialog to appear (Playwright processes dialogs synchronously)
+    // If no dialog fires within the next assertion, XSS did not execute
+    await expect(page.locator('body')).toBeVisible({ timeout: 2000 });
 
-    // Page should still be functional
-    const body = await page.textContent('body');
-    expect(body && body.length > 50).toBeTruthy();
+    // XSS must NOT have executed
+    expect(alertFired).toBe(false);
+
+    // Page must still be functional (search input still present)
+    await expect(searchInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
+
+    await takeScreenshot(page, '39-16-xss-search.png');
   });
 
   /**
@@ -426,13 +417,12 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     await page.reload({ waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
     await waitForPageReady(page);
 
-    // Should still be on programs page (session maintained via localStorage)
+    // Must stay on programs page or dashboard — NOT redirected to login
     const url = page.url();
-    expect(
-      url.includes('programs') ||
-      url.includes('dashboard') // may redirect to dashboard but not login
-    ).toBeTruthy();
     expect(url).not.toMatch(/\/auth\/login/);
+    expect(
+      url.includes('programs') || url.includes('dashboard')
+    ).toBeTruthy();
 
     await takeScreenshot(page, '39-17-session-after-refresh.png');
   });
@@ -461,19 +451,20 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     }).catch(() => {});
     await expect(page).toHaveURL(/login/);
 
-    // Go back — should not be able to access protected page without re-auth
+    // Go back — should not return to protected page without auth
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad }).catch(() => {});
-    await page.waitForTimeout(1000);
+
+    // Wait for router to settle — login form or heading must be visible
+    await expect(
+      page.locator('input[type="email"], input[name="email"], h1, h2').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const url = page.url();
-    // Either stays on login or redirected back to login
-    const body = await page.textContent('body');
+    // Must be on login page OR have been redirected to login
     const isLoginPage = url.includes('login') || url.includes('auth');
-    const isRedirectedToLogin = body?.toLowerCase().includes('sign in') ||
-      body?.toLowerCase().includes('log in') ||
-      body?.toLowerCase().includes('login');
+    const hasLoginForm = await page.locator('input[type="email"], input[name="email"]').first().isVisible({ timeout: 3000 }).catch(() => false);
 
-    expect(isLoginPage || isRedirectedToLogin || body && body.length > 50).toBeTruthy();
+    expect(isLoginPage || hasLoginForm).toBeTruthy();
   });
 
   /**
@@ -485,8 +476,7 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
     const programName = `Dedup Test ${Date.now()}`;
 
-    // Simulate rapid duplicate POST requests (what double-click would do)
-    // Use valid field names from the API schema (programType + difficultyLevel)
+    // Simulate rapid duplicate POST requests
     const requests = await Promise.all([
       page.request.post(`${BASE_URL}${API.programs}`, {
         data: { name: programName, durationWeeks: 1, programType: 'general_fitness', difficultyLevel: 'beginner' },
@@ -498,11 +488,11 @@ test.describe('39 - Error Handling & Edge Cases', () => {
       }),
     ]);
 
-    // At least one should succeed
+    // At least one must succeed
     const successResponses = requests.filter((r) => r.ok());
     expect(successResponses.length).toBeGreaterThanOrEqual(1);
 
-    // Server should not crash (no 500s)
+    // Server must not crash (no 500s)
     for (const r of requests) {
       expect(r.status()).toBeLessThan(500);
     }
@@ -532,16 +522,19 @@ test.describe('39 - Error Handling & Edge Cases', () => {
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
     await waitForPageReady(page);
 
-    // Page should load without crashing
-    const body = await page.textContent('body');
-    expect(body && body.length > 50).toBeTruthy();
+    // Page heading must be visible (not crashed)
+    await expect(
+      page.locator('h1, h2, [role="heading"]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Go back again
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
     await waitForPageReady(page);
 
-    const body2 = await page.textContent('body');
-    expect(body2 && body2.length > 50).toBeTruthy();
+    // Page heading must still be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '39-20-after-back-navigation.png');
   });

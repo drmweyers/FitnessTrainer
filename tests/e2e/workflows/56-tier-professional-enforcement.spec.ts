@@ -31,15 +31,17 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/analytics');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
 
-    // Should NOT see the starter lock screen
-    const hasOnlyLock =
-      pageText?.toLowerCase().includes('upgrade') &&
-      !pageText?.toLowerCase().includes('client') &&
-      !pageText?.toLowerCase().includes('overview');
-    expect(!hasOnlyLock).toBeTruthy();
+    // Must NOT show the starter lock screen (upgrade + no client/overview text)
+    // Assert the analytics heading or overview content is visible
+    await expect(
+      page.locator('h1:has-text("Analytics"), h1:has-text("Performance"), h2:has-text("Overview")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Upgrade-only lock screen must NOT be the sole content
+    await expect(
+      page.locator('text=/client|overview|performance/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '56-01-pro-analytics-dashboard.png');
   });
@@ -53,13 +55,13 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('Pro Suggest Test');
       const nextBtn = page.locator('button:has-text("Next")').first();
       for (let i = 0; i < 3; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await nextBtn.isVisible({ timeout: 3000 })) {
           await nextBtn.click();
-          await page.waitForTimeout(1000);
+          await expect(page.locator('body')).toBeVisible();
         }
       }
     }
@@ -68,13 +70,8 @@ test.describe('56 - Tier Enforcement: Professional', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest"), button:has-text("Next Exercise")'
     ).first();
 
-    const pageText = await page.textContent('body');
-    if (await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(suggestBtn).toBeVisible();
-    } else {
-      // May not be on exercise panel yet
-      expect(pageText?.length).toBeGreaterThan(100);
-    }
+    // Professional tier must show the suggest button on the exercise panel
+    await expect(suggestBtn).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 3. Program builder: outline drag-reorder IS visible for professional
@@ -86,27 +83,23 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('Pro Drag Test');
       const nextBtn = page.locator('button:has-text("Next")').first();
       for (let i = 0; i < 3; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await nextBtn.isVisible({ timeout: 3000 })) {
           await nextBtn.click();
-          await page.waitForTimeout(1000);
+          await expect(page.locator('body')).toBeVisible();
         }
       }
     }
 
-    // Drag handles in outline panel
+    // Drag handles in outline panel must be present for professional
     const dragHandle = page.locator(
       '[class*="drag-handle"], [aria-label*="drag" i], [class*="grip"]'
     ).first();
 
-    const dragVisible = await dragHandle.isVisible({ timeout: 5000 }).catch(() => false);
-    // For professional: drag should be visible
-    // Graceful if not yet on exercise step
-    const pageText = await page.textContent('body');
-    expect(dragVisible || pageText!.length > 100).toBeTruthy();
+    await expect(dragHandle).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 4. Export CSV works from analytics
@@ -121,19 +114,17 @@ test.describe('56 - Tier Enforcement: Professional', () => {
       'button:has-text("Export CSV"), button:has-text("CSV"), a:has-text("CSV")'
     ).first();
 
-    if (await csvBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await csvBtn.isVisible({ timeout: 5000 })) {
       // Check the download request rather than clicking (to avoid file dialog issues)
       const [download] = await Promise.all([
         page.waitForEvent('download', { timeout: 10000 }).catch(() => null),
         csvBtn.click(),
       ]);
-      // Either a download started or the button just sent an API request
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // Either a download started or the request fired — page must still be functional
+      await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
-      // CSV export may be on a sub-tab — verify analytics loads
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // CSV export may be on a sub-tab — verify analytics overview is accessible
+      await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
 
     await takeScreenshot(page, '56-04-pro-csv-export.png');
@@ -162,14 +153,12 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    // Should see upgrade prompt or be on settings page without API key creation
-    const hasUpgradeContent =
-      pageText?.toLowerCase().includes('upgrade') ||
-      pageText?.toLowerCase().includes('enterprise') ||
-      page.url().includes('/settings') ||
-      page.url().includes('/dashboard');
-    expect(hasUpgradeContent).toBeTruthy();
+    // Should see upgrade prompt OR be on settings page without API key creation
+    const onSettingsOrDashboard =
+      page.url().includes('/settings') || page.url().includes('/dashboard');
+    const upgradeVisible = await page.locator('text=/upgrade|enterprise/i').first().isVisible({ timeout: 3000 });
+
+    expect(onSettingsOrDashboard || upgradeVisible).toBe(true);
   });
 
   // 7. Client limit: can add clients without restriction
@@ -180,12 +169,10 @@ test.describe('56 - Tier Enforcement: Professional', () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Professional can fetch their clients list
-    expect(res.status()).toBeLessThan(500);
-    if (res.ok()) {
-      const body = await res.json();
-      expect(body.success !== false).toBeTruthy();
-    }
+    // Professional can fetch their clients list — must succeed
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
   });
 
   // 8. Analytics tabs all accessible for professional
@@ -196,14 +183,10 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    // Should see multiple analytics sections/tabs
-    const hasMultipleTabs =
-      pageText?.toLowerCase().includes('overview') ||
-      pageText?.toLowerCase().includes('performance') ||
-      pageText?.toLowerCase().includes('training') ||
-      pageText?.toLowerCase().includes('goal');
-    expect(hasMultipleTabs || pageText!.length > 200).toBeTruthy();
+    // Professional analytics must show at least one analytics tab
+    await expect(
+      page.locator('[role="tab"]:has-text("Overview"), [role="tab"]:has-text("Performance"), [role="tab"]:has-text("Training")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '56-08-pro-analytics-tabs.png');
   });
@@ -254,16 +237,12 @@ test.describe('56 - Tier Enforcement: Professional', () => {
       timeout: TIMEOUTS.element,
     });
 
-    // Assignment features should be accessible
+    // Assignment features should be accessible — either button visible or empty state
     const assignBtn = page.locator(
       'button:has-text("Assign"), button:has-text("Assign to Client")'
     ).first();
-    // Either Assign button visible or empty state (no programs yet)
-    const pageText = await page.textContent('body');
-    expect(
-      (await assignBtn.isVisible({ timeout: 3000 }).catch(() => false)) ||
-      pageText!.length > 100
-    ).toBeTruthy();
+    const emptyState = page.locator('text=/no programs|create your first/i').first();
+    await expect(assignBtn.or(emptyState).first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 13. Schedule: can create appointments
@@ -278,9 +257,7 @@ test.describe('56 - Tier Enforcement: Professional', () => {
       'button:has-text("New Appointment"), button:has-text("Add Appointment"), button:has-text("Schedule")'
     ).first();
 
-    const hasNewAppt = await newApptBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    const pageText = await page.textContent('body');
-    expect(hasNewAppt || pageText!.length > 100).toBeTruthy();
+    await expect(newApptBtn).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 14. Schedule: iCal export works
@@ -302,12 +279,10 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     });
     await waitForPageReady(page);
 
-    // Bulk operations: checkboxes + bulk actions button
-    const selectAll = page.locator(
-      'input[type="checkbox"][aria-label*="all" i], th input[type="checkbox"]'
-    ).first();
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Clients list heading must be visible
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
   });
 
   // 16. Exercise collections work
@@ -329,8 +304,7 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 18. Program builder multi-week multi-day creation works
@@ -342,14 +316,14 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('Pro Multi-Day Test');
 
       const nextBtn = page.locator('button:has-text("Next")').first();
       for (let i = 0; i < 2; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await nextBtn.isVisible({ timeout: 3000 })) {
           await nextBtn.click();
-          await page.waitForTimeout(800);
+          await expect(page.locator('body')).toBeVisible();
         }
       }
 
@@ -357,14 +331,15 @@ test.describe('56 - Tier Enforcement: Professional', () => {
         'button:has-text("Add Training Day"), button:has-text("Add Day")'
       ).first();
 
-      if (await addDayBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      if (await addDayBtn.isVisible({ timeout: 5000 })) {
+        // Count day tabs before clicking
+        const dayTabs = page.locator('[role="tab"]:has-text("Day"), button:has-text("Day ")');
+        const countBefore = await dayTabs.count();
         await addDayBtn.click();
-        await page.waitForTimeout(500);
+        // A new day tab must appear
+        await expect(dayTabs).toHaveCount(countBefore + 1, { timeout: TIMEOUTS.element });
       }
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
   });
 
   // 19. Suggest exercise returns suggestions for professional
@@ -376,13 +351,13 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('Pro AI Test');
       const nextBtn = page.locator('button:has-text("Next")').first();
       for (let i = 0; i < 3; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await nextBtn.isVisible({ timeout: 3000 })) {
           await nextBtn.click();
-          await page.waitForTimeout(1000);
+          await expect(page.locator('body')).toBeVisible();
         }
       }
     }
@@ -391,13 +366,14 @@ test.describe('56 - Tier Enforcement: Professional', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest")'
     ).first();
 
-    if (await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await suggestBtn.click();
-      await page.waitForTimeout(3000);
-    }
+    await expect(suggestBtn).toBeVisible({ timeout: TIMEOUTS.element });
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await suggestBtn.click();
+
+    // After click, suggestions or loading indicator must appear
+    await expect(
+      page.locator('text=/thinking|loading|suggestion|exercise/i').first()
+    ).toBeVisible({ timeout: 8000 });
 
     await takeScreenshot(page, '56-19-pro-suggest-exercise.png');
   });
@@ -410,17 +386,20 @@ test.describe('56 - Tier Enforcement: Professional', () => {
     });
     await waitForPageReady(page);
 
+    // Analytics heading must be present first
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+
     const generateBtn = page.locator(
       'button:has-text("Generate Report"), button:has-text("Generate"), button:has-text("Create Report")'
     ).first();
 
-    if (await generateBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await generateBtn.isVisible({ timeout: 5000 })) {
       await generateBtn.click();
-      await page.waitForTimeout(2000);
+      // Modal or result must appear
+      await expect(
+        page.locator('[role="dialog"], text=/generating|report|success/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
 
     await takeScreenshot(page, '56-20-pro-generate-report.png');
   });

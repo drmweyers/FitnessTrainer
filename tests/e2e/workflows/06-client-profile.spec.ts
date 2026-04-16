@@ -25,9 +25,8 @@ test.describe('06 - Client Profile & Onboarding', () => {
       timeout: TIMEOUTS.element,
     });
 
-    // Should show the user's email somewhere on the page
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toMatch(/@/); // email address present
+    // Should show the user's email or display name on the page
+    await expect(page.locator('text=/@/')).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // ---------- 2. Edit profile page loads with form fields ----------
@@ -219,8 +218,11 @@ test.describe('06 - Client Profile & Onboarding', () => {
       },
     });
 
-    // Accept 200, 201, or 400 (already exists) — any server response means the endpoint is reachable
-    expect([200, 201, 400, 404]).toContain(response.status());
+    // Accept 200/201 (created) or 400/409 (already exists for today) — success statuses only
+    expect([200, 201, 400, 409]).toContain(response.status());
+    // Must not be a 404 (endpoint missing) or 500 (server error)
+    expect(response.status()).not.toBe(404);
+    expect(response.status()).not.toBe(500);
   });
 
   // ---------- 13. Can record a body measurement ----------
@@ -237,8 +239,10 @@ test.describe('06 - Client Profile & Onboarding', () => {
       },
     });
 
-    // Accept success or "already exists for today" responses
+    // Accept 200/201 (created) or 400/409 (already exists for today)
     expect([200, 201, 400, 409]).toContain(response.status());
+    expect(response.status()).not.toBe(404);
+    expect(response.status()).not.toBe(500);
   });
 
   // ---------- 14. Profile completion widget updates after health info ----------
@@ -275,8 +279,8 @@ test.describe('06 - Client Profile & Onboarding', () => {
       page.locator('text=/profile completion/i').first()
     ).toBeVisible({ timeout: TIMEOUTS.element });
 
-    const updatedBody = await page.textContent('body');
-    expect(updatedBody).toMatch(/%/);
+    // Profile completion widget must still show a percentage
+    await expect(page.locator('text=/%/')).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // ---------- 15. Goals section shows active goals ----------
@@ -302,14 +306,15 @@ test.describe('06 - Client Profile & Onboarding', () => {
     // Either an "Active Goals" heading or some goal text should be visible.
     // If the API returned an error the section may be absent — still a valid pass
     // as the page renders without crashing.
+    // The profile page must have its heading — proves the page rendered
+    await expect(page.locator('h1').filter({ hasText: /profile/i }).first()).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
+
     const hasGoalsSection = await page
       .locator('text=/active goals/i')
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-
-    const bodyText = await page.textContent('body');
-    // Page must be non-trivially rendered
-    expect(bodyText?.length).toBeGreaterThan(200);
 
     // If the goals section IS present, it should show goal type text
     if (hasGoalsSection) {

@@ -13,130 +13,126 @@ test.describe('26 - Calendar Export', () => {
 
   test('calendar day view loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for day view button or navigate to it
+    // Look for day view button and click it if present
     const dayBtn = page.locator('button:has-text("Day"), [aria-label*="day" i], [data-view="day"]');
     if (await dayBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
       await dayBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
+      await expect(dayBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
 
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('schedule') ||
-      pageText?.toLowerCase().includes('calendar') ||
-      pageText?.toLowerCase().includes('day')
-    ).toBeTruthy();
+    // Schedule page heading must always be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /schedule|calendar|day/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '26-calendar-day.png');
   });
 
   test('calendar week view loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     const weekBtn = page.locator('button:has-text("Week"), [aria-label*="week" i], [data-view="week"]');
-    if (await weekBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await weekBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
-      await takeScreenshot(page, '26-calendar-week.png');
-    }
+    await expect(weekBtn.first()).toBeVisible({ timeout: 5000 });
+    await weekBtn.first().click();
 
-    // Page should still render correctly
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // After clicking Week, the view heading should reflect "Week"
+    await expect(
+      page.locator('h1, h2, [role="heading"], button[aria-pressed="true"]').filter({ hasText: /week|schedule|calendar/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    await takeScreenshot(page, '26-calendar-week.png');
   });
 
   test('calendar month view loads (default)', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Month view is default, or there is a Month button
+    // Month view is default or a Month button exists
     const monthBtn = page.locator('button:has-text("Month"), [aria-label*="month" i], [data-view="month"]');
     if (await monthBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
       await monthBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
     }
 
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('schedule') ||
-      pageText?.toLowerCase().includes('calendar') ||
-      pageText?.toLowerCase().includes('month') ||
-      // Calendar always shows day-of-week headers
-      pageText?.match(/mon|tue|wed|thu|fri/i)
-    ).toBeTruthy();
+    // Calendar grid must show day-of-week headers (definitive month/week view marker)
+    await expect(
+      page.locator('text=/Mon|Tue|Wed|Thu|Fri/').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '26-calendar-month.png');
   });
 
   test('can navigate to next month', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const nextBtn = page.locator(
-      'button:has-text("Next"), button[aria-label*="next" i], button[aria-label*="forward" i], button:has(svg[data-icon*="right"]), button:has(svg[data-icon*="chevron"])'
-    ).first();
+    // Capture current heading text before navigation
+    const heading = page.locator('h1, h2, [role="heading"]').first();
+    const initialText = await heading.textContent();
 
-    if (await nextBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      const initialText = await page.textContent('body');
-      await nextBtn.click();
-      await page.waitForTimeout(TIMEOUTS.animation);
-      const newText = await page.textContent('body');
-      // Page content should change after navigation
-      expect(newText?.length).toBeGreaterThan(0);
-    }
+    const nextBtn = page.locator(
+      'button:has-text("Next"), button[aria-label*="next" i], button[aria-label*="forward" i]'
+    ).first();
+    await expect(nextBtn).toBeVisible({ timeout: 5000 });
+    await nextBtn.click();
+
+    // Heading text must change after navigation (different month/period)
+    await expect(heading).not.toHaveText(initialText || '', { timeout: TIMEOUTS.element });
   });
 
   test('can navigate to previous month', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
+
+    const heading = page.locator('h1, h2, [role="heading"]').first();
+    const initialText = await heading.textContent();
 
     const prevBtn = page.locator(
       'button:has-text("Previous"), button:has-text("Prev"), button[aria-label*="prev" i], button[aria-label*="back" i]'
     ).first();
+    await expect(prevBtn).toBeVisible({ timeout: 5000 });
+    await prevBtn.click();
 
-    if (await prevBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await prevBtn.click();
-      await page.waitForTimeout(TIMEOUTS.animation);
-      const newText = await page.textContent('body');
-      expect(newText?.length).toBeGreaterThan(0);
-    }
+    // Heading text must change after navigation
+    await expect(heading).not.toHaveText(initialText || '', { timeout: TIMEOUTS.element });
   });
 
   test('appointments visible on calendar', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // The calendar structure should be rendered (with or without appointments)
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // The calendar container must render
+    await expect(
+      page.locator('[class*="calendar"], [data-testid*="calendar"], .fc, [class*="fc-"]').first()
+        .or(page.locator('h1, h2').filter({ hasText: /schedule|calendar/i }).first())
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '26-calendar-appointments.png');
   });
 
   test('"Export" button is visible', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -146,46 +142,36 @@ test.describe('26 - Calendar Export', () => {
     );
     const hasExport = await exportBtn.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
 
-    // Export functionality may be in a dropdown or settings panel
-    const pageText = await page.textContent('body');
-    const mentionsExport = pageText?.toLowerCase().match(/export|ical|ics|download/);
-
-    // Accept either visible button or text indicating the feature
-    if (!hasExport && !mentionsExport) {
-      // Feature may not be rendered on this page — check for a dedicated export route
-      const exportResponse = await page.request.get(`${BASE_URL}/api/schedule/export/ics`);
-      expect([200, 401, 403, 404].includes(exportResponse.status())).toBeTruthy();
+    if (!hasExport) {
+      // Feature may be behind a settings/menu button — check the iCal API endpoint directly
+      const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+      const exportResponse = await page.request.get(`${BASE_URL}/api/schedule/export/ics`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Authenticated request must return 200 (file) or 404 (endpoint pending implementation)
+      expect([200, 404].includes(exportResponse.status())).toBeTruthy();
+    } else {
+      expect(hasExport).toBeTruthy();
     }
   });
 
-  test('iCal export triggers download or API response', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
-      timeout: TIMEOUTS.pageLoad,
+  test('iCal export API endpoint responds correctly', async ({ page }) => {
+    // Check iCal export API endpoint directly with auth token
+    const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+    const exportResponse = await page.request.get(`${BASE_URL}/api/schedule/export/ics`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-    await waitForPageReady(page);
 
-    // Check iCal export API endpoint directly
-    const exportResponse = await page.request.get(`${BASE_URL}/api/schedule/export/ics`);
-    // 200 = file returned, 401 = needs auth token (expected), 404 = endpoint pending
-    expect([200, 401, 403, 404].includes(exportResponse.status())).toBeTruthy();
+    // 200 = ics file returned, 404 = endpoint not yet implemented (acceptable)
+    // 401 = auth issue (NOT acceptable — we sent a valid token)
+    expect([200, 404].includes(exportResponse.status())).toBeTruthy();
 
-    // If export button exists, clicking it should trigger a download or link navigation
-    const exportBtn = page.locator('button:has-text("Export"), a:has-text("Export"), a[href*="ics"]');
-    if (await exportBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-      // Set up download listener
-      const [download] = await Promise.all([
-        page.waitForEvent('download', { timeout: 5000 }).catch(() => null),
-        exportBtn.first().click(),
-      ]);
-      // Either download started or navigation happened
-      await takeScreenshot(page, '26-ical-export.png');
-    }
+    await takeScreenshot(page, '26-ical-export.png');
   });
 
   test('"Subscribe" button is visible', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -195,16 +181,17 @@ test.describe('26 - Calendar Export', () => {
     );
     const hasSubscribe = await subscribeBtn.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
 
-    const pageText = await page.textContent('body');
-    const mentionsSubscribe = pageText?.toLowerCase().match(/subscribe|sync|feed/);
-
-    // Accept either element or text reference
-    expect(hasSubscribe || mentionsSubscribe || true).toBeTruthy(); // Feature may be nested in export panel
+    if (!hasSubscribe) {
+      // Subscribe may be nested in an Export/Settings panel — acceptable if export endpoint works
+      test.fixme('KNOWN: Subscribe button may be nested inside export panel — not directly visible');
+    } else {
+      expect(hasSubscribe).toBeTruthy();
+    }
   });
 
-  test('subscribe shows URL to copy', async ({ page }) => {
+  test('subscribe shows webcal URL to copy', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -212,35 +199,32 @@ test.describe('26 - Calendar Export', () => {
     const subscribeBtn = page.locator('button:has-text("Subscribe"), a:has-text("Subscribe")');
     if (await subscribeBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
       await subscribeBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
 
-      // Should show a URL or copy instruction
-      const subscribeText = await page.textContent('body');
-      expect(
-        subscribeText?.includes('webcal') ||
-        subscribeText?.includes('ics') ||
-        subscribeText?.includes('http') ||
-        subscribeText?.toLowerCase().includes('copy') ||
-        subscribeText?.toLowerCase().includes('url')
-      ).toBeTruthy();
+      // Must show a URL (webcal:// or https://) the user can copy
+      await expect(
+        page.locator('input[value*="webcal"], input[value*="https"], [data-testid*="subscribe-url"], text=/webcal|ics/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
 
       await takeScreenshot(page, '26-subscribe-url.png');
+    } else {
+      test.fixme('KNOWN: Subscribe button not visible — feature may be in export panel');
     }
   });
 
   test('calendar view is responsive on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Calendar should render without overflow issues on mobile
+    // Schedule page must render on mobile without crashing
     await expect(page.locator('body')).toBeVisible();
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    // Layout viewport must not exceed mobile width
+    const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    expect(layoutWidth).toBeLessThanOrEqual(375 + 5);
 
     await takeScreenshot(page, '26-calendar-mobile.png');
   });

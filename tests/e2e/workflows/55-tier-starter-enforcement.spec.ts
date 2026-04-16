@@ -30,19 +30,17 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    // Starter trainers should see an upgrade/locked view
-    const pageText = await page.textContent('body');
-    const hasUpgradeContent =
-      pageText?.toLowerCase().includes('upgrade') ||
-      pageText?.toLowerCase().includes('locked') ||
-      pageText?.toLowerCase().includes('analytics require') ||
-      pageText?.toLowerCase().includes('plan');
-
-    // Should NOT see the full analytics dashboard (Total Clients KPI)
-    const hasFullDashboard = pageText?.includes('Total Clients');
-
-    // Either shows upgrade wall OR doesn't show full dashboard
-    expect(hasUpgradeContent || !hasFullDashboard).toBeTruthy();
+    // Starter trainers should see an upgrade/locked view, NOT the full "Total Clients" dashboard
+    const hasFullDashboard = await page.locator('text="Total Clients"').isVisible({ timeout: 3000 });
+    if (hasFullDashboard) {
+      // Full dashboard must NOT be visible for starter — assert failure condition
+      await expect(page.locator('text="Total Clients"')).not.toBeVisible();
+    } else {
+      // Should show upgrade wall with specific upgrade/locked text
+      await expect(
+        page.locator('text=/upgrade|locked|analytics require|plan/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
 
     await takeScreenshot(page, '55-01-starter-analytics-lock.png');
   });
@@ -56,8 +54,8 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/analytics');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Page must have a visible heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 3. Program builder: "Suggest next exercise" button NOT visible for starter
@@ -70,13 +68,13 @@ test.describe('55 - Tier Enforcement: Starter', () => {
 
     // Navigate to exercise step
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('Starter Suggest Test');
       const nextBtn = page.locator('button:has-text("Next")').first();
       for (let i = 0; i < 3; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await nextBtn.isVisible({ timeout: 3000 })) {
           await nextBtn.click();
-          await page.waitForTimeout(1000);
+          await expect(page.locator('body')).toBeVisible(); // let React re-render
         }
       }
     }
@@ -97,30 +95,23 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     await waitForPageReady(page);
 
     const nameInput = page.locator('input#name').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('Starter Drag Test');
       const nextBtn = page.locator('button:has-text("Next")').first();
       for (let i = 0; i < 3; i++) {
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await nextBtn.isVisible({ timeout: 3000 })) {
           await nextBtn.click();
-          await page.waitForTimeout(1000);
+          await expect(page.locator('body')).toBeVisible();
         }
       }
     }
 
-    // Drag handles are usually grip icons
+    // Drag handles are usually grip icons — must NOT be visible for starter
     const dragHandle = page.locator(
       '[class*="drag-handle"], [aria-label*="drag" i], [class*="grip"][class*="visible"]'
     ).first();
 
-    // Should not be visible for starter
-    const dragVisible = await dragHandle.isVisible({ timeout: 3000 }).catch(() => false);
-    // Graceful: if not present, that's correct behavior
-    if (dragVisible) {
-      // If present, it might be intended for all tiers — just note it
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
-    }
+    await expect(dragHandle).not.toBeVisible();
   });
 
   // 5. /settings/api page: shows upgrade required for starter
@@ -131,15 +122,12 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    // Should see upgrade prompt or redirect to settings
-    const hasUpgrade =
-      pageText?.toLowerCase().includes('upgrade') ||
-      pageText?.toLowerCase().includes('enterprise') ||
-      pageText?.toLowerCase().includes('api key') ||
-      page.url().includes('/settings') ||
-      page.url().includes('/dashboard');
-    expect(hasUpgrade).toBeTruthy();
+    // Must show upgrade prompt, OR be redirected away — assert one outcome
+    const onSettingsOrDashboard =
+      page.url().includes('/settings') || page.url().includes('/dashboard');
+    const upgradeVisible = await page.locator('text=/upgrade|enterprise|api key/i').first().isVisible({ timeout: 3000 });
+
+    expect(onSettingsOrDashboard || upgradeVisible).toBe(true);
   });
 
   // 6. Export Excel button NOT visible for starter
@@ -173,8 +161,7 @@ test.describe('55 - Tier Enforcement: Starter', () => {
       },
     });
 
-    // Either 403 (limit enforced) or 400 (validation) or 200 (not yet enforced)
-    // We accept any non-500 response
+    // Either 403 (limit enforced) or 400 (validation) — accept both, reject 500
     expect(res.status()).toBeLessThan(500);
   });
 
@@ -206,8 +193,7 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/workouts');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1:has-text("Workouts")')).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 10. Exercise library: can browse exercises
@@ -232,8 +218,7 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/schedule');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 12. Dashboard: shows content appropriate for starter
@@ -245,8 +230,7 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     await waitForPageReady(page);
 
     expect(page.url()).toContain('/dashboard');
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '55-12-starter-dashboard.png');
   });
@@ -259,14 +243,10 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    const hasPricingContent =
-      pageText?.toLowerCase().includes('professional') ||
-      pageText?.toLowerCase().includes('enterprise') ||
-      pageText?.toLowerCase().includes('upgrade') ||
-      pageText?.toLowerCase().includes('price') ||
-      pageText?.toLowerCase().includes('plan');
-    expect(hasPricingContent).toBeTruthy();
+    // Pricing page must mention at least Professional or Enterprise or contain a price
+    await expect(
+      page.locator('text=/professional|enterprise|upgrade|\$299|\$149/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 14. /checkout/cancel: loads correctly
@@ -277,8 +257,7 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 15. /checkout/success: loads correctly
@@ -289,8 +268,7 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 16. Admin page: redirects to /dashboard (not admin)
@@ -304,12 +282,10 @@ test.describe('55 - Tier Enforcement: Starter', () => {
       { timeout: TIMEOUTS.pageLoad }
     ).catch(() => {});
 
-    // Should be redirected or not see admin-only content
-    const pageText = await page.textContent('body');
-    const isAdminPanel =
-      pageText?.includes('User Management') && pageText?.includes('Feature Flags');
-    // Starter trainers should not see the admin panel internals
-    expect(!isAdminPanel || page.url().includes('/dashboard')).toBeTruthy();
+    // Should NOT see admin panel internals — both "User Management" AND "Feature Flags" absent
+    await expect(
+      page.locator('text="User Management"').and(page.locator('text="Feature Flags"'))
+    ).not.toBeVisible();
   });
 
   // 17. Can invite a client (within limit)
@@ -320,19 +296,17 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
+    // Client management page must load with its heading
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
+
     const inviteBtn = page.locator(
       'button:has-text("Invite"), button:has-text("Add Client"), a:has-text("Invite Client")'
     ).first();
 
-    const inviteVisible = await inviteBtn.isVisible({ timeout: 5000 }).catch(() => false);
     // Invite should be accessible for starter (within limit)
-    if (inviteVisible) {
-      await expect(inviteBtn).toBeVisible();
-    } else {
-      // Client management page loads
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
-    }
+    await expect(inviteBtn).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 18. WhatsApp link field visible on profile
@@ -343,12 +317,10 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    const hasWhatsApp =
-      pageText?.toLowerCase().includes('whatsapp') ||
-      pageText?.toLowerCase().includes('phone');
-    // WhatsApp link is available to all tiers
-    expect(hasWhatsApp || pageText!.length > 200).toBeTruthy();
+    // WhatsApp link is available to all tiers — assert label or input is visible
+    await expect(
+      page.locator('text=/whatsapp|phone/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 19. Can edit basic profile info
@@ -363,13 +335,9 @@ test.describe('55 - Tier Enforcement: Starter', () => {
       'input[name*="firstName" i], input[name*="name" i], input[placeholder*="first name" i]'
     ).first();
 
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      const currentVal = await nameInput.inputValue();
-      await nameInput.fill(currentVal || 'Starter QA');
-    }
-
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await expect(nameInput).toBeVisible({ timeout: TIMEOUTS.element });
+    const currentVal = await nameInput.inputValue();
+    await nameInput.fill(currentVal || 'Starter QA');
   });
 
   // 20. Can view exercise library
@@ -384,9 +352,10 @@ test.describe('55 - Tier Enforcement: Starter', () => {
       timeout: TIMEOUTS.element,
     });
 
-    // Exercise count should be visible
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(200);
+    // Exercise count indicator should be visible
+    await expect(
+      page.locator('text=/exercises|results/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 21. Starter sees correct feature set in program builder
@@ -435,21 +404,20 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    // CSV export button should either not be visible or analytics itself is locked
-    const csvBtn = page.locator(
-      'button:has-text("Export CSV"), button:has-text("CSV"), a[href*="csv"]'
-    ).first();
+    // Analytics must be locked for starter — upgrade text visible
+    const analyticsLocked = await page.locator('text=/upgrade|locked/i').first().isVisible({ timeout: 3000 });
 
-    // If analytics is locked for starter, CSV button won't exist
-    const pageText = await page.textContent('body');
-    const analyticsLocked =
-      pageText?.toLowerCase().includes('upgrade') ||
-      pageText?.toLowerCase().includes('locked') ||
-      !pageText?.includes('Export');
-
-    // Either analytics is locked (no CSV button context) or CSV button hidden
-    const csvVisible = await csvBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    expect(analyticsLocked || !csvVisible).toBeTruthy();
+    if (analyticsLocked) {
+      // Correct: starter sees upgrade wall — CSV button must be absent
+      await expect(
+        page.locator('button:has-text("Export CSV"), button:has-text("CSV"), a[href*="csv"]')
+      ).not.toBeVisible();
+    } else {
+      // If analytics is accessible, CSV button must still be hidden for starter
+      await expect(
+        page.locator('button:has-text("Export CSV"), button:has-text("CSV"), a[href*="csv"]')
+      ).not.toBeVisible();
+    }
   });
 
   // 25. Bug report button visible and functional
@@ -460,17 +428,9 @@ test.describe('55 - Tier Enforcement: Starter', () => {
     });
     await waitForPageReady(page);
 
-    const bugBtn = page.locator(
-      'button:has-text("Report Bug"), button:has-text("Bug"), button[aria-label*="bug" i]'
-    ).first();
-
-    if (await bugBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(bugBtn).toBeVisible();
-    } else {
-      // Bug report may be in footer or a floating button
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
-    }
+    // Bug report floating button must be present for all authenticated users
+    const bugBtn = page.locator('[aria-label="Report a Problem"]').first();
+    await expect(bugBtn).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '55-25-starter-bug-report.png');
   });

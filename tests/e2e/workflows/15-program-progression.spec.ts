@@ -42,7 +42,7 @@ async function fillStep1AndAdvance(page: import('@playwright/test').Page): Promi
     const isDisabled = await nextButton.isDisabled().catch(() => true);
     if (!isDisabled) {
       await nextButton.click();
-      await page.waitForTimeout(800);
+      await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
       return true;
     }
   }
@@ -63,7 +63,7 @@ async function tryAdvanceSteps(
     const isDisabled = await nextButton.isDisabled().catch(() => true);
     if (isDisabled) break;
     await nextButton.click();
-    await page.waitForTimeout(600);
+    await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
   }
 }
 
@@ -76,18 +76,12 @@ test.describe('15 - Program Progression Builder', () => {
     await fillStep1AndAdvance(page);
     await tryAdvanceSteps(page, 3);
 
-    // Check for any progression-related content in the builder
-    const allText = await page.evaluate(() => document.body.innerText);
-    const progressionFound =
-      allText.includes('Progression') ||
-      allText.includes('progression') ||
-      allText.includes('deload') ||
-      allText.includes('Week Structure') ||
-      allText.includes('Week') ||
-      allText.includes('Goals');
+    // Verify the builder is at an active step — heading or tab must be visible
+    await expect(
+      page.locator('text=/Progression|progression|deload|Week Structure|Week|Goals/').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '15-progression-builder.png');
-    expect(progressionFound).toBeTruthy();
   });
 
   test('Deload Config section is rendered within the progression builder', async ({ page }) => {
@@ -107,14 +101,10 @@ test.describe('15 - Program Progression Builder', () => {
 
     if (!deloadConfigVisible && !deloadTextVisible) {
       // DeloadConfig is not surfaced in the current live wizard.
-      // Verify the program builder itself is accessible and functional.
-      const pageText = await page.textContent('body');
-      const hasBuilderContent =
-        pageText?.toLowerCase().includes('program') ||
-        pageText?.toLowerCase().includes('week') ||
-        pageText?.toLowerCase().includes('goal') ||
-        pageText?.toLowerCase().includes('step');
-      expect(hasBuilderContent).toBeTruthy();
+      // Verify the program builder itself is at a valid step.
+      await expect(
+        page.locator('text=/program|week|goal|step/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-deload-config-not-surfaced.png');
       return;
     }
@@ -129,9 +119,9 @@ test.describe('15 - Program Progression Builder', () => {
     const deloadToggle = page.locator('input[aria-label="Enable automatic deload"]');
     if (!(await deloadToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
       // DeloadConfig is not surfaced in the current live wizard.
-      // Assert the builder page is in a valid state instead.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      await expect(
+        page.locator('h1, h2, h3').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-deload-toggle-not-surfaced.png');
       return;
     }
@@ -139,7 +129,7 @@ test.describe('15 - Program Progression Builder', () => {
     const isChecked = await deloadToggle.isChecked();
     if (!isChecked) {
       await deloadToggle.click();
-      await page.waitForTimeout(300);
+      await expect(deloadToggle).toBeChecked({ timeout: TIMEOUTS.element });
     }
     // After enabling, frequency and slider controls should appear
     const frequencySelect = page.locator('select#deload-frequency, select[aria-label="Frequency"]');
@@ -153,14 +143,13 @@ test.describe('15 - Program Progression Builder', () => {
     const toggle = page.locator('input[aria-label="Enable automatic deload"]');
     if (await toggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
       if (!(await toggle.isChecked())) await toggle.click();
-      await page.waitForTimeout(300);
+      await expect(toggle).toBeChecked({ timeout: TIMEOUTS.element });
     }
 
     const frequencySelect = page.locator('select#deload-frequency, select[aria-label="Frequency"]');
     if (!(await frequencySelect.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
       // Deload frequency not surfaced — assert the builder page loaded correctly.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-deload-frequency-not-surfaced.png');
       return;
     }
@@ -179,14 +168,13 @@ test.describe('15 - Program Progression Builder', () => {
     const toggle = page.locator('input[aria-label="Enable automatic deload"]');
     if (await toggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
       if (!(await toggle.isChecked())) await toggle.click();
-      await page.waitForTimeout(300);
+      await expect(toggle).toBeChecked({ timeout: TIMEOUTS.element });
     }
 
     const intensitySlider = page.locator('input#deload-intensity, input[aria-label="Deload intensity"]');
     if (!(await intensitySlider.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // Deload intensity slider not surfaced — assert the builder page loaded correctly.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // Deload intensity slider not surfaced — assert the builder heading is visible.
+      await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-deload-intensity-not-surfaced.png');
       return;
     }
@@ -204,14 +192,13 @@ test.describe('15 - Program Progression Builder', () => {
     const toggle = page.locator('input[aria-label="Enable automatic deload"]');
     if (await toggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
       if (!(await toggle.isChecked())) await toggle.click();
-      await page.waitForTimeout(300);
+      await expect(toggle).toBeChecked({ timeout: TIMEOUTS.element });
     }
 
     const volumeSlider = page.locator('input#deload-volume, input[aria-label="Deload volume"]');
     if (!(await volumeSlider.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // Deload volume slider not surfaced — assert the builder page loaded correctly.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // Deload volume slider not surfaced — assert the builder heading is visible.
+      await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-deload-volume-not-surfaced.png');
       return;
     }
@@ -229,14 +216,13 @@ test.describe('15 - Program Progression Builder', () => {
     const toggle = page.locator('input[aria-label="Enable automatic deload"]');
     if (await toggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
       if (!(await toggle.isChecked())) await toggle.click();
-      await page.waitForTimeout(300);
+      await expect(toggle).toBeChecked({ timeout: TIMEOUTS.element });
     }
 
     const preview = page.locator('[data-testid="deload-preview"]');
     if (!(await preview.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // Deload preview not surfaced — assert the builder page loaded correctly.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // Deload preview not surfaced — assert the builder heading is visible.
+      await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-deload-preview-not-surfaced.png');
       return;
     }
@@ -248,7 +234,7 @@ test.describe('15 - Program Progression Builder', () => {
     const frequencySelect = page.locator('select#deload-frequency, select[aria-label="Frequency"]');
     if (await frequencySelect.isVisible({ timeout: 2000 }).catch(() => false)) {
       await frequencySelect.selectOption('3');
-      await page.waitForTimeout(300);
+      await expect(preview).toBeVisible({ timeout: TIMEOUTS.element });
       const updatedText = await preview.textContent();
       expect(updatedText).toBeTruthy();
     }
@@ -260,13 +246,10 @@ test.describe('15 - Program Progression Builder', () => {
 
     const calcSection = page.locator('[data-testid="percentage-calculator-section"]');
     if (!(await calcSection.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // Check for the text at minimum
-      const pageText = await page.textContent('body');
-      const hasCalcContent =
-        pageText?.includes('Percentage') ||
-        pageText?.includes('Calculator') ||
-        pageText?.includes('Week');
-      expect(hasCalcContent).toBeTruthy();
+      // Check for the text at minimum — either percentage calc or week step must be visible
+      await expect(
+        page.locator('text=/Percentage|Calculator|Week/').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
 
@@ -280,9 +263,8 @@ test.describe('15 - Program Progression Builder', () => {
 
     const calcSection = page.locator('[data-testid="percentage-calculator-section"]');
     if (!(await calcSection.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // PercentageCalculator not surfaced — assert the builder page loaded correctly.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // PercentageCalculator not surfaced — assert the builder heading is visible.
+      await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-calc-toggle-not-surfaced.png');
       return;
     }
@@ -290,7 +272,6 @@ test.describe('15 - Program Progression Builder', () => {
     // Click the toggle button inside the section
     const toggleButton = calcSection.locator('button').first();
     await toggleButton.click();
-    await page.waitForTimeout(300);
 
     // After clicking, the PercentageCalculator should appear
     const calculator = page.locator('[data-testid="percentage-calculator"]');
@@ -304,9 +285,8 @@ test.describe('15 - Program Progression Builder', () => {
 
     const calcSection = page.locator('[data-testid="percentage-calculator-section"]');
     if (!(await calcSection.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      // PercentageCalculator not surfaced — assert the builder page loaded correctly.
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(100);
+      // PercentageCalculator not surfaced — assert the builder heading is visible.
+      await expect(page.locator('h1, h2, h3').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '15-calc-table-not-surfaced.png');
       return;
     }
@@ -314,14 +294,13 @@ test.describe('15 - Program Progression Builder', () => {
     // Expand calculator
     const toggleButton = calcSection.locator('button').first();
     await toggleButton.click();
-    await page.waitForTimeout(300);
 
     const calculator = page.locator('[data-testid="percentage-calculator"]');
-    if (await calculator.isVisible({ timeout: 3000 }).catch(() => false)) {
-      // Table should have rows for 4 weeks, 8 weeks, 12 weeks
-      await expect(calculator.locator('td:has-text("4 weeks")')).toHaveCount(1);
-      await expect(calculator.locator('td:has-text("8 weeks")')).toHaveCount(1);
-      await expect(calculator.locator('td:has-text("12 weeks")')).toHaveCount(1);
-    }
+    await expect(calculator).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Table should have rows for 4 weeks, 8 weeks, 12 weeks
+    await expect(calculator.locator('td:has-text("4 weeks")')).toHaveCount(1);
+    await expect(calculator.locator('td:has-text("8 weeks")')).toHaveCount(1);
+    await expect(calculator.locator('td:has-text("12 weeks")')).toHaveCount(1);
   });
 });

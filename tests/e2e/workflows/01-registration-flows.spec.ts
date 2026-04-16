@@ -45,9 +45,8 @@ async function fillRegisterForm(
   // Role buttons: type="button", text "Client" / "Trainer"
   const roleLabel = role === 'trainer' ? 'Trainer' : 'Client';
   const roleBtn = page.locator(`button:not([type="submit"]):has-text("${roleLabel}")`).first();
-  if (await roleBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-    await roleBtn.click();
-  }
+  await expect(roleBtn).toBeVisible({ timeout: 3000 });
+  await roleBtn.click();
 
   // Use #password specifically — confirmPassword also has type=password
   await page.locator('input#password').fill(password);
@@ -55,9 +54,8 @@ async function fillRegisterForm(
 
   if (agreeToTerms) {
     const termsCheckbox = page.locator('input#agreeToTerms');
-    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await termsCheckbox.check();
-    }
+    await expect(termsCheckbox).toBeVisible({ timeout: 2000 });
+    await termsCheckbox.check();
   }
 }
 
@@ -104,6 +102,7 @@ test.describe('01 - Registration Flows', () => {
 
   /**
    * Register an admin via the API (admin creation is typically API-only).
+   * Admin self-registration should be rejected (403/400) — this is a security check.
    */
   test('should register admin account via API', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -115,14 +114,17 @@ test.describe('01 - Registration Flows', () => {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    // Either 201 Created or 200, depending on implementation.
-    // Some apps reject admin self-registration (403/400 expected in that case).
+    // Admin self-registration should be rejected (400/403) OR succeed (200/201) if allowed.
+    // Either way the server must respond — never timeout.
     const status = response.status();
     expect([200, 201, 400, 403]).toContain(status);
 
     if (response.ok()) {
       const body = await response.json();
       expect(body.success).toBe(true);
+    } else {
+      // Server correctly rejected admin self-registration
+      expect([400, 403]).toContain(status);
     }
   });
 
@@ -140,29 +142,22 @@ test.describe('01 - Registration Flows', () => {
     await page.locator('input#password').fill('TestPass2026!');
     await page.locator('input#confirmPassword').fill('TestPass2026!');
     const termsCheckbox = page.locator('input#agreeToTerms');
-    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await termsCheckbox.check();
-    }
+    await expect(termsCheckbox).toBeVisible({ timeout: 2000 });
+    await termsCheckbox.check();
 
     await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(1000);
 
     // Should remain on register page
     await expect(page).toHaveURL(/register/);
 
-    // Custom error text for missing email
-    const hasCustomError = await page
-      .locator('text=/email is required/i')
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    // Fallback: native browser validity
+    // Assert EITHER custom error text OR native invalidity — both signal validation fired
     const emailInput = page.locator('input#email');
-    const isNativeInvalid = await emailInput
-      .evaluate((el: HTMLInputElement) => !el.validity.valid)
-      .catch(() => false);
+    const customError = page.locator('text=/email is required/i');
 
-    expect(isNativeInvalid || hasCustomError).toBeTruthy();
+    const isNativeInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+    if (!isNativeInvalid) {
+      await expect(customError).toBeVisible({ timeout: 3000 });
+    }
   });
 
   /**
@@ -179,28 +174,22 @@ test.describe('01 - Registration Flows', () => {
     await page.locator('input#email').fill(email);
     // Leave password + confirmPassword empty
     const termsCheckbox = page.locator('input#agreeToTerms');
-    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await termsCheckbox.check();
-    }
+    await expect(termsCheckbox).toBeVisible({ timeout: 2000 });
+    await termsCheckbox.check();
 
     await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(1000);
 
     // Should remain on register page
     await expect(page).toHaveURL(/register/);
 
-    // Custom error: "Password is required"
-    const hasCustomError = await page
-      .locator('text=/password is required/i')
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
+    // Assert EITHER native invalidity OR custom error text
     const pwInput = page.locator('input#password');
-    const isNativeInvalid = await pwInput
-      .evaluate((el: HTMLInputElement) => !el.validity.valid)
-      .catch(() => false);
+    const customError = page.locator('text=/password is required/i');
 
-    expect(isNativeInvalid || hasCustomError).toBeTruthy();
+    const isNativeInvalid = await pwInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+    if (!isNativeInvalid) {
+      await expect(customError).toBeVisible({ timeout: 3000 });
+    }
   });
 
   /**
@@ -217,23 +206,18 @@ test.describe('01 - Registration Flows', () => {
     await page.locator('input#password').fill('abc12');
     await page.locator('input#confirmPassword').fill('abc12');
     const termsCheckbox = page.locator('input#agreeToTerms');
-    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await termsCheckbox.check();
-    }
+    await expect(termsCheckbox).toBeVisible({ timeout: 2000 });
+    await termsCheckbox.check();
 
     await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(2000);
 
     // Page should not navigate away — still on register
-    const url = page.url();
+    await expect(page).toHaveURL(/register/);
 
-    // Error message: "Password must be at least 8 characters"
-    const hasError = await page
-      .locator('text=/password must be at least/i, text=/at least 8/i, text=/minimum/i, text=/too short/i')
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    expect(url.includes('register') || hasError).toBeTruthy();
+    // Error message about minimum password length must appear
+    await expect(
+      page.locator('text=/password must be at least/i, text=/at least 8/i, text=/minimum/i, text=/too short/i').first()
+    ).toBeVisible({ timeout: 3000 });
   });
 
   /**
@@ -248,25 +232,19 @@ test.describe('01 - Registration Flows', () => {
     await page.locator('input#password').fill('TestPass2026!');
     await page.locator('input#confirmPassword').fill('TestPass2026!');
     const termsCheckbox = page.locator('input#agreeToTerms');
-    if (await termsCheckbox.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await termsCheckbox.check();
-    }
+    await expect(termsCheckbox).toBeVisible({ timeout: 2000 });
+    await termsCheckbox.check();
 
     await page.locator('button[type="submit"]').click();
-    await page.waitForTimeout(1500);
 
-    // Custom error: "Please enter a valid email address"
-    const hasCustomError = await page
-      .locator('text=/valid email/i, text=/invalid email/i, text=/enter a valid/i')
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
+    // Assert EITHER native invalidity OR custom error text
     const emailInput = page.locator('input#email');
-    const isNativeInvalid = await emailInput
-      .evaluate((el: HTMLInputElement) => !el.validity.valid)
-      .catch(() => false);
+    const customError = page.locator('text=/valid email/i, text=/invalid email/i, text=/enter a valid/i');
 
-    expect(isNativeInvalid || hasCustomError).toBeTruthy();
+    const isNativeInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+    if (!isNativeInvalid) {
+      await expect(customError.first()).toBeVisible({ timeout: 3000 });
+    }
   });
 
   /**

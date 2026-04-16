@@ -35,9 +35,8 @@ test.describe('05 - Trainer Profile', () => {
     const completionCard = page.locator('text=/profile completion/i').first();
     await expect(completionCard).toBeVisible({ timeout: TIMEOUTS.element });
 
-    // We just need at least one visible element containing a % sign on the page
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toMatch(/%/);
+    // The completion percentage is rendered on the page as a numeric % value
+    await expect(page.locator('text=/%/')).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // ---------- 3. Edit profile page loads with form fields ----------
@@ -189,9 +188,6 @@ test.describe('05 - Trainer Profile', () => {
     // on the profile summary page for the QA trainer account.
     await page.goto(PROFILE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
 
-    // Wait for the expiring-certs API call to resolve (fetch runs on mount)
-    await page.waitForTimeout(3000);
-
     // The CertExpirationAlert renders role="alert" with amber styling and "expiring soon" text.
     // Find the specific cert-expiration alert (not generic toast alerts) by its content.
     const certAlert = page.locator('[role="alert"]:has-text("expir")').first();
@@ -202,15 +198,13 @@ test.describe('05 - Trainer Profile', () => {
       const alertText = (await certAlert.textContent()) ?? '';
       expect(alertText.toLowerCase()).toMatch(/expir/i);
     } else {
-      // Alert not rendered — this can happen if global-setup cert seeding hasn't propagated
-      // yet (race with API fetch on profile page mount). Verify the profile page itself
-      // rendered correctly; the cert seeding is best-effort in the shared environment.
+      // Alert not rendered — global-setup cert seeding may not have propagated.
+      // At minimum the profile page must have rendered with the trainer heading.
       await expect(page.locator('h1').filter({ hasText: /profile/i }).first()).toBeVisible({
         timeout: TIMEOUTS.element,
       });
-      // The body should contain the trainer role indicator at minimum
-      const bodyText = (await page.textContent('body')) ?? '';
-      expect(/trainer|profile/i.test(bodyText)).toBeTruthy();
+      // And the trainer role badge must be visible
+      await expect(page.locator('text=/trainer/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -218,26 +212,22 @@ test.describe('05 - Trainer Profile', () => {
   test('can add a specialization on profile edit page', async ({ page }) => {
     await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
 
-    // A specialization input or section may exist; gracefully skip if absent
+    // A specialization input or section may exist; if absent assert the form still renders
     const specializationInput = page.locator('input[placeholder*="specializ" i], input[id*="specializ" i]');
+    const inputVisible = await specializationInput.isVisible({ timeout: 3000 }).catch(() => false);
 
-    if (await specializationInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (inputVisible) {
       await specializationInput.fill('Strength & Conditioning');
 
       const addBtn = page.getByRole('button', { name: /add specialization/i });
-      if (await addBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await addBtn.click();
-        await expect(
-          page.locator('text=/Strength & Conditioning/i')
-        ).toBeVisible({ timeout: TIMEOUTS.element });
-      }
+      await expect(addBtn).toBeVisible({ timeout: TIMEOUTS.element });
+      await addBtn.click();
+      await expect(
+        page.locator('text=/Strength & Conditioning/i')
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
-      // Section not present in this build; verify page is still functional
-      const formVisible = await page
-        .locator('form')
-        .isVisible({ timeout: TIMEOUTS.element })
-        .catch(() => false);
-      expect(formVisible).toBeTruthy();
+      // Section not present in this build; assert the edit form is functional
+      await expect(page.locator('form')).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -275,8 +265,8 @@ test.describe('05 - Trainer Profile', () => {
     if (pctBefore !== null && pctAfter !== null) {
       expect(pctAfter).toBeGreaterThanOrEqual(pctBefore);
     } else {
-      // At minimum the page contains some % indicator
-      expect(bodyAfter).toMatch(/%/);
+      // At minimum the page must have a profile completion widget with a % indicator
+      await expect(page.locator('text=/%/')).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 });

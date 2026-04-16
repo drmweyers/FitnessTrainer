@@ -30,19 +30,10 @@ test.describe('03 - Password Reset', () => {
     await page.locator('input#email, input[name="email"], input[type="email"]').fill('any-email@test.com');
     await page.locator('button[type="submit"]').click();
 
-    // Wait for the response/animation
-    await page.waitForTimeout(3000);
-
-    // Should show a success / confirmation message
-    const successMessage = page.locator(
-      'text=/sent|check your email|if.*account.*exists|we.ll email|instructions/i'
-    );
-    const isVisible = await successMessage.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-
-    // Alternatively the form may have navigated or shown an alert
-    const hasAlert = await page.locator('[role="alert"]').isVisible({ timeout: 2000 }).catch(() => false);
-
-    expect(isVisible || hasAlert).toBeTruthy();
+    // Should show a success / confirmation message (security: same message regardless of whether account exists)
+    await expect(
+      page.locator('text=/sent|check your email|if.*account.*exists|we.ll email|instructions/i, [role="alert"]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   /**
@@ -56,14 +47,14 @@ test.describe('03 - Password Reset', () => {
     // Should stay on the same page
     await expect(page).toHaveURL(/forgot/);
 
+    // Must show validation — either native browser validity or custom error
     const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
-    const isInvalid = await emailInput
-      .evaluate((el: HTMLInputElement) => !el.validity.valid)
-      .catch(() => false);
-    const customError = page.locator('[role="alert"], .error, [data-testid*="error"]');
-    const hasCustomError = await customError.first().isVisible({ timeout: 2000 }).catch(() => false);
-
-    expect(isInvalid || hasCustomError).toBeTruthy();
+    const isInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+    if (!isInvalid) {
+      await expect(
+        page.locator('[role="alert"], .error, [data-testid*="error"]').first()
+      ).toBeVisible({ timeout: 2000 });
+    }
   });
 
   /**
@@ -75,18 +66,18 @@ test.describe('03 - Password Reset', () => {
       waitUntil: 'networkidle',
     });
 
-    // The page should render — even with an invalid/fake token the UI form should appear
-    const bodyText = (await page.textContent('body')) ?? '';
+    // The page should render — even with an invalid/fake token the UI should show
+    // either a password form or an "invalid token" error message
+    const passwordField = page.locator('input[type="password"], input[name="password"], input[id="password"]').first();
+    const hasPasswordField = await passwordField.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
 
-    const hasPasswordField = await page
-      .locator('input[type="password"], input[name="password"], input[id="password"]')
-      .first()
-      .isVisible({ timeout: TIMEOUTS.element })
-      .catch(() => false);
-
-    const hasResetHeading = /reset|new password|change password/i.test(bodyText);
-
-    expect(hasPasswordField || hasResetHeading).toBeTruthy();
+    if (!hasPasswordField) {
+      // Correct production behaviour: invalid token shows an error page
+      const bodyText = (await page.textContent('body')) ?? '';
+      expect(/reset|new password|change password|invalid|expired|token|error/i.test(bodyText)).toBe(true);
+    } else {
+      await expect(passwordField).toBeVisible();
+    }
   });
 
   /**
@@ -116,16 +107,11 @@ test.describe('03 - Password Reset', () => {
     const submitBtn = page.locator('button[type="submit"]');
     await submitBtn.click();
 
-    await page.waitForTimeout(2000);
-
-    // Should remain on reset page or show error about weak password
-    const url = page.url();
-    const hasWeakError = await page
-      .locator('text=/weak|too short|at least|minimum|strength/i')
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    expect(url.includes('reset') || hasWeakError).toBeTruthy();
+    // Must stay on reset page AND show a weak password error
+    await expect(page).toHaveURL(/reset/);
+    await expect(
+      page.locator('text=/weak|too short|at least|minimum|strength/i').first()
+    ).toBeVisible({ timeout: 3000 });
   });
 
   /**
@@ -153,16 +139,10 @@ test.describe('03 - Password Reset', () => {
 
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForTimeout(2000);
-
-    // Should show mismatch error
-    const hasMismatch = await page
-      .locator('text=/match|same|identical|confirm/i')
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    const remainsOnPage = page.url().includes('reset');
-
-    expect(hasMismatch || remainsOnPage).toBeTruthy();
+    // Must stay on the reset page AND show a mismatch error
+    await expect(page).toHaveURL(/reset/);
+    await expect(
+      page.locator('text=/match|same|identical|confirm/i').first()
+    ).toBeVisible({ timeout: 3000 });
   });
 });

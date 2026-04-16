@@ -118,13 +118,11 @@ test.describe('E03 - Concurrent Workout Completion', () => {
       expect(r.status()).toBeLessThan(500);
     }
 
-    // At least one should be a success (or all idempotent 2xx)
+    // All responses must be acceptable: 2xx (success/idempotent) or 409 (conflict) or 404 (not found)
     const statuses = results.map((r) => r.status());
-    const anySuccess = statuses.some((s) => s >= 200 && s < 300);
-    const allAcceptable = statuses.every(
-      (s) => (s >= 200 && s < 300) || s === 409 || s === 404
-    );
-    expect(anySuccess || allAcceptable).toBeTruthy();
+    for (const s of statuses) {
+      expect((s >= 200 && s < 300) || s === 409 || s === 404).toBe(true);
+    }
   });
 
   test('workout shows completed status after concurrent submits (single completion)', async ({ page }) => {

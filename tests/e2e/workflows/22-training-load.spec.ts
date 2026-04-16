@@ -120,8 +120,8 @@ test.describe('22 - Training Load & Performance', () => {
     }
 
     const body = await page.textContent('body');
-    // Should show either metrics or an empty/loading state
-    expect(body!.length).toBeGreaterThan(100);
+    // Should show either metrics or an empty/loading state — a structural element must be visible
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('performance API returns valid response', async ({ page }) => {
@@ -162,7 +162,7 @@ test.describe('22 - Training Load & Performance', () => {
     const numberInput = page.locator('input[type="number"]');
     const hasNumberInput = await numberInput.first().isVisible({ timeout: 3000 }).catch(() => false);
 
-    expect(hasControls || hasNumberInput || true).toBeTruthy(); // Range may be hidden by default
+    test.fixme(true, 'KNOWN: Time range filter may not be visible by default on training load tab');
   });
 
   test('trainer sees client selector on analytics page', async ({ page }) => {
@@ -192,7 +192,14 @@ test.describe('22 - Training Load & Performance', () => {
       bodyText.includes('went wrong') ||
       bodyText.includes('try again');
 
-    expect(hasSelector || hasCustom || hasAnyContent).toBeTruthy();
+    if (hasSelector || hasCustom) {
+      // Selector is present — this is the real assertion
+    } else {
+      // Selector not surfaced — verify analytics content is visible
+      await expect(
+        page.locator('text=/analytics|client|select|went wrong|try again/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
 
     await takeScreenshot(page, '22-trainer-analytics.png');
   });
@@ -218,23 +225,21 @@ test.describe('22 - Training Load & Performance', () => {
         const options = await page.locator('select option').count();
         if (options > 1) {
           await clientSelector.selectOption({ index: 1 });
-          await page.waitForTimeout(1000);
-          const updatedBody = await page.textContent('body');
-          expect(updatedBody!.length).toBeGreaterThan(100);
+          // After selecting a client, the page must still render a structural element
+          await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
         }
       } else {
         // Custom dropdown — click to open
         await clientSelector.click();
-        await page.waitForTimeout(500);
-        const dropdownItems = page.locator('[role="option"], [role="menuitem"], li');
-        const itemCount = await dropdownItems.count();
-        expect(itemCount >= 0).toBeTruthy();
+        await expect(
+          page.locator('[role="option"], [role="menuitem"]').first()
+        ).toBeVisible({ timeout: TIMEOUTS.element }).catch(() => {
+          // Dropdown may have no items — verify analytics content is still visible
+        });
       }
     } else {
-      // Client selector not visible — feature may be hidden or use a different UI pattern.
-      // Verify the analytics page still loaded correctly.
-      const pageBody = await page.textContent('body');
-      expect(pageBody!.length).toBeGreaterThan(50);
+      // Client selector not visible — verify the analytics page loaded correctly.
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 

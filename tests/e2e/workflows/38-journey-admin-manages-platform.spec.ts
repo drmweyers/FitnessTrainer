@@ -6,7 +6,7 @@
  * Uses test.describe.serial because tests represent a linear admin workflow.
  */
 import { test, expect } from '@playwright/test';
-import { BASE_URL, ROUTES, API, TIMEOUTS } from '../helpers/constants';
+import { BASE_URL, ROUTES, API, TIMEOUTS, TEST_ACCOUNTS } from '../helpers/constants';
 import { loginViaUI, loginViaAPI, waitForPageReady, takeScreenshot } from '../helpers/auth';
 
 test.describe.serial('38 - Journey: Admin Manages Platform', () => {
@@ -29,26 +29,21 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin navigates to /admin and verifies dashboard stats', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('admin') ||
-      body?.toLowerCase().includes('dashboard') ||
-      body?.toLowerCase().includes('overview') ||
-      body?.toLowerCase().includes('users')
-    ).toBeTruthy();
+    // Admin dashboard heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /admin|dashboard|overview/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-    // Should have some numeric stats
-    const hasStats =
-      body?.toLowerCase().includes('total') ||
-      body?.toLowerCase().includes('trainer') ||
-      body?.toLowerCase().includes('client') ||
-      /\d+/.test(body || '');
-    expect(hasStats).toBeTruthy();
+    // Numeric stats must be present
+    const statsSection = page.locator(
+      '[data-testid*="stats"], [class*="stat"], [class*="metric"], [class*="count"]'
+    );
+    await expect(statsSection.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '38-02-admin-dashboard-stats.png');
   });
@@ -59,17 +54,18 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin navigates to /admin/users and verifies user list', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('user') ||
-      body?.includes('@') ||
-      body?.toLowerCase().includes('manage')
-    ).toBeTruthy();
+    // User list heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /user|manage/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Seeded QA accounts must appear
+    await expect(page.locator('text=@evofit.io').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '38-03-admin-users.png');
   });
@@ -80,30 +76,23 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin searches for qa-trainer in user list', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     const searchInput = page.locator(
-      'input[type="search"], input[placeholder*="search" i], input[placeholder*="email" i], input[aria-label*="search" i], input[placeholder*="user" i]'
+      'input[type="search"], input[placeholder*="search" i], input[placeholder*="email" i], input[aria-label*="search" i]'
     );
-    const hasSearch = await searchInput.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(searchInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.first().fill('qa-trainer');
 
-    if (hasSearch) {
-      await searchInput.first().fill('qa-trainer');
-      await page.waitForTimeout(1000);
+    // qa-trainer account must appear in search results
+    await expect(
+      page.locator('text=qa-trainer@evofit.io').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-      const body = await page.textContent('body');
-      // Results should still contain something
-      expect(body && body.length > 50).toBeTruthy();
-
-      await takeScreenshot(page, '38-04-user-search-results.png');
-    } else {
-      // No search input visible — use the admin API to validate user list exists
-      const body = await page.textContent('body');
-      expect(body?.toLowerCase().includes('user') || body?.includes('@')).toBeTruthy();
-    }
+    await takeScreenshot(page, '38-04-user-search-results.png');
   });
 
   /**
@@ -112,20 +101,15 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin navigates to /admin/system and verifies system page', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.adminSystem}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    await expect(page.locator('body')).toBeVisible();
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('system') ||
-      body?.toLowerCase().includes('health') ||
-      body?.toLowerCase().includes('admin') ||
-      body?.toLowerCase().includes('feature') ||
-      body?.toLowerCase().includes('config')
-    ).toBeTruthy();
+    // System page heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /system|health|admin|feature|config/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '38-05-admin-system.png');
   });
@@ -136,28 +120,24 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin verifies feature flags section loads', async ({ page }) => {
     await loginViaAPI(page, 'admin');
 
-    // Check via API first
+    // Feature flags API must return 200 for admin
+    const token = await page.evaluate(() => localStorage.getItem('accessToken'));
     const flagsResponse = await page.request.get(`${BASE_URL}${API.adminFeatureFlags}`, {
-      headers: {
-        Authorization: `Bearer ${await page.evaluate(() => localStorage.getItem('accessToken'))}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-    expect([200, 401, 403, 404].includes(flagsResponse.status())).toBeTruthy();
+    expect(flagsResponse.status()).toBe(200);
 
-    // Navigate to system page and check UI
+    // Navigate to system page and verify flag UI
     await page.goto(`${BASE_URL}${ROUTES.adminSystem}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('flag') ||
-      body?.toLowerCase().includes('feature') ||
-      body?.toLowerCase().includes('system') ||
-      body?.toLowerCase().includes('admin')
-    ).toBeTruthy();
+    // Feature flags heading must be visible
+    await expect(
+      page.locator('h2, h3, [role="heading"]').filter({ hasText: /flag|feature/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '38-06-feature-flags.png');
   });
@@ -168,36 +148,22 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin toggles a feature flag', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.adminSystem}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const toggleBtn = page.locator(
-      'button[role="switch"], input[type="checkbox"][name*="flag" i], [data-testid*="toggle"], [data-testid*="flag"]'
-    );
-    const hasToggle = await toggleBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
+    // A toggle button must be present
+    const toggleBtn = page.locator('button[role="switch"]');
+    await expect(toggleBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-    if (hasToggle) {
-      const initialState = await toggleBtn.first().getAttribute('aria-checked') ||
-        await toggleBtn.first().isChecked().catch(() => null);
-      await toggleBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
+    const initialState = await toggleBtn.first().getAttribute('aria-checked');
+    await toggleBtn.first().click();
 
-      // Verify state changed or remained (optimistic UI may revert)
-      const body = await page.textContent('body');
-      expect(body && body.length > 50).toBeTruthy();
+    // State must change after clicking
+    await expect(toggleBtn.first()).not.toHaveAttribute('aria-checked', initialState || '', { timeout: TIMEOUTS.element });
 
-      await takeScreenshot(page, '38-07-flag-toggled.png');
-    } else {
-      // Toggle not visible — verify page still shows admin content
-      const body = await page.textContent('body');
-      expect(
-        body?.toLowerCase().includes('admin') ||
-        body?.toLowerCase().includes('system') ||
-        body?.toLowerCase().includes('feature')
-      ).toBeTruthy();
-    }
+    await takeScreenshot(page, '38-07-flag-toggled.png');
   });
 
   /**
@@ -206,42 +172,39 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin verifies activity log section loads', async ({ page }) => {
     await loginViaAPI(page, 'admin');
 
-    // Check activity API
+    // Activity API must return 200 for admin
+    const token = await page.evaluate(() => localStorage.getItem('accessToken'));
     const activityResponse = await page.request.get(`${BASE_URL}${API.adminActivity}`, {
-      headers: {
-        Authorization: `Bearer ${await page.evaluate(() => localStorage.getItem('accessToken'))}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-    expect([200, 401, 403, 404].includes(activityResponse.status())).toBeTruthy();
+    expect(activityResponse.status()).toBe(200);
 
-    // Navigate to admin dashboard to look for activity log
+    // Navigate to admin dashboard and verify activity log UI
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
+    // Activity log section must be visible
     const activitySection = page.locator(
       'text=/activity log/i, text=/recent activity/i, text=/audit log/i, [data-testid*="activity"]'
     );
     const hasActivity = await activitySection.first().isVisible({ timeout: 5000 }).catch(() => false);
 
     if (!hasActivity) {
-      // Fall back to system page
+      // Check system page instead
       await page.goto(`${BASE_URL}${ROUTES.adminSystem}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
       await waitForPageReady(page);
+      await expect(
+        page.locator('text=/activity|log|audit/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    } else {
+      await expect(activitySection.first()).toBeVisible();
     }
-
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('activity') ||
-      body?.toLowerCase().includes('log') ||
-      body?.toLowerCase().includes('audit') ||
-      body?.toLowerCase().includes('admin')
-    ).toBeTruthy();
 
     await takeScreenshot(page, '38-08-activity-log.png');
   });
@@ -252,18 +215,18 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin navigates to /profile and verifies profile', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('profile') ||
-      body?.includes('@') ||
-      body?.toLowerCase().includes('name') ||
-      body?.toLowerCase().includes('admin')
-    ).toBeTruthy();
+    // Profile heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /profile|admin/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Must show admin's email
+    await expect(page.locator(`text=${TEST_ACCOUNTS.admin.email}`).first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '38-09-admin-profile.png');
   });
@@ -274,51 +237,21 @@ test.describe.serial('38 - Journey: Admin Manages Platform', () => {
   test('admin logs out and verifies redirect to login', async ({ page }) => {
     await loginViaAPI(page, 'admin');
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for a logout button or link
+    // Find and click logout button
     const logoutBtn = page.locator(
       'button:has-text("Logout"), button:has-text("Log out"), button:has-text("Sign out"), a:has-text("Logout"), a:has-text("Log out"), a:has-text("Sign out"), [data-testid*="logout"], [aria-label*="logout" i]'
     );
-    const hasLogout = await logoutBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(logoutBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await logoutBtn.first().click();
 
-    if (hasLogout) {
-      await logoutBtn.first().click();
-      await page.waitForTimeout(2000);
+    // Must redirect to login page after logout
+    await expect(page).toHaveURL(/login|auth/, { timeout: TIMEOUTS.element });
 
-      // After logout, should redirect to login or home
-      const url = page.url();
-      expect(
-        url.includes('login') ||
-        url.includes('auth') ||
-        url === `${BASE_URL}/` ||
-        url === BASE_URL
-      ).toBeTruthy();
-
-      await takeScreenshot(page, '38-10-after-logout.png');
-    } else {
-      // Logout might be in a dropdown — try clearing localStorage directly
-      await page.evaluate(() => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-      });
-
-      await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-        waitUntil: 'networkidle',
-        timeout: TIMEOUTS.pageLoad,
-      });
-
-      // Without token, should redirect to login
-      const url = page.url();
-      expect(
-        url.includes('login') ||
-        url.includes('auth') ||
-        !url.includes('admin')
-      ).toBeTruthy();
-    }
+    await takeScreenshot(page, '38-10-after-logout.png');
   });
 });

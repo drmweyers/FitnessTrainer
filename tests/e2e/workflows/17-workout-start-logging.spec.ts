@@ -33,8 +33,8 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(body?.length).toBeGreaterThan(100);
+    // Page must render a heading or meaningful structural element
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '17-workout-tracker.png');
   });
@@ -46,13 +46,9 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    const hasWorkoutContent =
-      body?.toLowerCase().includes('workout') ||
-      body?.toLowerCase().includes('start') ||
-      body?.toLowerCase().includes('today') ||
-      body?.toLowerCase().includes('schedule');
-    expect(hasWorkoutContent).toBeTruthy();
+    await expect(
+      page.locator('text=/workout|start|today|schedule/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('start workout button or option is visible on tracker page', async ({ page }) => {
@@ -60,8 +56,6 @@ test.describe('17 - Workout Start & Set Logging', () => {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
-    // Wait for content to render without blocking on networkidle
-    await page.waitForTimeout(2000);
 
     // Look for any start/begin button or link
     const startBtn = page.locator(
@@ -69,16 +63,14 @@ test.describe('17 - Workout Start & Set Logging', () => {
     );
     const startVisible = await startBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
 
-    // Also acceptable: any workout-related content in the body text
-    const bodyText = (await page.textContent('body') ?? '').toLowerCase();
-    const contentVisible =
-      bodyText.includes('workout') ||
-      bodyText.includes('schedule') ||
-      bodyText.includes('today') ||
-      bodyText.includes('streak') ||
-      bodyText.includes('trainer');
-
-    expect(startVisible || contentVisible).toBeTruthy();
+    if (startVisible) {
+      await expect(startBtn.first()).toBeVisible();
+    } else {
+      // Acceptable fallback: workout-related content visible (no active session, showing daily view)
+      await expect(
+        page.locator('text=/workout|schedule|today|streak|trainer/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('workouts page shows navigation links to tracker or builder', async ({ page }) => {
@@ -100,12 +92,8 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    // The daily view renders cards or list items for workouts/exercises
-    const listItems = page.locator('ul li, [role="listitem"], .card, [class*="card"]');
-    const count = await listItems.count();
-    // Page may have empty state OR list items
-    const body = await page.textContent('body');
-    expect(body?.length).toBeGreaterThan(50);
+    // Page must render a meaningful structural element — heading or main region
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('workout execution screen has weight input when session active', async ({ page }) => {
@@ -156,16 +144,20 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    // Should show execution screen since session exists in localStorage
+    // Should show execution screen since session exists in localStorage.
+    // Either weight input or exercise name "Bench Press" must be visible.
     const weightInput = page.locator(
       'input[type="number"], input[placeholder*="weight" i], input[id*="weight" i], input[name*="weight" i]'
     );
     const hasWeightInput = await weightInput.first().isVisible({ timeout: 5000 }).catch(() => false);
+    const exerciseNameLocator = page.locator('text=Bench Press');
+    const hasExerciseName = await exerciseNameLocator.first().isVisible({ timeout: 5000 }).catch(() => false);
 
-    // Also valid: exercise name is visible
-    const hasExerciseName = await page.locator('text=Bench Press').first().isVisible({ timeout: 5000 }).catch(() => false);
+    if (!hasWeightInput && !hasExerciseName) {
+      // Execution screen did not render — this is a test failure
+      await expect(page.locator('text=Bench Press')).toBeVisible({ timeout: TIMEOUTS.element });
+    }
 
-    expect(hasWeightInput || hasExerciseName).toBeTruthy();
     await takeScreenshot(page, '17-workout-execution.png');
   });
 
@@ -214,12 +206,10 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    const hasRepsContent =
-      body?.toLowerCase().includes('rep') ||
-      body?.toLowerCase().includes('set') ||
-      body?.toLowerCase().includes('squat');
-    expect(hasRepsContent).toBeTruthy();
+    // Either reps/set content or the exercise name "Squat" must be visible
+    await expect(
+      page.locator('text=/rep|set|squat/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('workout execution screen shows complete set button', async ({ page }) => {
@@ -273,10 +263,12 @@ test.describe('17 - Workout Start & Set Logging', () => {
     );
     const isVisible = await completeBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
 
-    // Also accept any button that's visible in execution mode
-    const anyButton = page.locator('button');
-    const buttonCount = await anyButton.count();
-    expect(isVisible || buttonCount > 0).toBeTruthy();
+    if (isVisible) {
+      await expect(completeBtn.first()).toBeVisible();
+    } else {
+      // Execution screen did not surface complete set button — verify the exercise name is visible
+      await expect(page.locator('text=Deadlift')).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('workout execution screen shows skip exercise option', async ({ page }) => {
@@ -329,10 +321,14 @@ test.describe('17 - Workout Start & Set Logging', () => {
     );
     const isVisible = await skipBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
 
-    // Execution screen rendered (session was loaded)
-    const body = await page.textContent('body');
-    const hasContent = body?.toLowerCase().includes('pull up') || body?.toLowerCase().includes('workout');
-    expect(isVisible || hasContent).toBeTruthy();
+    if (isVisible) {
+      await expect(skipBtn.first()).toBeVisible();
+    } else {
+      // Skip button not surfaced — verify the execution screen rendered with exercise name
+      await expect(
+        page.locator('text=/pull up|workout/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('workout history page is accessible from workouts hub', async ({ page }) => {
@@ -343,8 +339,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
     await waitForPageReady(page);
 
     const historyLink = page.locator('a[href*="history"]');
-    const isVisible = await historyLink.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-    expect(isVisible).toBeTruthy();
+    await expect(historyLink.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('workout tracker clears session and shows daily view after exit', async ({ page }) => {
@@ -362,9 +357,8 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    // Without active session, should show daily view (not execution screen)
-    const body = await page.textContent('body');
-    expect(body?.length).toBeGreaterThan(50);
+    // Without active session, should show daily view — heading or main must be visible
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('workout builder page loads', async ({ page }) => {
@@ -374,13 +368,9 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    const hasBuilderContent =
-      body?.toLowerCase().includes('builder') ||
-      body?.toLowerCase().includes('create') ||
-      body?.toLowerCase().includes('workout') ||
-      body?.toLowerCase().includes('exercise');
-    expect(hasBuilderContent).toBeTruthy();
+    await expect(
+      page.locator('text=/builder|create|workout|exercise/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '17-workout-builder.png');
   });
@@ -392,8 +382,9 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(body?.length).toBeGreaterThan(50);
+    // Must not redirect to login
+    await expect(page).not.toHaveURL(/\/auth\/login/);
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('workout progress page is accessible', async ({ page }) => {
@@ -403,12 +394,8 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    const hasProgressContent =
-      body?.toLowerCase().includes('progress') ||
-      body?.toLowerCase().includes('workout') ||
-      body?.toLowerCase().includes('chart') ||
-      body?.toLowerCase().includes('history');
-    expect(hasProgressContent).toBeTruthy();
+    await expect(
+      page.locator('text=/progress|workout|chart|history/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });

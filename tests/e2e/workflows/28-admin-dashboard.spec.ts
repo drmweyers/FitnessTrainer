@@ -13,82 +13,66 @@ test.describe('28 - Admin Dashboard', () => {
 
   test('admin dashboard loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Admin dashboard should render
-    await expect(page.locator('body')).toBeVisible();
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('admin') ||
-      pageText?.toLowerCase().includes('dashboard') ||
-      pageText?.toLowerCase().includes('overview')
-    ).toBeTruthy();
+    // Admin dashboard heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /admin|dashboard|overview/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '28-admin-dashboard.png');
   });
 
   test('system stats displayed (users count)', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    // Should display counts or stats for users/trainers/clients
-    expect(
-      pageText?.toLowerCase().includes('users') ||
-      pageText?.toLowerCase().includes('trainers') ||
-      pageText?.toLowerCase().includes('clients') ||
-      pageText?.toLowerCase().includes('total') ||
-      pageText?.match(/\d+/)
-    ).toBeTruthy();
+    // Stats section must display numeric data about users/trainers/clients
+    const statsSection = page.locator(
+      '[data-testid*="stats"], [class*="stat"], [class*="metric"], [class*="count"], [class*="overview"]'
+    );
+    await expect(statsSection.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('can navigate to /admin/users', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    await expect(page.locator('body')).toBeVisible();
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('user') ||
-      pageText?.includes('@') ||
-      pageText?.toLowerCase().includes('manage')
-    ).toBeTruthy();
+    // User management heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /user|manage|admin/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '28-admin-users.png');
   });
 
   test('user list shows with search', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see a table or list with users
-    const userList = page.locator('table, [role="table"], [data-testid*="user-list"], ul li, .user-row');
-    const hasList = await userList.first().isVisible({ timeout: 5000 }).catch(() => false);
+    // User list/table must be present (seeded accounts exist)
+    const userList = page.locator('table, [role="table"], [data-testid*="user-list"], ul li');
+    await expect(userList.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-    const pageText = await page.textContent('body');
-    expect(
-      hasList ||
-      pageText?.includes('@') ||
-      pageText?.toLowerCase().includes('trainer') ||
-      pageText?.toLowerCase().includes('client')
-    ).toBeTruthy();
+    // Must show email addresses (seeded QA accounts have @evofit.io)
+    await expect(page.locator('text=@evofit.io').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('can search users by email', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -96,178 +80,143 @@ test.describe('28 - Admin Dashboard', () => {
     const searchInput = page.locator(
       'input[type="search"], input[placeholder*="search" i], input[placeholder*="email" i], input[aria-label*="search" i]'
     );
-    if (await searchInput.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.first().fill('qa-trainer@evofit.io');
-      await page.waitForTimeout(1000);
+    await expect(searchInput.first()).toBeVisible({ timeout: 5000 });
+    await searchInput.first().fill('qa-trainer@evofit.io');
 
-      // Results should update
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+    // After searching, the qa-trainer account must appear in results
+    await expect(
+      page.locator('text=qa-trainer@evofit.io').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-      await takeScreenshot(page, '28-admin-user-search.png');
-    }
+    await takeScreenshot(page, '28-admin-user-search.png');
   });
 
   test('can filter users by role', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
+    // Role filter control must be visible
     const roleFilter = page.locator(
-      'select[name*="role" i], button:has-text("Trainer"), button:has-text("Client"), [aria-label*="filter" i], select[aria-label*="role" i]'
+      'select[name*="role" i], [aria-label*="filter by role" i], select[aria-label*="role" i]'
     );
-    const hasFilter = await roleFilter.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasFilter ||
-      pageText?.toLowerCase().includes('role') ||
-      pageText?.toLowerCase().includes('filter') ||
-      pageText?.toLowerCase().includes('trainer')
-    ).toBeTruthy();
+    await expect(roleFilter.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('click user navigates to detail or shows detail', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Find a clickable user row
     const userRow = page.locator(
       'tr[data-user-id], [data-testid*="user-row"], table tbody tr, a[href*="/admin/users/"]'
     );
-    if (await userRow.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      const initialUrl = page.url();
-      await userRow.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
+    await expect(userRow.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-      const newUrl = page.url();
-      // Either navigated to user detail page or a detail panel opened
-      const bodyText = await page.textContent('body');
-      expect(newUrl !== initialUrl || bodyText?.toLowerCase().includes('detail') || bodyText?.includes('@')).toBeTruthy();
+    const initialUrl = page.url();
+    await userRow.first().click();
+    await waitForPageReady(page);
 
-      await takeScreenshot(page, '28-user-detail.png');
-    }
+    // Must have navigated to user detail or opened detail panel (URL changed OR email visible)
+    const newUrl = page.url();
+    const hasNavigated = newUrl !== initialUrl;
+    const emailVisible = await page.locator('text=@').first().isVisible({ timeout: 3000 }).catch(() => false);
+    expect(hasNavigated || emailVisible).toBeTruthy();
+
+    await takeScreenshot(page, '28-user-detail.png');
   });
 
   test('user detail shows role, status, email', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Navigate to first user if possible
     const userLink = page.locator('a[href*="/admin/users/"]');
-    if (await userLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await userLink.first().click();
-      await waitForPageReady(page);
+    await expect(userLink.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await userLink.first().click();
+    await waitForPageReady(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.includes('@') &&
-        (pageText?.toLowerCase().includes('role') || pageText?.toLowerCase().includes('trainer') || pageText?.toLowerCase().includes('client'))
-      ).toBeTruthy();
-    }
+    // Detail page must show email AND role information
+    await expect(page.locator('text=@').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await expect(
+      page.locator('text=/trainer|client|admin/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('can change user role', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Check the admin users API accepts PATCH for role updates
-    const response = await page.request.get(`${BASE_URL}/api/admin/users`);
-    expect([200, 401, 403, 404].includes(response.status())).toBeTruthy();
-
-    // Look for role change control on users page
+    // Role change control must be visible on users page
     const roleControl = page.locator(
       'select[name*="role" i], button:has-text("Change Role"), [aria-label*="role" i]'
     );
-    const pageText = await page.textContent('body');
-    expect(
-      await roleControl.first().isVisible({ timeout: 3000 }).catch(() => false) ||
-      pageText?.toLowerCase().includes('role')
-    ).toBeTruthy();
+    await expect(roleControl.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('can activate/deactivate user', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
+    // Status control must be visible
     const statusControl = page.locator(
       'button:has-text("Activate"), button:has-text("Deactivate"), button:has-text("Suspend"), button:has-text("Enable"), button:has-text("Disable"), [aria-label*="status" i]'
     );
-    const hasControl = await statusControl.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasControl ||
-      pageText?.toLowerCase().includes('active') ||
-      pageText?.toLowerCase().includes('status') ||
-      pageText?.toLowerCase().includes('suspend')
-    ).toBeTruthy();
+    await expect(statusControl.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('bulk user operations available', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
+    // Select-all checkbox or bulk action button must be present
     const bulkControl = page.locator(
       'input[type="checkbox"][aria-label*="select all" i], input[type="checkbox"][name*="select-all" i], button:has-text("Bulk"), button:has-text("Select All"), [data-testid*="bulk"]'
     );
-    const hasBulk = await bulkControl.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasBulk ||
-      pageText?.toLowerCase().includes('bulk') ||
-      pageText?.toLowerCase().includes('select all') ||
-      // Bulk operations endpoint exists
-      true // API endpoint validated elsewhere
-    ).toBeTruthy();
+    await expect(bulkControl.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('activity log is visible', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
+    // Activity log section must be on dashboard or system page
     const activitySection = page.locator(
       'text=/activity log/i, text=/recent activity/i, text=/audit log/i, [data-testid*="activity"]'
     );
     const hasActivity = await activitySection.first().isVisible({ timeout: 5000 }).catch(() => false);
 
     if (!hasActivity) {
-      // Check activity on system page
+      // Check system page
       await page.goto(`${BASE_URL}${ROUTES.adminSystem}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
       await waitForPageReady(page);
+      await expect(
+        page.locator('text=/activity|log|audit/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    } else {
+      await expect(activitySection.first()).toBeVisible();
     }
-
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('activity') ||
-      pageText?.toLowerCase().includes('log') ||
-      pageText?.toLowerCase().includes('audit') ||
-      pageText?.toLowerCase().includes('admin') // Still on admin page
-    ).toBeTruthy();
 
     await takeScreenshot(page, '28-activity-log.png');
   });

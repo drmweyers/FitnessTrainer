@@ -29,18 +29,18 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer navigates to profile and verifies it loads', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('profile') ||
-      body?.toLowerCase().includes('trainer') ||
-      body?.toLowerCase().includes('name') ||
-      body?.includes('@')
-    ).toBeTruthy();
+    // Profile heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /profile|trainer/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Profile must show trainer's email
+    await expect(page.locator(`text=${TEST_ACCOUNTS.trainer.email}`).first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-02-trainer-profile.png');
   });
@@ -51,18 +51,16 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer navigates to /clients', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     await expect(page.locator('body')).toBeVisible();
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('client') ||
-      body?.toLowerCase().includes('invite') ||
-      body?.toLowerCase().includes('add')
-    ).toBeTruthy();
+    // Clients heading must be present
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /client/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-03-trainer-clients.png');
   });
@@ -73,55 +71,32 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer clicks Add Client and fills invite form', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for Add Client / Invite button
+    // Add client button must be visible
     const addBtn = page.locator(
       'button:has-text("Add Client"), button:has-text("Invite Client"), button:has-text("Add"), a:has-text("Add Client"), a:has-text("Invite")'
     );
-    const hasAddBtn = await addBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(addBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await addBtn.first().click();
 
-    if (hasAddBtn) {
-      await addBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
+    // Email input must appear in the form/modal
+    const emailInput = page.locator(
+      'input[type="email"], input[placeholder*="email" i], input[name*="email" i]'
+    );
+    await expect(emailInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-      // After clicking, either a modal, form, or new page should appear
-      const emailInput = page.locator(
-        'input[type="email"], input[placeholder*="email" i], input[name*="email" i]'
-      );
-      const hasEmailInput = await emailInput.first().isVisible({ timeout: 5000 }).catch(() => false);
+    const uniqueEmail = `onboard-test-${Date.now()}@example.com`;
+    await emailInput.first().fill(uniqueEmail);
 
-      if (hasEmailInput) {
-        const uniqueEmail = `onboard-test-${Date.now()}@example.com`;
-        await emailInput.first().fill(uniqueEmail);
-        await takeScreenshot(page, '36-04-invite-form-filled.png');
+    // Input value must be set correctly
+    const emailValue = await emailInput.first().inputValue();
+    expect(emailValue).toBe(uniqueEmail);
 
-        // Input value is in a form field — check that the form is still open with content
-        const emailValue = await emailInput.first().inputValue().catch(() => '');
-        const body = await page.textContent('body');
-        expect(
-          emailValue.includes('@') ||
-          body?.toLowerCase().includes('add new client') ||
-          body?.toLowerCase().includes('invite') ||
-          body?.toLowerCase().includes('email')
-        ).toBeTruthy();
-      } else {
-        // Form may have opened as a new page
-        const body = await page.textContent('body');
-        expect(
-          body?.toLowerCase().includes('client') ||
-          body?.toLowerCase().includes('invite') ||
-          body?.toLowerCase().includes('email')
-        ).toBeTruthy();
-      }
-    } else {
-      // Add client button may be missing in empty state — verify page content
-      const body = await page.textContent('body');
-      expect(body?.toLowerCase().includes('client')).toBeTruthy();
-    }
+    await takeScreenshot(page, '36-04-invite-form-filled.png');
   });
 
   /**
@@ -130,17 +105,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer navigates to /programs', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('program') ||
-      body?.toLowerCase().includes('create') ||
-      body?.toLowerCase().includes('workout')
-    ).toBeTruthy();
+    // Programs heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /program/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-05-programs-list.png');
   });
@@ -167,13 +140,11 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
       },
     });
 
-    // Accept success (201/200) or any non-5xx response
-    expect(response.status()).toBeLessThan(500);
+    // Program creation must succeed
+    expect(response.ok()).toBeTruthy();
 
-    if (response.ok()) {
-      const body = await response.json();
-      expect(body.success).toBe(true);
-    }
+    const body = await response.json();
+    expect(body.success).toBe(true);
   });
 
   /**
@@ -182,17 +153,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer navigates to exercise library', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('exercise') ||
-      body?.toLowerCase().includes('search') ||
-      body?.toLowerCase().includes('filter')
-    ).toBeTruthy();
+    // Exercise library heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /exercise/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-07-exercise-library.png');
   });
@@ -203,18 +172,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer navigates to /schedule', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('schedule') ||
-      body?.toLowerCase().includes('calendar') ||
-      body?.toLowerCase().includes('appointment') ||
-      body?.toLowerCase().includes('availability')
-    ).toBeTruthy();
+    // Schedule heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /schedule|calendar|appointment/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-08-trainer-schedule.png');
   });
@@ -223,10 +189,10 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
    * Test 9: Client logs in via API.
    */
   test('client logs in via API', async ({ page }) => {
-    const { accessToken, user } = await loginViaAPI(page, 'client');
+    const { accessToken } = await loginViaAPI(page, 'client');
 
+    // Token must be returned and stored
     expect(accessToken).toBeTruthy();
-    // user may be null in some API response shapes — just verify token
     const storedToken = await page.evaluate(() => localStorage.getItem('accessToken'));
     expect(storedToken).toBeTruthy();
   });
@@ -237,18 +203,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('client navigates to client dashboard', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.clientDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('dashboard') ||
-      body?.toLowerCase().includes('workout') ||
-      body?.toLowerCase().includes('progress') ||
-      body?.toLowerCase().includes('client')
-    ).toBeTruthy();
+    // Client dashboard heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /dashboard|workout|progress|welcome/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-10-client-dashboard.png');
   });
@@ -259,17 +222,18 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('client navigates to profile', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('profile') ||
-      body?.toLowerCase().includes('name') ||
-      body?.includes('@')
-    ).toBeTruthy();
+    // Profile heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /profile/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Must show the client's email
+    await expect(page.locator(`text=${TEST_ACCOUNTS.client.email}`).first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-11-client-profile.png');
   });
@@ -280,17 +244,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('client navigates to /workouts', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.workouts}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('workout') ||
-      body?.toLowerCase().includes('exercise') ||
-      body?.toLowerCase().includes('history')
-    ).toBeTruthy();
+    // Workouts heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /workout/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-12-client-workouts.png');
   });
@@ -301,18 +263,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('client navigates to /analytics', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('analytics') ||
-      body?.toLowerCase().includes('progress') ||
-      body?.toLowerCase().includes('overview') ||
-      body?.toLowerCase().includes('goal')
-    ).toBeTruthy();
+    // Analytics heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /analytics|progress/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-13-client-analytics.png');
   });
@@ -323,18 +282,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('client navigates to /schedule', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('schedule') ||
-      body?.toLowerCase().includes('calendar') ||
-      body?.toLowerCase().includes('appointment') ||
-      body?.toLowerCase().includes('session')
-    ).toBeTruthy();
+    // Schedule heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /schedule|calendar|appointment|session/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-14-client-schedule.png');
   });
@@ -345,18 +301,15 @@ test.describe.serial('36 - Journey: Trainer Onboards Client', () => {
   test('trainer navigates to /analytics', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(
-      body?.toLowerCase().includes('analytics') ||
-      body?.toLowerCase().includes('overview') ||
-      body?.toLowerCase().includes('client') ||
-      body?.toLowerCase().includes('progress')
-    ).toBeTruthy();
+    // Analytics heading must be visible for trainer
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /analytics|overview|progress/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '36-15-trainer-analytics.png');
   });

@@ -22,8 +22,8 @@ test.describe('Suite 48: Bug Reporting System', () => {
       },
       { timeout: 10000 },
     )
-    // Give React a tick to re-render with auth state
-    await page.waitForTimeout(1000)
+    // Give React a render cycle to update auth state via locator auto-waiting
+    await expect(page.locator('[aria-label="Report a Problem"]')).toBeVisible({ timeout: 15000 })
   }
 
   async function openBugDialog(page: Page): Promise<void> {
@@ -40,7 +40,6 @@ test.describe('Suite 48: Bug Reporting System', () => {
   test('48.01 — floating report button is visible to authenticated trainer', async ({ page }) => {
     await loginViaAPI(page, 'trainer')
     await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' })
-    await waitForAuth(page)
 
     const btn = page.locator('[aria-label="Report a Problem"]')
     await expect(btn).toBeVisible({ timeout: 20000 })
@@ -92,7 +91,7 @@ test.describe('Suite 48: Bug Reporting System', () => {
     // Submit
     await dialog.getByRole('button', { name: 'Submit Report' }).click()
 
-    // Toast should appear
+    // Toast should appear with success message
     await expect(page.getByText(/report submitted/i)).toBeVisible({ timeout: 20000 })
   })
 
@@ -116,18 +115,10 @@ test.describe('Suite 48: Bug Reporting System', () => {
     // Wait for loading spinner to disappear
     await page.locator('.animate-spin').waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {})
 
-    // Either a table or empty state must appear
+    // Either a table or empty state must appear — assert one of them
     const table = page.locator('table')
     const emptyState = page.getByText('No bug reports found.')
-    const eitherVisible = async () => {
-      const tableCount = await table.count()
-      const emptyCount = await emptyState.count()
-      return tableCount > 0 || emptyCount > 0
-    }
-    await page.waitForFunction(eitherVisible, { timeout: 15000 }).catch(async () => {
-      // Fallback: just check heading is still visible
-      await expect(page.getByRole('heading', { name: 'Bug Reports' })).toBeVisible()
-    })
+    await expect(table.or(emptyState).first()).toBeVisible({ timeout: 15000 })
   })
 
   test('48.07 — Bug Reports link visible in admin nav', async ({ page }) => {

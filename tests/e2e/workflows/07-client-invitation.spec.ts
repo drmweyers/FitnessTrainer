@@ -105,9 +105,7 @@ test.describe('07 - Client Invitation', () => {
     await submitBtn.click();
 
     // Either modal closes (success) or an error message is shown.
-    // Success: modal disappears within the timeout.
-    // Failure: any error text appears in the modal, or the modal stays open
-    // (indicating the server responded and the UI reflected it).
+    // Both are valid outcomes — what is NOT acceptable is the app hanging or crashing.
     const modalClosed = await page
       .locator('h2')
       .filter({ hasText: /add new client/i })
@@ -115,20 +113,12 @@ test.describe('07 - Client Invitation', () => {
       .then(() => true)
       .catch(() => false);
 
-    const errorVisible = await page
-      .locator('.bg-red-100, [role="alert"]')
-      .isVisible({ timeout: 1000 })
-      .catch(() => false);
-
-    // Also accept: modal still open with any error text (e.g. "Not Found", server-side error)
-    const modalStillOpen = await page
-      .locator('h2')
-      .filter({ hasText: /add new client/i })
-      .isVisible({ timeout: 1000 })
-      .catch(() => false);
-
-    // Any outcome where the app responds is acceptable
-    expect(modalClosed || errorVisible || modalStillOpen).toBeTruthy();
+    if (!modalClosed) {
+      // Modal still open — must show an error message explaining why
+      await expect(
+        page.locator('.bg-red-100, [role="alert"]').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
     await takeScreenshot(page, '07-05-invite-submit.png');
   });
 
@@ -204,11 +194,25 @@ test.describe('07 - Client Invitation', () => {
 
     await page.locator('button[type="submit"]').click();
 
-    // Either an error message is shown or the modal closes gracefully
-    await page.waitForTimeout(TIMEOUTS.apiCall);
-    const bodyText = await page.textContent('body');
-    // App should still be functional (not a 500 page)
-    expect(bodyText).toBeTruthy();
+    // For a duplicate client: must either close (already on roster) or show an error
+    const modalClosed = await page
+      .locator('h2')
+      .filter({ hasText: /add new client/i })
+      .waitFor({ state: 'hidden', timeout: TIMEOUTS.apiCall })
+      .then(() => true)
+      .catch(() => false);
+
+    if (!modalClosed) {
+      // App should show an error — not hang silently
+      await expect(
+        page.locator('.bg-red-100, [role="alert"], text=/already|exists|duplicate/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
+
+    // The clients heading must still be visible (page not crashed)
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
     await takeScreenshot(page, '07-08-duplicate-invite.png');
   });
 
@@ -228,8 +232,19 @@ test.describe('07 - Client Invitation', () => {
     await page.locator('input[type="email"]').first().fill(uniqueEmail);
     await page.locator('button[type="submit"]').click();
 
-    // Wait for modal to close or an error to appear
-    await page.waitForTimeout(TIMEOUTS.apiCall);
+    // Modal should close (success) or show an error (failure) — not hang
+    const modalClosed = await page
+      .locator('h2')
+      .filter({ hasText: /add new client/i })
+      .waitFor({ state: 'hidden', timeout: TIMEOUTS.apiCall })
+      .then(() => true)
+      .catch(() => false);
+
+    if (!modalClosed) {
+      await expect(
+        page.locator('.bg-red-100, [role="alert"]').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
 
     // The page should still show the clients heading (no crash)
     await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({

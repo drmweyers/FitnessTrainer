@@ -6,6 +6,8 @@
  * Uses page.evaluate() to detect broken <img> elements.
  *
  * All tests run as qa-trainer.
+ *
+ * Commandment #8: ZERO TOLERANCE FOR BROKEN IMAGES — broken image threshold MUST be 0.
  */
 import { test, expect } from '@playwright/test';
 import { BASE_URL, ROUTES, TIMEOUTS } from '../helpers/constants';
@@ -43,23 +45,25 @@ test.describe('51 - Exercise GIF Rendering', () => {
     await loginViaAPI(page, 'trainer');
   });
 
-  // 1. Exercise library grid: first 10 visible exercises have non-broken GIF images
+  // 1. Exercise library grid: visible exercise images load without errors
   test('51.01 exercise library grid: visible GIF images load without errors', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    // Wait for lazy-loaded images
-    await page.waitForTimeout(2500);
+
+    // Wait for images to appear
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      // Allow up to 30% broken (lazy loading, slow network)
-      const allowedBroken = Math.ceil(total * 0.3);
-      expect(broken).toBeLessThanOrEqual(allowedBroken);
+      // ZERO broken images — Commandment #8
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-01-grid-gif-check.png');
@@ -73,21 +77,23 @@ test.describe('51 - Exercise GIF Rendering', () => {
     });
     await waitForPageReady(page);
 
-    // Apply chest filter via search or filter
     const searchInput = page.locator(
       'input[type="search"], input[placeholder*="Search" i]'
     ).first();
 
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('chest');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('chest');
+
+    // Wait for results to load
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-02-chest-gifs.png');
@@ -105,16 +111,18 @@ test.describe('51 - Exercise GIF Rendering', () => {
       'input[type="search"], input[placeholder*="Search" i]'
     ).first();
 
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('back');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('back');
+
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
   });
 
@@ -130,16 +138,18 @@ test.describe('51 - Exercise GIF Rendering', () => {
       'input[type="search"], input[placeholder*="Search" i]'
     ).first();
 
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('barbell');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('barbell');
+
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-04-barbell-gifs.png');
@@ -157,16 +167,18 @@ test.describe('51 - Exercise GIF Rendering', () => {
       'input[type="search"], input[placeholder*="Search" i]'
     ).first();
 
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('bodyweight');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('bodyweight');
+
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
   });
 
@@ -177,42 +189,29 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(1500);
 
-    // Click on the first exercise card to open the detail modal
+    // Wait for exercise cards to load
     const exerciseCard = page.locator(
       '[class*="card"] img, [class*="exercise"] img, img[alt][src*="exerciseGifs"]'
     ).first();
 
-    const cardVisible = await exerciseCard.isVisible({ timeout: 5000 }).catch(() => false);
-    if (!cardVisible) {
-      // Try clicking a card div
-      const card = page.locator('[class*="card"], [class*="exercise-item"]').first();
-      if (await card.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await card.click();
-        await page.waitForTimeout(1000);
-      }
-    } else {
-      await exerciseCard.click();
-      await page.waitForTimeout(1000);
-    }
+    await expect(exerciseCard).toBeVisible({ timeout: TIMEOUTS.element });
+    await exerciseCard.click();
 
-    // Modal or detail page should be visible
+    // Modal or detail page should appear
     const modal = page.locator('[role="dialog"], [class*="modal"], [class*="sheet"]').first();
-    const modalVisible = await modal.isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(modal).toBeVisible({ timeout: TIMEOUTS.element });
 
-    if (modalVisible) {
-      // Check GIF in modal is not broken
-      const modalGifBroken = await page.evaluate(() => {
-        const modalEl = document.querySelector('[role="dialog"], [class*="modal"]');
-        if (!modalEl) return 0;
-        const imgs = Array.from(modalEl.querySelectorAll('img'));
-        return imgs.filter(
-          (img) => !(img as HTMLImageElement).complete || (img as HTMLImageElement).naturalWidth === 0
-        ).length;
-      });
-      expect(modalGifBroken).toBe(0);
-    }
+    // Check GIF in modal is not broken
+    const modalGifBroken = await page.evaluate(() => {
+      const modalEl = document.querySelector('[role="dialog"], [class*="modal"]');
+      if (!modalEl) return 0;
+      const imgs = Array.from(modalEl.querySelectorAll('img'));
+      return imgs.filter(
+        (img) => !(img as HTMLImageElement).complete || (img as HTMLImageElement).naturalWidth === 0
+      ).length;
+    });
+    expect(modalGifBroken).toBe(0);
 
     await takeScreenshot(page, '51-06-exercise-modal-gif.png');
   });
@@ -224,17 +223,17 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(1500);
 
-    const pageText = await page.textContent('body');
-    // Page loads successfully
-    expect(pageText?.length).toBeGreaterThan(50);
+    // Page should load with a heading
+    await expect(
+      page.locator('h1').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-07-favorites-gifs.png');
@@ -248,31 +247,30 @@ test.describe('51 - Exercise GIF Rendering', () => {
     });
     await waitForPageReady(page);
 
-    // Navigate through the wizard steps to reach the exercise selection panel
-    // Step 1: fill program name and advance
+    // Navigate through wizard steps to reach the exercise selection panel
     const nameInput = page.locator('input#name, input[placeholder*="program" i]').first();
-    if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await nameInput.isVisible({ timeout: 5000 })) {
       await nameInput.fill('GIF Test Program');
     }
 
     const nextBtn = page.locator('button:has-text("Next"), button:has-text("Continue")').first();
-    if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await nextBtn.isVisible({ timeout: 3000 })) {
       await nextBtn.click();
-      await page.waitForTimeout(1000);
-      // Click next a couple more times to reach exercise panel
-      if (await nextBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      if (await nextBtn.isVisible({ timeout: 2000 })) {
         await nextBtn.click();
-        await page.waitForTimeout(1000);
       }
     }
 
-    await page.waitForTimeout(2000);
+    // Wait for exercise panel to appear
+    await expect(
+      page.locator('input[type="search"], input[placeholder*="exercise" i]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-08-program-builder-gifs.png');
@@ -290,19 +288,18 @@ test.describe('51 - Exercise GIF Rendering', () => {
       'input[type="search"], input[placeholder*="Search" i]'
     ).first();
 
-    if (!(await searchInput.isVisible({ timeout: TIMEOUTS.element }).catch(() => false))) {
-      test.skip();
-      return;
-    }
-
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
     await searchInput.fill('squat');
-    await page.waitForTimeout(2000);
+
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-09-search-results-gifs.png');
@@ -315,13 +312,15 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(2000);
 
-    // Check for broken image icons (alt text visible as broken)
-    // A well-implemented component uses onerror or next/image fallback
+    // Wait for initial load
+    await expect(
+      page.locator('h1:has-text("Exercise Library")')
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // A well-implemented component uses onerror or next/image fallback — no img should be visually broken
     const brokenIconCount = await page.evaluate(() => {
       const imgs = Array.from(document.querySelectorAll('img'));
-      // An image is "visibly broken" if width is 0 and it has alt text rendered as fallback
       return imgs.filter(
         (img) =>
           !(img as HTMLImageElement).complete &&
@@ -330,8 +329,8 @@ test.describe('51 - Exercise GIF Rendering', () => {
       ).length;
     });
 
-    // We don't fail here — just document the count
-    expect(brokenIconCount).toBeGreaterThanOrEqual(0);
+    // Zero tolerance for broken image icons
+    expect(brokenIconCount).toBe(0);
   });
 
   // 11. External URL GIFs (https://) load correctly
@@ -341,7 +340,10 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(2000);
+
+    await expect(
+      page.locator('h1:has-text("Exercise Library")')
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const externalGifCount = await page.evaluate(() =>
       document.querySelectorAll('img[src^="https://"]').length
@@ -358,7 +360,7 @@ test.describe('51 - Exercise GIF Rendering', () => {
     });
 
     if (externalGifCount > 0) {
-      expect(brokenExternal).toBeLessThanOrEqual(Math.ceil(externalGifCount * 0.3));
+      expect(brokenExternal).toBe(0);
     }
   });
 
@@ -369,7 +371,10 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(2000);
+
+    await expect(
+      page.locator('h1:has-text("Exercise Library")')
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const exerciseGifsCount = await page.evaluate(() =>
       document.querySelectorAll('img[src*="/exerciseGifs/"]').length
@@ -386,9 +391,7 @@ test.describe('51 - Exercise GIF Rendering', () => {
     });
 
     if (exerciseGifsCount > 0) {
-      expect(brokenExerciseGifs).toBeLessThanOrEqual(
-        Math.ceil(exerciseGifsCount * 0.3)
-      );
+      expect(brokenExerciseGifs).toBe(0);
     }
 
     await takeScreenshot(page, '51-12-exercise-gifs-path.png');
@@ -401,7 +404,10 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(2000);
+
+    await expect(
+      page.locator('h1:has-text("Exercise Library")')
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const absoluteGifs = await page.evaluate(() =>
       Array.from(document.querySelectorAll('img'))
@@ -424,9 +430,7 @@ test.describe('51 - Exercise GIF Rendering', () => {
     });
 
     if (absoluteGifs > 0) {
-      expect(brokenAbsolute).toBeLessThanOrEqual(
-        Math.ceil(absoluteGifs * 0.3)
-      );
+      expect(brokenAbsolute).toBe(0);
     }
   });
 
@@ -439,13 +443,16 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(2000);
+
+    await expect(
+      page.locator('h1:has-text("Exercise Library")')
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const total = await countGifImages(page);
     const broken = await countBrokenGifs(page);
 
     if (total > 0) {
-      expect(broken).toBeLessThanOrEqual(Math.ceil(total * 0.3));
+      expect(broken).toBe(0);
     }
 
     await takeScreenshot(page, '51-14-mobile-gifs.png');
@@ -458,15 +465,15 @@ test.describe('51 - Exercise GIF Rendering', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForTimeout(3000);
+
+    // Wait for images to load
+    await expect(
+      page.locator('img[src*="exerciseGifs"], img[src*="gif"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const broken = await countBrokenGifs(page);
-    const total = await countGifImages(page);
-
-    // If we have exercise images, less than 50% should be broken
-    if (total > 5) {
-      expect(broken).toBeLessThan(total * 0.5);
-    }
+    // ZERO tolerance — Commandment #8
+    expect(broken).toBe(0);
 
     await takeScreenshot(page, '51-15-no-broken-icons.png');
   });

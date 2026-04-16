@@ -4,7 +4,7 @@ import { loginViaUI, takeScreenshot } from '../helpers/auth';
 
 test.describe('01 - Trainer Login Flow', () => {
   test('should display the login page with form fields', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'domcontentloaded' });
 
     // Verify form elements are present
     await expect(page.locator('input#email, input[name="email"]')).toBeVisible({ timeout: TIMEOUTS.element });
@@ -18,7 +18,7 @@ test.describe('01 - Trainer Login Flow', () => {
   });
 
   test('should show validation errors for empty form', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'domcontentloaded' });
 
     // Click submit without filling form
     await page.locator('button[type="submit"]').click();
@@ -34,35 +34,30 @@ test.describe('01 - Trainer Login Flow', () => {
     // Should be redirected to dashboard area
     await expect(page).toHaveURL(/\/(dashboard|trainer)/);
 
-    // Wait for page content to load
-    await page.waitForLoadState('networkidle');
-
-    // Verify dashboard content is visible (trainer dashboard)
-    const pageContent = await page.textContent('body');
-    expect(pageContent).toBeTruthy();
+    // Verify dashboard content is visible (trainer dashboard) — specific heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'trainer-login-success.png');
   });
 
   test('should show error for invalid credentials', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'domcontentloaded' });
 
     // Fill with invalid credentials
     await page.locator('input#email, input[name="email"]').fill('invalid@example.com');
     await page.locator('input#password, input[name="password"]').fill('WrongPassword123!');
     await page.locator('button[type="submit"]').click();
 
-    // Should stay on login page or show error
-    await page.waitForTimeout(3000);
-    const url = page.url();
-    const hasError = await page.locator('text=/error|invalid|incorrect|failed/i').isVisible({ timeout: 5000 }).catch(() => false);
+    // Should show an error message — wait for it via locator auto-wait
+    const errorLocator = page.locator('text=/error|invalid|incorrect|failed/i').first();
+    const staysOnLogin = page.locator('input[name="email"], input#email').first();
 
-    // Either still on login page or error is shown
-    expect(url.includes('login') || hasError).toBeTruthy();
+    // Either an error message appears OR the login form is still visible
+    await expect(errorLocator.or(staysOnLogin).first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should navigate to register page from login', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'domcontentloaded' });
 
     // Click create account / register link - actual text is "create a new account"
     const registerLink = page.locator('a[href*="register"]:has-text("create a new account")');
@@ -73,10 +68,10 @@ test.describe('01 - Trainer Login Flow', () => {
   });
 
   test('should navigate to forgot password from login', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'domcontentloaded' });
 
     const forgotLink = page.locator('a[href*="forgot"]');
-    if (await forgotLink.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await forgotLink.isVisible({ timeout: 3000 })) {
       await forgotLink.click();
       await expect(page).toHaveURL(/forgot/);
     }

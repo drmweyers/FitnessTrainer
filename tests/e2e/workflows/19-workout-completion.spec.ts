@@ -58,8 +58,7 @@ test.describe('19 - Workout Completion', () => {
     });
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(body?.length).toBeGreaterThan(100);
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '19-tracker-load.png');
   });
@@ -78,12 +77,14 @@ test.describe('19 - Workout Completion', () => {
     );
     const isVisible = await completeBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
 
-    const body = await page.textContent('body');
-    const hasCompletionContent =
-      body?.toLowerCase().includes('complete') ||
-      body?.toLowerCase().includes('finish') ||
-      body?.toLowerCase().includes('workout');
-    expect(isVisible || hasCompletionContent).toBeTruthy();
+    if (isVisible) {
+      await expect(completeBtn.first()).toBeVisible();
+    } else {
+      // Complete button not surfaced — verify execution content rendered
+      await expect(
+        page.locator('text=/complete|finish|workout/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('completion flow shows success toast when workout is finished', async ({ page }) => {
@@ -103,24 +104,18 @@ test.describe('19 - Workout Completion', () => {
 
     if (isVisible) {
       await finishBtn.first().click();
-      await page.waitForTimeout(1500);
 
       // Look for toast or success message
-      const toast = page.locator('[role="alert"], .toast, [class*="toast"], text=/complete|great|workout/i');
-      const toastVisible = await toast.first().isVisible({ timeout: 5000 }).catch(() => false);
-      expect(toastVisible).toBeTruthy();
+      await expect(
+        page.locator('[role="alert"], .toast, [class*="toast"], text=/complete|great|workout/i').first()
+      ).toBeVisible({ timeout: 5000 });
 
       await takeScreenshot(page, '19-completion-toast.png');
     } else {
-      // Complete Workout button is not surfaced (tracker shows daily view or no session UI).
-      // Verify the tracker page loaded correctly and has workout-related content.
-      const body = await page.textContent('body');
-      const hasContent =
-        body?.toLowerCase().includes('workout') ||
-        body?.toLowerCase().includes('exercise') ||
-        body?.toLowerCase().includes('start') ||
-        body?.toLowerCase().includes('schedule');
-      expect(hasContent).toBeTruthy();
+      // Complete Workout button is not surfaced — verify the tracker rendered workout content.
+      await expect(
+        page.locator('text=/workout|exercise|start|schedule/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '19-completion-not-surfaced.png');
     }
   });
@@ -159,19 +154,14 @@ test.describe('19 - Workout Completion', () => {
 
     if (isVisible) {
       await finishBtn.first().click();
-      await page.waitForTimeout(2000);
 
-      const body = await page.textContent('body');
-      const hasVolumeInfo =
-        body?.toLowerCase().includes('volume') ||
-        body?.toLowerCase().includes('lbs') ||
-        body?.toLowerCase().includes('kg') ||
-        body?.toLowerCase().includes('complete');
-      expect(hasVolumeInfo).toBeTruthy();
+      // Volume info or completion summary must appear
+      await expect(
+        page.locator('text=/volume|lbs|kg|complete/i').first()
+      ).toBeVisible({ timeout: 5000 });
     } else {
-      // Completion button not surfaced — verify the tracker page itself loads correctly.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // Completion button not surfaced — verify the builder heading is visible.
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '19-volume-not-surfaced.png');
     }
   });
@@ -192,20 +182,18 @@ test.describe('19 - Workout Completion', () => {
 
     if (isVisible) {
       await finishBtn.first().click();
-      await page.waitForTimeout(2000);
-
-      // After completion, the session should be cleared
-      const sessionData = await page.evaluate(() =>
-        localStorage.getItem('activeWorkoutSession')
-      );
-      expect(sessionData).toBeNull();
+      // After completion, the session must be cleared from localStorage
+      await expect(async () => {
+        const sessionData = await page.evaluate(() =>
+          localStorage.getItem('activeWorkoutSession')
+        );
+        expect(sessionData).toBeNull();
+      }).toPass({ timeout: 5000 });
     } else {
-      // Completion button not surfaced — verify the seeded session data is accessible in localStorage.
+      // Completion button not surfaced — verify the seeded session data is in localStorage.
       const sessionData = await page.evaluate(() =>
         localStorage.getItem('activeWorkoutSession')
       );
-      // The session was seeded — it should still be present (no completion happened)
-      // This verifies localStorage seeding works correctly
       expect(sessionData).not.toBeNull();
       const session = JSON.parse(sessionData!);
       expect(session.id).toBe('completion-session');
@@ -253,16 +241,12 @@ test.describe('19 - Workout Completion', () => {
       });
 
       await exitBtn.first().click();
-      await page.waitForTimeout(1000);
 
-      // Should return to daily view
-      const body = await page.textContent('body');
-      const hasContent = body?.length;
-      expect(hasContent).toBeGreaterThan(50);
+      // Should return to daily view — heading must be visible
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
-      // Exit button not surfaced — verify the tracker page loaded correctly.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // Exit button not surfaced — verify the tracker rendered with workout content.
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '19-exit-not-surfaced.png');
     }
   });
@@ -283,18 +267,14 @@ test.describe('19 - Workout Completion', () => {
 
     if (isVisible) {
       await finishBtn.first().click();
-      await page.waitForTimeout(2000);
 
-      const body = await page.textContent('body');
-      const hasAdherenceContent =
-        body?.toLowerCase().includes('%') ||
-        body?.toLowerCase().includes('adherence') ||
-        body?.toLowerCase().includes('completion');
-      expect(hasAdherenceContent).toBeTruthy();
+      // Adherence/completion percentage must appear
+      await expect(
+        page.locator('text=/%|adherence|completion/i').first()
+      ).toBeVisible({ timeout: 5000 });
     } else {
-      // Completion button not surfaced — verify the tracker page loaded correctly.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // Completion button not surfaced — verify the builder heading is visible.
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '19-adherence-not-surfaced.png');
     }
   });

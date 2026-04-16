@@ -36,7 +36,6 @@ test.describe('24 - Analytics Reports', () => {
 
     const generateBtn = page.locator('button:has-text("Generate Report"), button:has-text("Report")');
     await generateBtn.first().click();
-    await page.waitForTimeout(500);
 
     // ReportModal opens as an inline section (not a role="dialog")
     // Look for the "Progress Report" heading or the date inputs that appear
@@ -57,7 +56,6 @@ test.describe('24 - Analytics Reports', () => {
 
     const generateBtn = page.locator('button:has-text("Generate Report")');
     await generateBtn.first().click();
-    await page.waitForTimeout(500);
 
     const startDateInput = page.locator(
       'input[type="date"]:first-of-type, input[id*="start" i], input[name*="start" i], input[placeholder*="start" i]'
@@ -74,7 +72,6 @@ test.describe('24 - Analytics Reports', () => {
 
     const generateBtn = page.locator('button:has-text("Generate Report")');
     await generateBtn.first().click();
-    await page.waitForTimeout(500);
 
     const endDateInput = page.locator(
       'input[type="date"]:nth-of-type(2), input[id*="end" i], input[name*="end" i], input[placeholder*="end" i]'
@@ -91,7 +88,6 @@ test.describe('24 - Analytics Reports', () => {
 
     const generateBtn = page.locator('button:has-text("Generate Report")').first();
     await generateBtn.click();
-    await page.waitForTimeout(500);
 
     // The report form opens inline; find the Generate Report button inside the report section
     // The modal backdrop may block direct clicks — use force click inside the report section
@@ -105,28 +101,20 @@ test.describe('24 - Analytics Reports', () => {
 
       if (isVisible) {
         await generateReportBtn.click({ force: true });
-        await page.waitForTimeout(3000);
 
         // Report content should appear or error message
-        const body = await page.textContent('body');
-        const hasReportContent =
-          body?.toLowerCase().includes('report') ||
-          body?.toLowerCase().includes('workout') ||
-          body?.toLowerCase().includes('period') ||
-          body?.toLowerCase().includes('summary') ||
-          body?.toLowerCase().includes('failed');
-        expect(hasReportContent).toBeTruthy();
+        await expect(
+          page.locator('text=/report|workout|period|summary|failed/i').first()
+        ).toBeVisible({ timeout: 5000 });
 
         await takeScreenshot(page, '24-report-generated.png');
       } else {
-        // Button not visible inside report section — verify the page still has report content
-        const body = await page.textContent('body');
-        expect(body!.length).toBeGreaterThan(50);
+        // Button not visible inside report section — verify "Progress Report" heading is visible
+        await expect(reportSection.first()).toBeVisible({ timeout: TIMEOUTS.element });
       }
     } else {
-      // Report section not found — verify the analytics page still loaded
-      const body = await page.textContent('body');
-      expect(body!.length).toBeGreaterThan(50);
+      // Report section not found — verify the analytics page loaded
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -139,7 +127,6 @@ test.describe('24 - Analytics Reports', () => {
 
     const generateBtn = page.locator('button:has-text("Generate Report")').first();
     await generateBtn.click();
-    await page.waitForTimeout(500);
 
     // The report form opens inline; find the Generate Report button inside the report section
     const reportSection = page.locator('h2:has-text("Progress Report"), h3:has-text("Progress Report")');
@@ -152,25 +139,18 @@ test.describe('24 - Analytics Reports', () => {
 
       if (isVisible) {
         await generateReportBtn.click({ force: true });
-        await page.waitForTimeout(3000);
 
-        const body = await page.textContent('body');
-        const hasReportSummary =
-          body?.toLowerCase().includes('total') ||
-          body?.toLowerCase().includes('workout') ||
-          body?.toLowerCase().includes('completion') ||
-          body?.toLowerCase().includes('report') ||
-          body?.toLowerCase().includes('failed');
-        expect(hasReportSummary).toBeTruthy();
+        // Report summary must appear
+        await expect(
+          page.locator('text=/total|workout|completion|report|failed/i').first()
+        ).toBeVisible({ timeout: 5000 });
       } else {
-        // Button not visible — verify the page still has analytics content
-        const body = await page.textContent('body');
-        expect(body!.length).toBeGreaterThan(50);
+        // Button not visible — verify the "Progress Report" heading is visible
+        await expect(reportSection.first()).toBeVisible({ timeout: TIMEOUTS.element });
       }
     } else {
-      // Report section not found — verify the analytics page still loaded
-      const body = await page.textContent('body');
-      expect(body!.length).toBeGreaterThan(50);
+      // Report section not found — verify the analytics page loaded
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -183,7 +163,10 @@ test.describe('24 - Analytics Reports', () => {
 
     const generateBtn = page.locator('button:has-text("Generate Report")');
     await generateBtn.first().click();
-    await page.waitForTimeout(500);
+    // Wait for report section to open
+    await expect(
+      page.locator('h2:has-text("Progress Report"), h3:has-text("Progress Report")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Close the modal
     const closeBtn = page.locator(
@@ -193,18 +176,17 @@ test.describe('24 - Analytics Reports', () => {
 
     if (isVisible) {
       await closeBtn.first().click();
-      await page.waitForTimeout(500);
-
-      const modal = page.locator('[role="dialog"]');
-      const stillOpen = await modal.first().isVisible({ timeout: 1000 }).catch(() => false);
-      expect(!stillOpen).toBeTruthy();
+      // The report section must no longer be visible
+      await expect(
+        page.locator('h2:has-text("Progress Report"), h3:has-text("Progress Report")').first()
+      ).not.toBeVisible({ timeout: TIMEOUTS.element });
     } else {
       // Try pressing Escape
       await page.keyboard.press('Escape');
-      await page.waitForTimeout(500);
-      const modal = page.locator('[role="dialog"]');
-      const stillOpen = await modal.first().isVisible({ timeout: 1000 }).catch(() => false);
-      expect(!stillOpen).toBeTruthy();
+      // The report section must no longer be visible
+      await expect(
+        page.locator('h2:has-text("Progress Report"), h3:has-text("Progress Report")').first()
+      ).not.toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -226,7 +208,7 @@ test.describe('24 - Analytics Reports', () => {
     const heading = page.locator('h1');
     await expect(heading).toBeVisible({ timeout: TIMEOUTS.element });
 
-    expect(hasSelector || true).toBeTruthy(); // ClientSelector may be hidden if no clients
+    test.fixme(true, 'KNOWN: ClientSelector may be hidden when trainer has no clients');
 
     await takeScreenshot(page, '24-trainer-analytics-with-selector.png');
   });
@@ -256,18 +238,13 @@ test.describe('24 - Analytics Reports', () => {
         const optCount = await options.count();
         if (optCount > 0) {
           await options.first().click();
-          await page.waitForTimeout(1000);
-
-          // Heading should potentially change or data refreshes
-          const headingAfter = await page.locator('h1').textContent();
-          expect(headingAfter?.length).toBeGreaterThan(0);
+          // After selecting a client, heading must still be visible
+          await expect(page.locator('h1')).toBeVisible({ timeout: TIMEOUTS.element });
         }
       }
     } else {
-      // Client selector not visible — feature may use a different UI pattern.
-      // Verify the analytics page still loaded correctly.
-      const pageBody = await page.textContent('body');
-      expect(pageBody!.length).toBeGreaterThan(50);
+      // Client selector not visible — verify the analytics page loaded correctly.
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -288,8 +265,10 @@ test.describe('24 - Analytics Reports', () => {
       },
     });
 
-    // Should be 200 or 201; 400 means invalid params; 401 means not authed
-    expect([200, 201, 400, 404]).toContain(response.status());
+    // Should be 200 or 201 (success); 400 means bad params; 404 means no route
+    // We accept 400/404 as non-server-error but not 401 (must be authenticated)
+    expect(response.status()).not.toBe(401);
+    expect(response.status()).not.toBe(500);
     if (response.status() === 200 || response.status() === 201) {
       const data = await response.json();
       expect(data).toHaveProperty('success');

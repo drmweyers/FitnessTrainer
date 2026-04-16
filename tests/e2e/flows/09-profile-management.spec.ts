@@ -9,12 +9,12 @@ test.describe('09 - Profile Management', () => {
 
   test('should load profile page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see profile content
+    // Should see profile content heading
     await expect(page.locator('text=/profile|account/i').first()).toBeVisible({
       timeout: TIMEOUTS.element,
     });
@@ -24,48 +24,40 @@ test.describe('09 - Profile Management', () => {
 
   test('should display user information', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should show email and role info
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.includes('@') ||
-      pageText?.toLowerCase().includes('email') ||
-      pageText?.toLowerCase().includes('trainer') ||
-      pageText?.toLowerCase().includes('role')
-    ).toBeTruthy();
+    // Should show email or role info — specific content
+    await expect(
+      page.locator('text=/@|text=/email|trainer|role/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should load profile edit page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.profileEdit}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see edit form
-    const hasForm = await page
-      .locator('input, textarea, select')
-      .first()
-      .isVisible({ timeout: TIMEOUTS.element })
-      .catch(() => false);
-
-    expect(hasForm).toBeTruthy();
+    // Should see edit form — input must be visible
+    await expect(
+      page.locator('input, textarea, select').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'profile-edit.png');
   });
 
   test('should display editable fields on profile edit', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.profileEdit}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for common profile fields
+    // Multiple fields should be available
     const fields = page.locator('input, textarea');
     const fieldCount = await fields.count();
     expect(fieldCount).toBeGreaterThan(0);
@@ -73,35 +65,33 @@ test.describe('09 - Profile Management', () => {
 
   test('should load health page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.profileHealth}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Health page should load
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('health') ||
-      pageText?.toLowerCase().includes('measurement') ||
-      pageText?.toLowerCase().includes('weight') ||
-      pageText?.toLowerCase().includes('body')
-    ).toBeTruthy();
+    // Health page should load with a relevant heading
+    await expect(
+      page.locator('text=/health|measurement|weight|body/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'profile-health.png');
   });
 
   test('should navigate between profile pages', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Look for navigation links to edit/health
     const editLink = page.locator('a[href*="profile/edit"], button:has-text("Edit")');
-    if (await editLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await editLink.first().isVisible({ timeout: 5000 })) {
       await editLink.first().click();
       await page.waitForURL(/profile\/edit/, { timeout: TIMEOUTS.pageLoad }).catch(() => {});
+      // Edit page heading must be visible
+      await expect(page.locator('input, textarea').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 });

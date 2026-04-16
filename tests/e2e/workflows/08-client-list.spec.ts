@@ -35,15 +35,11 @@ test.describe('08 - Client List', () => {
   // ── 2. Client cards/rows display name and status ───────────────────────────
 
   test('client cards display client information', async ({ page }) => {
-    // The list may be empty if no clients exist; check that either cards appear
-    // or the empty state message is shown — both are valid renders.
-    const clientCards = page.locator('.bg-white.rounded-lg.shadow, [data-testid="client-card"]');
+    // Either client cards or the empty state must be visible — both prove the list rendered
+    const clientCards = page.locator('.bg-white.rounded-lg.shadow, [data-testid="client-card"]').first();
     const emptyState = page.locator('text=/no clients found/i');
 
-    const hasCards = await clientCards.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-    const hasEmpty = await emptyState.isVisible({ timeout: 1000 }).catch(() => false);
-
-    expect(hasCards || hasEmpty).toBeTruthy();
+    await expect(clientCards.or(emptyState).first()).toBeVisible({ timeout: TIMEOUTS.element });
     await takeScreenshot(page, '08-02-client-cards.png');
   });
 
@@ -55,7 +51,11 @@ test.describe('08 - Client List', () => {
 
     // Type a search term — client-side filtering runs immediately
     await searchInput.first().fill('Alex');
-    await page.waitForTimeout(500); // debounce / re-render
+
+    // Wait for filtering to settle — either results or empty state
+    await expect(
+      page.locator('a[href^="/clients/"], text=/no clients found/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '08-03-search-by-name.png');
     // The page should still be functional (heading remains)
@@ -69,7 +69,11 @@ test.describe('08 - Client List', () => {
     await expect(searchInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await searchInput.first().fill('@evofit');
-    await page.waitForTimeout(500);
+
+    // Wait for filtering to settle — either results or empty state
+    await expect(
+      page.locator('a[href^="/clients/"], text=/no clients found/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '08-04-search-by-email.png');
     await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible();
@@ -95,14 +99,13 @@ test.describe('08 - Client List', () => {
     const select = page.locator('select').first();
     await select.selectOption('active');
 
-    // Wait for the API re-fetch to settle
+    // Wait for the filter to take effect
     await page.waitForLoadState('networkidle').catch(() => {});
-    await page.waitForTimeout(1000);
 
-    // Page heading updates to "Active Clients" (from ClientsPage)
-    const heading = page.locator('h1');
-    const headingText = await heading.first().textContent();
-    expect(headingText).toMatch(/clients/i);
+    // Page heading should reflect current filter state
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
 
     await takeScreenshot(page, '08-06-filter-active.png');
   });
@@ -120,17 +123,16 @@ test.describe('08 - Client List', () => {
     if (exists > 0) {
       await select.selectOption('archived');
       await page.waitForLoadState('networkidle').catch(() => {});
-      await page.waitForTimeout(1000);
 
-      const heading = page.locator('h1').first();
-      const headingText = await heading.textContent();
-      expect(headingText).toMatch(/clients/i);
+      await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
       await takeScreenshot(page, '08-07-filter-archived.png');
     } else {
-      // "Archived" option is absent from this build's filter — verify the page still
-      // renders the client list correctly with the available filter options.
-      const headingText = await page.locator('h1').first().textContent();
-      expect(headingText).toMatch(/clients/i);
+      // "Archived" option is absent from this build's filter — verify the heading still renders
+      await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
       await takeScreenshot(page, '08-07-filter-archived.png');
     }
   });
@@ -142,16 +144,16 @@ test.describe('08 - Client List', () => {
 
     // First apply a filter
     await select.selectOption('active');
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle').catch(() => {});
 
-    // Then reset
+    // Then reset to all
     await select.selectOption('all');
     await page.waitForLoadState('networkidle').catch(() => {});
-    await page.waitForTimeout(500);
 
-    const heading = page.locator('h1').first();
-    const headingText = await heading.textContent();
-    expect(headingText).toMatch(/all clients/i);
+    // Heading should reflect "All Clients"
+    await expect(page.locator('h1').filter({ hasText: /all clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
     await takeScreenshot(page, '08-08-filter-cleared.png');
   });
 
@@ -174,9 +176,10 @@ test.describe('08 - Client List', () => {
     const rowExists = await clientRow.isVisible({ timeout: 2000 }).catch(() => false);
 
     if (!exists && !rowExists) {
-      // No clients in the system — verify empty state or basic page content
-      const body = await page.textContent('body');
-      expect(body?.toLowerCase().includes('client')).toBeTruthy();
+      // No clients in the system — empty state must be shown
+      await expect(page.locator('text=/no clients found/i')).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
       return;
     }
 
@@ -187,9 +190,10 @@ test.describe('08 - Client List', () => {
       });
       expect(page.url()).toContain('/clients/');
     } else {
-      // Client rows exist but may not be anchor links — just verify the page renders clients
-      const body = await page.textContent('body');
-      expect(body?.toLowerCase().includes('client')).toBeTruthy();
+      // Client rows exist as non-link elements — heading must still be visible
+      await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
     }
 
     await takeScreenshot(page, '08-10-client-detail.png');
@@ -203,7 +207,6 @@ test.describe('08 - Client List', () => {
 
     // Use a string that is virtually impossible to match
     await searchInput.first().fill('ZZZNORESULT_XYZ_9999');
-    await page.waitForTimeout(700);
 
     // ClientList renders "No clients found" when filteredClients.length === 0
     await expect(page.locator('text=/no clients found/i')).toBeVisible({
@@ -218,7 +221,7 @@ test.describe('08 - Client List', () => {
     // Reset search/filter to show all
     const select = page.locator('select').first();
     await select.selectOption('all');
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle').catch(() => {});
 
     // Check for pagination controls or that the list renders
     const paginationNext = page.locator('button', { hasText: /next/i });
@@ -227,8 +230,16 @@ test.describe('08 - Client List', () => {
     const clientItems = page.locator('a[href^="/clients/"]');
     const itemCount = await clientItems.count();
 
-    // Either pagination is present (many clients) or the full list is shown (few clients)
-    expect(hasPagination || itemCount >= 0).toBeTruthy();
+    // Either pagination is present (many clients) or at least some client items are shown
+    // itemCount >= 0 is always true, so assert something meaningful:
+    // the page must have rendered without crashing (heading visible)
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
+    // If pagination is present it must be functional
+    if (hasPagination) {
+      await expect(page.locator('button', { hasText: /next/i }).first()).toBeVisible();
+    }
     await takeScreenshot(page, '08-12-pagination.png');
   });
 });

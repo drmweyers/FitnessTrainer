@@ -9,7 +9,7 @@ test.describe('03 - Client Management', () => {
 
   test('should load clients page with client list', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -22,7 +22,7 @@ test.describe('03 - Client Management', () => {
 
   test('should display Add Client button', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -34,21 +34,19 @@ test.describe('03 - Client Management', () => {
 
   test('should open Add Client modal when clicking the button', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Click Add Client
     const addButton = page.locator('button:has-text("Add Client")');
-    if (await addButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await addButton.isVisible({ timeout: 5000 })) {
       await addButton.click();
 
       // Should see a modal or form
       const modal = page.locator('[role="dialog"], .modal, [data-state="open"]');
-      await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element }).catch(() => {
-        // Modal might be inline form instead
-      });
+      await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
       await takeScreenshot(page, 'client-add-modal.png');
     }
@@ -56,55 +54,49 @@ test.describe('03 - Client Management', () => {
 
   test('should display client cards or rows', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // The page should have some client data rendered
-    // Look for client-related content (names, emails, status badges)
-    const pageContent = await page.textContent('body');
-    const hasClientContent =
-      pageContent?.includes('active') ||
-      pageContent?.includes('client') ||
-      pageContent?.includes('@');
-
-    expect(hasClientContent).toBeTruthy();
+    // The clients page should have specific client-related content
+    await expect(
+      page.locator('text=/active|inactive|client/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should have search functionality', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Look for search input
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i], input[placeholder*="Search" i]');
-    if (await searchInput.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.first().fill('alex');
-      // Wait for filtering
-      await page.waitForTimeout(1000);
+    if (await searchInput.first().isVisible({ timeout: 5000 })) {
+      await searchInput.first().fill('qa');
+      // Wait for filtering via locator auto-wait
+      await expect(page.locator('h1').filter({ hasText: /Clients/i })).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, 'client-search-results.png');
     }
   });
 
   test('should have status filter tabs', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Look for filter tabs (All, Active, Inactive, etc.)
     const filterTab = page.locator('button:has-text("Active"), a:has-text("Active"), [role="tab"]:has-text("Active")');
-    if (await filterTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await filterTab.first().isVisible({ timeout: 5000 })) {
       await filterTab.first().click();
-      await page.waitForTimeout(1000);
 
       // Click "All" to reset
       const allTab = page.locator('button:has-text("All"), a:has-text("All"), [role="tab"]:has-text("All")');
-      if (await allTab.first().isVisible({ timeout: 3000 }).catch(() => false)) {
+      if (await allTab.first().isVisible({ timeout: 3000 })) {
         await allTab.first().click();
       }
     }

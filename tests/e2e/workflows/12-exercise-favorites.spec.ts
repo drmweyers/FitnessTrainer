@@ -87,21 +87,20 @@ test.describe('12 - Exercise Favorites', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    // Brief wait for exercise cards to render without blocking on the spinner
-    await page.waitForTimeout(3000);
+    // Wait for exercise library to load
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     // Search to load exercise cards
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="Search" i]')
       .first();
-    if (await searchInput.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
-      await searchInput.fill('curl');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('curl');
 
-    // Verify cards are present
-    const pageText = await page.textContent('body');
-    expect(pageText?.toLowerCase().includes('curl') || pageText?.toLowerCase().includes('exercise')).toBeTruthy();
+    // Verify "curl" exercise cards appear in results
+    await expect(page.locator('text=/curl/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('click heart/favorite icon on an exercise', async ({ page }) => {
@@ -110,33 +109,31 @@ test.describe('12 - Exercise Favorites', () => {
       timeout: PAGE_LOAD_EXT,
     });
 
-    // Wait for exercise cards to render without blocking on networkidle
-    await page.waitForTimeout(3000);
-
     // Surface exercise cards via search
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="Search" i]')
       .first();
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('press');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('press');
+
+    // Wait for "press" results to appear
+    await expect(page.locator('text=/press/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Look only for buttons with explicit aria-label or title containing "favorite"
-    // Do NOT use svg[class*="heart"] as it may match card links and trigger navigation
     const favoriteButton = page
       .locator('button[aria-label*="favorite" i], button[title*="favorite" i]')
       .first();
 
     const isVisible = await favoriteButton.isVisible({ timeout: 3000 }).catch(() => false);
     if (isVisible) {
-      await favoriteButton.click().catch(() => {});
-      await page.waitForTimeout(1500);
+      await favoriteButton.click();
+      // Exercise library heading must still be visible after favoriting
+      await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
+    } else {
+      test.fixme(true, 'KNOWN: No favorite button found on exercise cards');
     }
-
-    // Page should still be on exercise library (or gracefully redirect)
-    const body = await page.textContent('body');
-    expect(body?.toLowerCase().includes('exercise')).toBeTruthy();
 
     await takeScreenshot(page, '12-exercise-favorited.png');
   });
@@ -172,15 +169,16 @@ test.describe('12 - Exercise Favorites', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
 
-    // The favorites page should list at least one exercise
-    const pageText = await page.textContent('body');
-    const hasFavorite =
-      !pageText?.toLowerCase().includes('no favorite exercises yet') &&
-      (pageText?.toLowerCase().includes('exercise') ?? false);
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
-    expect(hasFavorite).toBeTruthy();
+    // The favorites page should list at least one exercise (not show the empty state)
+    await expect(async () => {
+      const pageText = await page.textContent('body');
+      expect(pageText?.toLowerCase()).not.toContain('no favorite exercises yet');
+    }).toPass({ timeout: PAGE_LOAD_EXT });
 
     await takeScreenshot(page, '12-favorites-with-exercise.png');
   });
@@ -191,20 +189,14 @@ test.describe('12 - Exercise Favorites', () => {
       timeout: PAGE_LOAD_EXT,
     });
 
-    // Wait for the heading to appear
     await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1000);
 
-    // Extract count text from the page (e.g. "3 exercises in your favorites")
-    const countText = await page
-      .locator('p:has-text("exercise"), span:has-text("exercise")')
-      .first()
-      .textContent()
-      .catch(() => '');
-
-    expect(countText).toBeTruthy();
+    // Exercise count text must be visible (e.g. "3 exercises in your favorites")
+    await expect(
+      page.locator('p:has-text("exercise"), span:has-text("exercise")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('unfavorite by clicking heart again removes the exercise', async ({ page }) => {
@@ -234,13 +226,15 @@ test.describe('12 - Exercise Favorites', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
+
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
 
     // Hover over the first card to reveal the favorite toggle
     const firstCard = page.locator('[class*="card"], [class*="exercise"]').first();
     if (await firstCard.isVisible({ timeout: 5000 }).catch(() => false)) {
       await firstCard.hover();
-      await page.waitForTimeout(300);
     }
 
     const heartButton = page
@@ -248,10 +242,13 @@ test.describe('12 - Exercise Favorites', () => {
       .first();
     if (await heartButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await heartButton.click();
-      await page.waitForTimeout(1500);
+      // Wait for the unfavorite action to register (heading stays visible = no crash)
+      await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
     }
 
-    // Page should not crash after unfavoriting
+    // Page should not crash after unfavoriting — heading still visible
     await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
       timeout: TIMEOUTS.element,
     });
@@ -335,12 +332,17 @@ test.describe('12 - Exercise Favorites', () => {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
 
-    // There should be more than 1 exercise card
-    const cards = page.locator('[class*="card"], [class*="exercise"]');
-    const count = await cards.count();
-    expect(count).toBeGreaterThan(0);
+    await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
+      timeout: PAGE_LOAD_EXT,
+    });
+
+    // Multiple exercise cards must appear (we favorited 3 exercises above)
+    await expect(async () => {
+      const cards = page.locator('[class*="card"], [class*="exercise"]');
+      const count = await cards.count();
+      expect(count).toBeGreaterThan(0);
+    }).toPass({ timeout: PAGE_LOAD_EXT });
 
     await takeScreenshot(page, '12-multiple-favorites.png');
   });
@@ -379,17 +381,20 @@ test.describe('12 - Exercise Favorites', () => {
     await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
       timeout: PAGE_LOAD_EXT,
     });
-    await page.waitForTimeout(1500);
 
     const searchInput = page
       .locator('input[placeholder*="Search favorites" i], input[placeholder*="Search" i]')
       .first();
     if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await searchInput.fill('a');
-      await page.waitForTimeout(1000);
+
+      // Filtering must settle — either results visible or empty state
+      await expect(
+        page.locator('[class*="card"], [class*="exercise"], text=/no.*found/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
 
-    // Page must not crash
+    // Page heading must still be visible after search (no crash)
     await expect(page.locator('h1:has-text("Favorite Exercises")')).toBeVisible({
       timeout: TIMEOUTS.element,
     });
@@ -462,18 +467,19 @@ test.describe('12 - Exercise Favorites', () => {
       }
     );
 
-    // Accept 200 (file) or 204/200 empty (no favorites yet) or redirect to login
-    expect([200, 204, 302, 401]).toContain(response.status());
+    // Must return 200 (file with data or empty) — 401 means auth broken, 404 means route missing
+    expect([200, 204]).toContain(response.status());
 
     if (response.status() === 200) {
       const contentType = response.headers()['content-type'] ?? '';
       const contentDisposition = response.headers()['content-disposition'] ?? '';
+      // Response must have file headers proving it's actually a CSV download
       const hasFileHeaders =
         contentType.includes('csv') ||
         contentType.includes('text') ||
         contentType.includes('octet-stream') ||
         contentDisposition.includes('attachment');
-      expect(hasFileHeaders).toBeTruthy();
+      expect(hasFileHeaders).toBe(true);
     }
   });
 });

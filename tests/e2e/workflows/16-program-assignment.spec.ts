@@ -48,16 +48,13 @@ test.describe('16 - Program Assignment', () => {
       'button:has-text("Assign"), button:has-text("Assign to Client")'
     );
 
-    // If there are no programs yet, the list may be empty — check for either
     const hasPrograms = await assignButton.first().isVisible({ timeout: 5000 }).catch(() => false);
 
     if (!hasPrograms) {
       // No programs seeded for this trainer — verify the empty state renders cleanly
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('program') ||
-        pageText?.toLowerCase().includes('create')
-      ).toBeTruthy();
+      await expect(
+        page.locator('text=/program|create/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
       await expect(assignButton.first()).toBeVisible();
     }
@@ -87,7 +84,7 @@ test.describe('16 - Program Assignment', () => {
     } else if (await moreMenuButton.isVisible({ timeout: 3000 }).catch(() => false)) {
       // Open dropdown then click assign
       await moreMenuButton.click();
-      await page.waitForTimeout(300);
+      await expect(page.locator('[role="menu"], [role="listbox"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
       const dropdownAssign = page.locator('button:has-text("Assign")').first();
       if (await dropdownAssign.isVisible({ timeout: 2000 }).catch(() => false)) {
         await dropdownAssign.click();
@@ -102,11 +99,10 @@ test.describe('16 - Program Assignment', () => {
       ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '16-assign-modal-open.png');
     } else {
-      // No programs exist for this trainer — verify the page still shows programs-related content
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('program') || pageText?.toLowerCase().includes('create')
-      ).toBeTruthy();
+      // No programs exist for this trainer — verify the page shows programs-related content
+      await expect(
+        page.locator('text=/program|create/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '16-no-programs-to-assign.png');
     }
   });
@@ -125,10 +121,9 @@ test.describe('16 - Program Assignment', () => {
     ).first();
     if (!(await assignButton.isVisible({ timeout: 5000 }).catch(() => false))) {
       // No programs exist — verify the page loaded correctly with program-related content
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('program') || pageText?.toLowerCase().includes('create')
-      ).toBeTruthy();
+      await expect(
+        page.locator('text=/program|create/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
 
@@ -137,14 +132,13 @@ test.describe('16 - Program Assignment', () => {
     if (!(await assignButton.isVisible({ timeout: 1000 }).catch(() => false))) {
       if (await moreMenuButton.isVisible({ timeout: 1000 }).catch(() => false)) {
         await moreMenuButton.click();
-        await page.waitForTimeout(300);
+        await expect(page.locator('[role="menu"], [role="listbox"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
       }
     }
     await assignButton.click();
-    await page.waitForTimeout(800);
+    await expect(page.locator('h2:has-text("Assign Program to Clients")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Modal should show "Select Clients" heading — h3 in BulkAssignmentModal
-    // Use getByText for reliable text matching across element types
     const selectClientsHeading = page.getByText('Select Clients', { exact: true });
     await expect(selectClientsHeading).toBeVisible({ timeout: TIMEOUTS.element });
 
@@ -168,14 +162,13 @@ test.describe('16 - Program Assignment', () => {
     ).first();
     if (!(await assignButton.isVisible({ timeout: 5000 }).catch(() => false))) {
       // No programs exist — verify the page loaded correctly
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('program') || pageText?.toLowerCase().includes('create')
-      ).toBeTruthy();
+      await expect(
+        page.locator('text=/program|create/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
     await assignButton.click();
-    await page.waitForTimeout(800);
+    await expect(page.locator('h2:has-text("Assign Program to Clients")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     // BulkAssignmentModal: start date input is in the "Assignment Details" section
     // which only renders when selectedClients.length > 0.
@@ -185,10 +178,9 @@ test.describe('16 - Program Assignment', () => {
 
     if (await clientCheckbox.isVisible({ timeout: 3000 }).catch(() => false)) {
       await clientCheckbox.click();
-      await page.waitForTimeout(500);
+      await expect(clientCheckbox).toBeChecked({ timeout: TIMEOUTS.element });
     } else if (await clientRow.isVisible({ timeout: 2000 }).catch(() => false)) {
       await clientRow.click();
-      await page.waitForTimeout(500);
     }
 
     // After selecting a client, the "Assignment Details" section with start date should appear
@@ -198,13 +190,7 @@ test.describe('16 - Program Assignment', () => {
     if (!startDateVisible) {
       // No clients in the roster — verify the modal opened with client selection interface
       const selectClientsText = page.getByText('Select Clients', { exact: true });
-      const modalVisible = await selectClientsText.isVisible({ timeout: 3000 }).catch(() => false);
-      const pageText = await page.textContent('body');
-      expect(
-        modalVisible ||
-        pageText?.toLowerCase().includes('client') ||
-        pageText?.toLowerCase().includes('assign')
-      ).toBeTruthy();
+      await expect(selectClientsText).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '16-modal-no-clients-for-date.png');
       return;
     }
@@ -226,60 +212,49 @@ test.describe('16 - Program Assignment', () => {
     ).first();
     if (!(await assignButton.isVisible({ timeout: 5000 }).catch(() => false))) {
       // No programs — verify programs page is accessible
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('program') || pageText?.toLowerCase().includes('create')
-      ).toBeTruthy();
+      await expect(
+        page.locator('text=/program|create/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
     await assignButton.click();
-    await page.waitForTimeout(800);
+    await expect(page.locator('h2:has-text("Assign Program to Clients")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     // BulkAssignmentModal footer button: "Assign to 0 Clients" (disabled) or similar
     // handleAssign() returns early if selectedClients.length === 0
-    // The button text is dynamic: "Assign to {count} Client(s)"
     const submitButton = page.locator(
       'button:has-text("Assign to 0"), button:has-text("Assign Program"), button:has-text("Assign to Selected")'
     );
     if (await submitButton.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
       // Should be disabled when no clients selected
-      const isDisabled = await submitButton.first().isDisabled();
-      expect(isDisabled).toBeTruthy();
+      await expect(submitButton.first()).toBeDisabled();
     } else {
-      // Modal opened — check it is showing the assignment interface
-      const modalHeading = page.locator('h2:has-text("Assign Program to Clients")');
-      const modalVisible = await modalHeading.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-      const pageText = await page.textContent('body');
-      expect(
-        modalVisible ||
-        pageText?.toLowerCase().includes('assign') ||
-        pageText?.toLowerCase().includes('client')
-      ).toBeTruthy();
+      // Modal opened — the assign interface is showing the client selection
+      await expect(page.locator('h2:has-text("Assign Program to Clients")')).toBeVisible();
     }
   });
 
   test('successful assignment via API shows programs list with assignment count', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
 
-    // Verify we can POST to the assignment endpoint as a trainer
+    // Verify we can GET the programs endpoint as a trainer
     const programsResponse = await page.request.get(`${BASE_URL}/api/programs`, {
       headers: {
         Authorization: `Bearer ${await page.evaluate(() => localStorage.getItem('accessToken'))}`,
       },
     });
 
-    // API should respond successfully (even if empty)
+    // API should respond successfully (not a server error)
     expect(programsResponse.status()).toBeLessThan(500);
 
-    // Navigate to programs list
+    // Navigate to programs list and verify the heading
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
       waitUntil: 'networkidle',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.toLowerCase().includes('program')).toBeTruthy();
+    await expect(page.locator('text=/program/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '16-programs-after-assignment.png');
   });
@@ -296,13 +271,11 @@ test.describe('16 - Program Assignment', () => {
     });
     await waitForPageReady(page);
 
-    // Client should be able to reach the programs page
-    // (may be redirected to dashboard if no assigned programs)
-    const url = page.url();
-    expect(url).toBeTruthy();
+    // Client should be able to reach the programs page — must not redirect to login
+    await expect(page).not.toHaveURL(/\/auth\/login/);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    // Page must render meaningful content
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '16-client-programs-page.png');
   });
@@ -327,20 +300,10 @@ test.describe('16 - Program Assignment', () => {
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    // Page has some content (not blank)
-    expect(pageText?.length).toBeGreaterThan(100);
-
     // Content should relate to programs or training or be an empty state
-    const hasProgramContent =
-      pageText?.toLowerCase().includes('program') ||
-      pageText?.toLowerCase().includes('training') ||
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('create') ||
-      pageText?.toLowerCase().includes('assigned') ||
-      pageText?.toLowerCase().includes('no programs');
-
-    expect(hasProgramContent).toBeTruthy();
+    await expect(
+      page.locator('text=/program|training|workout|assigned|no programs/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('client can view program details page for an assigned program via API', async ({ page }) => {
@@ -357,8 +320,7 @@ test.describe('16 - Program Assignment', () => {
         waitUntil: 'networkidle',
         timeout: TIMEOUTS.pageLoad,
       });
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+      await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
       return;
     }
 
@@ -372,8 +334,7 @@ test.describe('16 - Program Assignment', () => {
         waitUntil: 'networkidle',
         timeout: TIMEOUTS.pageLoad,
       });
-      const pageText = await page.textContent('body');
-      expect(pageText?.length).toBeGreaterThan(50);
+      await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '16-client-programs-no-data.png');
       return;
     }
@@ -388,9 +349,8 @@ test.describe('16 - Program Assignment', () => {
     });
     await waitForPageReady(page);
 
-    // Either renders program detail or redirects — should not be a blank page
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    // Either renders program detail or redirects — must show meaningful content
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '16-client-program-detail.png');
   });

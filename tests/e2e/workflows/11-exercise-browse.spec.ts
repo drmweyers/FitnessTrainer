@@ -71,24 +71,22 @@ test.describe('11 - Exercise Browse', () => {
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="Search" i]')
       .first();
-    if (await searchInput.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
-      await searchInput.fill('press');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('press');
 
-    // Pagination: Next/Previous buttons or page number buttons
+    // Wait for results to load
+    await expect(
+      page.locator('[class*="grid"] > div, [class*="card"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Pagination controls OR "Showing X of Y" text must appear
     const paginationControls = page.locator(
       'button:has-text("Next"), button:has-text("Previous"), [aria-label*="page" i], [role="navigation"]'
     );
-    const hasPagination =
-      (await paginationControls.count()) > 0 ||
-      // Alternatively the page may show "Showing X of Y" without separate pagination controls
-      (await page
-        .locator('text=/showing/i')
-        .isVisible({ timeout: 3000 })
-        .catch(() => false));
-
-    expect(hasPagination).toBeTruthy();
+    const hasPagination = (await paginationControls.count()) > 0;
+    if (!hasPagination) {
+      await expect(page.locator('text=/showing/i').first()).toBeVisible({ timeout: 3000 });
+    }
   });
 
   test('navigate to page 2 loads different exercises', async ({ page }) => {
@@ -102,36 +100,37 @@ test.describe('11 - Exercise Browse', () => {
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="Search" i]')
       .first();
-    if (!(await searchInput.isVisible({ timeout: 5000 }).catch(() => false))) {
-      // Search input not present — exercise page may have loaded in a different layout.
-      // Verify the page has some meaningful exercise content instead of silently skipping.
-      const body = await page.textContent('body');
-      const hasExerciseContent =
-        body?.toLowerCase().includes('exercise') ||
-        body?.toLowerCase().includes('squat') ||
-        body?.toLowerCase().includes('library');
-      expect(hasExerciseContent).toBeTruthy();
-      return;
-    }
-
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
     await searchInput.fill('press');
-    await page.waitForTimeout(2000);
+
+    // Wait for results to load
+    await expect(
+      page.locator('[class*="grid"] > div, [class*="card"], img[alt]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     const nextButton = page.locator('button:has-text("Next")').first();
-    if (!(await nextButton.isVisible({ timeout: 5000 }).catch(() => false))) {
-      // Fewer results than one page — skip gracefully
+    const nextVisible = await nextButton.isVisible({ timeout: 5000 }).catch(() => false);
+    if (!nextVisible) {
+      // Fewer results than one page — verify library page loaded correctly instead
+      await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
       return;
     }
 
-    // Capture first-page exercise names
-    const firstPageText = await page.textContent('body');
+    // Capture first-page heading/text before navigating
+    const firstPageExercises = await page.locator('[class*="grid"] > div').first().textContent();
 
     await nextButton.click();
-    await page.waitForTimeout(2000);
 
-    const secondPageText = await page.textContent('body');
-    // The page content should have changed
-    expect(secondPageText).not.toEqual(firstPageText);
+    // Wait for page 2 to load
+    await expect(page.locator('[class*="grid"] > div, [class*="card"]').first()).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
+
+    const secondPageFirstExercise = await page.locator('[class*="grid"] > div').first().textContent();
+    // The content should have changed (different exercises on page 2)
+    expect(secondPageFirstExercise).not.toEqual(firstPageExercises);
 
     await takeScreenshot(page, '11-exercise-page-2.png');
   });
@@ -149,10 +148,9 @@ test.describe('11 - Exercise Browse', () => {
     await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
 
     await searchInput.fill('squat');
-    await page.waitForTimeout(2000);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.toLowerCase()).toContain('squat');
+    // Wait for results containing "squat" to appear
+    await expect(page.locator('text=/squat/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '11-search-squat.png');
   });
@@ -170,10 +168,9 @@ test.describe('11 - Exercise Browse', () => {
     await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
 
     await searchInput.fill('bench');
-    await page.waitForTimeout(2000);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.toLowerCase()).toContain('bench');
+    // Wait for results containing "bench" to appear
+    await expect(page.locator('text=/bench/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '11-search-bench.png');
   });
@@ -188,23 +185,20 @@ test.describe('11 - Exercise Browse', () => {
     // Open the filters panel
     const filtersButton = page.locator('button:has-text("Filters"), button:has-text("Filter")').first();
     if (!(await filtersButton.isVisible({ timeout: 5000 }).catch(() => false))) {
+      test.fixme(true, 'KNOWN: Filters button not present in current build');
       return;
     }
     await filtersButton.click();
-    await page.waitForTimeout(500);
 
     // Look for a body-part option (chest / back / waist / upper arms …)
     const bodyPartOption = page
       .locator('label:has-text("chest"), button:has-text("chest"), input[value="chest"]')
       .first();
-    if (await bodyPartOption.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await bodyPartOption.click();
-      await page.waitForTimeout(2000);
+    await expect(bodyPartOption).toBeVisible({ timeout: TIMEOUTS.element });
+    await bodyPartOption.click();
 
-      const pageText = await page.textContent('body');
-      // Results count should now be filtered
-      expect(pageText?.toLowerCase()).toContain('chest');
-    }
+    // Results must contain "chest" after applying the body-part filter
+    await expect(page.locator('text=/chest/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '11-filter-body-part.png');
   });
@@ -218,21 +212,19 @@ test.describe('11 - Exercise Browse', () => {
 
     const filtersButton = page.locator('button:has-text("Filters"), button:has-text("Filter")').first();
     if (!(await filtersButton.isVisible({ timeout: 5000 }).catch(() => false))) {
+      test.fixme(true, 'KNOWN: Filters button not present in current build');
       return;
     }
     await filtersButton.click();
-    await page.waitForTimeout(500);
 
     const equipmentOption = page
       .locator('label:has-text("barbell"), button:has-text("barbell"), input[value="barbell"]')
       .first();
-    if (await equipmentOption.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await equipmentOption.click();
-      await page.waitForTimeout(2000);
+    await expect(equipmentOption).toBeVisible({ timeout: TIMEOUTS.element });
+    await equipmentOption.click();
 
-      const pageText = await page.textContent('body');
-      expect(pageText?.toLowerCase()).toContain('barbell');
-    }
+    // Results must contain "barbell" after filtering by equipment
+    await expect(page.locator('text=/barbell/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '11-filter-equipment.png');
   });
@@ -246,25 +238,21 @@ test.describe('11 - Exercise Browse', () => {
 
     const filtersButton = page.locator('button:has-text("Filters"), button:has-text("Filter")').first();
     if (!(await filtersButton.isVisible({ timeout: 5000 }).catch(() => false))) {
+      test.fixme(true, 'KNOWN: Filters button not present in current build');
       return;
     }
     await filtersButton.click();
-    await page.waitForTimeout(500);
 
     const muscleOption = page
       .locator('label:has-text("quads"), button:has-text("quads"), label:has-text("quadriceps"), input[value*="quad"]')
       .first();
-    if (await muscleOption.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await muscleOption.click();
-      await page.waitForTimeout(2000);
+    await expect(muscleOption).toBeVisible({ timeout: TIMEOUTS.element });
+    await muscleOption.click();
 
-      // Filtered results are displayed (count changes)
-      const pageText = await page.textContent('body');
-      const hasFiltered =
-        pageText?.toLowerCase().includes('quad') ||
-        pageText?.toLowerCase().includes('filtered');
-      expect(hasFiltered).toBeTruthy();
-    }
+    // Filtered results must contain quad-related content
+    await expect(
+      page.locator('text=/quad|quadriceps/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '11-filter-target-muscle.png');
   });
@@ -282,22 +270,22 @@ test.describe('11 - Exercise Browse', () => {
 
     if (isSelectVisible) {
       await difficultySelect.selectOption('beginner');
-      await page.waitForTimeout(2000);
 
-      const pageText = await page.textContent('body');
-      expect(pageText?.toLowerCase()).toContain('beginner');
+      // Results must show beginner-level exercises
+      await expect(page.locator('text=/beginner/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
       // Fallback: open filters panel and look for beginner option
       const filtersButton = page.locator('button:has-text("Filters"), button:has-text("Filter")').first();
-      if (await filtersButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+      const filtersVisible = await filtersButton.isVisible({ timeout: 3000 }).catch(() => false);
+      if (filtersVisible) {
         await filtersButton.click();
-        await page.waitForTimeout(500);
         const beginnerOption = page
           .locator('label:has-text("beginner"), button:has-text("beginner"), input[value="beginner"]')
           .first();
-        if (await beginnerOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+        const beginnerVisible = await beginnerOption.isVisible({ timeout: 3000 }).catch(() => false);
+        if (beginnerVisible) {
           await beginnerOption.click();
-          await page.waitForTimeout(2000);
+          await expect(page.locator('text=/beginner/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
         }
       }
     }
@@ -316,7 +304,6 @@ test.describe('11 - Exercise Browse', () => {
     const difficultySelect = page.locator('select').filter({ hasText: /beginner/i }).first();
     if (await difficultySelect.isVisible({ timeout: 5000 }).catch(() => false)) {
       await difficultySelect.selectOption('beginner');
-      await page.waitForTimeout(1000);
     }
 
     // Apply search filter as the second filter
@@ -325,7 +312,8 @@ test.describe('11 - Exercise Browse', () => {
       .first();
     if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await searchInput.fill('squat');
-      await page.waitForTimeout(2000);
+      // Wait for results to appear
+      await expect(page.locator('text=/squat/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
 
     // Page should still render without crashing
@@ -347,11 +335,9 @@ test.describe('11 - Exercise Browse', () => {
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="Search" i]')
       .first();
-    if (!(await searchInput.isVisible({ timeout: 5000 }).catch(() => false))) {
-      return;
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
     await searchInput.fill('squat');
-    await page.waitForTimeout(2000);
+    await expect(page.locator('text=/squat/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Click "Clear all filters" link
     const clearButton = page
@@ -359,16 +345,12 @@ test.describe('11 - Exercise Browse', () => {
       .first();
     if (await clearButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await clearButton.click();
-      await page.waitForTimeout(2000);
 
-      // Search input should be empty or welcome screen returns
-      const inputValue = await searchInput.inputValue().catch(() => '');
-      const pageText = await page.textContent('body');
-      const isCleared =
-        inputValue === '' ||
-        pageText?.toLowerCase().includes('1,324') ||
-        pageText?.toLowerCase().includes('popular');
-      expect(isCleared).toBeTruthy();
+      // Search input should be empty after clearing
+      await expect(async () => {
+        const inputValue = await searchInput.inputValue();
+        expect(inputValue).toBe('');
+      }).toPass({ timeout: TIMEOUTS.element });
     }
 
     await takeScreenshot(page, '11-filters-cleared.png');
@@ -385,21 +367,11 @@ test.describe('11 - Exercise Browse', () => {
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="Search" i]')
       .first();
-    if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await searchInput.fill('curl');
-      await page.waitForTimeout(2000);
-    }
+    await expect(searchInput).toBeVisible({ timeout: TIMEOUTS.element });
+    await searchInput.fill('curl');
 
-    // The page body should contain exercise card metadata
-    const pageText = await page.textContent('body');
-    // At minimum: names and some equipment / muscle text should be present
-    const hasExerciseData =
-      (pageText?.toLowerCase().includes('curl') ||
-        pageText?.toLowerCase().includes('bicep') ||
-        pageText?.toLowerCase().includes('barbell') ||
-        pageText?.toLowerCase().includes('dumbbell')) ?? false;
-
-    expect(hasExerciseData).toBeTruthy();
+    // Wait for exercise cards to render with curl results
+    await expect(page.locator('text=/curl/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '11-exercise-card-metadata.png');
   });
@@ -410,34 +382,35 @@ test.describe('11 - Exercise Browse', () => {
       timeout: TIMEOUTS.pageLoad,
     });
 
-    // Wait briefly for initial render without waiting for networkidle
-    await page.waitForTimeout(3000);
+    // Wait for exercise cards to render
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
 
     // Find any exercise link — the library renders cards with /exercises/<id> hrefs
     const exerciseLink = page.locator('a[href*="exercises/"]').first();
-    const linkExists = await exerciseLink.isVisible({ timeout: 5000 }).catch(() => false);
+    const linkExists = await exerciseLink.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
 
     if (!linkExists) {
-      // No cards rendered yet — verify page has exercise content at minimum
-      const body = await page.textContent('body');
-      expect(body?.toLowerCase().includes('exercise')).toBeTruthy();
+      // No cards rendered yet — this is a failure condition: the exercise library must show exercises
+      await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible();
+      test.fixme(true, 'KNOWN: No exercise links rendered — exercise library may be empty or not loading');
       return;
     }
 
     const initialUrl = page.url();
     await exerciseLink.click();
     await page.waitForLoadState('domcontentloaded', { timeout: TIMEOUTS.pageLoad }).catch(() => {});
-    await page.waitForTimeout(1000);
 
-    // Either navigated to a detail route or a modal/drawer appeared
+    // Must have navigated to a detail route OR a modal must have appeared
     const currentUrl = page.url();
-    const pageText = await page.textContent('body');
-    const hasDetailContent =
-      currentUrl !== initialUrl ||
-      currentUrl.includes('/exercises/') ||
-      pageText?.toLowerCase().includes('exercise');
-
-    expect(hasDetailContent).toBeTruthy();
+    const navigated = currentUrl !== initialUrl && currentUrl.includes('/exercises/');
+    if (!navigated) {
+      // Modal-based detail view: exercise name/details must appear
+      await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    } else {
+      expect(currentUrl).toContain('/exercises/');
+    }
 
     await takeScreenshot(page, '11-exercise-detail.png');
   });

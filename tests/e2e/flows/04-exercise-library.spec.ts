@@ -9,7 +9,7 @@ test.describe('04 - Exercise Library', () => {
 
   test('should load exercise library page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -22,7 +22,7 @@ test.describe('04 - Exercise Library', () => {
 
   test('should display exercise cards or list', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -35,12 +35,12 @@ test.describe('04 - Exercise Library', () => {
 
   test('should have exercise images loading', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Check for images (exercise GIFs)
+    // Check for images (exercise GIFs) — at least one must exist
     const images = page.locator('img');
     const imageCount = await images.count();
     expect(imageCount).toBeGreaterThan(0);
@@ -48,21 +48,20 @@ test.describe('04 - Exercise Library', () => {
 
   test('should have search functionality for exercises', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Find search input
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i], input[placeholder*="Search" i]');
-    if (await searchInput.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await searchInput.first().isVisible({ timeout: 5000 })) {
       await searchInput.first().fill('squat');
-      // Wait for filtering/search
-      await page.waitForTimeout(2000);
 
-      // Results should contain squat-related exercises
-      const pageText = await page.textContent('body');
-      expect(pageText?.toLowerCase()).toContain('squat');
+      // Wait for search results via locator auto-wait
+      await expect(
+        page.locator('img[alt*="squat" i], [class*="exercise"]:has-text("squat"), [class*="card"]:has-text("squat")').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
 
       await takeScreenshot(page, 'exercise-search-squat.png');
     }
@@ -70,50 +69,48 @@ test.describe('04 - Exercise Library', () => {
 
   test('should have body part or category filters', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Look for filter options (body part, equipment, category)
     const filterButton = page.locator('button:has-text("Filter"), select, [role="combobox"], button:has-text("Body Part"), button:has-text("Muscle")');
-    if (await filterButton.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await filterButton.first().isVisible({ timeout: 5000 })) {
       await filterButton.first().click();
-      await page.waitForTimeout(1000);
+      // Filter panel or dropdown must appear
+      await expect(
+        page.locator('[role="listbox"], [role="menu"], [class*="filter"]').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, 'exercise-filters.png');
     }
   });
 
   test('should navigate to exercise detail when clicking a card', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Click on first exercise card/link
     const exerciseLink = page.locator('a[href*="exercises/"]').first();
-    if (await exerciseLink.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await exerciseLink.isVisible({ timeout: 5000 })) {
       await exerciseLink.click();
-      await page.waitForLoadState('networkidle');
+      await waitForPageReady(page);
 
-      // Should show exercise detail
-      const pageText = await page.textContent('body');
-      const hasDetail =
-        pageText?.toLowerCase().includes('target') ||
-        pageText?.toLowerCase().includes('muscle') ||
-        pageText?.toLowerCase().includes('equipment') ||
-        pageText?.toLowerCase().includes('instructions');
+      // Should show exercise detail with muscle/equipment info
+      await expect(
+        page.locator('text=/target|muscle|equipment|instructions/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
 
-      if (hasDetail) {
-        await takeScreenshot(page, 'exercise-detail.png');
-      }
+      await takeScreenshot(page, 'exercise-detail.png');
     }
   });
 
   test('should also work at public exercises route', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercisesPublic}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
 

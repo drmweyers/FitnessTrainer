@@ -43,7 +43,7 @@ test.describe('42 - Calendar View', () => {
 
     // Click Calendar tab if not already active
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
@@ -64,13 +64,13 @@ test.describe('42 - Calendar View', () => {
 
     // Ensure Calendar tab is active
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
     // Click Month toggle button
     const monthToggle = page.locator('[data-testid="calendar-toggle-month"]');
-    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element })) {
       await monthToggle.click();
     }
 
@@ -93,12 +93,12 @@ test.describe('42 - Calendar View', () => {
     await waitForPageReady(page);
 
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
     const monthToggle = page.locator('[data-testid="calendar-toggle-month"]');
-    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element })) {
       await monthToggle.click();
     }
 
@@ -121,7 +121,7 @@ test.describe('42 - Calendar View', () => {
     await waitForPageReady(page);
 
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
@@ -150,12 +150,12 @@ test.describe('42 - Calendar View', () => {
     await waitForPageReady(page);
 
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
     const monthToggle = page.locator('[data-testid="calendar-toggle-month"]');
-    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element })) {
       await monthToggle.click();
     }
 
@@ -164,9 +164,9 @@ test.describe('42 - Calendar View', () => {
     await expect(headerLabel).toBeVisible({ timeout: TIMEOUTS.element });
     const beforeText = await headerLabel.textContent();
 
-    // Click Next
+    // Click Next and wait for the label to change
     await page.locator('button[aria-label="Next"]').click();
-    await page.waitForTimeout(300); // allow state update
+    await expect(headerLabel).not.toHaveText(beforeText || '');
 
     const afterText = await headerLabel.textContent();
     expect(afterText).not.toBe(beforeText);
@@ -184,30 +184,32 @@ test.describe('42 - Calendar View', () => {
     await waitForPageReady(page);
 
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
     const monthToggle = page.locator('[data-testid="calendar-toggle-month"]');
-    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element })) {
       await monthToggle.click();
     }
+
+    const headerLabel = page.locator('[data-testid="calendar-header-label"]');
+    await expect(headerLabel).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Navigate forward two months
     const nextBtn = page.locator('button[aria-label="Next"]');
     await nextBtn.click();
     await nextBtn.click();
-    await page.waitForTimeout(300);
+    // Wait for header to update
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
+    await expect(headerLabel).not.toContainText(currentMonth);
 
     // Click Today
     const todayBtn = page.locator('[data-testid="calendar-today-btn"]');
     await expect(todayBtn).toBeVisible({ timeout: TIMEOUTS.element });
     await todayBtn.click();
-    await page.waitForTimeout(300);
 
     // Header should show current month again
-    const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
-    const headerLabel = page.locator('[data-testid="calendar-header-label"]');
     await expect(headerLabel).toContainText(currentMonth);
 
     await takeScreenshot(page, '42-back-to-today.png');
@@ -223,12 +225,12 @@ test.describe('42 - Calendar View', () => {
     await waitForPageReady(page);
 
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
     const monthToggle = page.locator('[data-testid="calendar-toggle-month"]');
-    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await monthToggle.isVisible({ timeout: TIMEOUTS.element })) {
       await monthToggle.click();
     }
 
@@ -238,31 +240,22 @@ test.describe('42 - Calendar View', () => {
     const dateKey = tomorrow.toISOString().split('T')[0]; // yyyy-MM-dd
 
     // Global-setup creates appointment for tomorrow — wait for the cell to load
-    // The appointment chip may or may not exist depending on DB state
     const tomorrowCell = page.locator(`[data-testid="calendar-day-${dateKey}"]`);
 
-    // If the cell is visible, that's sufficient — appointment display is best-effort
-    // since global-setup appointment creation is non-fatal
-    const cellVisible = await tomorrowCell.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-    if (cellVisible) {
-      await tomorrowCell.click();
-      await page.waitForTimeout(400);
+    // Cell must be visible (calendar is in current month)
+    await expect(tomorrowCell).toBeVisible({ timeout: TIMEOUTS.element });
+    await tomorrowCell.click();
 
-      // Check if day detail panel opens
-      const panel = page.locator('[data-testid="calendar-day-detail-panel"]');
-      const panelVisible = await panel.isVisible({ timeout: 3000 }).catch(() => false);
+    // Day detail panel must open
+    const panel = page.locator('[data-testid="calendar-day-detail-panel"]');
+    await expect(panel).toBeVisible({ timeout: TIMEOUTS.element });
 
-      await takeScreenshot(page, '42-tomorrow-appointment.png');
+    // Panel must show either appointment data or an empty state message
+    await expect(
+      panel.locator('text=/appointment|session|no appointments/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-      // Either appointment exists or panel says "No appointments"
-      if (panelVisible) {
-        const panelText = await panel.textContent();
-        expect(panelText).toBeTruthy();
-      }
-    } else {
-      // Tomorrow cell not visible means we might need to navigate — acceptable skip
-      console.log('Tomorrow cell not in current view — appointment check skipped');
-    }
+    await takeScreenshot(page, '42-tomorrow-appointment.png');
   });
 
   // ── 9: Week view shows current week ──────────────────────────────────────
@@ -275,12 +268,12 @@ test.describe('42 - Calendar View', () => {
     await waitForPageReady(page);
 
     const calTab = page.locator('[data-testid="tab-calendar"]');
-    if (await calTab.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await calTab.isVisible({ timeout: TIMEOUTS.element })) {
       await calTab.click();
     }
 
     const weekToggle = page.locator('[data-testid="calendar-toggle-week"]');
-    if (await weekToggle.isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    if (await weekToggle.isVisible({ timeout: TIMEOUTS.element })) {
       await weekToggle.click();
     }
 

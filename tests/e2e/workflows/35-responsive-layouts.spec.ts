@@ -25,28 +25,16 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Dashboard should load
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
+    // Dashboard heading must render on mobile
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /dashboard|welcome/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-    // On mobile, sidebar should collapse and hamburger should appear
+    // Hamburger button must be visible at 375px (sidebar collapses)
     const hamburger = page.locator(
       'button[aria-label*="menu" i], button[aria-label*="Menu" i], [data-testid="mobile-menu"], button:has(svg[class*="menu" i])'
     );
-    const hasHamburger = await hamburger.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    // Sidebar should be hidden on mobile
-    const sidebar = page.locator('aside, nav[aria-label*="sidebar" i], [data-testid="sidebar"]');
-    const sidebarVisible = await sidebar.first().isVisible({ timeout: 2000 }).catch(() => false);
-
-    // Either hamburger is shown or sidebar adapts (bottom nav etc.)
-    const pageText = await page.textContent('body');
-    expect(
-      hasHamburger ||
-      !sidebarVisible ||
-      pageText?.toLowerCase().includes('dashboard')
-    ).toBeTruthy();
+    await expect(hamburger.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-mobile-dashboard.png');
   });
@@ -60,22 +48,12 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('exercise') ||
-      pageText?.toLowerCase().includes('workout')
-    ).toBeTruthy();
+    // Exercise heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /exercise/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-    // Cards should be present
-    const cards = page.locator('article, .card, [data-testid*="exercise"], [class*="exercise"]');
-    const hasCards = await cards.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    // On mobile, check page renders without extreme overflow
-    // Use documentElement.clientWidth (layout viewport) rather than body.scrollWidth
-    // which can reflect internal component min-widths that scroll horizontally
+    // Layout viewport must not exceed mobile width (no horizontal overflow)
     const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
     expect(layoutWidth).toBeLessThanOrEqual(375 + 5);
 
@@ -91,16 +69,12 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('program') ||
-      pageText?.toLowerCase().includes('workout')
-    ).toBeTruthy();
+    // Programs heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /program/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-    // No horizontal overflow
+    // No horizontal overflow on mobile
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
     expect(bodyWidth).toBeLessThanOrEqual(375 + 20);
 
@@ -116,15 +90,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('exercise') ||
-      pageText?.toLowerCase().includes('log')
-    ).toBeTruthy();
+    // Workouts heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /workout|exercise|log/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // No horizontal overflow
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
@@ -142,15 +111,12 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    // Analytics heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /analytics|progress/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
-    // Charts should not cause the layout viewport to overflow on mobile
-    // Use documentElement.clientWidth (layout viewport) rather than body.scrollWidth
-    // which reflects chart internal min-widths that may cause internal horizontal scroll
+    // Charts must not cause layout viewport overflow (use clientWidth, not scrollWidth)
     const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
     expect(layoutWidth).toBeLessThanOrEqual(375 + 5);
 
@@ -168,15 +134,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('dashboard') ||
-      pageText?.toLowerCase().includes('welcome') ||
-      pageText?.toLowerCase().includes('client')
-    ).toBeTruthy();
+    // Dashboard heading must be visible at tablet width
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /dashboard|welcome/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-tablet-dashboard.png');
   });
@@ -190,14 +151,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('client') ||
-      pageText?.toLowerCase().includes('athlete')
-    ).toBeTruthy();
+    // Client heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /client|athlete/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // No horizontal overflow at tablet
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
@@ -215,14 +172,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('exercise') ||
-      pageText?.toLowerCase().includes('workout')
-    ).toBeTruthy();
+    // Exercise heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /exercise/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-tablet-exercises.png');
   });
@@ -236,9 +189,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
+    // Schedule heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /schedule|calendar/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Calendar should not overflow tablet width
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
@@ -256,13 +210,11 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-
-    // At 768px, sidebar may be visible or collapsed depending on breakpoint
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    // At 768px, sidebar OR bottom nav must be visible (navigation is accessible)
+    const navElement = page.locator(
+      'aside, nav[aria-label*="sidebar" i], [data-testid="sidebar"], nav[aria-label*="navigation" i]'
+    );
+    await expect(navElement.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-tablet-nav.png');
   });
@@ -278,17 +230,9 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Sidebar should be visible at full desktop width
+    // Sidebar must be visible at full desktop width
     const sidebar = page.locator('aside, nav[aria-label*="sidebar" i], [data-testid="sidebar"], .sidebar');
-    const hasSidebar = await sidebar.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasSidebar ||
-      pageText?.toLowerCase().includes('dashboard') ||
-      pageText?.toLowerCase().includes('exercises') ||
-      pageText?.toLowerCase().includes('clients')
-    ).toBeTruthy();
+    await expect(sidebar.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-desktop-full-layout.png');
   });
@@ -302,14 +246,14 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('exercise') ||
-      pageText?.toLowerCase().includes('workout')
-    ).toBeTruthy();
+    // Exercise heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /exercise/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // At 1440px, exercise grid must show multiple cards per row
+    const cards = page.locator('article, [data-testid*="exercise-card"], [class*="exercise-card"]');
+    await expect(cards.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-desktop-exercises.png');
   });
@@ -323,11 +267,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    // Analytics heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /analytics|progress/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-desktop-analytics.png');
   });
@@ -341,15 +284,10 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('program') ||
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('create')
-    ).toBeTruthy();
+    // Programs heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /program/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '35-desktop-programs.png');
   });
@@ -363,35 +301,26 @@ test.describe('35 - Responsive Layouts', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Try to open a modal (e.g., add client)
+    // Open a modal (add client)
     const addBtn = page.locator(
       'button:has-text("Add Client"), button:has-text("New Client"), button:has-text("Invite"), button:has-text("Add")'
     );
-    if (await addBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
+    await expect(addBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await addBtn.first().click();
 
-      const modal = page.locator('[role="dialog"], [data-radix-dialog-content], .modal');
-      if (await modal.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-        // Modal should be centered (check it's not full-width or off-screen)
-        const modalBox = await modal.first().boundingBox();
-        if (modalBox) {
-          // Modal should be narrower than the full viewport
-          expect(modalBox.width).toBeLessThan(1440);
-          // Modal should be horizontally centered (some margin on each side)
-          expect(modalBox.x).toBeGreaterThan(0);
-        }
+    const modal = page.locator('[role="dialog"], [data-radix-dialog-content], .modal');
+    await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-        await takeScreenshot(page, '35-desktop-modal.png');
+    // Modal must be narrower than the full viewport (not full-width on desktop)
+    const modalBox = await modal.first().boundingBox();
+    expect(modalBox).not.toBeNull();
+    expect(modalBox!.width).toBeLessThan(1440);
+    // Modal must have margin on left (horizontally centered)
+    expect(modalBox!.x).toBeGreaterThan(0);
 
-        // Close modal
-        await page.keyboard.press('Escape');
-      }
-    }
+    await takeScreenshot(page, '35-desktop-modal.png');
 
-    // Page still functional regardless
-    // Use count check instead of toBeVisible: body may have visibility:hidden
-    // briefly while the dev server is still hydrating.
-    expect(await page.locator('body').count()).toBeGreaterThan(0);
+    // Close modal
+    await page.keyboard.press('Escape');
   });
 });

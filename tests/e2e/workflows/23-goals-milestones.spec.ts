@@ -20,7 +20,7 @@ async function openGoalsTab(page: any) {
   );
   await expect(goalsTab.first()).toBeVisible({ timeout: TIMEOUTS.element });
   await goalsTab.first().click();
-  await page.waitForTimeout(500);
+  await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 }
 
 test.describe('23 - Goals & Milestones', () => {
@@ -57,7 +57,6 @@ test.describe('23 - Goals & Milestones', () => {
       'button:has-text("Create New Goal"), button:has-text("Add Goal")'
     );
     await createBtn.first().click();
-    await page.waitForTimeout(500);
 
     // Form should appear
     const form = page.locator('form, [class*="form"], [class*="goal-form"]');
@@ -71,7 +70,6 @@ test.describe('23 - Goals & Milestones', () => {
 
     const createBtn = page.locator('button:has-text("Create New Goal"), button:has-text("Add Goal")');
     await createBtn.first().click();
-    await page.waitForTimeout(500);
 
     const goalTypeSelect = page.locator(
       'select#goal-type, select[name*="type" i], select[aria-label*="type" i], select[id*="type" i]'
@@ -84,7 +82,6 @@ test.describe('23 - Goals & Milestones', () => {
 
     const createBtn = page.locator('button:has-text("Create New Goal"), button:has-text("Add Goal")');
     await createBtn.first().click();
-    await page.waitForTimeout(500);
 
     const targetInput = page.locator(
       'input#target-value, input[name*="target" i], input[id*="target" i], input[placeholder*="target" i]'
@@ -97,7 +94,6 @@ test.describe('23 - Goals & Milestones', () => {
 
     const createBtn = page.locator('button:has-text("Create New Goal"), button:has-text("Add Goal")');
     await createBtn.first().click();
-    await page.waitForTimeout(500);
 
     const dateInput = page.locator(
       'input#target-date, input[type="date"], input[name*="date" i], input[id*="date" i]'
@@ -110,7 +106,6 @@ test.describe('23 - Goals & Milestones', () => {
 
     const createBtn = page.locator('button:has-text("Create New Goal"), button:has-text("Add Goal")');
     await createBtn.first().click();
-    await page.waitForTimeout(500);
 
     // Fill goal type
     const goalTypeSelect = page.locator('select#goal-type, select[name*="type" i]').first();
@@ -136,18 +131,14 @@ test.describe('23 - Goals & Milestones', () => {
     const submitBtn = page.locator('button[type="submit"], button:has-text("Create Goal")');
     if (await submitBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
       await submitBtn.first().click();
-      await page.waitForTimeout(2000);
 
-      // Form should close or success indicator appears
-      const body = await page.textContent('body');
-      const hasGoalContent = body?.toLowerCase().includes('goal');
-      expect(hasGoalContent).toBeTruthy();
+      // Form should close or success indicator appears — goal content must be visible
+      await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
       await takeScreenshot(page, '23-goal-created.png');
     } else {
       // Submit button not found — verify the goals tab is still functional
-      const body = await page.textContent('body');
-      expect(body!.length).toBeGreaterThan(50);
+      await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -183,7 +174,6 @@ test.describe('23 - Goals & Milestones', () => {
     // First create a goal to delete
     const createBtn = page.locator('button:has-text("Create New Goal"), button:has-text("Add Goal")');
     await createBtn.first().click();
-    await page.waitForTimeout(500);
 
     const goalTypeSelect = page.locator('select#goal-type').first();
     if (await goalTypeSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -200,7 +190,8 @@ test.describe('23 - Goals & Milestones', () => {
     const submitBtn = page.locator('button[type="submit"], button:has-text("Create Goal")').first();
     if (await submitBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await submitBtn.click();
-      await page.waitForTimeout(1000);
+      // Wait for form to close and goals tab to re-render
+      await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
 
     // Now try to delete
@@ -209,7 +200,6 @@ test.describe('23 - Goals & Milestones', () => {
 
     if (hasDeleteBtn) {
       await deleteBtn.click();
-      await page.waitForTimeout(500);
 
       // May require confirmation
       const confirmBtn = page.locator(
@@ -217,16 +207,14 @@ test.describe('23 - Goals & Milestones', () => {
       );
       if (await confirmBtn.first().isVisible({ timeout: 2000 }).catch(() => false)) {
         await confirmBtn.first().click();
-        await page.waitForTimeout(1000);
+        await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
       }
 
-      const body = await page.textContent('body');
-      expect(body!.length).toBeGreaterThan(50);
+      // After delete, goals tab must still render
+      await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
       // Delete button not found — no goals to delete or UI differs.
-      // Verify the goals tab is still functional.
-      const body = await page.textContent('body');
-      expect(body!.length).toBeGreaterThan(50);
+      await expect(page.locator('text=/goal/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 

@@ -64,7 +64,6 @@ test.describe('21 - Body Measurements', () => {
       'button:has-text("Record New Measurement"), button:has-text("Add Measurement")'
     );
     await recordBtn.first().click();
-    await page.waitForTimeout(500);
 
     // MeasurementTracker form is an inline section (not a dialog)
     // Look for the form section heading or the form's save button
@@ -85,7 +84,6 @@ test.describe('21 - Body Measurements', () => {
 
     const recordBtn = page.locator('button:has-text("Record New Measurement"), button:has-text("Add Measurement")');
     await recordBtn.first().click();
-    await page.waitForTimeout(500);
 
     // Weight input is a spinbutton (number input); look for it near the "Weight" label
     const weightLabel = page.locator(
@@ -114,7 +112,6 @@ test.describe('21 - Body Measurements', () => {
 
     const recordBtn = page.locator('button:has-text("Record New Measurement"), button:has-text("Add Measurement")');
     await recordBtn.first().click();
-    await page.waitForTimeout(500);
 
     // Body fat input is a spinbutton (number input); check by label text or page content
     const bodyFatLabel = page.locator(
@@ -137,7 +134,6 @@ test.describe('21 - Body Measurements', () => {
 
     const recordBtn = page.locator('button:has-text("Record New Measurement"), button:has-text("Add Measurement")');
     await recordBtn.first().click();
-    await page.waitForTimeout(500);
 
     // Muscle mass input is a spinbutton (number input); check by label text or page content
     const muscleMassLabel = page.locator(
@@ -160,7 +156,6 @@ test.describe('21 - Body Measurements', () => {
 
     const recordBtn = page.locator('button:has-text("Record New Measurement"), button:has-text("Add Measurement")');
     await recordBtn.first().click();
-    await page.waitForTimeout(500);
 
     // Fill in weight field (spinbutton/number input)
     const weightInput = page.locator(
@@ -184,7 +179,6 @@ test.describe('21 - Body Measurements', () => {
     );
     if (await saveBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
       await saveBtn.first().click();
-      await page.waitForTimeout(2000);
 
       // Success toast or modal closing
       const successIndicator = page.locator(
@@ -266,7 +260,9 @@ test.describe('21 - Body Measurements', () => {
 
     if (tabVisible) {
       await historyTab.first().click();
-      await page.waitForTimeout(800);
+      await expect(historyTab.first()).toHaveAttribute('aria-selected', 'true').catch(() =>
+        expect(page.locator('text=/history/i').first()).toBeVisible({ timeout: TIMEOUTS.element })
+      );
 
       const deleteBtn = page.locator('button:has-text("Delete")').first();
       const hasMeasurements = await deleteBtn.isVisible({ timeout: 3000 }).catch(() => false);
@@ -278,7 +274,6 @@ test.describe('21 - Body Measurements', () => {
         });
 
         await deleteBtn.click();
-        await page.waitForTimeout(2000);
 
         // Success toast or the measurement list updates (fewer items)
         const successMsg = page.locator('[role="alert"]:not([aria-label="Mobile navigation menu"]), text=/deleted|removed/i');
@@ -287,7 +282,11 @@ test.describe('21 - Body Measurements', () => {
         const alertVisible = await alertEl.first().isVisible({ timeout: 3000 }).catch(() => false);
         // Accept if toast appears or if delete button is gone (item removed)
         const deleteBtnGone = !(await deleteBtn.isVisible({ timeout: 1000 }).catch(() => true));
-        expect(deleted || alertVisible || deleteBtnGone || true).toBeTruthy(); // graceful: skip if delete has no toast
+        // At least one of: toast visible, alert visible, or delete button gone
+        if (!deleted && !alertVisible && !deleteBtnGone) {
+          // None detected — this is a failure
+          expect(deleted || alertVisible || deleteBtnGone).toBeTruthy();
+        }
       } else {
         test.skip();
       }

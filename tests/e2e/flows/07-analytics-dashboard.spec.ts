@@ -6,7 +6,7 @@ test.describe('07 - Analytics Dashboard', () => {
   test('should load analytics page for client user', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -22,42 +22,43 @@ test.describe('07 - Analytics Dashboard', () => {
   test('should display analytics tabs', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Check for various analytics tabs
-    const tabNames = ['Overview', 'Performance', 'Goals', 'History'];
-    for (const tabName of tabNames) {
-      const tab = page.locator(`text=${tabName}`);
-      if (await tab.first().isVisible({ timeout: 3000 }).catch(() => false)) {
-        // Tab exists, verified
-      }
-    }
+    // At least one analytics tab must be visible
+    await expect(
+      page.locator('[role="tab"]:has-text("Overview"), [role="tab"]:has-text("Performance"), [role="tab"]:has-text("Goals")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should switch between analytics tabs', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Try clicking on Goals tab if it exists
     const goalsTab = page.locator('button:has-text("Goals"), [role="tab"]:has-text("Goals"), a:has-text("Goals")');
-    if (await goalsTab.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await goalsTab.first().isVisible({ timeout: 5000 })) {
       await goalsTab.first().click();
-      await page.waitForTimeout(1000);
+      // After click, Goals tab content should be active — wait for it
+      await expect(
+        page.locator('[role="tab"][aria-selected="true"]:has-text("Goals"), [aria-selected="true"]:has-text("Goals")').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, 'analytics-goals.png');
     }
 
     // Try clicking History tab
     const historyTab = page.locator('button:has-text("History"), [role="tab"]:has-text("History"), a:has-text("History")');
-    if (await historyTab.first().isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await historyTab.first().isVisible({ timeout: 3000 })) {
       await historyTab.first().click();
-      await page.waitForTimeout(1000);
+      await expect(
+        page.locator('[role="tab"][aria-selected="true"]:has-text("History"), text=/history|measurement/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, 'analytics-history.png');
     }
   });
@@ -65,13 +66,12 @@ test.describe('07 - Analytics Dashboard', () => {
   test('should load analytics page for trainer', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Analytics page should load for trainer too
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Analytics page should load for trainer with a heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });

@@ -83,14 +83,14 @@ async function fillInfoAndAdvance(
     if (!(await fallbackBtn.isVisible({ timeout: 1500 }).catch(() => false))) return false;
     if (await fallbackBtn.isDisabled().catch(() => true)) return false;
     await fallbackBtn.click();
-    await page.waitForTimeout(600);
+    await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
     return true;
   }
 
   if (await nextBtn.isDisabled().catch(() => true)) return false;
 
   await nextBtn.click();
-  await page.waitForTimeout(600);
+  await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
   return true;
 }
 
@@ -115,14 +115,14 @@ async function advanceFromWeekBuilder(page: import('@playwright/test').Page): Pr
     const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
     if (await addWeekBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
       await addWeekBtn.click();
-      await page.waitForTimeout(400);
+      await expect(continueBtn).not.toBeDisabled({ timeout: TIMEOUTS.element });
     }
     // Re-check disabled state
     if (await continueBtn.isDisabled().catch(() => true)) return false;
   }
 
   await continueBtn.click();
-  await page.waitForTimeout(800);
+  await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
   return true;
 }
 
@@ -149,17 +149,17 @@ async function advanceToStep(
       const disabled = await continueBtn.isDisabled().catch(() => true);
       if (!disabled) {
         await continueBtn.click();
-        await page.waitForTimeout(800);
+        await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
         continue;
       }
       // Disabled — try adding a week, then retry
       const addWeekBtn = page.locator('button:has-text("Add Another Week")').first();
       if (await addWeekBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
         await addWeekBtn.click();
-        await page.waitForTimeout(400);
+        await expect(continueBtn).not.toBeDisabled({ timeout: TIMEOUTS.element });
         if (!(await continueBtn.isDisabled().catch(() => true))) {
           await continueBtn.click();
-          await page.waitForTimeout(800);
+          await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
           continue;
         }
       }
@@ -174,7 +174,7 @@ async function advanceToStep(
     if (await nextBtn.isDisabled().catch(() => true)) break;
 
     await nextBtn.click();
-    await page.waitForTimeout(500);
+    await expect(page.locator('h1, h2, h3, [role="tab"]').first()).toBeVisible({ timeout: TIMEOUTS.element });
   }
   const target = page.locator(`[data-testid="${targetTestId}"]`);
   return target.isVisible({ timeout: 2000 }).catch(() => false);
@@ -292,11 +292,8 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     await cancelBtn.click();
     await page.waitForTimeout(800);
 
-    // Should navigate back to /programs or /programs/new is no longer the URL
-    const url = page.url();
-    // Accept either /programs list or browser navigated back
-    const redirectedAway = !url.endsWith('/programs/new') || url.includes('/programs');
-    expect(redirectedAway).toBeTruthy();
+    // Should navigate back to /programs — URL must not still be /programs/new
+    await expect(page).not.toHaveURL(/\/programs\/new$/);
 
     await takeScreenshot(page, '14b-03-cancel.png');
   });
@@ -324,13 +321,9 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     if (!canvasVisible) {
       // The multi-step builder does not have a 3-panel canvas yet.
       // Verify we at least advanced to the goals or weeks step.
-      const pageText = await page.textContent('body');
-      const onNextStep =
-        pageText?.toLowerCase().includes('goals') ||
-        pageText?.toLowerCase().includes('equipment') ||
-        pageText?.toLowerCase().includes('week') ||
-        pageText?.toLowerCase().includes('workout');
-      expect(onNextStep).toBeTruthy();
+      await expect(
+        page.locator('text=/goals|equipment|week|workout/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       test.skip(true, 'data-testid="program-builder-canvas" not present — DnD wiring not yet integrated');
       return;
     }
@@ -398,11 +391,8 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     }
 
     await searchInput.fill('bench');
-    await page.waitForTimeout(500); // debounce
-
-    // Exercise cards should be filtered — at minimum, the word "bench" should appear
-    const pageText = await page.textContent('body');
-    expect(pageText?.toLowerCase()).toContain('bench');
+    // Wait for debounced filter to apply — exercise cards should show "bench" exercises
+    await expect(page.locator('text=/bench/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '14b-06-library-search.png');
   });
@@ -770,16 +760,12 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     const sectionCard = page.locator('[data-testid="section-card"]').first();
     const sectionVisible = await sectionCard.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
 
-    // Also accept if the body text contains "superset" or "A" label
-    const pageText = await page.textContent('body');
-    const hasSupersetIndicator =
-      sectionVisible ||
-      pageText?.toLowerCase().includes('superset') ||
-      pageText?.includes(' A ') ||
-      pageText?.includes('1A') ||
-      pageText?.includes('A1');
-
-    expect(hasSupersetIndicator).toBeTruthy();
+    // Expect a section-card with superset indicator, or the word "superset" in the UI
+    if (sectionVisible) {
+      await expect(sectionCard).toBeVisible();
+    } else {
+      await expect(page.locator('text=/superset|1A|A1/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    }
 
     await takeScreenshot(page, '14b-12-superset.png');
   });
@@ -816,7 +802,11 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     const sectionsAfter = await page.locator('[data-testid="section-card"]').count();
     const pickerVisible = await page.locator('[role="dialog"], [role="listbox"]').isVisible({ timeout: 2000 }).catch(() => false);
 
-    expect(sectionsAfter > sectionsBefore || pickerVisible).toBeTruthy();
+    if (pickerVisible) {
+      await expect(page.locator('[role="dialog"], [role="listbox"]').first()).toBeVisible();
+    } else {
+      expect(sectionsAfter).toBeGreaterThan(sectionsBefore);
+    }
 
     await takeScreenshot(page, '14b-13-add-section.png');
   });
@@ -846,11 +836,7 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     }
 
     await expect(outline).toBeVisible();
-    const outlineText = await outline.textContent();
-    const hasWeekText =
-      outlineText?.toLowerCase().includes('week') ||
-      outlineText?.toLowerCase().includes('day');
-    expect(hasWeekText).toBeTruthy();
+    await expect(outline.locator('text=/week|day/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '14b-14-outline.png');
   });
@@ -944,8 +930,11 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
     const redirectedToPrograms =
       finalUrl.includes('/programs') && !finalUrl.endsWith('/programs/new');
 
-    // Either redirected or API was called
-    expect(redirectedToPrograms || programsPostCalled).toBeTruthy();
+    // Either redirected to programs list, or the POST was called (redirects may be async)
+    if (!redirectedToPrograms && !programsPostCalled) {
+      // Neither condition met — this is a real failure
+      expect(redirectedToPrograms).toBe(true);
+    }
 
     await takeScreenshot(page, '14b-15-save.png');
   });
@@ -986,15 +975,15 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
       await saveBtn.click();
       await page.waitForTimeout(800);
 
-      // Accept either a validation message or a successful redirect
-      const validationMsg = page.locator(
-        '[role="alert"], .text-red-600, text=/exercise/i, text=/required/i, text=/empty/i'
-      );
-      const hasValidation = await validationMsg.first().isVisible({ timeout: 3000 }).catch(() => false);
+      // Either a validation message must appear, or redirect to programs occurred
       const currentUrl = page.url();
       const redirected = currentUrl.includes('/programs') && !currentUrl.endsWith('/programs/new');
-
-      expect(hasValidation || redirected).toBeTruthy();
+      if (!redirected) {
+        // Must show validation message
+        await expect(
+          page.locator('[role="alert"], .text-red-600, text=/exercise/i, text=/required/i, text=/empty/i').first()
+        ).toBeVisible({ timeout: 3000 });
+      }
     } else {
       // Multi-step builder: advance through all steps to reach Save.
       // Step 2 uses "Continue to Workouts", later steps use "Next" variants.
@@ -1021,12 +1010,10 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
       ).first();
       const saveBtnVisible = await saveBtn.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
       if (!saveBtnVisible) {
-        // The weeks step may block Next with "No weeks added" — that IS validation
-        const pageText = await page.textContent('body');
-        const hasWeekValidation =
-          pageText?.toLowerCase().includes('week') ||
-          pageText?.toLowerCase().includes('add');
-        expect(hasWeekValidation).toBeTruthy();
+        // The weeks step blocks Next with "No weeks added" — assert the week/add text is visible
+        await expect(
+          page.locator('text=/week|add/i').first()
+        ).toBeVisible({ timeout: TIMEOUTS.element });
         await takeScreenshot(page, '14b-16-empty-validation.png');
         return;
       }
@@ -1034,11 +1021,12 @@ test.describe('14b - Manual Program Builder Drag-and-Drop', () => {
       await saveBtn.click();
       await page.waitForTimeout(800);
 
-      const validationMsg = page.locator('[role="alert"], .text-red-600, text=/required/i');
-      const hasValidation = await validationMsg.first().isVisible({ timeout: 3000 }).catch(() => false);
       const redirected = page.url().includes('/programs') && !page.url().endsWith('/programs/new');
-
-      expect(hasValidation || redirected).toBeTruthy();
+      if (!redirected) {
+        await expect(
+          page.locator('[role="alert"], .text-red-600, text=/required/i').first()
+        ).toBeVisible({ timeout: 3000 });
+      }
     }
 
     await takeScreenshot(page, '14b-16-empty-save.png');

@@ -12,10 +12,10 @@ test.describe('34 - Notification Settings', () => {
   });
 
   /**
-   * Navigate to the notification settings page/section.
-   * Tries multiple possible routes in order.
+   * Navigate to the notification settings page.
+   * Returns the route that was found, or throws if none found.
    */
-  async function navigateToNotifications(page: import('@playwright/test').Page): Promise<boolean> {
+  async function navigateToNotifications(page: import('@playwright/test').Page): Promise<string> {
     const notifRoutes = [
       '/settings/notifications',
       '/settings',
@@ -26,191 +26,119 @@ test.describe('34 - Notification Settings', () => {
 
     for (const route of notifRoutes) {
       await page.goto(`${BASE_URL}${route}`, {
-        waitUntil: 'load',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
       await waitForPageReady(page);
 
       const pageText = await page.textContent('body');
-      // Only return true if the page has notification content AND is not a 404 page
-      const is404 = pageText?.toLowerCase().includes('page not found') ||
-        pageText?.toLowerCase().includes('404');
+      const is404 = pageText?.toLowerCase().includes('page not found') || pageText?.toLowerCase().includes('404');
       if (
         !is404 &&
-        (pageText?.toLowerCase().includes('notification') ||
-         pageText?.toLowerCase().includes('push notification'))
+        (pageText?.toLowerCase().includes('notification') || pageText?.toLowerCase().includes('push notification'))
       ) {
-        return true;
+        return route;
       }
     }
-    return false;
+    throw new Error('Notification settings page not found at any known route');
   }
 
   test('settings/notification page or section loads', async ({ page }) => {
-    const found = await navigateToNotifications(page);
+    const route = await navigateToNotifications(page);
 
-    if (found) {
-      const pageText = await page.textContent('body');
-      expect(
-        pageText?.toLowerCase().includes('notification') ||
-        pageText?.toLowerCase().includes('setting') ||
-        pageText?.toLowerCase().includes('profile') ||
-        pageText?.toLowerCase().includes('preference')
-      ).toBeTruthy();
-    } else {
-      // Notification settings not exposed as a standalone page — verify API is accessible
-      const response = await page.request.get(`${BASE_URL}/api/notifications/preferences`);
-      expect([200, 401, 403, 404, 405].includes(response.status())).toBeTruthy();
-    }
+    // Notification settings heading must be visible
+    await expect(
+      page.locator('h1, h2, h3, [role="heading"]').filter({ hasText: /notification|setting|preference/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '34-notification-settings.png');
   });
 
   test('push notification toggle visible', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      const pushToggle = page.locator(
-        'input[type="checkbox"][name*="push" i], button[role="switch"][aria-label*="push" i], [data-testid*="push-notification"], label:has-text("Push Notification")'
-      );
-      const hasPush = await pushToggle.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await navigateToNotifications(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        hasPush ||
-        pageText?.toLowerCase().includes('push notification') ||
-        pageText?.toLowerCase().includes('push')
-      ).toBeTruthy();
-    } else {
-      // Settings page not found — check notifications API
-      const response = await page.request.get(`${BASE_URL}/api/notifications/preferences`);
-      expect([200, 401, 403, 404].includes(response.status())).toBeTruthy();
-    }
+    // Push notification toggle must be present
+    const pushToggle = page.locator(
+      'input[type="checkbox"][name*="push" i], button[role="switch"][aria-label*="push" i], [data-testid*="push-notification"], label:has-text("Push Notification")'
+    );
+    await expect(pushToggle.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('category checkboxes visible (workouts, messages, PRs, scheduling)', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      const categoryCheckboxes = page.locator(
-        'input[type="checkbox"][name*="workout" i], input[type="checkbox"][name*="message" i], input[type="checkbox"][name*="schedule" i]'
-      );
-      const hasCategories = await categoryCheckboxes.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await navigateToNotifications(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        hasCategories ||
-        pageText?.toLowerCase().includes('workout') ||
-        pageText?.toLowerCase().includes('message') ||
-        pageText?.toLowerCase().includes('categor')
-      ).toBeTruthy();
-    }
+    // Notification category checkboxes must be present
+    const categoryCheckboxes = page.locator(
+      'input[type="checkbox"][name*="workout" i], input[type="checkbox"][name*="message" i], input[type="checkbox"][name*="schedule" i]'
+    );
+    await expect(categoryCheckboxes.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('quiet hours configuration available', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      const quietHours = page.locator(
-        '[data-testid*="quiet-hours"], text=/quiet hours/i, text=/do not disturb/i, [aria-label*="quiet" i]'
-      );
-      const hasQuiet = await quietHours.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await navigateToNotifications(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        hasQuiet ||
-        pageText?.toLowerCase().includes('quiet') ||
-        pageText?.toLowerCase().includes('do not disturb') ||
-        pageText?.toLowerCase().includes('schedule') ||
-        true // Feature may be in a sub-section
-      ).toBeTruthy();
-    }
+    // Quiet hours section must be present
+    const quietHours = page.locator(
+      '[data-testid*="quiet-hours"], text=/quiet hours/i, text=/do not disturb/i, [aria-label*="quiet" i]'
+    );
+    await expect(quietHours.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('start/end time pickers for quiet hours', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      const timePicker = page.locator(
-        'input[type="time"][name*="start" i], input[type="time"][name*="end" i], [aria-label*="start time" i], [aria-label*="end time" i]'
-      );
-      const hasTimePicker = await timePicker.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await navigateToNotifications(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        hasTimePicker ||
-        pageText?.toLowerCase().includes('start') ||
-        pageText?.toLowerCase().includes('end') ||
-        pageText?.toLowerCase().includes('time') ||
-        true // Sub-section may not be expanded by default
-      ).toBeTruthy();
-    }
+    // Time pickers for quiet hours start/end must be present
+    const timePicker = page.locator(
+      'input[type="time"][name*="start" i], input[type="time"][name*="end" i], [aria-label*="start time" i], [aria-label*="end time" i]'
+    );
+    await expect(timePicker.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('"Test Notification" button visible', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      const testBtn = page.locator(
-        'button:has-text("Test Notification"), button:has-text("Test"), button[aria-label*="test notification" i]'
-      );
-      const hasTest = await testBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await navigateToNotifications(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        hasTest ||
-        pageText?.toLowerCase().includes('test notification') ||
-        true // May be available only after enabling push
-      ).toBeTruthy();
-    }
+    // Test notification button must be visible on the settings page
+    const testBtn = page.locator(
+      'button:has-text("Test Notification"), button:has-text("Test"), button[aria-label*="test notification" i]'
+    );
+    await expect(testBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('toggle state persists after page reload', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      // Find a toggle and note its state
-      const toggle = page.locator(
-        'input[type="checkbox"], button[role="switch"]'
-      ).first();
+    const route = await navigateToNotifications(page);
 
-      if (await toggle.isVisible({ timeout: 5000 }).catch(() => false)) {
-        const initialChecked = await toggle.isChecked().catch(() => false);
+    // Find a toggle and record its initial state
+    const toggle = page.locator('input[type="checkbox"], button[role="switch"]').first();
+    await expect(toggle).toBeVisible({ timeout: TIMEOUTS.element });
+    const initialChecked = await toggle.isChecked().catch(() => false);
 
-        // Toggle it
-        await toggle.click().catch(() => {});
-        await page.waitForTimeout(1000);
+    // Toggle it
+    await toggle.click();
+    await expect(page.locator('[data-testid*="save-success"], text=/saved|updated/i').first()).toBeVisible({ timeout: TIMEOUTS.element }).catch(() => {});
 
-        // Reload the page
-        await page.reload({ waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
-        await waitForPageReady(page);
+    // Reload the page
+    await page.goto(`${BASE_URL}${route}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: TIMEOUTS.pageLoad,
+    });
+    await waitForPageReady(page);
 
-        // Toggle should reflect the new state
-        const reloadedToggle = page.locator('input[type="checkbox"], button[role="switch"]').first();
-        const afterChecked = await reloadedToggle.isChecked().catch(() => null);
+    // Toggle state must differ from the original (change persisted)
+    const reloadedToggle = page.locator('input[type="checkbox"], button[role="switch"]').first();
+    await expect(reloadedToggle).toBeVisible({ timeout: TIMEOUTS.element });
+    const afterChecked = await reloadedToggle.isChecked();
+    expect(afterChecked).toBe(!initialChecked);
 
-        // State should have changed (or at least persisted)
-        expect(afterChecked !== null || true).toBeTruthy(); // Settings page still functional
-
-        await takeScreenshot(page, '34-toggle-persisted.png');
-      }
-    }
+    await takeScreenshot(page, '34-toggle-persisted.png');
   });
 
   test('can disable all notifications', async ({ page }) => {
-    const found = await navigateToNotifications(page);
-    if (found) {
-      // Look for master disable toggle
-      const masterToggle = page.locator(
-        'input[type="checkbox"][name*="all" i], button[role="switch"][aria-label*="all notification" i], label:has-text("Disable All"), label:has-text("All Notifications")'
-      );
-      const hasMaster = await masterToggle.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await navigateToNotifications(page);
 
-      const pageText = await page.textContent('body');
-      expect(
-        hasMaster ||
-        pageText?.toLowerCase().includes('all notification') ||
-        pageText?.toLowerCase().includes('disable') ||
-        pageText?.toLowerCase().includes('notification') // On page at all
-      ).toBeTruthy();
-    } else {
-      // Verify notifications API is accessible
-      const response = await page.request.get(`${BASE_URL}/api/notifications/subscribe`);
-      expect([200, 401, 403, 404, 405].includes(response.status())).toBeTruthy();
-    }
+    // Master disable toggle must be present
+    const masterToggle = page.locator(
+      'input[type="checkbox"][name*="all" i], button[role="switch"][aria-label*="all notification" i], label:has-text("Disable All"), label:has-text("All Notifications")'
+    );
+    await expect(masterToggle.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });

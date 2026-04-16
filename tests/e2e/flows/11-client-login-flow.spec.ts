@@ -9,8 +9,10 @@ test.describe('11 - Client Login Flow', () => {
     // Should be redirected to dashboard area
     await expect(page).toHaveURL(/\/(dashboard|client)/);
 
-    await page.waitForLoadState('networkidle');
     await waitForPageReady(page);
+
+    // Dashboard heading must be visible
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'client-login-success.png');
   });
@@ -18,19 +20,16 @@ test.describe('11 - Client Login Flow', () => {
   test('should show client dashboard with relevant stats', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.clientDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see client-specific dashboard content
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('dashboard') ||
-      pageText?.toLowerCase().includes('workout') ||
-      pageText?.toLowerCase().includes('progress') ||
-      pageText?.toLowerCase().includes('streak')
-    ).toBeTruthy();
+    // Client dashboard heading must be visible
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Must show client-specific content — not trainer KPI
+    await expect(page.locator('text="Total Clients"')).not.toBeVisible();
 
     await takeScreenshot(page, 'client-dashboard.png');
   });
@@ -38,18 +37,15 @@ test.describe('11 - Client Login Flow', () => {
   test('should navigate to analytics from client dashboard', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Analytics page should load for client
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('analytics') ||
-      pageText?.toLowerCase().includes('progress') ||
-      pageText?.toLowerCase().includes('overview')
-    ).toBeTruthy();
+    // Analytics page must load with its heading
+    await expect(
+      page.locator('h1:has-text("Analytics"), h1:has-text("Progress")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'client-analytics.png');
   });
@@ -57,18 +53,15 @@ test.describe('11 - Client Login Flow', () => {
   test('should view client profile', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.profile}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see profile content
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('profile') ||
-      pageText?.includes('@') ||
-      pageText?.toLowerCase().includes('account')
-    ).toBeTruthy();
+    // Profile page heading must be visible
+    await expect(page.locator('text=/profile|account/i').first()).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
 
     await takeScreenshot(page, 'client-profile.png');
   });
@@ -76,29 +69,30 @@ test.describe('11 - Client Login Flow', () => {
   test('should display quick actions for client', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.clientDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Client dashboard should have quick actions like "Start Workout", "View Progress"
     const quickActions = page.locator('text=/start workout|view progress|quick actions|log workout/i');
-    if (await quickActions.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      // Quick actions visible for client
+    if (await quickActions.first().isVisible({ timeout: 5000 })) {
+      // Quick actions visible for client — verified
+      await expect(quickActions.first()).toBeVisible();
     }
   });
 
   test('should show different dashboard than trainer', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.clientDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Client dashboard should NOT show trainer-specific items
-    const pageText = await page.textContent('body');
-    // Client dashboard typically shows personal stats, not client management
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Client dashboard should NOT show trainer-specific items like "Total Clients"
+    await expect(page.locator('text="Total Clients"')).not.toBeVisible();
+    // But should show a heading
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });

@@ -18,9 +18,10 @@ test.describe('04 - Session Management', () => {
     // Should NOT be on the login page
     await expect(page).not.toHaveURL(/\/auth\/login/);
 
-    // Dashboard content should be present
-    const bodyText = (await page.textContent('body')) ?? '';
-    expect(bodyText.length).toBeGreaterThan(100);
+    // Dashboard heading must be present — proves the dashboard rendered, not just any page
+    await expect(page.locator('h1, [data-testid="dashboard-heading"]').first()).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
   });
 
   /**
@@ -57,15 +58,18 @@ test.describe('04 - Session Management', () => {
       'button:has-text("Logout"), button:has-text("Sign out"), a:has-text("Logout"), a:has-text("Sign out"), [data-testid="logout"]'
     );
 
-    if (await logoutBtn.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false)) {
+    const logoutBtnVisible = await logoutBtn.first().isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
+    if (logoutBtnVisible) {
       await logoutBtn.first().click();
     } else {
       // Logout may be inside a dropdown/menu
       const menuBtn = page.locator(
         '[aria-label*="menu" i], [aria-label*="account" i], [data-testid="user-menu"]'
       );
-      if (await menuBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
+      const menuVisible = await menuBtn.first().isVisible({ timeout: 3000 }).catch(() => false);
+      if (menuVisible) {
         await menuBtn.first().click();
+        await expect(logoutBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
         await logoutBtn.first().click();
       } else {
         // Fallback: manually clear storage to simulate logout
@@ -77,10 +81,11 @@ test.describe('04 - Session Management', () => {
       }
     }
 
-    await page.waitForTimeout(1500);
-
-    const tokenAfter = await page.evaluate(() => localStorage.getItem('accessToken'));
-    expect(tokenAfter).toBeFalsy();
+    // Wait for navigation or token removal to complete
+    await expect(async () => {
+      const tokenAfter = await page.evaluate(() => localStorage.getItem('accessToken'));
+      expect(tokenAfter).toBeFalsy();
+    }).toPass({ timeout: 5000 });
   });
 
   /**

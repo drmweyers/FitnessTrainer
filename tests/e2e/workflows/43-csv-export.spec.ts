@@ -4,7 +4,7 @@
  * Verifies the Export CSV button triggers a valid CSV download.
  */
 import { test, expect } from '@playwright/test'
-import { BASE_URL, ROUTES, API, TEST_ACCOUNTS } from '../helpers/constants'
+import { BASE_URL, ROUTES, API } from '../helpers/constants'
 import { loginViaAPI } from '../helpers/auth'
 
 test.describe('43 - CSV Analytics Export', () => {
@@ -21,9 +21,7 @@ test.describe('43 - CSV Analytics Export', () => {
     await loginViaAPI(page, 'trainer')
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, { waitUntil: 'domcontentloaded' })
 
-    // Wait for the page to hydrate
-    await page.waitForTimeout(2000)
-
+    // Wait for React hydration via locator auto-wait
     const exportBtn = page.locator(
       '[data-testid="export-csv-btn"], button:has-text("Export CSV")'
     )

@@ -9,7 +9,7 @@ test.describe('02 - Trainer Dashboard', () => {
 
   test('should load trainer dashboard with stats cards', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -26,19 +26,19 @@ test.describe('02 - Trainer Dashboard', () => {
 
   test('should display client list section', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Trainer dashboard has "Recent Activity" or stat cards, not "Your Clients"
+    // Trainer dashboard has "Recent Activity" or stat cards
     const activityOrStats = page.locator('text=/recent activity|total clients|active clients/i');
     await expect(activityOrStats.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should display quick actions section', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -50,7 +50,7 @@ test.describe('02 - Trainer Dashboard', () => {
 
   test('should navigate to programs from quick action', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -58,7 +58,7 @@ test.describe('02 - Trainer Dashboard', () => {
     // Dashboard may not have direct program link - check for any navigation link
     const programsNav = page.locator('a[href*="/programs"]').first();
     // If link exists, click it, otherwise skip (dashboard may vary by data)
-    if (await programsNav.isVisible({ timeout: 5000 }).catch(() => false)) {
+    if (await programsNav.isVisible({ timeout: 5000 })) {
       await programsNav.click();
       await page.waitForURL(/programs/, { timeout: TIMEOUTS.pageLoad });
       await expect(page).toHaveURL(/programs/);
@@ -67,7 +67,7 @@ test.describe('02 - Trainer Dashboard', () => {
 
   test('should show activity feed or placeholder', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

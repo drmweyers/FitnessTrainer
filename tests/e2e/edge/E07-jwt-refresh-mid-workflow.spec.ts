@@ -218,12 +218,9 @@ test.describe('E07 - JWT Expiry / Refresh Mid-Workflow', () => {
     // We check the content does NOT leak the client user's email.
     const clientEmail = TEST_ACCOUNTS.client.email;
     const leaksEmail = pageText.includes(clientEmail);
-    const recovered =
-      url.includes('/auth/login') ||
-      /sign in|log in|login/i.test(pageText) ||
-      !leaksEmail; // as long as the other user's email is not shown, it's not a leak
 
-    expect(recovered).toBeTruthy();
+    // The client's email must NOT appear after tokens are cleared — that would be a data leak
+    expect(leaksEmail).toBe(false);
   });
 
   // -----------------------------------------------------------------------

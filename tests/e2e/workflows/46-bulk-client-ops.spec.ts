@@ -14,7 +14,7 @@
  *              (done by global-setup.ts Step 2).
  */
 import { test, expect } from '@playwright/test';
-import { BASE_URL, ROUTES, TIMEOUTS, TEST_ACCOUNTS, API } from '../helpers/constants';
+import { BASE_URL, ROUTES, TIMEOUTS, API } from '../helpers/constants';
 import { loginViaAPI, takeScreenshot, waitForPageReady } from '../helpers/auth';
 
 const BULK_URL = `${BASE_URL}${API.clientsBulk}`;
@@ -60,7 +60,7 @@ async function ensureTag(
   page: import('@playwright/test').Page,
   token: string,
   name: string
-): Promise<string | null> {
+): Promise<string> {
   // Try fetching existing tags first
   const listRes = await page.request.get(`${BASE_URL}/api/clients/tags`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -77,9 +77,11 @@ async function ensureTag(
     data: { name, color: '#4f46e5' },
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
   });
-  if (!createRes.ok()) return null;
+  expect(createRes.ok()).toBeTruthy();
   const body = await createRes.json();
-  return body.data?.id || body.id || null;
+  const tagId = body.data?.id || body.id;
+  expect(tagId).toBeTruthy();
+  return tagId;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -148,7 +150,7 @@ test.describe('46 - Bulk Client Operations', () => {
       clientIds,
       value: 'paused',
     });
-    expect(pauseRes.ok()).toBeTruthy();
+    expect(pauseRes.status()).toBe(200);
     const pauseBody = await pauseRes.json();
     expect(pauseBody.success).toBe(true);
     expect(pauseBody.data.updatedCount).toBeGreaterThanOrEqual(1);
@@ -159,7 +161,7 @@ test.describe('46 - Bulk Client Operations', () => {
       clientIds,
       value: 'active',
     });
-    expect(activeRes.ok()).toBeTruthy();
+    expect(activeRes.status()).toBe(200);
     const activeBody = await activeRes.json();
     expect(activeBody.success).toBe(true);
     expect(activeBody.data.updatedCount).toBeGreaterThanOrEqual(1);
@@ -178,25 +180,12 @@ test.describe('46 - Bulk Client Operations', () => {
 
     const tagId = await ensureTag(page, token, 'E2E-Bulk-Tag');
 
-    if (!tagId) {
-      // Tag creation endpoint may not exist yet — verify API still responds OK
-      const res = await bulkPost(page, token, {
-        action: 'assign-tags',
-        clientIds,
-        value: ['placeholder-tag-id'],
-      });
-      // Will likely be 200 (skipDuplicates handles non-existent FK gracefully or throws 500)
-      // Accept either: the important thing is the route is reachable
-      expect([200, 500]).toContain(res.status());
-      return;
-    }
-
     const res = await bulkPost(page, token, {
       action: 'assign-tags',
       clientIds,
       value: [tagId],
     });
-    expect(res.ok()).toBeTruthy();
+    expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
   });
@@ -214,17 +203,6 @@ test.describe('46 - Bulk Client Operations', () => {
 
     const tagId = await ensureTag(page, token, 'E2E-Remove-Tag');
 
-    if (!tagId) {
-      // Fallback: verify endpoint still responds and 400s on missing value
-      const res = await bulkPost(page, token, {
-        action: 'remove-tag',
-        clientIds,
-        // no value — should 400
-      });
-      expect(res.status()).toBe(400);
-      return;
-    }
-
     // First assign the tag so there's something to remove
     await bulkPost(page, token, {
       action: 'assign-tags',
@@ -238,7 +216,7 @@ test.describe('46 - Bulk Client Operations', () => {
       clientIds,
       value: tagId,
     });
-    expect(removeRes.ok()).toBeTruthy();
+    expect(removeRes.status()).toBe(200);
     const body = await removeRes.json();
     expect(body.success).toBe(true);
     expect(typeof body.data.removedCount).toBe('number');
@@ -272,7 +250,7 @@ test.describe('46 - Bulk Client Operations', () => {
       clientIds,
       value: fakeTagId,
     });
-    expect(res.ok()).toBeTruthy();
+    expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
     expect(body.data.removedCount).toBe(0);
@@ -287,26 +265,10 @@ test.describe('46 - Bulk Client Operations', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForLoadState('networkidle', { timeout: TIMEOUTS.pageLoad }).catch(() => {});
 
     // Wait for client list to populate
-    const checkboxes = page.locator('input[type="checkbox"][aria-label*="Select"]');
-    const count = await checkboxes.count();
-
-    if (count === 0) {
-      // No clients rendered yet — try waiting longer
-      await page.waitForSelector('input[type="checkbox"][aria-label*="Select"]', {
-        timeout: TIMEOUTS.element,
-      }).catch(() => {});
-    }
-
-    const firstCheckbox = checkboxes.first();
-    const visible = await firstCheckbox.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-
-    if (!visible) {
-      test.skip(true, 'No client checkboxes rendered — clients may not be loaded');
-      return;
-    }
+    const firstCheckbox = page.locator('input[type="checkbox"][aria-label*="Select"]').first();
+    await expect(firstCheckbox).toBeVisible({ timeout: TIMEOUTS.element });
 
     await firstCheckbox.check();
 
@@ -329,16 +291,9 @@ test.describe('46 - Bulk Client Operations', () => {
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-    await page.waitForLoadState('networkidle', { timeout: TIMEOUTS.pageLoad }).catch(() => {});
 
-    const checkboxes = page.locator('input[type="checkbox"][aria-label*="Select"]');
-    const firstCheckbox = checkboxes.first();
-    const visible = await firstCheckbox.isVisible({ timeout: TIMEOUTS.element }).catch(() => false);
-
-    if (!visible) {
-      test.skip(true, 'No client checkboxes rendered');
-      return;
-    }
+    const firstCheckbox = page.locator('input[type="checkbox"][aria-label*="Select"]').first();
+    await expect(firstCheckbox).toBeVisible({ timeout: TIMEOUTS.element });
 
     await firstCheckbox.check();
     await expect(page.locator('text=/1 selected/i')).toBeVisible({ timeout: TIMEOUTS.element });

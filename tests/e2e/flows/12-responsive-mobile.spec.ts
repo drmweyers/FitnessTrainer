@@ -9,27 +9,18 @@ test.describe('12 - Responsive / Mobile', () => {
   });
 
   test('should render home page on mobile', async ({ page }) => {
-    await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
-    // Page should render correctly on mobile — verify basic content is present
-    // The landing page is the home page with hero content
-    const bodyText = await page.textContent('body');
-    expect(bodyText).toBeTruthy();
-    expect(bodyText!.length).toBeGreaterThan(100);
-
-    // Verify key landing page content is present in the DOM (Framer Motion may animate opacity)
-    const hasLandingContent =
-      bodyText!.toLowerCase().includes('evofit') ||
-      bodyText!.toLowerCase().includes('trainer') ||
-      bodyText!.toLowerCase().includes('training') ||
-      bodyText!.toLowerCase().includes('workout');
-    expect(hasLandingContent).toBeTruthy();
+    // Landing page key content must be present on mobile
+    await expect(
+      page.locator('text=/evofit|trainer|training|workout/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'mobile-home.png');
   });
 
   test('should render login page on mobile', async ({ page }) => {
-    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(`${BASE_URL}${ROUTES.login}`, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Login form should be usable on mobile
     await expect(page.locator('input#email, input[name="email"]')).toBeVisible();
@@ -42,25 +33,24 @@ test.describe('12 - Responsive / Mobile', () => {
   test('should show mobile navigation after login', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // On mobile, sidebar should be hidden and hamburger menu should appear
-    // Look for hamburger/menu button
     const hamburger = page.locator(
-      'button[aria-label*="menu" i], button[aria-label*="Menu" i], button:has(svg), [data-testid="mobile-menu"]'
+      'button[aria-label*="menu" i], button[aria-label*="Menu" i], [data-testid="mobile-menu"]'
     );
 
-    // Either hamburger exists or the nav adapts
-    const hasHamburger = await hamburger.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    if (hasHamburger) {
+    if (await hamburger.first().isVisible({ timeout: 5000 })) {
       await hamburger.first().click();
-      await page.waitForTimeout(500);
 
       // Mobile nav should appear with navigation links
+      await expect(
+        page.locator('[role="navigation"] a, [class*="mobile-nav"] a').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+
       await takeScreenshot(page, 'mobile-nav.png');
     }
 
@@ -70,13 +60,13 @@ test.describe('12 - Responsive / Mobile', () => {
   test('should render exercises page on mobile with stacked cards', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Page should render properly on mobile
-    await expect(page.locator('text=/exercise/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Exercise Library heading must be visible on mobile
+    await expect(page.locator('h1:has-text("Exercise Library")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'mobile-exercises.png');
   });
@@ -84,13 +74,13 @@ test.describe('12 - Responsive / Mobile', () => {
   test('should render clients page on mobile', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.clients}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Client list should be usable on mobile
-    await expect(page.locator('text=/client/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Clients heading must be visible on mobile
+    await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'mobile-clients.png');
   });
@@ -98,12 +88,13 @@ test.describe('12 - Responsive / Mobile', () => {
   test('should render programs page on mobile', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    await expect(page.locator('text=/program/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Programs heading must be visible on mobile
+    await expect(page.locator('h1:has-text("Training Programs")')).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'mobile-programs.png');
   });
@@ -113,13 +104,13 @@ test.describe('12 - Responsive / Mobile', () => {
     // Reset viewport for this test
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Analytics heading must be visible on mobile
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'mobile-analytics.png');
   });
@@ -128,11 +119,12 @@ test.describe('12 - Responsive / Mobile', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.trainerDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
+    // Dashboard heading must be visible on tablet
     await expect(page.locator('text=/dashboard/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'tablet-dashboard.png');

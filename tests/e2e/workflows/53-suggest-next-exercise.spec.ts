@@ -21,16 +21,15 @@ async function navigateToExerciseStep(
 
   // Fill program name (required)
   const nameInput = page.locator('input#name').first();
-  if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-    await nameInput.fill(`Suggest Test ${Date.now()}`);
-  }
+  await expect(nameInput).toBeVisible({ timeout: 5000 });
+  await nameInput.fill(`Suggest Test ${Date.now()}`);
 
-  // Navigate through steps
+  // Navigate through steps — click Next up to 3 times
   const nextBtn = page.locator('button:has-text("Next"), button:has-text("Continue")').first();
   for (let i = 0; i < 3; i++) {
-    if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await nextBtn.isVisible({ timeout: 3000 })) {
       await nextBtn.click();
-      await page.waitForTimeout(1000);
+      await expect(page.locator('body')).toBeVisible(); // let React re-render
     }
   }
 }
@@ -47,19 +46,9 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest"), button[aria-label*="suggest" i], button:has-text("Next Exercise")'
     ).first();
 
-    const pageText = await page.textContent('body');
-    // Enterprise should see button OR we're not yet on the exercise panel
-    if (await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(suggestBtn).toBeVisible();
-      await takeScreenshot(page, '53-01-enterprise-suggest-btn.png');
-    } else {
-      // If not visible, we may be on a different step — verify we're in the builder
-      expect(
-        pageText?.toLowerCase().includes('program') ||
-        pageText?.toLowerCase().includes('workout') ||
-        pageText?.toLowerCase().includes('exercise')
-      ).toBeTruthy();
-    }
+    // Enterprise must show the suggest button on the exercise panel
+    await expect(suggestBtn).toBeVisible({ timeout: TIMEOUTS.element });
+    await takeScreenshot(page, '53-01-enterprise-suggest-btn.png');
   });
 
   // 2. Enterprise trainer: clicking button shows loading state
@@ -71,24 +60,23 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest"), button:has-text("Next Exercise")'
     ).first();
 
-    if (!(await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false))) {
-      test.skip();
+    if (!(await suggestBtn.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: enterprise suggest button not visible on exercise panel');
       return;
     }
 
     await suggestBtn.click();
-    await page.waitForTimeout(300);
 
     // Loading state: "Thinking...", spinner, or button becomes disabled
     const loadingIndicator = page.locator(
       'text=/Thinking|Loading|Suggesting/i, .animate-spin, button[disabled]:has-text("Suggest")'
     ).first();
 
-    const loadingVisible = await loadingIndicator.isVisible({ timeout: 3000 }).catch(() => false);
-    const btnDisabled = await suggestBtn.isDisabled().catch(() => false);
+    // Either a loading text appears OR the button becomes disabled — one specific outcome
+    const loadingVisible = await loadingIndicator.isVisible({ timeout: 3000 });
+    const btnDisabled = await suggestBtn.isDisabled();
 
-    // Either a loading text or a disabled button
-    expect(loadingVisible || btnDisabled).toBeTruthy();
+    expect(loadingVisible || btnDisabled).toBe(true);
 
     await takeScreenshot(page, '53-02-suggest-loading.png');
   });
@@ -102,18 +90,18 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest"), button:has-text("Next Exercise")'
     ).first();
 
-    if (!(await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false))) {
-      test.skip();
+    if (!(await suggestBtn.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: enterprise suggest button not visible on exercise panel');
       return;
     }
 
     await suggestBtn.click();
-    // Wait for response
-    await page.waitForTimeout(5000);
 
-    const pageText = await page.textContent('body');
-    // Should show something — exercises, error, or suggestion list (not silent/blank)
-    expect(pageText?.length).toBeGreaterThan(100);
+    // After click, should show a suggestion list, exercise card, or error — wait for it
+    const resultOrError = page.locator(
+      '[class*="suggestion"], [class*="suggest-item"], [class*="exercise-card"], text=/error|failed|unable/i'
+    ).first();
+    await expect(resultOrError).toBeVisible({ timeout: 10000 });
 
     await takeScreenshot(page, '53-03-suggest-results.png');
   });
@@ -127,28 +115,28 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest"), button:has-text("Next Exercise")'
     ).first();
 
-    if (!(await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false))) {
-      test.skip();
+    if (!(await suggestBtn.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: enterprise suggest button not visible on exercise panel');
       return;
     }
 
     await suggestBtn.click();
-    await page.waitForTimeout(4000);
 
     // Click the first suggestion (usually a clickable card or button)
     const firstSuggestion = page.locator(
       '[class*="suggestion"] button, [class*="suggest"] [role="button"], button[class*="exercise-card"]'
     ).first();
 
-    const suggestionVisible = await firstSuggestion.isVisible({ timeout: 3000 }).catch(() => false);
-    if (suggestionVisible) {
-      await firstSuggestion.click();
-      await page.waitForTimeout(800);
+    if (!(await firstSuggestion.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: no suggestion cards visible after clicking Suggest');
+      return;
     }
 
-    // Page should still be functional
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    await firstSuggestion.click();
+
+    // Clicking should add the exercise — verify the workout panel now contains it
+    const addedExercise = page.locator('[class*="workout-exercise"], [class*="day-exercise"], [class*="exercise-row"]').first();
+    await expect(addedExercise).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 5. Professional trainer: "Suggest next exercise" button IS visible
@@ -161,16 +149,7 @@ test.describe('53 - Suggest Next Exercise', () => {
     ).first();
 
     // Professional tier should have aiSuggest: true
-    const pageText = await page.textContent('body');
-    if (await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(suggestBtn).toBeVisible();
-    } else {
-      // May not be on exercise panel yet — verify builder is accessible
-      expect(
-        pageText?.toLowerCase().includes('program') ||
-        pageText?.toLowerCase().includes('workout')
-      ).toBeTruthy();
-    }
+    await expect(suggestBtn).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 6. Starter trainer: "Suggest next exercise" button is NOT visible
@@ -198,12 +177,13 @@ test.describe('53 - Suggest Next Exercise', () => {
       '[aria-label*="locked" i]:near(:text("Suggest")), [class*="lock"]:near(:text("Suggest"))'
     ).first();
 
-    const lockVisible = await lockIcon.isVisible({ timeout: 3000 }).catch(() => false);
     // Lock overlay should NOT be present (button is hidden entirely)
-    expect(lockVisible).toBe(false);
+    await expect(lockIcon).not.toBeVisible();
 
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Page must be functional — verify the builder heading is visible
+    await expect(
+      page.locator('text=/Program|exercise|workout/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 8. Enterprise: button disabled when already loading
@@ -215,24 +195,22 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest")'
     ).first();
 
-    if (!(await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false))) {
-      test.skip();
+    if (!(await suggestBtn.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: enterprise suggest button not visible on exercise panel');
       return;
     }
 
     await suggestBtn.click();
-    await page.waitForTimeout(200);
 
-    // During loading, button should be disabled or have aria-disabled
-    const isDisabled = await suggestBtn.isDisabled().catch(() => false);
-    const ariaDisabled = await suggestBtn.getAttribute('aria-disabled').catch(() => null);
-
-    // Either disabled or aria-disabled during loading — or button text changed
-    const btnText = await suggestBtn.textContent().catch(() => '');
+    // During loading, button should be disabled or have aria-disabled or text changes
+    // Use locator auto-wait to detect the disabled state within 2s
+    // COMMANDMENT #1: removed `|| true` — if none of these states is detected, the test fails
+    const isDisabled = await suggestBtn.isDisabled();
+    const ariaDisabled = await suggestBtn.getAttribute('aria-disabled');
+    const btnText = await suggestBtn.textContent();
     const isLoading = btnText?.toLowerCase().includes('thinking') || btnText?.toLowerCase().includes('loading');
 
-    // Accept any of: disabled, aria-disabled=true, loading text, or button unchanged (fast response)
-    expect(isDisabled || ariaDisabled === 'true' || isLoading || true).toBeTruthy();
+    expect(isDisabled || ariaDisabled === 'true' || isLoading).toBe(true);
   });
 
   // 9. Enterprise: suggestion popover closes when clicking outside
@@ -244,21 +222,22 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest")'
     ).first();
 
-    if (!(await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false))) {
-      test.skip();
+    if (!(await suggestBtn.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: enterprise suggest button not visible on exercise panel');
       return;
     }
 
     await suggestBtn.click();
-    await page.waitForTimeout(3000);
+
+    // Wait for suggestions to appear
+    const popover = page.locator('[class*="suggestion"], [class*="suggest"], [role="listbox"]').first();
+    await expect(popover).toBeVisible({ timeout: 5000 });
 
     // Click outside the popover
     await page.mouse.click(10, 10);
-    await page.waitForTimeout(500);
 
-    // Popover should be gone or page still functional
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(100);
+    // Popover should be gone
+    await expect(popover).not.toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   // 10. Enterprise: adding suggested exercise updates exercise count
@@ -270,28 +249,30 @@ test.describe('53 - Suggest Next Exercise', () => {
       'button:has-text("Suggest"), button:has-text("AI Suggest")'
     ).first();
 
-    if (!(await suggestBtn.isVisible({ timeout: 5000 }).catch(() => false))) {
-      test.skip();
+    if (!(await suggestBtn.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: enterprise suggest button not visible on exercise panel');
       return;
     }
 
-    // Capture initial page state
-    const initialText = await page.textContent('body');
+    // Count initial exercises in the day panel
+    const exerciseItems = page.locator('[class*="workout-exercise"], [class*="day-exercise"], [class*="exercise-row"]');
+    const initialCount = await exerciseItems.count();
 
     await suggestBtn.click();
-    await page.waitForTimeout(4000);
 
     const firstSuggestion = page.locator(
       '[class*="suggestion"] button, button:has-text("Add"), [class*="suggest-item"]'
     ).first();
 
-    if (await firstSuggestion.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await firstSuggestion.click();
-      await page.waitForTimeout(1000);
+    if (!(await firstSuggestion.isVisible({ timeout: 5000 }))) {
+      test.fixme(true, 'KNOWN: no suggestion cards visible after clicking Suggest');
+      return;
     }
 
-    const updatedText = await page.textContent('body');
-    expect(updatedText?.length).toBeGreaterThan(100);
+    await firstSuggestion.click();
+
+    // Exercise count must increase by at least 1
+    await expect(exerciseItems).toHaveCount(initialCount + 1, { timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '53-10-suggest-exercise-added.png');
   });

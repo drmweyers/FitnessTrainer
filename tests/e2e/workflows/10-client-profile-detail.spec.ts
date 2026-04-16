@@ -191,9 +191,9 @@ test.describe('10 - Client Profile Detail', () => {
     const heading = page.locator('h1').first();
     await expect(heading).toBeVisible({ timeout: TIMEOUTS.element });
 
-    const text = await heading.textContent();
-    // Must be more than just "Dashboard" — should include a name or email
-    expect(text?.length).toBeGreaterThan('Dashboard'.length);
+    const text = await heading.textContent() ?? '';
+    // Heading should be "{name}'s Dashboard" — must include a name before "Dashboard"
+    expect(text).toMatch(/\S+.+dashboard/i);
   });
 
   // ── 3. Status badge shows current status ─────────────────────────────────
@@ -338,16 +338,19 @@ test.describe('10 - Client Profile Detail', () => {
     const saveBtn = page.locator('button', { hasText: /^save$/i });
     await saveBtn.click();
 
-    // Wait briefly for the request
-    await page.waitForTimeout(1000);
-
-    // Either the PATCH was intercepted or the form closed (onSave callback)
-    const editorGone = await page
-      .locator('h3', { hasText: /edit profile/i })
-      .isVisible({ timeout: 2000 })
-      .catch(() => false);
-
-    expect(patchCalled || !editorGone).toBeTruthy();
+    // Either the PATCH was intercepted (mocked success) or the editor closed
+    if (patchCalled) {
+      // PATCH was intercepted — editor should close after save
+      await expect(page.locator('h3', { hasText: /edit profile/i })).not.toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
+    } else {
+      // No PATCH intercepted — the save button click must have been registered;
+      // assert the edit form is no longer visible (onSave closed it)
+      await expect(page.locator('h3', { hasText: /edit profile/i })).not.toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
+    }
     await takeScreenshot(page, '10-09-save-clicked.png');
   });
 

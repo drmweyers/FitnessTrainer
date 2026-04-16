@@ -128,10 +128,10 @@ test.describe('18 - Workout Modifications', () => {
 
       await takeScreenshot(page, '18-substitution-modal.png');
     } else {
-      // Substitution button is not surfaced in the current tracker view.
-      // Verify the workout tracker page is accessible and has content.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // Substitution button is not surfaced — verify the tracker page rendered workout content.
+      await expect(
+        page.locator('text=/workout|exercise|set|barbell row/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '18-substitution-not-surfaced.png');
     }
   });
@@ -186,10 +186,16 @@ test.describe('18 - Workout Modifications', () => {
     const settingsBtn = page.locator('button svg[class*="settings" i], button:has([data-lucide="settings"])');
     const settingsVisible = await settingsBtn.first().isVisible({ timeout: 3000 }).catch(() => false);
 
-    // If in execution mode, some interactive button should be present
-    const anyBtn = page.locator('button');
-    const btnCount = await anyBtn.count();
-    expect(isVisible || settingsVisible || btnCount > 0).toBeTruthy();
+    if (isVisible) {
+      await expect(fab.first()).toBeVisible();
+    } else if (settingsVisible) {
+      await expect(settingsBtn.first()).toBeVisible();
+    } else {
+      // FAB not surfaced — verify execution mode rendered with workout content
+      await expect(
+        page.locator('text=/workout|exercise|set|barbell row/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('modification templates bottom sheet shows Feeling Great option', async ({ page }) => {
@@ -213,10 +219,10 @@ test.describe('18 - Workout Modifications', () => {
       await expect(feelingGreat).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '18-modification-templates.png');
     } else {
-      // Test the ModificationTemplates component state by navigating to the tracker
-      // with execution mode and checking for any UI content
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(50);
+      // ModificationTemplates FAB not surfaced — verify execution content is visible.
+      await expect(
+        page.locator('text=/workout|exercise|set/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
     }
   });
 
@@ -239,9 +245,10 @@ test.describe('18 - Workout Modifications', () => {
       const timeCrunch = page.locator('text=/time crunch/i');
       await expect(timeCrunch).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
-      // ModificationTemplates FAB is not surfaced — verify the tracker page loaded correctly.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // ModificationTemplates FAB not surfaced — verify execution content is visible.
+      await expect(
+        page.locator('text=/workout|exercise|set/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '18-time-crunch-not-surfaced.png');
     }
   });
@@ -265,9 +272,10 @@ test.describe('18 - Workout Modifications', () => {
       const lowEnergy = page.locator('text=/low energy/i');
       await expect(lowEnergy).toBeVisible({ timeout: TIMEOUTS.element });
     } else {
-      // ModificationTemplates FAB is not surfaced — verify the tracker page loaded correctly.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // ModificationTemplates FAB not surfaced — verify execution content is visible.
+      await expect(
+        page.locator('text=/workout|exercise|set/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '18-low-energy-not-surfaced.png');
     }
   });
@@ -293,16 +301,14 @@ test.describe('18 - Workout Modifications', () => {
         await lowEnergyBtn.click();
         await page.waitForTimeout(500);
 
-        // Sheet should close after selection
-        const sheetOpen = await page.locator('text=/low energy/i').isVisible({ timeout: 2000 }).catch(() => false);
-        // Toast or confirmation may appear
-        const toastVisible = await page.locator('[role="alert"], .toast, [class*="toast"]').first().isVisible({ timeout: 2000 }).catch(() => false);
-        expect(!sheetOpen || toastVisible).toBeTruthy();
+        // Sheet should close after selection — "Low Energy" text must no longer be visible
+        await expect(page.locator('text=/low energy/i').first()).not.toBeVisible({ timeout: TIMEOUTS.element });
       }
     } else {
-      // ModificationTemplates FAB is not surfaced — verify the tracker page loaded correctly.
-      const body = await page.textContent('body');
-      expect(body?.length).toBeGreaterThan(100);
+      // ModificationTemplates FAB not surfaced — verify execution content is visible.
+      await expect(
+        page.locator('text=/workout|exercise|set/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
       await takeScreenshot(page, '18-mod-template-select-not-surfaced.png');
     }
   });
@@ -323,9 +329,16 @@ test.describe('18 - Workout Modifications', () => {
     const iconSkip = page.locator('button svg[data-lucide="skip-forward"], button:has([data-lucide="skip-forward"])');
     const iconVisible = await iconSkip.first().isVisible({ timeout: 3000 }).catch(() => false);
 
-    // If execution screen rendered, we confirm it has interactive elements
-    const anyBtn = await page.locator('button').count();
-    expect(isVisible || iconVisible || anyBtn > 0).toBeTruthy();
+    if (isVisible) {
+      await expect(skipBtn.first()).toBeVisible();
+    } else if (iconVisible) {
+      await expect(iconSkip.first()).toBeVisible();
+    } else {
+      // Skip button not surfaced — verify execution screen rendered with exercise content
+      await expect(
+        page.locator('text=/workout|exercise|set|barbell row/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('workout tracker allows navigating between exercises', async ({ page }) => {
@@ -345,9 +358,17 @@ test.describe('18 - Workout Modifications', () => {
 
     const nextVisible = await nextBtn.first().isVisible({ timeout: 3000 }).catch(() => false);
     const prevVisible = await prevBtn.first().isVisible({ timeout: 3000 }).catch(() => false);
-    const anyBtn = await page.locator('button').count();
 
-    expect(nextVisible || prevVisible || anyBtn > 0).toBeTruthy();
+    if (nextVisible) {
+      await expect(nextBtn.first()).toBeVisible();
+    } else if (prevVisible) {
+      await expect(prevBtn.first()).toBeVisible();
+    } else {
+      // Navigation buttons not surfaced — verify execution content is visible
+      await expect(
+        page.locator('text=/workout|exercise|set|barbell row/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('rest timer area exists in execution screen layout', async ({ page }) => {
@@ -368,7 +389,14 @@ test.describe('18 - Workout Modifications', () => {
       body?.toLowerCase().includes('workout') ||
       body?.toLowerCase().includes('exercise') ||
       body?.toLowerCase().includes('set');
-    expect(hasTimer || hasSessionContent).toBeTruthy();
+    if (hasTimer) {
+      await expect(timerArea.first()).toBeVisible();
+    } else {
+      // Timer not surfaced — verify execution screen rendered with workout content
+      await expect(
+        page.locator('text=/workout|exercise|set/i').first()
+      ).toBeVisible({ timeout: TIMEOUTS.element });
+    }
   });
 
   test('notes field is accessible in execution context', async ({ page }) => {
@@ -387,6 +415,6 @@ test.describe('18 - Workout Modifications', () => {
     const hasNotesIcon = await notesIcon.first().isVisible({ timeout: 3000 }).catch(() => false);
 
     // Accept either notes field or icon
-    expect(hasNotes || hasNotesIcon || true).toBeTruthy(); // Always passes — notes may be in collapsed state
+    test.fixme(true, 'KNOWN: Notes field may be in a collapsed state — not reliably testable without session data');
   });
 });

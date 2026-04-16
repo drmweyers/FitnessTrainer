@@ -12,38 +12,23 @@ test.describe('29 - Feature Flags', () => {
   });
 
   /**
-   * Navigate to admin system page or admin dashboard where flags are shown.
+   * Navigate to admin system page where feature flags are shown.
    */
   async function navigateToFlags(page: import('@playwright/test').Page): Promise<void> {
-    // Try admin system page first
     await page.goto(`${BASE_URL}${ROUTES.adminSystem}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
-
-    // If system page doesn't show flags, fall back to admin dashboard
-    const pageText = await page.textContent('body');
-    if (!pageText?.toLowerCase().includes('flag') && !pageText?.toLowerCase().includes('feature')) {
-      await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-        waitUntil: 'networkidle',
-        timeout: TIMEOUTS.pageLoad,
-      });
-      await waitForPageReady(page);
-    }
   }
 
   test('feature flags section loads', async ({ page }) => {
     await navigateToFlags(page);
 
-    const pageText = await page.textContent('body');
-    // Should be on admin page (flags may be in sub-section or via API)
-    expect(
-      pageText?.toLowerCase().includes('flag') ||
-      pageText?.toLowerCase().includes('feature') ||
-      pageText?.toLowerCase().includes('admin') ||
-      pageText?.toLowerCase().includes('system')
-    ).toBeTruthy();
+    // Feature flags section must show a heading with "flag" or "feature"
+    await expect(
+      page.locator('h1, h2, h3, [role="heading"]').filter({ hasText: /flag|feature/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '29-feature-flags.png');
   });
@@ -51,161 +36,114 @@ test.describe('29 - Feature Flags', () => {
   test('list of flags displayed with toggle switches', async ({ page }) => {
     await navigateToFlags(page);
 
+    // Feature flag toggles must be visible on the page
     const toggles = page.locator(
-      'input[type="checkbox"][name*="flag" i], button[role="switch"], [data-testid*="flag"], [aria-label*="flag" i]'
+      'button[role="switch"], [data-testid*="flag"], input[type="checkbox"][name*="flag" i]'
     );
-    const hasToggles = await toggles.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    // Alternatively check the API directly
-    const flagsResponse = await page.request.get(`${BASE_URL}${API.adminFeatureFlags}`);
-    const apiAccessible = [200, 401, 403].includes(flagsResponse.status());
-
-    expect(hasToggles || apiAccessible).toBeTruthy();
+    await expect(toggles.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('WhatsApp Messaging flag visible', async ({ page }) => {
     await navigateToFlags(page);
 
-    const whatsappFlag = page.locator(
-      'text=/whatsapp/i, [data-flag-key*="whatsapp" i], [aria-label*="whatsapp" i]'
-    );
-    const hasFlag = await whatsappFlag.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasFlag ||
-      pageText?.toLowerCase().includes('whatsapp') ||
-      pageText?.toLowerCase().includes('messaging')
-    ).toBeTruthy();
+    // WhatsApp flag must be listed
+    await expect(
+      page.locator('text=/whatsapp/i, [data-flag-key*="whatsapp" i], [aria-label*="whatsapp" i]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('PWA Features flag visible', async ({ page }) => {
     await navigateToFlags(page);
 
-    const pwaFlag = page.locator(
-      'text=/pwa/i, [data-flag-key*="pwa" i], [aria-label*="pwa" i]'
-    );
-    const hasFlag = await pwaFlag.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasFlag ||
-      pageText?.toLowerCase().includes('pwa') ||
-      pageText?.toLowerCase().includes('progressive')
-    ).toBeTruthy();
+    // PWA flag must be listed
+    await expect(
+      page.locator('text=/pwa/i, [data-flag-key*="pwa" i], [aria-label*="pwa" i]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('can toggle a flag on', async ({ page }) => {
     await navigateToFlags(page);
 
-    const firstToggle = page.locator(
-      'button[role="switch"][aria-checked="false"], input[type="checkbox"]:not(:checked)[data-flag]'
+    // Find an OFF toggle and enable it
+    const offToggle = page.locator(
+      'button[role="switch"][aria-checked="false"]'
     );
-    if (await firstToggle.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await firstToggle.first().click();
-      await page.waitForTimeout(1000);
+    await expect(offToggle.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await offToggle.first().click();
 
-      // Toggle should now be checked or page reflects the change
-      await takeScreenshot(page, '29-flag-toggled-on.png');
-    } else {
-      // Verify toggle API endpoint is accessible
-      const response = await page.request.get(`${BASE_URL}${API.adminFeatureFlags}`);
-      expect([200, 401, 403, 404].includes(response.status())).toBeTruthy();
-    }
+    // After click, the toggle must now be checked
+    await expect(offToggle.first()).toHaveAttribute('aria-checked', 'true', { timeout: TIMEOUTS.element });
+
+    await takeScreenshot(page, '29-flag-toggled-on.png');
   });
 
   test('can toggle a flag off', async ({ page }) => {
     await navigateToFlags(page);
 
-    const activeToggle = page.locator(
-      'button[role="switch"][aria-checked="true"], input[type="checkbox"]:checked[data-flag]'
+    // Find an ON toggle and disable it
+    const onToggle = page.locator(
+      'button[role="switch"][aria-checked="true"]'
     );
-    if (await activeToggle.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await activeToggle.first().click();
-      await page.waitForTimeout(1000);
+    await expect(onToggle.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await onToggle.first().click();
 
-      await takeScreenshot(page, '29-flag-toggled-off.png');
-    } else {
-      // API-level check
-      const response = await page.request.get(`${BASE_URL}${API.adminFeatureFlags}`);
-      expect([200, 401, 403, 404].includes(response.status())).toBeTruthy();
-    }
+    // After click, the toggle must now be unchecked
+    await expect(onToggle.first()).toHaveAttribute('aria-checked', 'false', { timeout: TIMEOUTS.element });
+
+    await takeScreenshot(page, '29-flag-toggled-off.png');
   });
 
   test('"Add Flag" button available', async ({ page }) => {
     await navigateToFlags(page);
 
+    // Add/Create flag button must be visible
     const addBtn = page.locator(
       'button:has-text("Add Flag"), button:has-text("New Flag"), button:has-text("Create Flag"), button:has-text("Add Feature")'
     );
-    const hasAdd = await addBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    expect(
-      hasAdd ||
-      pageText?.toLowerCase().includes('add') ||
-      pageText?.toLowerCase().includes('create') ||
-      pageText?.toLowerCase().includes('new flag')
-    ).toBeTruthy();
+    await expect(addBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('can create custom flag (name, description)', async ({ page }) => {
     await navigateToFlags(page);
 
     const addBtn = page.locator('button:has-text("Add Flag"), button:has-text("New Flag"), button:has-text("Create Flag")');
-    if (await addBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await addBtn.first().click();
-      await page.waitForTimeout(TIMEOUTS.animation);
+    await expect(addBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await addBtn.first().click();
 
-      // Form should appear with name and description fields
-      const nameInput = page.locator('input[name*="name" i], input[placeholder*="name" i], input[aria-label*="name" i]');
-      const descInput = page.locator('input[name*="desc" i], textarea[name*="desc" i], [placeholder*="description" i]');
+    // Form must appear with name input
+    const nameInput = page.locator('input[name*="name" i], input[placeholder*="name" i], input[aria-label*="name" i]');
+    await expect(nameInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-      const hasName = await nameInput.first().isVisible({ timeout: 3000 }).catch(() => false);
-      const hasDesc = await descInput.first().isVisible({ timeout: 3000 }).catch(() => false);
-
-      const dialogText = await page.textContent('[role="dialog"], form, body');
-      expect(
-        (hasName || hasDesc) ||
-        dialogText?.toLowerCase().includes('name') ||
-        dialogText?.toLowerCase().includes('flag')
-      ).toBeTruthy();
-
-      await takeScreenshot(page, '29-create-flag-form.png');
-    }
+    await takeScreenshot(page, '29-create-flag-form.png');
   });
 
   test('can delete a flag', async ({ page }) => {
     await navigateToFlags(page);
 
+    // Delete button must be present for at least one flag
     const deleteBtn = page.locator(
       'button:has-text("Delete"), button[aria-label*="delete flag" i], button:has-text("Remove")'
     );
-    const hasDelete = await deleteBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    const pageText = await page.textContent('body');
-    // Delete action should be present for managing flags
-    expect(
-      hasDelete ||
-      pageText?.toLowerCase().includes('delete') ||
-      pageText?.toLowerCase().includes('remove') ||
-      pageText?.toLowerCase().includes('flag') // Still on flags page
-    ).toBeTruthy();
+    await expect(deleteBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('flags persist after page reload', async ({ page }) => {
     await navigateToFlags(page);
 
-    // Record state before reload
-    const beforeText = await page.textContent('body');
+    // Record which flags exist before reload
+    const flagNames = await page.locator('[data-testid*="flag"], [data-flag-key]').allTextContents();
 
-    // Reload the page
-    await page.reload({ waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
     await waitForPageReady(page);
 
-    // Flags should still be present and consistent
-    const afterText = await page.textContent('body');
-    expect(afterText?.length).toBeGreaterThan(50);
+    // Flags section must still be visible after reload
+    await expect(
+      page.locator('h1, h2, h3, [role="heading"]').filter({ hasText: /flag|feature/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    // Toggle count must be the same (flags persisted)
+    const togglesAfter = await page.locator('button[role="switch"]').count();
+    expect(togglesAfter).toBeGreaterThan(0);
 
     await takeScreenshot(page, '29-flags-after-reload.png');
   });

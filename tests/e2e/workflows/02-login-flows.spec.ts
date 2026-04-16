@@ -83,17 +83,11 @@ test.describe('02 - Login Flows', () => {
     await page.locator('input#password, input[name="password"], input[type="password"]').fill('WrongPassword999!');
     await page.locator('button[type="submit"]').click();
 
-    // Wait for response
-    await page.waitForTimeout(3000);
-
-    const url = page.url();
-    const hasError = await page
-      .locator('text=/invalid|incorrect|wrong|error|failed|credentials/i')
-      .isVisible({ timeout: TIMEOUTS.apiCall })
-      .catch(() => false);
-
-    // Either still on login page or an error is visible
-    expect(url.includes('login') || hasError).toBeTruthy();
+    // Must stay on login page AND show an error — both required for a real failure test
+    await expect(page).toHaveURL(/login/, { timeout: TIMEOUTS.apiCall });
+    await expect(
+      page.locator('text=/invalid|incorrect|wrong|error|failed|credentials/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
   });
 
   /**
@@ -108,15 +102,11 @@ test.describe('02 - Login Flows', () => {
     await page.locator('input#password, input[name="password"], input[type="password"]').fill('TestPass2026!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForTimeout(3000);
-
-    const url = page.url();
-    const hasError = await page
-      .locator('text=/invalid|not found|no account|error|credentials/i')
-      .isVisible({ timeout: TIMEOUTS.apiCall })
-      .catch(() => false);
-
-    expect(url.includes('login') || hasError).toBeTruthy();
+    // Must stay on login page AND show an error
+    await expect(page).toHaveURL(/login/, { timeout: TIMEOUTS.apiCall });
+    await expect(
+      page.locator('text=/invalid|not found|no account|error|credentials/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.apiCall });
   });
 
   /**
@@ -130,13 +120,14 @@ test.describe('02 - Login Flows', () => {
     // Should stay on login page
     await expect(page).toHaveURL(/login/);
 
-    // Browser validation or custom errors should be present
+    // Browser validation or custom errors must be present
     const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
     const isEmailInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
-    const customError = page.locator('[role="alert"], .error, [data-testid*="error"]');
-    const hasCustomError = await customError.first().isVisible({ timeout: 2000 }).catch(() => false);
-
-    expect(isEmailInvalid || hasCustomError).toBeTruthy();
+    if (!isEmailInvalid) {
+      await expect(
+        page.locator('[role="alert"], .error, [data-testid*="error"]').first()
+      ).toBeVisible({ timeout: 2000 });
+    }
   });
 
   /**

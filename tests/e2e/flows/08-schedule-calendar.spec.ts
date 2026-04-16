@@ -9,7 +9,7 @@ test.describe('08 - Schedule & Calendar', () => {
 
   test('should load schedule/calendar page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -24,66 +24,69 @@ test.describe('08 - Schedule & Calendar', () => {
 
   test('should display calendar grid or week view', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for calendar elements (day names, date grid, time slots)
-    const calendarContent = page.locator('text=/Mon|Tue|Wed|Thu|Fri|Sat|Sun/i');
-    if (await calendarContent.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      // Calendar grid is displayed
-    }
+    // Look for calendar day-name elements
+    await expect(
+      page.locator('text=/Mon|Tue|Wed|Thu|Fri|Sat|Sun/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should have week navigation buttons', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Look for prev/next navigation
     const navButtons = page.locator('button:has-text("Previous"), button:has-text("Next"), button[aria-label*="previous" i], button[aria-label*="next" i]');
-    if (await navButtons.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      // Navigation buttons exist
+    if (await navButtons.first().isVisible({ timeout: 5000 })) {
+      // Capture heading before click
+      const headingBefore = await page.locator('h1, h2').first().textContent();
       await navButtons.first().click();
-      await page.waitForTimeout(1000);
+      // After navigation, heading or calendar content must still be visible
+      await expect(page.locator('main h1:has-text("Schedule"), .p-6 h1:has-text("Schedule")')).toBeVisible({
+        timeout: TIMEOUTS.element,
+      });
     }
   });
 
   test('should have new appointment button', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for "New Appointment" or "+" button
-    const newButton = page.locator('button:has-text("New"), button:has-text("Add"), button:has-text("Create"), button[aria-label*="add" i]');
-    if (await newButton.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      await newButton.first().click();
-      await page.waitForTimeout(1000);
+    // Look for "New Appointment" or "+" button — must be visible for trainer
+    const newButton = page.locator('button:has-text("New Appointment"), button:has-text("New"), a:has-text("New Appointment")');
+    await expect(newButton.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-      // Should open a modal or form
-      await takeScreenshot(page, 'schedule-new-appointment.png');
-    }
+    await newButton.first().click();
+
+    // Modal or form must open
+    await expect(page.locator('[role="dialog"], [class*="modal"]').first()).toBeVisible({
+      timeout: TIMEOUTS.element,
+    });
+
+    await takeScreenshot(page, 'schedule-new-appointment.png');
   });
 
   test('should load availability page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.scheduleAvailability}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see availability content
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('availability') ||
-      pageText?.toLowerCase().includes('schedule') ||
-      pageText?.toLowerCase().includes('time')
-    ).toBeTruthy();
+    // Should see availability content heading
+    await expect(
+      page.locator('h1:has-text("Availability"), h2:has-text("Availability"), h1:has-text("Schedule")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'schedule-availability.png');
   });

@@ -9,31 +9,32 @@ import { BASE_URL, ROUTES, API, TIMEOUTS, TEST_ACCOUNTS } from '../helpers/const
 import { loginViaAPI, getAuthToken, waitForPageReady, takeScreenshot } from '../helpers/auth';
 
 test.describe('40 - Form Validation', () => {
-  // Dev-server is slow under parallel test load; extend per-test timeout and
-  // default action timeout to tolerate cold compiles + slow API responses.
+  // Dev-server is slow under parallel test load; extend per-test timeout.
   test.describe.configure({ timeout: 180000 });
   test.beforeEach(async ({ page }) => {
     page.setDefaultTimeout(60000);
   });
+
   /**
    * Test 1: Registration — empty email field shows required error.
    */
   test('registration: empty email field shows required error', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.register}`, { waitUntil: 'domcontentloaded' });
 
-    // Fill password (use #password to avoid matching confirmPassword) but leave email empty
+    // Fill password but leave email empty
     await page.locator('input#password').fill('TestPass2026!');
     await page.locator('button[type="submit"]').click();
 
-    // Should stay on register page
+    // Must stay on register page
     await expect(page).toHaveURL(/register/);
 
+    // Email field must be invalid (native or custom error)
     const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
     const isNativeInvalid = await emailInput.evaluate(
       (el: HTMLInputElement) => !el.validity.valid
     ).catch(() => false);
     const customError = page.locator(
-      '[data-testid="email-error"], .error, [role="alert"], [class*="error"], [class*="text-red"], p:has-text("required"), p:has-text("Email")'
+      '[data-testid="email-error"], [role="alert"], [class*="error"], [class*="text-red"], p:has-text("required"), p:has-text("Email")'
     );
     const hasCustomError = await customError.first().isVisible({ timeout: 3000 }).catch(() => false);
 
@@ -55,13 +56,12 @@ test.describe('40 - Form Validation', () => {
 
     await expect(page).toHaveURL(/register/);
 
-    // Use #password to avoid strict-mode violation (confirmPassword also matches type="password")
     const pwInput = page.locator('input#password').first();
     const isNativeInvalid = await pwInput.evaluate(
       (el: HTMLInputElement) => !el.validity.valid
     ).catch(() => false);
     const customError = page.locator(
-      '[data-testid="password-error"], .error, [role="alert"], [class*="error"], [class*="text-red"], p:has-text("required"), p:has-text("Password")'
+      '[data-testid="password-error"], [role="alert"], [class*="error"], [class*="text-red"], p:has-text("required"), p:has-text("Password")'
     );
     const hasCustomError = await customError.first().isVisible({ timeout: 3000 }).catch(() => false);
 
@@ -78,17 +78,17 @@ test.describe('40 - Form Validation', () => {
 
     await page.locator('input#email, input[name="email"], input[type="email"]')
       .fill(`short-pw-${Date.now()}@test.io`);
-    await page.locator('input#password').fill('abc12'); // 5 chars, use #id to avoid strict mode violation
+    await page.locator('input#password').fill('abc12'); // 5 chars
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForTimeout(2000);
-    const url = page.url();
+    // Must stay on register page AND show password error
+    await expect(page).toHaveURL(/register/);
+
     const hasError = await page
       .locator('text=/password|too short|at least|minimum|8/i')
-      .isVisible({ timeout: 3000 })
+      .isVisible({ timeout: TIMEOUTS.apiCall })
       .catch(() => false);
-
-    expect(url.includes('register') || hasError).toBeTruthy();
+    expect(hasError).toBeTruthy();
 
     await takeScreenshot(page, '40-03-register-short-password.png');
   });
@@ -101,30 +101,29 @@ test.describe('40 - Form Validation', () => {
 
     await page.locator('input#email, input[name="email"], input[type="email"]')
       .fill(`mismatch-${Date.now()}@test.io`);
-    await page.locator('input#password').fill('TestPass2026!'); // use #id to avoid strict mode violation
+    await page.locator('input#password').fill('TestPass2026!');
 
-    // Look for password confirmation field
     const confirmInput = page.locator(
       'input[name="confirmPassword"], input[name="confirm_password"], input[name="passwordConfirmation"], input[placeholder*="confirm" i], input[id*="confirm" i]'
     );
-    const hasConfirmField = await confirmInput.first().isVisible({ timeout: 3000 }).catch(() => false);
-
-    if (hasConfirmField) {
+    // Only run if a confirmation field exists
+    if (await confirmInput.first().isVisible({ timeout: 3000 }).catch(() => false)) {
       await confirmInput.first().fill('DifferentPass2026!');
       await page.locator('button[type="submit"]').click();
-      await page.waitForTimeout(2000);
 
-      const url = page.url();
+      // Must stay on register AND show mismatch error
+      await expect(page).toHaveURL(/register/);
+
       const hasError = await page
         .locator('text=/match|confirm|password/i')
-        .isVisible({ timeout: 3000 })
+        .isVisible({ timeout: TIMEOUTS.apiCall })
         .catch(() => false);
-
-      expect(url.includes('register') || hasError).toBeTruthy();
+      expect(hasError).toBeTruthy();
 
       await takeScreenshot(page, '40-04-register-password-mismatch.png');
+    } else {
+      test.fixme('KNOWN: No password confirmation field found on registration form');
     }
-    // If no confirm field, this test is not applicable — pass gracefully
   });
 
   /**
@@ -187,40 +186,35 @@ test.describe('40 - Form Validation', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Look for an edit button
     const editBtn = page.locator(
       'button:has-text("Edit"), a:has-text("Edit"), a[href*="edit"], button:has-text("Edit Profile")'
     );
-    const hasEditBtn = await editBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
+    await expect(editBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await editBtn.first().click();
+    await waitForPageReady(page);
 
-    if (hasEditBtn) {
-      await editBtn.first().click();
-      await waitForPageReady(page);
+    const nameInput = page.locator(
+      'input[name="name"], input[name="firstName"], input[name="first_name"], input[id*="name" i]'
+    );
+    await expect(nameInput.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await nameInput.first().clear();
 
-      // Find the name field and clear it
-      const nameInput = page.locator(
-        'input[name="name"], input[name="firstName"], input[name="first_name"], input[id*="name" i], input[placeholder*="name" i]'
-      );
-      const hasNameInput = await nameInput.first().isVisible({ timeout: 5000 }).catch(() => false);
+    const saveBtn = page.locator('button[type="submit"], button:has-text("Save"), button:has-text("Update")');
+    await expect(saveBtn.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await saveBtn.first().click();
 
-      if (hasNameInput) {
-        await nameInput.first().clear();
-        const saveBtn = page.locator('button[type="submit"], button:has-text("Save"), button:has-text("Update")');
-        await saveBtn.first().click();
-        await page.waitForTimeout(2000);
+    // Must show validation error for empty required name field
+    const hasError = await page
+      .locator('[role="alert"], .error, text=/required|can.t be empty|field/i')
+      .first().isVisible({ timeout: TIMEOUTS.apiCall })
+      .catch(() => false);
+    const nameIsInvalid = await nameInput.first().evaluate(
+      (el: HTMLInputElement) => !el.validity.valid
+    ).catch(() => false);
 
-        const hasError = await page
-          .locator('[role="alert"], .error, text=/required|can.t be empty|field/i')
-          .first().isVisible({ timeout: 3000 })
-          .catch(() => false);
-        const url = page.url();
+    expect(hasError || nameIsInvalid).toBeTruthy();
 
-        // Either shows error or stays on edit page
-        expect(hasError || url.includes('edit') || url.includes('profile')).toBeTruthy();
-
-        await takeScreenshot(page, '40-07-profile-empty-name.png');
-      }
-    }
+    await takeScreenshot(page, '40-07-profile-empty-name.png');
   });
 
   /**
@@ -234,7 +228,6 @@ test.describe('40 - Form Validation', () => {
     }).catch(() => {});
     await waitForPageReady(page);
 
-    // Find name input and leave it empty, try to submit
     const nameInput = page.locator(
       'input[name="name"], input[placeholder*="name" i], input[placeholder*="program" i], input[id*="name" i]'
     );
@@ -246,14 +239,13 @@ test.describe('40 - Form Validation', () => {
     const hasSubmit = await submitBtn.first().isVisible({ timeout: 5000 }).catch(() => false);
 
     if (hasNameInput && hasSubmit) {
-      // Ensure name is empty
       await nameInput.first().clear();
       await submitBtn.first().click();
-      await page.waitForTimeout(2000);
 
+      // Must show validation error for empty name
       const hasError = await page
         .locator('[role="alert"], .error, text=/required|name|enter/i')
-        .first().isVisible({ timeout: 3000 })
+        .first().isVisible({ timeout: TIMEOUTS.apiCall })
         .catch(() => false);
       const nameIsInvalid = await nameInput.first().evaluate(
         (el: HTMLInputElement) => !el.validity.valid
@@ -263,13 +255,13 @@ test.describe('40 - Form Validation', () => {
 
       await takeScreenshot(page, '40-08-program-empty-name.png');
     } else {
-      // Form not available at this route — validate via API
+      // Form not available at this route — validate via API (empty name must be rejected)
       const token = await page.evaluate(() => localStorage.getItem('accessToken'));
       const response = await page.request.post(`${BASE_URL}${API.programs}`, {
         data: { name: '', durationWeeks: 4, difficulty: 'beginner' },
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       });
-      // Empty name should be rejected
+      // Empty name must return 400/422 (validation error), NOT 200/201
       expect(response.status()).toBeGreaterThanOrEqual(400);
       expect(response.status()).toBeLessThan(500);
     }
@@ -283,7 +275,6 @@ test.describe('40 - Form Validation', () => {
 
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
 
-    // Try to log a workout set with negative weight
     const response = await page.request.post(`${BASE_URL}${API.workouts}`, {
       data: {
         name: 'Validation Test Workout',
@@ -300,8 +291,7 @@ test.describe('40 - Form Validation', () => {
       },
     });
 
-    // Should either reject with 400/422 or accept (server validates differently)
-    // Critical: must not return 500
+    // Must NOT crash server (no 5xx)
     expect(response.status()).toBeLessThan(500);
   });
 
@@ -329,8 +319,7 @@ test.describe('40 - Form Validation', () => {
       },
     });
 
-    // 0 reps should be rejected or accepted depending on server rules
-    // Critical: no server crash
+    // Must NOT crash server (no 5xx)
     expect(response.status()).toBeLessThan(500);
   });
 
@@ -342,7 +331,6 @@ test.describe('40 - Form Validation', () => {
 
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
 
-    // RPE of 15 is out of range
     const response = await page.request.post(`${BASE_URL}${API.workouts}`, {
       data: {
         name: 'RPE Validation Test',
@@ -355,8 +343,7 @@ test.describe('40 - Form Validation', () => {
       },
     });
 
-    // Should be 400/422 for invalid RPE, or 201/200 if server ignores it
-    // Critical: no 500
+    // Must NOT crash (no 5xx)
     expect(response.status()).toBeLessThan(500);
   });
 
@@ -380,7 +367,7 @@ test.describe('40 - Form Validation', () => {
       },
     });
 
-    // Negative weight should be rejected (400/422) or ignored, not crash
+    // Negative weight must be rejected (400/422) or ignored — NOT a server crash
     expect(response.status()).toBeLessThan(500);
   });
 
@@ -391,8 +378,6 @@ test.describe('40 - Form Validation', () => {
     await loginViaAPI(page, 'trainer');
 
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
-
-    // Use a date well in the past
     const pastDate = new Date('2020-01-01T10:00:00.000Z').toISOString();
 
     const response = await page.request.post(`${BASE_URL}${API.scheduleAppointments}`, {
@@ -411,15 +396,16 @@ test.describe('40 - Form Validation', () => {
     // Past dates may be accepted or rejected — no server crash allowed
     expect(response.status()).toBeLessThan(500);
 
-    // If the UI is available, check for a warning
+    // Navigate to schedule page — it must still render correctly
     await page.goto(`${BASE_URL}${ROUTES.schedule}`, {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad * 2,
     }).catch(() => {});
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(body && body.length > 50).toBeTruthy();
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /schedule|calendar/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   /**
@@ -430,7 +416,6 @@ test.describe('40 - Form Validation', () => {
 
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
 
-    // POST to goals API with missing required fields
     const response = await page.request.post(`${BASE_URL}${API.analyticsGoals}`, {
       data: {
         // Missing required 'type' and 'target' fields
@@ -442,7 +427,7 @@ test.describe('40 - Form Validation', () => {
       },
     });
 
-    // Should return 400/422 for missing required fields
+    // Missing required fields must return 400/422
     expect(response.status()).toBeGreaterThanOrEqual(400);
     expect(response.status()).toBeLessThan(500);
 
@@ -457,7 +442,6 @@ test.describe('40 - Form Validation', () => {
 
     const token = await page.evaluate(() => localStorage.getItem('accessToken'));
 
-    // POST with empty required fields
     const response = await page.request.post(`${BASE_URL}${API.supportTickets}`, {
       data: {
         subject: '',
@@ -469,19 +453,21 @@ test.describe('40 - Form Validation', () => {
       },
     });
 
-    // Empty subject/message should be rejected (400/422) or 404 if route not found
+    // Empty subject/message must be rejected (400/422)
     expect(response.status()).toBeGreaterThanOrEqual(400);
     expect(response.status()).toBeLessThan(500);
 
-    // Also test via the UI if the page exists
+    // Navigate to support page — it must render correctly
     await page.goto(`${BASE_URL}/support`, {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad * 2,
     }).catch(() => {});
     await waitForPageReady(page);
 
-    const body = await page.textContent('body');
-    expect(body && body.length > 50).toBeTruthy();
+    // Support page heading must be visible
+    await expect(
+      page.locator('h1, h2, [role="heading"]').filter({ hasText: /support|help|contact/i }).first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '40-15-support-ticket-validation.png');
   });

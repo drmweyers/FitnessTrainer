@@ -1,6 +1,11 @@
 /**
  * Suite 33: Offline Mode / PWA Sync
  * Tests offline banner, cached UI render, and sync recovery.
+ *
+ * Note: We simulate offline by manipulating navigator.onLine and dispatching events.
+ * Full service-worker-based offline caching is not testable in headless Chromium
+ * (requires HTTPS + SW registration). These tests verify the app's JS event handlers
+ * respond correctly to online/offline events.
  */
 import { test, expect } from '@playwright/test';
 import { BASE_URL, ROUTES, TIMEOUTS } from '../helpers/constants';
@@ -9,54 +14,44 @@ import { loginViaAPI, takeScreenshot, waitForPageReady } from '../helpers/auth';
 test.describe('33 - Offline Mode', () => {
 
   test('page loads normally when online', async ({ page }) => {
-    await page.goto(`${BASE_URL}`, {
-      waitUntil: 'networkidle',
+    const response = await page.goto(`${BASE_URL}`, {
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
+    expect(response?.ok()).toBeTruthy();
     await expect(page.locator('body')).toBeVisible();
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+
+    // Home page must render actual content (not an empty shell)
+    await expect(
+      page.locator('h1, h2, [role="heading"]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '33-online-normal.png');
   });
 
-  test('simulated offline - offline banner appears with amber styling', async ({ page }) => {
+  test('simulated offline — offline banner appears with amber styling', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Simulate offline by setting navigator.onLine to false and dispatching event
+    // Simulate offline
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(1500);
 
-    // Look for offline indicator (amber/yellow banner or status indicator)
+    // Offline banner must appear (amber/yellow styling indicates warning)
     const offlineBanner = page.locator(
-      '[data-testid*="offline"], .offline-banner, [class*="offline"], text=/offline/i, [aria-label*="offline" i]'
+      '[data-testid*="offline"], [class*="offline"], [aria-label*="offline" i], [class*="amber"], [class*="yellow"]'
     );
-    const hasOfflineBanner = await offlineBanner.first().isVisible({ timeout: 5000 }).catch(() => false);
-
-    // Check for amber/yellow color class (Tailwind: bg-amber, bg-yellow)
-    const amberElement = page.locator('[class*="amber"], [class*="yellow"], [class*="warning"]');
-    const hasAmber = await amberElement.first().isVisible({ timeout: 3000 }).catch(() => false);
-
-    // Either banner shown or page still renders (offline indicator may be subtle)
-    await expect(page.locator('body')).toBeVisible();
-    // Accept: banner visible, amber styling present, or page still functional
-    expect(
-      hasOfflineBanner ||
-      hasAmber ||
-      true // Offline handling is a progressive enhancement — page staying functional is acceptable
-    ).toBeTruthy();
+    await expect(offlineBanner.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '33-offline-banner.png');
 
-    // Restore online state for subsequent tests
+    // Restore online state
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
       window.dispatchEvent(new Event('online'));
@@ -66,7 +61,7 @@ test.describe('33 - Offline Mode', () => {
   test('UI still renders while offline (cached content)', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -76,12 +71,12 @@ test.describe('33 - Offline Mode', () => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(1000);
 
-    // Page should still show content (either cached or skeleton)
+    // Dashboard heading must still be visible (cached/rendered content)
     await expect(page.locator('body')).toBeVisible();
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
+    await expect(
+      page.locator('h1, h2, [role="heading"]').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '33-offline-ui.png');
 
@@ -95,7 +90,7 @@ test.describe('33 - Offline Mode', () => {
   test('form inputs still work while offline', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -105,16 +100,16 @@ test.describe('33 - Offline Mode', () => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(500);
 
     // Find any input on the page and verify it's still interactive
     const anyInput = page.locator('input[type="text"], input[type="search"], textarea').first();
     if (await anyInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await anyInput.fill('offline test');
       const value = await anyInput.inputValue();
+      // Input must accept text while offline
       expect(value).toBe('offline test');
     } else {
-      // No form on dashboard — that's ok, UI is still functional
+      // No form on dashboard — body must still be visible
       await expect(page.locator('body')).toBeVisible();
     }
 
@@ -128,33 +123,39 @@ test.describe('33 - Offline Mode', () => {
   test('restore network connection triggers online event', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Go offline then immediately back online
+    // Track online event receipt via JS
+    await page.evaluate(() => {
+      (window as any).__onlineEventReceived = false;
+      window.addEventListener('online', () => { (window as any).__onlineEventReceived = true; }, { once: true });
+    });
+
+    // Cycle offline → online
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(800);
 
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
       window.dispatchEvent(new Event('online'));
     });
-    await page.waitForTimeout(1500);
 
-    // Page should respond to online event without crashing
-    await expect(page.locator('body')).toBeVisible();
+    // The online event must have fired
+    const onlineReceived = await page.evaluate(() => (window as any).__onlineEventReceived);
+    expect(onlineReceived).toBe(true);
+
     await takeScreenshot(page, '33-network-restored.png');
   });
 
   test('green sync banner appears briefly after reconnection', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -164,23 +165,17 @@ test.describe('33 - Offline Mode', () => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(600);
 
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
       window.dispatchEvent(new Event('online'));
     });
-    await page.waitForTimeout(1000);
 
-    // Look for green sync indicator
+    // Green/success sync banner must appear after reconnection
     const greenBanner = page.locator(
-      '[class*="green"], [class*="success"], [data-testid*="sync"], text=/sync/i, text=/connected/i, text=/back online/i'
+      '[class*="green"], [class*="success"], [data-testid*="sync"], text=/sync/i, text=/back online/i, text=/connected/i'
     );
-    const hasGreen = await greenBanner.first().isVisible({ timeout: 3000 }).catch(() => false);
-
-    // Green banner may be transient — page still functional is acceptable
-    await expect(page.locator('body')).toBeVisible();
-    expect(hasGreen || true).toBeTruthy(); // Progressive enhancement
+    await expect(greenBanner.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '33-sync-banner.png');
   });
@@ -188,34 +183,33 @@ test.describe('33 - Offline Mode', () => {
   test('data syncs after reconnection (sync manager check)', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Check if SyncManager is available (Background Sync API)
-    const hasSyncManager = await page.evaluate(() => 'SyncManager' in window || 'serviceWorker' in navigator);
-    expect(hasSyncManager).toBeTruthy();
+    // SyncManager or serviceWorker must be available (Background Sync capability)
+    const hasSyncCapability = await page.evaluate(() => 'SyncManager' in window || 'serviceWorker' in navigator);
+    expect(hasSyncCapability).toBeTruthy();
 
-    // Go offline then online and verify no crash
+    // Cycle offline/online and verify no crash
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(500);
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
       window.dispatchEvent(new Event('online'));
     });
-    await page.waitForTimeout(2000);
 
+    // Page must remain visible and not crash
     await expect(page.locator('body')).toBeVisible();
   });
 
   test('no error messages shown after reconnect', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -225,24 +219,21 @@ test.describe('33 - Offline Mode', () => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(500);
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
       window.dispatchEvent(new Event('online'));
     });
-    await page.waitForTimeout(2000);
 
-    // Look for error states that shouldn't appear after reconnect
+    // No network-error messages should appear after reconnect
     const errorMsg = page.locator('text=/network error/i, text=/connection failed/i, text=/unable to connect/i');
     const hasError = await errorMsg.first().isVisible({ timeout: 2000 }).catch(() => false);
-
-    expect(hasError).toBeFalsy();
+    expect(hasError).toBe(false);
   });
 
   test('page functions normally after reconnection', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.dashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -252,22 +243,14 @@ test.describe('33 - Offline Mode', () => {
       Object.defineProperty(navigator, 'onLine', { value: false, writable: true, configurable: true });
       window.dispatchEvent(new Event('offline'));
     });
-    await page.waitForTimeout(500);
     await page.evaluate(() => {
       Object.defineProperty(navigator, 'onLine', { value: true, writable: true, configurable: true });
       window.dispatchEvent(new Event('online'));
     });
-    await page.waitForTimeout(2000);
 
-    // Page should still be fully functional
-    await expect(page.locator('body')).toBeVisible();
-    const pageText = await page.textContent('body');
-    expect(pageText?.length).toBeGreaterThan(50);
-
-    // Can still navigate
+    // Navigation links must still be accessible
     const navLinks = page.locator('nav a, aside a, [role="navigation"] a');
-    const hasNav = await navLinks.first().isVisible({ timeout: 3000 }).catch(() => false);
-    expect(hasNav || pageText?.toLowerCase().includes('dashboard')).toBeTruthy();
+    await expect(navLinks.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '33-post-reconnect-functional.png');
   });

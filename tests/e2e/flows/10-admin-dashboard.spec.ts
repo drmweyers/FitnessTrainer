@@ -9,12 +9,12 @@ test.describe('10 - Admin Dashboard', () => {
 
   test('should load admin dashboard', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see admin-related content
+    // Should see admin-related content heading
     await expect(page.locator('text=/dashboard|admin|overview/i').first()).toBeVisible({
       timeout: TIMEOUTS.element,
     });
@@ -24,82 +24,67 @@ test.describe('10 - Admin Dashboard', () => {
 
   test('should display admin metrics cards', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
     // Should see metric-related content (total users, trainers, clients, etc.)
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('users') ||
-      pageText?.toLowerCase().includes('trainers') ||
-      pageText?.toLowerCase().includes('clients') ||
-      pageText?.toLowerCase().includes('total')
-    ).toBeTruthy();
+    await expect(
+      page.locator('text=/users|trainers|clients|total/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should display recent signups or user list', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should show some user data
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.includes('@') ||
-      pageText?.toLowerCase().includes('signup') ||
-      pageText?.toLowerCase().includes('recent')
-    ).toBeTruthy();
+    // Should show some recent activity or user data
+    await expect(
+      page.locator('text=/@|text=/signup|recent/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should navigate to admin users page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminUsers}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Should see user management content
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('user') ||
-      pageText?.toLowerCase().includes('manage') ||
-      pageText?.includes('@')
-    ).toBeTruthy();
+    // Should see user management content heading
+    await expect(
+      page.locator('h1:has-text("Users"), h1:has-text("User Management"), h2:has-text("Users")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'admin-users.png');
   });
 
   test('should have navigation links to admin sections', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Look for navigation to user management
+    // Look for navigation to user management — at least one admin nav link must exist
     const usersLink = page.locator('a[href*="admin/users"], a[href*="users"], button:has-text("View All Users"), a:has-text("Users")');
-    if (await usersLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-      // Admin navigation link exists
-    }
+    await expect(usersLink.first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 
   test('should show correct admin role indicators', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.adminDashboard}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
 
-    // Check that the page acknowledges admin role
-    const pageText = await page.textContent('body');
-    expect(
-      pageText?.toLowerCase().includes('admin') ||
-      pageText?.toLowerCase().includes('administrator') ||
-      pageText?.toLowerCase().includes('dashboard')
-    ).toBeTruthy();
+    // Page must acknowledge admin role — specific text
+    await expect(
+      page.locator('text=/admin|administrator|dashboard/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });
