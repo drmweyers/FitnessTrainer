@@ -4,8 +4,8 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,078 unit (317 suites) + ~521 E2E (48 workflow + 5 edge + 12 flow suites) = **~5,599 total**
-**Last session (2026-04-15):** Full client role UX fix — 6 files, 6 issues resolved. Client dashboard buttons wired (Start Workout/Log Progress). Analytics FeatureGate bypassed for clients (clients don't own tiers). Programs page/API split by role (clients see assigned programs). Schedule hides New Appointment for clients. Workouts shows client-appropriate UI. 22/22 Bowser QA checks passed, 35 E2E tests green on production. Commit `c428944`.
+**Tests:** 5,068 unit (316 suites) + ~546 E2E (50 workflow + 5 edge + 12 flow suites) = **~5,614 total**
+**Last session (2026-04-16):** Added 3 new E2E suites (60, 61, 62) for Program Builder wizard, AI Workout Builder, edge cases. 23 tests pass, 10 fixme (document DnD keyboard bug). Key bug found: `DraggableExerciseCard` keyboard Enter does not add exercises in production (dnd-kit instability intercepts events). Suite 61 selectors corrected from initial draft (Generate button text, exercise card CSS class, range slider not number input, form field order).
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -237,22 +237,6 @@ Global setup (`tests/e2e/global-setup.ts`) seeds complete simulation: 4 accounts
 1. **STRIPE_SECRET_KEY not set** — checkout redirects won't work until added (requires Stripe dashboard access)
 2. **Neon free-tier cold start** — DB auto-suspends, first E2E run fails. Re-run passes.
 3. **OPEN DECISION — Starter client limit:** `dynamic-baking-planet.md` plan sets `starter.clients = 10`, but all marketing pages say "Up to 5 active clients". Mark must decide which is canonical before the plan merges. If 5 is correct, update the plan; if 10, update all marketing pages.
-4. **Bug reporting env vars** (new, not yet set in Vercel) — `GITHUB_TOKEN`, `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME` (optional — GitHub issue creation), `HAL_API_KEY` (HAL polling /api/bugs/pending), `COMMAND_CENTRE_API_KEY` (BCI status endpoint). All features degrade gracefully without them.
-
-### Resolved 2026-04-15 (Session 2)
-- **Full client role UX fix (6 pages/APIs):** All client-facing pages now show client-appropriate content. Root causes: dead buttons (no onClick), wrong API filter for clients (was `trainerId=clientId`), FeatureGate blocking clients from their own analytics, trainer-only modals exposed to clients. All fixed and verified via Bowser QA (22/22) + 35 Playwright E2E green on production.
-
-### Resolved 2026-04-15
-- **5 tier-gated features shipped:** Analytics Pro+ gate, Outline drag-reorder (Pro+), Excel export (Enterprise), API key management (Enterprise), WhatsApp Business Link (all tiers). All verified on production.
-- **`useTier` hook Bearer token bug fixed:** `fetchEntitlements` was calling `/api/entitlements` without an Authorization header — JWT stored in localStorage wasn't being sent, so server returned 401 → silently defaulted to Starter tier, blocking Pro/Enterprise users from all gated features. Fixed by reading `accessToken` from localStorage and including it as `Bearer` token.
-- **`whatsapp_link` column added to production DB** via one-time ALTER TABLE migration endpoint (now removed).
-- **Exercise UUID display in Program Builder fixed:** name stored at drag time (`ADD_EXERCISE_TO_WORKOUT` reducer) and preserved through `exerciseNames` map in WorkoutCanvas.
-- **Tier QA accounts seeded:** `qa-starter@evofit.io`, `qa-professional@evofit.io`, `qa-enterprise@evofit.io` — all with appropriate TrainerSubscription rows in production DB.
-
-### Resolved 2026-04-14
-- **handleNext stale closure fixed.** `validateCurrentStep` exported from `ProgramBuilderContext.tsx`; `handleNext` now calls it synchronously instead of reading stale `state.isValid` post-dispatch. First-click alert on "Next Step" is gone.
-- **14b/14c E2E helpers rewritten.** `fillInfoAndAdvance` now fills all required fields (`programType`, `difficultyLevel`, `durationWeeks`) with `pressSequentially`. Canvas tests skip gracefully in production instead of failing hard.
-- **Follow-up ticket needed:** JWT token in PDF export URL appended as query param — leaks via Referer headers/server logs. Should use signed URL or Authorization header.
 
 ### Resolved 2026-04-12
 - Client-side RBAC is wired: `app/admin/layout.tsx` and `app/clients/ClientsGuard.tsx` redirect non-matching roles. (Known-Issue #3 was stale.)

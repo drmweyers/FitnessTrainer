@@ -7,11 +7,12 @@
  *   - Page heading: "AI Workout Generator" (h2) inside /workouts/builder (h1 "AI Workout Builder")
  *   - Form fields: Focus Area (select), Difficulty (select), Duration (input[type=number]), Workout Type (select)
  *   - Equipment: toggle buttons (not a select, pills with onClick)
- *   - Generate button: "Generate AI Workout" with Wand2 icon
- *   - Generates locally (aiGenerateWorkout fn, 1500ms simulated delay)
- *   - Exercise list: div.bg-gray-50 rows with exercise name (h4), sets, reps, rest
+ *   - Generate button: "Generate AI Program (N weeks × N days)" with Wand2 icon
+ *   - Generates locally (generateProgram fn, 1500ms simulated delay)
+ *   - Exercise list: div.bg-gray-50.rounded-lg.p-3 rows; exercise name in <p class="font-medium">, sets/reps in text-right div
+ *   - Form field order: Program Type (nth 0), Focus Area (nth 1), Difficulty (nth 2), Workout Style (nth 3)
  *   - Save button: "Save to My Programs"
- *   - Success banner: "Workout saved to My Programs" + "View Programs" button
+ *   - Success banner: "Program saved to My Programs!" + "View Programs" button
  *
  * Note: There is NO requirements textbox in the current AIWorkoutBuilder.
  * The builder uses structured dropdowns/buttons — no free-text input.
@@ -27,9 +28,16 @@ test.describe('61 - AI Workout Builder', () => {
   test.beforeEach(async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.workoutsBuilder}`, {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
       timeout: TIMEOUTS.pageLoad,
     });
+    // If auth didn't hydrate and redirected away, retry
+    if (!page.url().includes('/workouts/builder')) {
+      await page.goto(`${BASE_URL}${ROUTES.workoutsBuilder}`, {
+        waitUntil: 'networkidle',
+        timeout: TIMEOUTS.pageLoad,
+      });
+    }
     await waitForPageReady(page);
   });
 
@@ -56,7 +64,7 @@ test.describe('61 - AI Workout Builder', () => {
 
     // Generate button
     await expect(
-      page.locator('button:has-text("Generate AI Workout")')
+      page.locator('button:has-text("Generate AI Program")')
     ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, '61-01-ai-builder-page.png');
@@ -78,25 +86,29 @@ test.describe('61 - AI Workout Builder', () => {
   // 61.03 — Fill structured fields: focus=upper body, difficulty=intermediate, duration=45
   // -------------------------------------------------------------------------
   test('61.03 fill structured fields: upper body / intermediate / 45 min / dumbbell', async ({ page }) => {
-    // Focus Area — select "upper body"
-    const focusSelect = page.locator('select').nth(0); // First select = Focus Area
+    // Focus Area — select "upper body" (nth(1): Program Type is nth(0))
+    const focusSelect = page.locator('select').nth(1); // nth(1) = Primary Focus Area
     await expect(focusSelect).toBeVisible({ timeout: TIMEOUTS.element });
     await focusSelect.selectOption('upper body');
     await expect(focusSelect).toHaveValue('upper body');
 
-    // Difficulty — select "intermediate"
-    const difficultySelect = page.locator('select').nth(1);
+    // Difficulty — select "intermediate" (nth(2): Difficulty Level)
+    const difficultySelect = page.locator('select').nth(2);
     await expect(difficultySelect).toBeVisible({ timeout: TIMEOUTS.element });
     await difficultySelect.selectOption('intermediate');
     await expect(difficultySelect).toHaveValue('intermediate');
 
-    // Duration input — set to 45
-    const durationInput = page.locator('input[type="number"]').first();
-    await expect(durationInput).toBeVisible({ timeout: TIMEOUTS.element });
-    await durationInput.fill('45');
-    await expect(durationInput).toHaveValue('45');
+    // Session Duration — it's a range slider, not a number input.
+    // Set to approximately 45 minutes using the range input (min=15, max=120, step=5).
+    // Range position for 45min = (45-15)/(120-15) = 30/105 ≈ 28.6% of range width.
+    const durationSlider = page.locator('input[type="range"]').first();
+    await expect(durationSlider).toBeVisible({ timeout: TIMEOUTS.element });
+    // Use fill to set the value directly via JS
+    await durationSlider.fill('45');
+    // Verify slider moved (value should be 45)
+    await expect(durationSlider).toHaveValue('45');
 
-    // Equipment — toggle "dumbbell" button
+    // Equipment — toggle "dumbbell" button (equipment chips, text = eq)
     const dumbbellBtn = page.locator('button:has-text("dumbbell")').first();
     await expect(dumbbellBtn).toBeVisible({ timeout: TIMEOUTS.element });
     await dumbbellBtn.click();
@@ -121,12 +133,12 @@ test.describe('61 - AI Workout Builder', () => {
       { timeout: TIMEOUTS.pageLoad }
     );
 
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
-    // Loading state: "Generating Workout..."
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    // Loading state: "Generating N-week program…"
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       // Wait for loading to finish (1500ms simulated delay in component)
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
@@ -144,32 +156,33 @@ test.describe('61 - AI Workout Builder', () => {
   // 61.05 — Verify generated exercises are visible (at least 3 exercise cards)
   // -------------------------------------------------------------------------
   test('61.05 generated workout has at least 3 exercise cards', async ({ page }) => {
-    // Generate first
+    // Generate first — wait for generate button to be enabled (exercises loaded)
     await page.waitForFunction(
-      () => !(document.querySelector('button:contains("Generate AI Workout")') as HTMLButtonElement | null)?.disabled,
+      () => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const genBtn = buttons.find(b => b.textContent?.includes('Generate AI Program'));
+        return genBtn && !genBtn.disabled;
+      },
       { timeout: TIMEOUTS.pageLoad }
     ).catch(() => {});
 
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
     // Wait for loading spinner on button to go away
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
     }
 
-    // Exercise cards: div.bg-gray-50.rounded-lg.p-4 (from AIWorkoutBuilder.tsx line ~439)
-    const exerciseCards = page.locator('div.bg-gray-50.rounded-lg.p-4').filter({
-      has: page.locator('h4'),
+    // Exercise cards: div.bg-gray-50.rounded-lg.p-3 (from AIWorkoutBuilder.tsx line ~439)
+    const exerciseCards = page.locator('div.bg-gray-50.rounded-lg.p-3').filter({
+      has: page.locator('p.font-medium'),
     });
 
-    // Wait for at least 3 to appear
-    await expect(exerciseCards).toHaveCount(
-      await exerciseCards.count().then((n) => Math.max(n, 3)),
-      { timeout: TIMEOUTS.element }
-    );
+    // Wait for at least 1 card to appear (the default day has exercises)
+    await expect(exerciseCards.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     const cardCount = await exerciseCards.count();
     expect(cardCount).toBeGreaterThanOrEqual(3);
@@ -182,17 +195,17 @@ test.describe('61 - AI Workout Builder', () => {
   // -------------------------------------------------------------------------
   test('61.06 exercise GIFs render (visible images exist, naturalWidth check)', async ({ page }) => {
     // Generate workout first
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
     }
 
     // Wait for exercise cards to render
-    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-4').filter({ has: page.locator('h4') }).first();
+    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-3').filter({ has: page.locator('p.font-medium') }).first();
     await expect(firstCard).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Let images start loading
@@ -223,17 +236,17 @@ test.describe('61 - AI Workout Builder', () => {
   // -------------------------------------------------------------------------
   test('61.07 generated exercise names are real text (not placeholders or UUIDs)', async ({ page }) => {
     // Generate workout
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
     }
 
-    // Exercise names are in h4 tags inside the exercise cards
-    const exerciseNameEls = page.locator('div.bg-gray-50.rounded-lg.p-4 h4');
+    // Exercise names are in <p class="font-medium"> inside the exercise cards
+    const exerciseNameEls = page.locator('div.bg-gray-50.rounded-lg.p-3 p.font-medium');
     const firstNameEl = exerciseNameEls.first();
     await expect(firstNameEl).toBeVisible({ timeout: TIMEOUTS.element });
 
@@ -259,17 +272,17 @@ test.describe('61 - AI Workout Builder', () => {
   // -------------------------------------------------------------------------
   test('61.08 click Save → "Workout saved to My Programs" banner appears', async ({ page }) => {
     // Generate workout first
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
     }
 
     // Wait for exercise cards
-    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-4').filter({ has: page.locator('h4') }).first();
+    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-3').filter({ has: page.locator('p.font-medium') }).first();
     await expect(firstCard).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Click "Save to My Programs"
@@ -288,7 +301,7 @@ test.describe('61 - AI Workout Builder', () => {
     expect(response.status()).toBeLessThan(400);
 
     // Success banner must appear
-    await expect(page.locator('text=Workout saved to My Programs')).toBeVisible({
+    await expect(page.locator('text=Program saved to My Programs')).toBeVisible({
       timeout: TIMEOUTS.pageLoad,
     });
 
@@ -300,16 +313,16 @@ test.describe('61 - AI Workout Builder', () => {
   // -------------------------------------------------------------------------
   test('61.09 after save, /programs shows the saved AI workout', async ({ page }) => {
     // Generate + save
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
     }
 
-    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-4').filter({ has: page.locator('h4') }).first();
+    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-3').filter({ has: page.locator('p.font-medium') }).first();
     await expect(firstCard).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Get the workout name before saving
@@ -356,20 +369,20 @@ test.describe('61 - AI Workout Builder', () => {
   // -------------------------------------------------------------------------
   test('61.10 open saved AI workout from /programs, verify exercises and sets', async ({ page }) => {
     // Generate and save a workout
-    const generateBtn = page.locator('button:has-text("Generate AI Workout")');
+    const generateBtn = page.locator('button:has-text("Generate AI Program")');
     await expect(generateBtn).toBeEnabled({ timeout: TIMEOUTS.pageLoad });
     await generateBtn.click();
 
-    const loadingBtn = page.locator('button:has-text("Generating Workout...")');
+    const loadingBtn = page.locator('button:has-text("Generating")');
     if (await loadingBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await loadingBtn.waitFor({ state: 'hidden', timeout: 10000 });
     }
 
-    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-4').filter({ has: page.locator('h4') }).first();
+    const firstCard = page.locator('div.bg-gray-50.rounded-lg.p-3').filter({ has: page.locator('p.font-medium') }).first();
     await expect(firstCard).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Get exercise count from the generated workout
-    const exerciseCards = page.locator('div.bg-gray-50.rounded-lg.p-4').filter({ has: page.locator('h4') });
+    const exerciseCards = page.locator('div.bg-gray-50.rounded-lg.p-3').filter({ has: page.locator('p.font-medium') });
     const generatedCount = await exerciseCards.count();
     expect(generatedCount).toBeGreaterThan(0);
 
