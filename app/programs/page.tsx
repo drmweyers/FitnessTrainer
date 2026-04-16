@@ -65,9 +65,10 @@ export default function ProgramsPage() {
           onViewModeChange={setViewMode}
         />
         
-        <ProgramList 
+        <ProgramList
           filters={filters}
           viewMode={viewMode}
+          isClient={isClient}
         />
       </div>
   )

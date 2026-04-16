@@ -18,9 +18,10 @@ import { useToast, ToastContainer } from '@/components/shared/Toast'
 interface ProgramListProps {
   filters: ProgramFiltersType
   viewMode: 'grid' | 'list'
+  isClient?: boolean
 }
 
-export default function ProgramList({ filters, viewMode }: ProgramListProps) {
+export default function ProgramList({ filters, viewMode, isClient = false }: ProgramListProps) {
   const [programs, setPrograms] = useState<Program[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -284,17 +285,23 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Calendar className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No programs yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {isClient ? 'No programs assigned yet' : 'No programs yet'}
+            </h3>
             <p className="text-gray-600 mb-6">
-              Get started by creating your first training program. You can build custom workouts and assign them to clients.
+              {isClient
+                ? 'Your trainer hasn\'t assigned any programs to you yet. Check back soon!'
+                : 'Get started by creating your first training program. You can build custom workouts and assign them to clients.'}
             </p>
-            <button
-              onClick={handleCreateProgram}
-              className="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
-            >
-              <Plus size={20} />
-              Create Your First Program
-            </button>
+            {!isClient && (
+              <button
+                onClick={handleCreateProgram}
+                className="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                <Plus size={20} />
+                Create Your First Program
+              </button>
+            )}
           </>
         )}
       </div>
@@ -323,15 +330,19 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
               <ProgramCard
                 program={program}
                 viewMode="grid"
-                onEdit={handleEdit}
-                onDuplicate={handleDuplicate}
-                onDelete={handleDelete}
-                onAssign={handleAssign}
+                {...(!isClient && {
+                  onEdit: handleEdit,
+                  onDuplicate: handleDuplicate,
+                  onDelete: handleDelete,
+                  onAssign: handleAssign,
+                })}
               />
-              {/* Enterprise: Bulk Assign — shown for enterprise tier, locked for others */}
-              <div className="mt-2">
-                <BulkAssignDialog programId={program.id} />
-              </div>
+              {/* Enterprise: Bulk Assign — trainer only */}
+              {!isClient && (
+                <div className="mt-2">
+                  <BulkAssignDialog programId={program.id} />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -343,14 +354,16 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
                 <ProgramCard
                   program={program}
                   viewMode="list"
-                  onEdit={handleEdit}
-                  onDuplicate={handleDuplicate}
-                  onDelete={handleDelete}
-                  onAssign={handleAssign}
+                  {...(!isClient && {
+                    onEdit: handleEdit,
+                    onDuplicate: handleDuplicate,
+                    onDelete: handleDelete,
+                    onAssign: handleAssign,
+                  })}
                 />
               </div>
-              {/* Enterprise: Bulk Assign */}
-              <BulkAssignDialog programId={program.id} />
+              {/* Enterprise: Bulk Assign — trainer only */}
+              {!isClient && <BulkAssignDialog programId={program.id} />}
             </div>
           ))}
         </div>
@@ -358,8 +371,8 @@ export default function ProgramList({ filters, viewMode }: ProgramListProps) {
 
       {/* Load More / Pagination could go here */}
       
-      {/* Bulk Assignment Modal */}
-      {assignmentModal.program && (
+      {/* Bulk Assignment Modal — trainer only */}
+      {!isClient && assignmentModal.program && (
         <BulkAssignmentModal
           program={assignmentModal.program}
           isOpen={assignmentModal.isOpen}

@@ -19,10 +19,10 @@ import { Program, ProgramType, DifficultyLevel } from '@/types/program'
 interface ProgramCardProps {
   program: Program
   viewMode?: 'grid' | 'list'
-  onEdit: (program: Program) => void
-  onDuplicate: (program: Program) => void
-  onDelete: (program: Program) => void
-  onAssign: (program: Program) => void
+  onEdit?: (program: Program) => void
+  onDuplicate?: (program: Program) => void
+  onDelete?: (program: Program) => void
+  onAssign?: (program: Program) => void
 }
 
 const programTypeColors: Record<ProgramType, string> = {
@@ -133,64 +133,79 @@ export default function ProgramCard({
               <div className="text-xs text-gray-500">Workouts</div>
             </div>
             
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary-600">{assignmentCount}</div>
-              <div className="text-xs text-gray-500">Active</div>
-            </div>
+            {onAssign && (
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary-600">{assignmentCount}</div>
+                <div className="text-xs text-gray-500">Active</div>
+              </div>
+            )}
           </div>
 
-          {/* Right Section - Actions */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => handleActionClick(() => onAssign(program), e)}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors"
-            >
-              <UserPlus size={14} />
-              Assign
-            </button>
-            
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowDropdown(!showDropdown)
-                }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <MoreVertical size={16} />
-              </button>
+          {/* Right Section - Actions (trainer only) */}
+          {(onAssign || onEdit || onDuplicate || onDelete) && (
+            <div className="flex items-center gap-2">
+              {onAssign && (
+                <button
+                  onClick={(e) => handleActionClick(() => onAssign(program), e)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors"
+                >
+                  <UserPlus size={14} />
+                  Assign
+                </button>
+              )}
 
-              {showDropdown && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+              {(onEdit || onDuplicate || onDelete) && (
+                <div className="relative">
                   <button
-                    onClick={(e) => handleActionClick(() => onEdit(program), e)}
-                    className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowDropdown(!showDropdown)
+                    }}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                   >
-                    <Edit2 size={14} />
-                    Edit Program
+                    <MoreVertical size={16} />
                   </button>
-                  
-                  <button
-                    onClick={(e) => handleActionClick(() => onDuplicate(program), e)}
-                    className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-                  >
-                    <Copy size={14} />
-                    Duplicate
-                  </button>
-                  
-                  <hr className="my-1" />
-                  
-                  <button
-                    onClick={(e) => handleActionClick(() => onDelete(program), e)}
-                    className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 size={14} />
-                    Delete
-                  </button>
+
+                  {showDropdown && (
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                      {onEdit && (
+                        <button
+                          onClick={(e) => handleActionClick(() => onEdit(program), e)}
+                          className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <Edit2 size={14} />
+                          Edit Program
+                        </button>
+                      )}
+
+                      {onDuplicate && (
+                        <button
+                          onClick={(e) => handleActionClick(() => onDuplicate(program), e)}
+                          className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <Copy size={14} />
+                          Duplicate
+                        </button>
+                      )}
+
+                      {onDelete && (
+                        <>
+                          <hr className="my-1" />
+                          <button
+                            onClick={(e) => handleActionClick(() => onDelete(program), e)}
+                            className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     )
@@ -215,47 +230,56 @@ export default function ProgramCard({
             )}
           </div>
 
-          <div className="relative ml-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowDropdown(!showDropdown)
-              }}
-              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-            >
-              <MoreVertical size={16} />
-            </button>
+          {(onEdit || onDuplicate || onDelete) && (
+            <div className="relative ml-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowDropdown(!showDropdown)
+                }}
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+              >
+                <MoreVertical size={16} />
+              </button>
 
-            {showDropdown && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                <button
-                  onClick={(e) => handleActionClick(() => onEdit(program), e)}
-                  className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-                >
-                  <Edit2 size={14} />
-                  Edit Program
-                </button>
-                
-                <button
-                  onClick={(e) => handleActionClick(() => onDuplicate(program), e)}
-                  className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-                >
-                  <Copy size={14} />
-                  Duplicate
-                </button>
-                
-                <hr className="my-1" />
-                
-                <button
-                  onClick={(e) => handleActionClick(() => onDelete(program), e)}
-                  className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
-                >
-                  <Trash2 size={14} />
-                  Delete
-                </button>
-              </div>
-            )}
-          </div>
+              {showDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                  {onEdit && (
+                    <button
+                      onClick={(e) => handleActionClick(() => onEdit(program), e)}
+                      className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <Edit2 size={14} />
+                      Edit Program
+                    </button>
+                  )}
+
+                  {onDuplicate && (
+                    <button
+                      onClick={(e) => handleActionClick(() => onDuplicate(program), e)}
+                      className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <Copy size={14} />
+                      Duplicate
+                    </button>
+                  )}
+
+                  {onDelete && (
+                    <>
+                      <hr className="my-1" />
+                      <button
+                        onClick={(e) => handleActionClick(() => onDelete(program), e)}
+                        className="flex items-center gap-3 w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 size={14} />
+                        Delete
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Badges */}
@@ -276,7 +300,7 @@ export default function ProgramCard({
 
       {/* Stats */}
       <div className="p-4 bg-gray-50">
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className={`grid ${onAssign ? 'grid-cols-3' : 'grid-cols-2'} gap-4 mb-4`}>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Calendar size={14} className="text-gray-500" />
@@ -284,7 +308,7 @@ export default function ProgramCard({
             <div className="text-lg font-bold text-gray-900">{program.durationWeeks}</div>
             <div className="text-xs text-gray-500">Weeks</div>
           </div>
-          
+
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Dumbbell size={14} className="text-gray-500" />
@@ -292,14 +316,16 @@ export default function ProgramCard({
             <div className="text-lg font-bold text-gray-900">{workoutCount}</div>
             <div className="text-xs text-gray-500">Workouts</div>
           </div>
-          
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Users size={14} className="text-primary-500" />
+
+          {onAssign && (
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Users size={14} className="text-primary-500" />
+              </div>
+              <div className="text-lg font-bold text-primary-600">{assignmentCount}</div>
+              <div className="text-xs text-gray-500">Active</div>
             </div>
-            <div className="text-lg font-bold text-primary-600">{assignmentCount}</div>
-            <div className="text-xs text-gray-500">Active</div>
-          </div>
+          )}
         </div>
 
         {/* Goals */}
@@ -342,16 +368,18 @@ export default function ProgramCard({
         )}
       </div>
 
-      {/* Actions */}
-      <div className="p-4 bg-white">
-        <button
-          onClick={(e) => handleActionClick(() => onAssign(program), e)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors touch-target"
-        >
-          <UserPlus size={16} />
-          Assign to Client
-        </button>
-      </div>
+      {/* Actions — trainer only */}
+      {onAssign && (
+        <div className="p-4 bg-white">
+          <button
+            onClick={(e) => handleActionClick(() => onAssign(program), e)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors touch-target"
+          >
+            <UserPlus size={16} />
+            Assign to Client
+          </button>
+        </div>
+      )}
     </div>
   )
 }
