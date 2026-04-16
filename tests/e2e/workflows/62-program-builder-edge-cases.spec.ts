@@ -32,14 +32,14 @@ async function goToNewProgram(page: Page) {
 
   // Step 2: Navigate to the new program page — use networkidle so React hydrates auth context
   await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
-    waitUntil: 'networkidle',
+    waitUntil: 'domcontentloaded',
     timeout: TIMEOUTS.pageLoad,
   });
 
   // If redirected away (auth not ready), try once more
   if (!page.url().includes('/programs/new') && !page.url().includes('/programs')) {
     await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
   }

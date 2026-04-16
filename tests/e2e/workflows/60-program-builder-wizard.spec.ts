@@ -104,14 +104,14 @@ test.describe.serial('60 - Program Builder Wizard', () => {
   // -------------------------------------------------------------------------
   test('60.01 fill Step 1 (name, type, difficulty, weeks=2) and advance to Step 2', async () => {
     await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
 
     // If auth not ready yet (redirect happened), retry once
     if (!page.url().includes('/programs/new') && !page.url().includes('/programs')) {
       await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
     }

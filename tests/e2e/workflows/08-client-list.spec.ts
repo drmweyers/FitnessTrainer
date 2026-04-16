@@ -100,7 +100,7 @@ test.describe('08 - Client List', () => {
     await select.selectOption('active');
 
     // Wait for the filter to take effect
-    await page.waitForLoadState('networkidle').catch(() => {});
+    await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     // Page heading should reflect current filter state
     await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
@@ -122,7 +122,7 @@ test.describe('08 - Client List', () => {
 
     if (exists > 0) {
       await select.selectOption('archived');
-      await page.waitForLoadState('networkidle').catch(() => {});
+      await page.waitForLoadState('domcontentloaded').catch(() => {});
 
       await expect(page.locator('h1').filter({ hasText: /clients/i })).toBeVisible({
         timeout: TIMEOUTS.element,
@@ -144,11 +144,11 @@ test.describe('08 - Client List', () => {
 
     // First apply a filter
     await select.selectOption('active');
-    await page.waitForLoadState('networkidle').catch(() => {});
+    await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     // Then reset to all
     await select.selectOption('all');
-    await page.waitForLoadState('networkidle').catch(() => {});
+    await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     // Heading should reflect "All Clients"
     await expect(page.locator('h1').filter({ hasText: /all clients/i })).toBeVisible({
@@ -221,7 +221,7 @@ test.describe('08 - Client List', () => {
     // Reset search/filter to show all
     const select = page.locator('select').first();
     await select.selectOption('all');
-    await page.waitForLoadState('networkidle').catch(() => {});
+    await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     // Check for pagination controls or that the list renders
     const paginationNext = page.locator('button', { hasText: /next/i });

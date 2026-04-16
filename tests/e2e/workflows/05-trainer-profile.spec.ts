@@ -41,7 +41,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 3. Edit profile page loads with form fields ----------
   test('edit profile page loads with form fields', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Heading
     await expect(page.locator('h1').filter({ hasText: /edit profile/i })).toBeVisible({
@@ -55,7 +55,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 4. Can update bio text and save ----------
   test('can update bio text and save successfully', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const bioField = page.locator('textarea#bio');
     await expect(bioField).toBeVisible({ timeout: TIMEOUTS.element });
@@ -76,7 +76,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 5. Gender select has expected options ----------
   test('gender select dropdown has required options', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const genderSelect = page.locator('select#gender');
     await expect(genderSelect).toBeVisible({ timeout: TIMEOUTS.element });
@@ -89,7 +89,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 6. Can change gender and save ----------
   test('can change gender and save', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const genderSelect = page.locator('select#gender');
     await expect(genderSelect).toBeVisible({ timeout: TIMEOUTS.element });
@@ -105,7 +105,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 7. Can update timezone and preferred units ----------
   test('can update timezone and preferred units', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Select a timezone — option value is 'America/Los_Angeles'
     const tzSelect = page.locator('select#timezone');
@@ -134,7 +134,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 8. Certifications section visible for trainers ----------
   test('certifications section is visible for trainer role', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // The "Certifications" card heading
     await expect(
@@ -148,7 +148,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 9. Can add a new certification ----------
   test('can add a new certification', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Use a unique cert name per run to avoid conflicts with data left from prior runs
     const uniqueCert = `QA-Cert-${Date.now()}`;
@@ -186,7 +186,7 @@ test.describe('05 - Trainer Profile', () => {
   test('cert expiration alert renders when expiring certs are present', async ({ page }) => {
     // Global setup seeds a cert (NASM-CPT) expiring in 15 days, so the alert should appear
     // on the profile summary page for the QA trainer account.
-    await page.goto(PROFILE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // The CertExpirationAlert renders role="alert" with amber styling and "expiring soon" text.
     // Find the specific cert-expiration alert (not generic toast alerts) by its content.
@@ -210,7 +210,7 @@ test.describe('05 - Trainer Profile', () => {
 
   // ---------- 11. Can add a specialization ----------
   test('can add a specialization on profile edit page', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // A specialization input or section may exist; if absent assert the form still renders
     const specializationInput = page.locator('input[placeholder*="specializ" i], input[id*="specializ" i]');
@@ -239,7 +239,7 @@ test.describe('05 - Trainer Profile', () => {
     const pctBefore = matchBefore ? parseInt(matchBefore[1], 10) : null;
 
     // Navigate to edit page and fill bio
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const bioField = page.locator('textarea#bio');
     await expect(bioField).toBeVisible({ timeout: TIMEOUTS.element });
@@ -255,7 +255,7 @@ test.describe('05 - Trainer Profile', () => {
     ).toBeVisible({ timeout: 15000 });
 
     // Go back to profile summary and read the updated completion %
-    await page.goto(PROFILE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const bodyAfter = await page.textContent('body');
     const matchAfter = bodyAfter?.match(/(\d+)%/);

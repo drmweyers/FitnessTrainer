@@ -11,7 +11,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('training load tab loads on analytics page', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -38,7 +38,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('training load chart or graph area renders', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -81,7 +81,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('performance tab loads on analytics page', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -108,7 +108,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('performance tab shows metrics content or empty state', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -141,7 +141,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('time range filter exists on training load tab', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -207,7 +207,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('trainer client selector changes the analytics context', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -246,7 +246,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('ACWR data section is present or shows empty state on training load tab', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -271,7 +271,7 @@ test.describe('22 - Training Load & Performance', () => {
   test('deload suggestion section renders on training load tab', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

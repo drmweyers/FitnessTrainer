@@ -31,7 +31,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 2. Edit profile page loads with form fields ----------
   test('edit profile page loads with form fields', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     await expect(page.locator('h1').filter({ hasText: /edit profile/i })).toBeVisible({
       timeout: TIMEOUTS.element,
@@ -45,7 +45,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 3. Can update basic info (name / phone / bio) ----------
   test('can update basic info and save', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Update bio
     const bioField = page.locator('textarea#bio');
@@ -69,7 +69,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 4. Can set date of birth ----------
   test('can set date of birth', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const dobInput = page.locator('input#dateOfBirth');
     await expect(dobInput).toBeVisible({ timeout: TIMEOUTS.element });
@@ -85,7 +85,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 5. Can set gender ----------
   test('can set gender', async ({ page }) => {
-    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_EDIT_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     const genderSelect = page.locator('select#gender');
     await expect(genderSelect).toBeVisible({ timeout: TIMEOUTS.element });
@@ -101,7 +101,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 6. Health page loads with sections ----------
   test('health page loads with expected sections', async ({ page }) => {
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Page title
     await expect(
@@ -121,7 +121,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 7. PAR-Q questionnaire renders 7 questions ----------
   test('PAR-Q questionnaire renders 7 questions', async ({ page }) => {
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Each PAR-Q question is wrapped in a <fieldset role="group">
     const questionGroups = page.locator('fieldset[role="group"]');
@@ -130,7 +130,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 8. PAR-Q questions have yes/no/unsure toggles ----------
   test('PAR-Q questions expose yes, no, and unsure toggle buttons', async ({ page }) => {
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Look at the first PAR-Q question group
     const firstGroup = page.locator('fieldset[role="group"]').first();
@@ -148,7 +148,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 9. Answering "yes" shows doctor warning ----------
   test('answering yes to a PAR-Q question shows doctor consultation warning', async ({ page }) => {
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Click "Yes" on the first PAR-Q question
     const firstGroup = page.locator('fieldset[role="group"]').first();
@@ -164,7 +164,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 10. Can save PAR-Q responses ----------
   test('can save PAR-Q responses', async ({ page }) => {
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Answer a couple of questions
     const groups = page.locator('fieldset[role="group"]');
@@ -185,7 +185,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
 
   // ---------- 11. Health info section shows medical conditions fields ----------
   test('health info section has medical conditions textarea', async ({ page }) => {
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // The medical conditions textarea
     await expect(page.locator('textarea#medicalConditions')).toBeVisible({
@@ -252,7 +252,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
     expect(bodyText).toMatch(/%/);
 
     // Navigate to health, save something, then come back and verify % still renders
-    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_HEALTH_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Answer all PAR-Q questions "no" (safe, non-warning answers)
     const groups = page.locator('fieldset[role="group"]');
@@ -272,7 +272,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
     ).toBeVisible({ timeout: 15000 });
 
     // Return to profile summary
-    await page.goto(PROFILE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Profile completion card should still be visible
     await expect(
@@ -301,7 +301,7 @@ test.describe('06 - Client Profile & Onboarding', () => {
     });
 
     // Reload the profile page to pick up the new goal
-    await page.goto(PROFILE_URL, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(PROFILE_URL, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Either an "Active Goals" heading or some goal text should be visible.
     // If the API returned an error the section may be absent — still a valid pass

@@ -15,7 +15,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('exercise library page loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -29,7 +29,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('exercises display in grid or list format', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -44,7 +44,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('exercise count or total is shown', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -62,7 +62,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('pagination controls are visible after searching', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -91,7 +91,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('navigate to page 2 loads different exercises', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -137,7 +137,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('search by name "squat" returns relevant results', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -157,7 +157,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('search by name "bench" returns relevant results', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -177,7 +177,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('filter by body part narrows results', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -205,7 +205,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('filter by equipment narrows results', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -231,7 +231,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('filter by target muscle narrows results', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -259,7 +259,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('filter by difficulty "beginner" narrows results', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -295,7 +295,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('combine two filters works', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -326,7 +326,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('clear all filters restores full list', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -358,7 +358,7 @@ test.describe('11 - Exercise Browse', () => {
 
   test('exercise card shows name, body part and equipment', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.exercises}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

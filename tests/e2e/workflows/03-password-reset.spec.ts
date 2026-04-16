@@ -11,7 +11,7 @@ test.describe('03 - Password Reset', () => {
    * The forgot-password page should load and display an email input.
    */
   test('should load forgot-password page with email input', async ({ page }) => {
-    await page.goto(ROUTES.forgotPassword, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.forgotPassword, { waitUntil: 'domcontentloaded' });
 
     const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
     await expect(emailInput).toBeVisible({ timeout: TIMEOUTS.element });
@@ -25,7 +25,7 @@ test.describe('03 - Password Reset', () => {
    * generic success message — a security best practice to avoid user enumeration.
    */
   test('should show success message after submitting email on forgot-password', async ({ page }) => {
-    await page.goto(ROUTES.forgotPassword, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.forgotPassword, { waitUntil: 'domcontentloaded' });
 
     await page.locator('input#email, input[name="email"], input[type="email"]').fill('any-email@test.com');
     await page.locator('button[type="submit"]').click();
@@ -40,7 +40,7 @@ test.describe('03 - Password Reset', () => {
    * Submitting the forgot-password form with an empty email should show a validation error.
    */
   test('should show validation error for empty email on forgot-password', async ({ page }) => {
-    await page.goto(ROUTES.forgotPassword, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.forgotPassword, { waitUntil: 'domcontentloaded' });
 
     await page.locator('button[type="submit"]').click();
 
@@ -63,7 +63,7 @@ test.describe('03 - Password Reset', () => {
   test('should load reset-password page with token parameter', async ({ page }) => {
     // Simulate the URL a user would receive in a reset email
     await page.goto(`${ROUTES.resetPassword}?token=fake-reset-token-for-ui-test`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
     });
 
     // The page should render — even with an invalid/fake token the UI should show
@@ -84,7 +84,7 @@ test.describe('03 - Password Reset', () => {
    * The reset-password page should validate that the new password meets strength requirements.
    */
   test('should validate password strength on reset-password page', async ({ page }) => {
-    await page.goto(`${ROUTES.resetPassword}?token=fake-token`, { waitUntil: 'networkidle' });
+    await page.goto(`${ROUTES.resetPassword}?token=fake-token`, { waitUntil: 'domcontentloaded' });
 
     const passwordInput = page
       .locator('input[type="password"], input[name="password"], input[id="password"]')
@@ -118,7 +118,7 @@ test.describe('03 - Password Reset', () => {
    * The reset-password page should reject mismatched password confirmation.
    */
   test('should validate password confirmation match on reset-password page', async ({ page }) => {
-    await page.goto(`${ROUTES.resetPassword}?token=fake-token`, { waitUntil: 'networkidle' });
+    await page.goto(`${ROUTES.resetPassword}?token=fake-token`, { waitUntil: 'domcontentloaded' });
 
     const passwordFields = page.locator('input[type="password"]');
     const count = await passwordFields.count();

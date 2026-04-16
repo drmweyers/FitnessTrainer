@@ -21,7 +21,7 @@ import { loginViaAPI, takeScreenshot, waitForPageReady } from '../helpers/auth';
  */
 async function fillStep1AndAdvance(page: import('@playwright/test').Page): Promise<boolean> {
   await page.goto(`${BASE_URL}${ROUTES.programsNew}`, {
-    waitUntil: 'networkidle',
+    waitUntil: 'domcontentloaded',
     timeout: TIMEOUTS.pageLoad,
   });
   await waitForPageReady(page);

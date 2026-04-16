@@ -16,7 +16,7 @@ export async function loginViaUI(
 ): Promise<void> {
   const { email, password } = TEST_ACCOUNTS[account];
 
-  await page.goto(ROUTES.login, { waitUntil: 'networkidle' });
+  await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded' });
 
   const emailInput = page.locator('input#email, input[name="email"], input[type="email"]');
   await emailInput.waitFor({ state: 'visible', timeout: TIMEOUTS.element });

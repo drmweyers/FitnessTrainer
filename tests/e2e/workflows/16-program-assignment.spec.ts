@@ -22,7 +22,7 @@ test.describe('16 - Program Assignment', () => {
   test('trainer views programs list page successfully', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -37,7 +37,7 @@ test.describe('16 - Program Assignment', () => {
   test('"Assign" or "Assign to Client" button is visible on program cards', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -65,7 +65,7 @@ test.describe('16 - Program Assignment', () => {
   test('clicking assign button opens the BulkAssignmentModal', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -110,7 +110,7 @@ test.describe('16 - Program Assignment', () => {
   test('assignment modal contains a client search/selection interface', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -152,7 +152,7 @@ test.describe('16 - Program Assignment', () => {
   test('assignment modal has a start date field', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -202,7 +202,7 @@ test.describe('16 - Program Assignment', () => {
   test('submitting assignment without selecting client is blocked', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -249,7 +249,7 @@ test.describe('16 - Program Assignment', () => {
 
     // Navigate to programs list and verify the heading
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -266,7 +266,7 @@ test.describe('16 - Program Assignment', () => {
   test('client can login and navigate to programs page', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -283,7 +283,7 @@ test.describe('16 - Program Assignment', () => {
   test('client programs page loads without auth errors', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -295,7 +295,7 @@ test.describe('16 - Program Assignment', () => {
   test('client sees program-related content on their programs page', async ({ page }) => {
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -317,7 +317,7 @@ test.describe('16 - Program Assignment', () => {
     if (!programsRes.ok()) {
       // API unavailable — verify at least the trainer programs page loads
       await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
       await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
@@ -331,7 +331,7 @@ test.describe('16 - Program Assignment', () => {
       // No programs found — verify API responded successfully and client programs page loads
       await loginViaAPI(page, 'client');
       await page.goto(`${BASE_URL}${ROUTES.programs}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
       await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: TIMEOUTS.element });
@@ -344,7 +344,7 @@ test.describe('16 - Program Assignment', () => {
     // Now log in as client and attempt to view the program detail
     await loginViaAPI(page, 'client');
     await page.goto(`${BASE_URL}${ROUTES.programDetail(programId)}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

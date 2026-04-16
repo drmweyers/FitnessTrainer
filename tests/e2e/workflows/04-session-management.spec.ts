@@ -13,7 +13,7 @@ test.describe('04 - Session Management', () => {
    */
   test('should allow authenticated user to access protected dashboard', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
-    await page.goto(ROUTES.dashboard, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(ROUTES.dashboard, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Should NOT be on the login page
     await expect(page).not.toHaveURL(/\/auth\/login/);
@@ -36,7 +36,7 @@ test.describe('04 - Session Management', () => {
       localStorage.removeItem('user');
     });
 
-    await page.goto(ROUTES.dashboard, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(ROUTES.dashboard, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Should be redirected to login
     await expect(page).toHaveURL(/\/auth\/login|\/login/, { timeout: TIMEOUTS.pageLoad });
@@ -47,7 +47,7 @@ test.describe('04 - Session Management', () => {
    */
   test('should clear localStorage tokens on logout', async ({ page }) => {
     await loginViaUI(page, 'trainer');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Verify token is present before logout
     const tokenBefore = await page.evaluate(() => localStorage.getItem('accessToken'));
@@ -93,7 +93,7 @@ test.describe('04 - Session Management', () => {
    */
   test('should redirect to login after logout when accessing protected route', async ({ page }) => {
     await loginViaUI(page, 'trainer');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Simulate logout by clearing tokens
     await page.evaluate(() => {
@@ -102,7 +102,7 @@ test.describe('04 - Session Management', () => {
       localStorage.removeItem('user');
     });
 
-    await page.goto(ROUTES.dashboard, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(ROUTES.dashboard, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     await expect(page).toHaveURL(/\/auth\/login|\/login/, { timeout: TIMEOUTS.pageLoad });
   });
@@ -153,7 +153,7 @@ test.describe('04 - Session Management', () => {
     await loginViaAPI(page, 'trainer');
 
     // Attempt to navigate back to the login page
-    await page.goto(ROUTES.login, { waitUntil: 'networkidle', timeout: TIMEOUTS.pageLoad });
+    await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded', timeout: TIMEOUTS.pageLoad });
 
     // Should be redirected — not left on the login page
     const url = page.url();

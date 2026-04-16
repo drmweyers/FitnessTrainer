@@ -13,7 +13,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history page loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -26,7 +26,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history shows "History" or workout-related heading', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -38,7 +38,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history page contains workout list or empty state', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -73,7 +73,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history page shows date information in entries', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -86,7 +86,7 @@ test.describe('20 - Workout History', () => {
 
   test('clicking a workout entry navigates to detail view', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -114,7 +114,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout progress page loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsProgress}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -142,7 +142,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history page has filter or search controls', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -153,7 +153,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history page is navigable from workouts hub', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workouts}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -172,7 +172,7 @@ test.describe('20 - Workout History', () => {
 
   test('workout history shows consistent navigation between pages', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

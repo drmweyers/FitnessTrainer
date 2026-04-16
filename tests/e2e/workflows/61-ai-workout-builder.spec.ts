@@ -28,13 +28,13 @@ test.describe('61 - AI Workout Builder', () => {
   test.beforeEach(async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.workoutsBuilder}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     // If auth didn't hydrate and redirected away, retry
     if (!page.url().includes('/workouts/builder')) {
       await page.goto(`${BASE_URL}${ROUTES.workoutsBuilder}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: TIMEOUTS.pageLoad,
       });
     }

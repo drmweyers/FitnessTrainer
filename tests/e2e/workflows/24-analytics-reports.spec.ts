@@ -14,7 +14,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('"Generate Report" button is visible on analytics page', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -29,7 +29,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('clicking "Generate Report" opens the report modal', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -49,7 +49,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('report modal has start date input', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -65,7 +65,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('report modal has end date input', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -81,7 +81,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('generating a report with valid date range succeeds', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -120,7 +120,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('generated report displays summary data', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -156,7 +156,7 @@ test.describe('24 - Analytics Reports', () => {
 
   test('report modal can be closed', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -193,7 +193,7 @@ test.describe('24 - Analytics Reports', () => {
   test('trainer sees client selector on analytics page', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -216,7 +216,7 @@ test.describe('24 - Analytics Reports', () => {
   test('trainer client selector changes displayed analytics data', async ({ page }) => {
     await loginViaAPI(page, 'trainer');
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

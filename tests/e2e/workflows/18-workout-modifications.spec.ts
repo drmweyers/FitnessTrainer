@@ -68,7 +68,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('workout execution screen renders with active session', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -87,7 +87,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('exercise substitution button is visible in execution screen', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -108,7 +108,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('clicking substitution opens a modal or drawer with alternatives', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -138,7 +138,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('substitution modal lists alternative exercises', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -171,7 +171,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('modification templates FAB is present in execution screen', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -200,7 +200,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('modification templates bottom sheet shows Feeling Great option', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -228,7 +228,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('modification templates bottom sheet shows Time Crunch option', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -255,7 +255,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('modification templates bottom sheet shows Low Energy option', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -282,7 +282,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('selecting a modification template applies it and closes sheet', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -315,7 +315,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('skip exercise is available in execution screen', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -343,7 +343,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('workout tracker allows navigating between exercises', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -373,7 +373,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('rest timer area exists in execution screen layout', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -401,7 +401,7 @@ test.describe('18 - Workout Modifications', () => {
 
   test('notes field is accessible in execution context', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

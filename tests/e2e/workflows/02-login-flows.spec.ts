@@ -41,7 +41,7 @@ test.describe('02 - Login Flows', () => {
   test('should redirect trainer to /dashboard/trainer after login', async ({ page }) => {
     await loginViaUI(page, 'trainer');
 
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     const url = page.url();
 
     // Trainer dashboard is typically /dashboard/trainer or /dashboard
@@ -54,7 +54,7 @@ test.describe('02 - Login Flows', () => {
   test('should redirect client to /dashboard/client after login', async ({ page }) => {
     await loginViaUI(page, 'client');
 
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     const url = page.url();
 
     // Client dashboard is typically /dashboard/client or /dashboard
@@ -67,7 +67,7 @@ test.describe('02 - Login Flows', () => {
   test('should redirect admin to /admin or /dashboard/admin after login', async ({ page }) => {
     await loginViaUI(page, 'admin');
 
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     const url = page.url();
 
     expect(url).toMatch(/\/(admin|dashboard)/);
@@ -77,7 +77,7 @@ test.describe('02 - Login Flows', () => {
    * An incorrect password should show an error message and keep the user on the login page.
    */
   test('should show error for invalid password', async ({ page }) => {
-    await page.goto(ROUTES.login, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded' });
 
     await page.locator('input#email, input[name="email"], input[type="email"]').fill(TEST_ACCOUNTS.trainer.email);
     await page.locator('input#password, input[name="password"], input[type="password"]').fill('WrongPassword999!');
@@ -94,7 +94,7 @@ test.describe('02 - Login Flows', () => {
    * An email address that does not exist should show an error message.
    */
   test('should show error for non-existent email', async ({ page }) => {
-    await page.goto(ROUTES.login, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded' });
 
     await page
       .locator('input#email, input[name="email"], input[type="email"]')
@@ -113,7 +113,7 @@ test.describe('02 - Login Flows', () => {
    * Submitting the login form without any input should show validation errors.
    */
   test('should show validation errors on empty form submission', async ({ page }) => {
-    await page.goto(ROUTES.login, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded' });
 
     await page.locator('button[type="submit"]').click();
 
@@ -134,7 +134,7 @@ test.describe('02 - Login Flows', () => {
    * The "Forgot password" link should navigate to the forgot-password page.
    */
   test('should navigate to forgot-password page via link', async ({ page }) => {
-    await page.goto(ROUTES.login, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded' });
 
     const forgotLink = page.locator('a[href*="forgot"]');
     await expect(forgotLink.first()).toBeVisible({ timeout: TIMEOUTS.element });
@@ -177,7 +177,7 @@ test.describe('02 - Login Flows', () => {
    * This checks only that the page renders without crashing; WebAuthn is environment-specific.
    */
   test('should render biometric / passkey UI component if WebAuthn is supported', async ({ page }) => {
-    await page.goto(ROUTES.login, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.login, { waitUntil: 'domcontentloaded' });
 
     // The component may render a "Use biometric" / "Sign in with passkey" button
     const biometricBtn = page.locator('text=/biometric|passkey|fingerprint|face id/i');

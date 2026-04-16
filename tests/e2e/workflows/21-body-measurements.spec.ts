@@ -13,7 +13,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('analytics page loads for client', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -26,7 +26,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('analytics page shows Overview tab by default', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -42,7 +42,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('"Record New Measurement" button is visible', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -55,7 +55,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('clicking "Record New Measurement" opens measurement form', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -77,7 +77,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('measurement form has weight input field', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -105,7 +105,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('measurement form has body fat percentage input', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -127,7 +127,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('measurement form has muscle mass input', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -149,7 +149,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('submitting measurement form with valid data succeeds', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -210,7 +210,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('analytics page shows progress chart area when measurements exist', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -230,7 +230,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('body composition chart renders when data is present', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -246,7 +246,7 @@ test.describe('21 - Body Measurements', () => {
 
   test('delete measurement removes it from the list', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

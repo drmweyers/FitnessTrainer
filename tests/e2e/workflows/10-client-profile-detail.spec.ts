@@ -156,7 +156,7 @@ test.describe('10 - Client Profile Detail', () => {
     // Wait for React hydration before tests interact with buttons. Under
     // concurrent dev-server load, the dashboard button clicks silently fail
     // unless the page has finished hydrating + initial data fetch.
-    await page.waitForLoadState('networkidle', { timeout: TIMEOUTS.pageLoad }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: TIMEOUTS.pageLoad }).catch(() => {});
     await page
       .locator('h1')
       .first()

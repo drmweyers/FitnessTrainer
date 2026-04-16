@@ -66,7 +66,7 @@ test.describe('01 - Registration Flows', () => {
   test('should register as trainer and redirect to trainer dashboard', async ({ page }) => {
     const email = `test-trainer-${Date.now()}@test.com`;
 
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     await fillRegisterForm(page, { email, role: 'trainer' });
     await page.locator('button[type="submit"]').click();
@@ -87,7 +87,7 @@ test.describe('01 - Registration Flows', () => {
   test('should register as client and redirect to client dashboard', async ({ page }) => {
     const email = `test-client-${Date.now()}@test.com`;
 
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     await fillRegisterForm(page, { email, role: 'client' });
     await page.locator('button[type="submit"]').click();
@@ -133,7 +133,7 @@ test.describe('01 - Registration Flows', () => {
    * The form uses custom JS validation — errors appear as red <p> text.
    */
   test('should show error for empty email', async ({ page }) => {
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     // Fill all required fields except email, then submit
     await page.locator('input#firstName').fill('QA');
@@ -166,7 +166,7 @@ test.describe('01 - Registration Flows', () => {
   test('should show error for empty password', async ({ page }) => {
     const email = `test-empty-pw-${Date.now()}@test.com`;
 
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     // Fill all fields except password
     await page.locator('input#firstName').fill('QA');
@@ -198,7 +198,7 @@ test.describe('01 - Registration Flows', () => {
   test('should show error for password shorter than 8 characters', async ({ page }) => {
     const email = `test-short-pw-${Date.now()}@test.com`;
 
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     await page.locator('input#firstName').fill('QA');
     await page.locator('input#lastName').fill('Tester');
@@ -224,7 +224,7 @@ test.describe('01 - Registration Flows', () => {
    * Invalid email format should be rejected by custom validation.
    */
   test('should show error for invalid email format', async ({ page }) => {
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     await page.locator('input#firstName').fill('QA');
     await page.locator('input#lastName').fill('Tester');
@@ -274,7 +274,7 @@ test.describe('01 - Registration Flows', () => {
    * The register page should have a role selector (trainer / client buttons).
    */
   test('should display role selector on register page', async ({ page }) => {
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     // The register page uses type="button" role-selection buttons
     const roleSelector =
@@ -290,7 +290,7 @@ test.describe('01 - Registration Flows', () => {
    * The register page should contain a link that navigates to the login page.
    */
   test('should have a link to the login page', async ({ page }) => {
-    await page.goto(ROUTES.register, { waitUntil: 'networkidle' });
+    await page.goto(ROUTES.register, { waitUntil: 'domcontentloaded' });
 
     const loginLink = page.locator('a[href*="login"]');
     await expect(loginLink.first()).toBeVisible({ timeout: TIMEOUTS.element });

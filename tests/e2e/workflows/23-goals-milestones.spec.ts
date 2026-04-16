@@ -10,7 +10,7 @@ import { loginViaAPI, waitForPageReady, takeScreenshot } from '../helpers/auth';
 /** Navigate to analytics page and click the Goals tab. */
 async function openGoalsTab(page: any) {
   await page.goto(`${BASE_URL}${ROUTES.analytics}`, {
-    waitUntil: 'networkidle',
+    waitUntil: 'domcontentloaded',
     timeout: TIMEOUTS.pageLoad,
   });
   await waitForPageReady(page);

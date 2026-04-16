@@ -13,7 +13,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workouts page loads with correct heading', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workouts}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -28,7 +28,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout tracker page loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -41,7 +41,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout tracker shows start or daily view content', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -75,7 +75,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workouts page shows navigation links to tracker or builder', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workouts}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -87,7 +87,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout tracker exercise list area is present', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -139,7 +139,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
     }, mockSession);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -201,7 +201,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
     }, mockSession);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -253,7 +253,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
     }, mockSession);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -311,7 +311,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
     }, mockSession);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -333,7 +333,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout history page is accessible from workouts hub', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workouts}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -352,7 +352,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
     });
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -363,7 +363,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout builder page loads', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsBuilder}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -377,7 +377,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout log page is accessible', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsLog}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -389,7 +389,7 @@ test.describe('17 - Workout Start & Set Logging', () => {
 
   test('workout progress page is accessible', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsProgress}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);

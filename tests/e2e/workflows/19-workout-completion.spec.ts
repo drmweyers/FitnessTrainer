@@ -53,7 +53,7 @@ test.describe('19 - Workout Completion', () => {
 
   test('workout tracker page loads for client', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -67,7 +67,7 @@ test.describe('19 - Workout Completion', () => {
     await seedNearCompleteSession(page);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -91,7 +91,7 @@ test.describe('19 - Workout Completion', () => {
     await seedNearCompleteSession(page);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -122,7 +122,7 @@ test.describe('19 - Workout Completion', () => {
 
   test('workout history page loads after completion', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workoutsHistory}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -142,7 +142,7 @@ test.describe('19 - Workout Completion', () => {
     await seedNearCompleteSession(page);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -170,7 +170,7 @@ test.describe('19 - Workout Completion', () => {
     await seedNearCompleteSession(page);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -223,7 +223,7 @@ test.describe('19 - Workout Completion', () => {
     await seedNearCompleteSession(page);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -255,7 +255,7 @@ test.describe('19 - Workout Completion', () => {
     await seedNearCompleteSession(page);
 
     await page.goto(`${BASE_URL}${ROUTES.workoutTracker}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
@@ -281,7 +281,7 @@ test.describe('19 - Workout Completion', () => {
 
   test('workouts hub shows link to start workout or tracker', async ({ page }) => {
     await page.goto(`${BASE_URL}${ROUTES.workouts}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
     await waitForPageReady(page);
