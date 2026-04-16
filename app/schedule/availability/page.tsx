@@ -26,11 +26,13 @@ export default function AvailabilityPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+    if (isLoading) return
+    if (!isAuthenticated) {
+      window.location.replace('/auth/login')
+      return
     }
-    if (!isLoading && user?.role === 'client') {
-      router.push('/schedule');
+    if (user?.role === 'client') {
+      window.location.replace('/schedule')
     }
   }, [isAuthenticated, isLoading, user, router]);
 

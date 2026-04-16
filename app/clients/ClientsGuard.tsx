@@ -11,11 +11,11 @@ export default function ClientsGuard({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (isLoading) return
     if (!isAuthenticated || !user) {
-      router.push('/auth/login')
+      window.location.replace('/auth/login')
       return
     }
     if (user.role !== 'trainer' && user.role !== 'admin') {
-      router.push('/dashboard')
+      window.location.replace('/dashboard')
     }
   }, [user, isAuthenticated, isLoading, router])
 
@@ -27,7 +27,15 @@ export default function ClientsGuard({ children }: { children: React.ReactNode }
     )
   }
 
-  if (!isAuthenticated || (user?.role !== 'trainer' && user?.role !== 'admin')) {
+  // Fire redirect synchronously from render path (not just useEffect) so Playwright
+  // navigation tracking sees the navigation start immediately on commit.
+  if (!isAuthenticated || !user) {
+    if (typeof window !== 'undefined') window.location.replace('/auth/login')
+    return null
+  }
+
+  if (user.role !== 'trainer' && user.role !== 'admin') {
+    if (typeof window !== 'undefined') window.location.replace('/dashboard')
     return null
   }
 

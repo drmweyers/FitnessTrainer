@@ -79,11 +79,11 @@ export default function Footer() {
                 >
                   Programs
                 </Link>
-                <Link 
-                  href="/clients" 
+                <Link
+                  href="/analytics"
                   className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
-                  Clients
+                  Analytics
                 </Link>
               </div>
             </div>

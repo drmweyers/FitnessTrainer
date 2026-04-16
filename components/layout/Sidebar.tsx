@@ -2,6 +2,7 @@
 
 import {useState, useEffect} from "react";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 import {
 	Dumbbell,
 	ClipboardList,
@@ -71,6 +72,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }: SidebarProps) {
+	const { user } = useAuth();
+	const isTrainerOrAdmin = user?.role === 'trainer' || user?.role === 'admin';
 	const [activeItem, setActiveItem] = useState("exercises");
 	const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
 		exercises: true,
@@ -203,50 +206,54 @@ export default function Sidebar({ isOpen, onClose, isCollapsed, setIsCollapsed }
 						onMobileClick={isMobile ? () => onClose() : undefined}
 					/>
 
-					<NavItem
-						icon={<Users size={18} />}
-						label="Client Management"
-						href="#"
-						active={activeItem === "client-management"}
-						hasChildren={true}
-						expanded={expandedItems.clientManagement}
-						onClick={() => toggleExpand("clientManagement")}
-						onMobileClick={isMobile ? () => onClose() : undefined}
-					/>
+					{isTrainerOrAdmin && (
+						<>
+							<NavItem
+								icon={<Users size={18} />}
+								label="Client Management"
+								href="#"
+								active={activeItem === "client-management"}
+								hasChildren={true}
+								expanded={expandedItems.clientManagement}
+								onClick={() => toggleExpand("clientManagement")}
+								onMobileClick={isMobile ? () => onClose() : undefined}
+							/>
 
-					{expandedItems.clientManagement && (
-						<div className="ml-7 border-l border-[#1E293B] pl-3 mb-2">
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
-								label="All Clients"
-								href="/clients"
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
-								label="Active Clients"
-								href="/clients?status=active"
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
-								label="Inactive Clients"
-								href="/clients?status=inactive"
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
-								label="Pending Clients"
-								href="/clients?status=pending"
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-							<NavItem
-								icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
-								label="Archived Clients"
-								href="/clients?status=archived"
-								onMobileClick={isMobile ? () => onClose() : undefined}
-							/>
-						</div>
+							{expandedItems.clientManagement && (
+								<div className="ml-7 border-l border-[#1E293B] pl-3 mb-2">
+									<NavItem
+										icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
+										label="All Clients"
+										href="/clients"
+										onMobileClick={isMobile ? () => onClose() : undefined}
+									/>
+									<NavItem
+										icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
+										label="Active Clients"
+										href="/clients?status=active"
+										onMobileClick={isMobile ? () => onClose() : undefined}
+									/>
+									<NavItem
+										icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
+										label="Inactive Clients"
+										href="/clients?status=inactive"
+										onMobileClick={isMobile ? () => onClose() : undefined}
+									/>
+									<NavItem
+										icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
+										label="Pending Clients"
+										href="/clients?status=pending"
+										onMobileClick={isMobile ? () => onClose() : undefined}
+									/>
+									<NavItem
+										icon={<div className="w-2 h-2 rounded-full bg-slate-600" />}
+										label="Archived Clients"
+										href="/clients?status=archived"
+										onMobileClick={isMobile ? () => onClose() : undefined}
+									/>
+								</div>
+							)}
+						</>
 					)}
 
 					<div className="border-t border-[#1E293B] mt-3 pt-3">

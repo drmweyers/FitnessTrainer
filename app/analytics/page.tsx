@@ -373,12 +373,14 @@ export default function AnalyticsPage() {
                 >
                   Generate Report
                 </button>
-                <button
-                  onClick={openNewMeasurementTracker}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-                >
-                  Record New Measurement
-                </button>
+                {(user?.role !== 'trainer' || selectedClientId) && (
+                  <button
+                    onClick={openNewMeasurementTracker}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                  >
+                    Record New Measurement
+                  </button>
+                )}
               </div>
             </div>
 

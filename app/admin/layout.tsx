@@ -32,11 +32,11 @@ export default function AdminLayout({
   useEffect(() => {
     if (isLoading) return
     if (!isAuthenticated || !user) {
-      router.push('/auth/login')
+      window.location.replace('/auth/login')
       return
     }
     if (user.role !== 'admin') {
-      router.push('/dashboard')
+      window.location.replace('/dashboard')
     }
   }, [user, isAuthenticated, isLoading, router])
 
