@@ -16,6 +16,7 @@ import {
   Plus
 } from 'lucide-react'
 import { ExerciseWithUserData } from '@/types/exercise'
+import { getGifUrl } from '@/lib/utils/exercise'
 
 interface ExerciseCardProps {
   exercise: ExerciseWithUserData
@@ -91,25 +92,13 @@ export function ExerciseCard({
     onQuickView?.(exercise)
   }
 
-  const getGifPath = () => {
-    if (!exercise.gifUrl || exercise.gifUrl === 'null' || exercise.gifUrl === 'undefined') {
-      return null;
-    }
-    // Handle gifUrl that already contains a path prefix
-    if (exercise.gifUrl.startsWith('/')) {
-      return exercise.gifUrl;
-    }
-    return `/exerciseGifs/${exercise.gifUrl}`;
-  }
-
   const getImageSrc = () => {
-    const gifPath = getGifPath();
-    // If no valid GIF path or there's an error, always use placeholder
-    if (!gifPath || imageError) {
-      return '/images/exercise-placeholder.svg';
+    // If there was a load error, show placeholder
+    if (imageError) {
+      return '/images/exercise-placeholder.svg'
     }
-    // Return GIF path for both static and animated (browser handles animation)
-    return gifPath;
+    // Delegate all URL normalisation to the shared utility
+    return getGifUrl(exercise.gifUrl)
   }
 
   if (viewMode === 'list') {

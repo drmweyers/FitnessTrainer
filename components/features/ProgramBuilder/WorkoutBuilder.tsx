@@ -564,6 +564,22 @@ export default function WorkoutBuilder({ onNext, onPrev }: WorkoutBuilderProps) 
         </div>
       </div>
 
+      {/* Prominent Add Training Day button — visible before the list, no scrolling needed */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-gray-700">
+          {workouts.length === 0 ? 'No workouts yet' : `${workouts.length} workout${workouts.length === 1 ? '' : 's'} this week`}
+        </h3>
+        <Button
+          variant="outline"
+          onClick={handleAddWorkout}
+          leftIcon={<Plus size={16} />}
+          disabled={workouts.length >= 7}
+        >
+          + Add Training Day
+          {workouts.length >= 7 && <span className="ml-1 text-xs">(Week Full)</span>}
+        </Button>
+      </div>
+
       {/* Workouts List */}
       <div className="space-y-4">
         {workouts.length > 0 ? (

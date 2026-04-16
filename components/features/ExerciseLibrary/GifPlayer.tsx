@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
-import { 
+import { getGifUrl } from '@/lib/utils/exercise'
+import {
   Play, 
   Pause, 
   RotateCcw, 
@@ -45,10 +46,7 @@ export function GifPlayer({
 
   // Get the full path to the GIF
   const getGifPath = useCallback(() => {
-    if (gifUrl.startsWith('/')) {
-      return gifUrl;
-    }
-    return `/exerciseGifs/${gifUrl}`
+    return getGifUrl(gifUrl)
   }, [gifUrl])
 
   // Handle play/pause toggle

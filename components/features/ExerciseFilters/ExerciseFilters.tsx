@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, ChevronDown } from 'lucide-react'
 
 interface FilterOption {
@@ -12,6 +12,11 @@ interface FilterCategory {
   id: string
   name: string
   options: FilterOption[]
+}
+
+interface ExerciseFiltersProps {
+  /** Called whenever the user changes any filter selection. */
+  onFilterChange?: (filters: Record<string, string[]>) => void
 }
 
 const filterCategories: FilterCategory[] = [
@@ -60,7 +65,7 @@ const filterCategories: FilterCategory[] = [
   }
 ]
 
-export default function ExerciseFilters() {
+export default function ExerciseFilters({ onFilterChange }: ExerciseFiltersProps = {}) {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     'muscle-group': true,
     'equipment': true,
@@ -109,6 +114,12 @@ export default function ExerciseFilters() {
     })
   }
   
+  // Notify parent whenever filters change
+  useEffect(() => {
+    onFilterChange?.(selectedFilters)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFilters])
+
   // Count total selected filters
   const totalSelectedFilters = Object.values(selectedFilters).flat().length
   

@@ -7,6 +7,7 @@ import { ExerciseFiltersAdvanced } from '@/components/features/ExerciseLibrary/E
 import { CollectionManager } from '@/components/features/ExerciseLibrary/CollectionManager'
 import { Exercise, ExerciseWithUserData, ExerciseFilters, FilterOptions } from '@/types/exercise'
 import { searchExercises, getFilterOptions, getPopularExercises } from '@/services/exerciseService'
+import { getGifUrl } from '@/lib/utils/exercise'
 import { Filter, BookOpen, TrendingUp, Loader2, Zap } from 'lucide-react'
 
 export default function ExercisesPage() {
@@ -325,20 +326,14 @@ export default function ExercisesPage() {
               {popularExercises.map(exercise => (
                 <div key={exercise.exerciseId} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                   <div className="aspect-video bg-gray-100 rounded-lg mb-3 overflow-hidden">
-                    {exercise.gifUrl ? (
-                      <img
-                        src={exercise.gifUrl.startsWith('/') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
-                        alt={exercise.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/exercise-placeholder.svg';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                        <span className="text-gray-400 text-sm">No preview</span>
-                      </div>
-                    )}
+                    <img
+                      src={getGifUrl(exercise.gifUrl)}
+                      alt={exercise.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/images/exercise-placeholder.svg'
+                      }}
+                    />
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">
                     {exercise.name}

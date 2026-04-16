@@ -13,6 +13,7 @@ import {
   X,
   Loader2
 } from 'lucide-react'
+import { getGifUrl } from '@/lib/utils/exercise'
 
 // Types - match backend API response
 interface Exercise {
@@ -53,9 +54,15 @@ const fieldMap = {
 
 interface ExerciseListProps {
   preloadedExercises?: Exercise[]
+  /** External filter values passed from a parent (e.g. ExerciseFilters sidebar). */
+  activeFilters?: {
+    bodyPart?: string[]
+    equipment?: string[]
+    difficulty?: string[]
+  }
 }
 
-export default function ExerciseList({ preloadedExercises }: ExerciseListProps = {}) {
+export default function ExerciseList({ preloadedExercises, activeFilters }: ExerciseListProps = {}) {
   const [exercises, setExercises] = useState<Exercise[]>(preloadedExercises || [])
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([])
   const [loading, setLoading] = useState(true)
@@ -72,6 +79,17 @@ export default function ExerciseList({ preloadedExercises }: ExerciseListProps =
   const [sort, setSort] = useState<SortState>({ field: 'name', direction: 'asc' })
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+
+  // Sync external activeFilters into internal filter state
+  useEffect(() => {
+    if (!activeFilters) return
+    setFilters(prev => ({
+      ...prev,
+      bodyPart: activeFilters.bodyPart ?? prev.bodyPart,
+      equipment: activeFilters.equipment ?? prev.equipment,
+      difficulty: activeFilters.difficulty ?? prev.difficulty,
+    }))
+  }, [activeFilters])
 
   // Dynamic filter options derived from exercises
   const filterOptions = {
@@ -494,7 +512,7 @@ export default function ExerciseList({ preloadedExercises }: ExerciseListProps =
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <Image
-                      src={exercise.gifUrl?.startsWith('/') ? exercise.gifUrl : `/exerciseGifs/${exercise.gifUrl}`}
+                      src={getGifUrl(exercise.gifUrl)}
                       alt={exercise.name}
                       width={40}
                       height={40}

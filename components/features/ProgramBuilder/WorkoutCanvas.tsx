@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { Plus, Sparkles, Zap } from 'lucide-react'
+import { Plus, Sparkles, Zap, CalendarPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -24,6 +24,7 @@ import type {
   SectionMetadata,
   WorkoutExerciseDataExtended,
 } from '@/types/program'
+import { WorkoutType } from '@/types/program'
 
 // Shape returned by the suggest-exercise API
 interface SuggestedExercise {
@@ -146,6 +147,7 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
   const [suggestions, setSuggestions] = useState<SuggestedExercise[]>([])
   const [suggestOpen, setSuggestOpen] = useState(false)
   const [isSuggesting, setIsSuggesting] = useState(false)
+  const [suggestError, setSuggestError] = useState<string | null>(null)
 
   // Read week/workout selection from global context so outline navigation stays in sync.
   const selectedWeekIdx = state.currentWeekIndex
@@ -210,19 +212,36 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
 
   const handleAiSuggest = async () => {
     setIsSuggesting(true)
+    setSuggestError(null)
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
       const currentExerciseIds = exercises.map((e) => e.exerciseId)
       const res = await fetch('/api/programs/suggest-exercise', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ currentExerciseIds }),
       })
-      if (!res.ok) return
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}))
+        setSuggestError(errJson.error ?? 'Could not fetch suggestions. Try again.')
+        setSuggestOpen(true)
+        return
+      }
       const json = await res.json()
       if (json.success && Array.isArray(json.data?.suggestions)) {
         setSuggestions(json.data.suggestions)
+        setSuggestError(null)
+        setSuggestOpen(true)
+      } else {
+        setSuggestError('No suggestions available right now.')
         setSuggestOpen(true)
       }
+    } catch {
+      setSuggestError('Could not fetch suggestions. Try again.')
+      setSuggestOpen(true)
     } finally {
       setIsSuggesting(false)
     }
@@ -248,6 +267,33 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
 
   const handleGroupAsSuperset = () => {
     dispatch({ type: 'GROUP_AS_SUPERSET' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, exerciseIds: Array.from(selectedExerciseIds) } } as any)
+  }
+
+  /** Add a new training day to the current week and switch to it immediately. */
+  const handleAddTrainingDay = () => {
+    const currentWorkouts = currentWeek?.workouts ?? []
+    if (currentWorkouts.length >= 7) return
+    const usedDays = new Set(currentWorkouts.map((w) => w.dayNumber))
+    let nextDay = 1
+    while (usedDays.has(nextDay) && nextDay <= 7) nextDay++
+    const newWorkoutIdx = currentWorkouts.length
+    dispatch({
+      type: 'ADD_WORKOUT',
+      payload: {
+        weekIndex: selectedWeekIdx,
+        workout: {
+          dayNumber: nextDay,
+          name: `Day ${nextDay}`,
+          description: '',
+          workoutType: WorkoutType.STRENGTH,
+          estimatedDuration: 60,
+          isRestDay: false,
+          exercises: [],
+        },
+      },
+    })
+    // Switch to the newly added workout tab
+    dispatch({ type: 'SET_CURRENT_WORKOUT', payload: newWorkoutIdx })
   }
 
   return (
@@ -291,6 +337,18 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
               {workout.name || `Day ${workout.dayNumber}`}
             </button>
           ))}
+          {/* Add Training Day button — always visible in the tab bar */}
+          {(currentWeek.workouts?.length ?? 0) < 7 && (
+            <button
+              type="button"
+              onClick={handleAddTrainingDay}
+              title="Add training day to this week"
+              className="text-xs px-2.5 py-1 rounded border border-dashed border-blue-300 text-blue-600 hover:bg-blue-50 transition-colors flex-shrink-0 flex items-center gap-1"
+            >
+              <CalendarPlus size={12} />
+              Add Day
+            </button>
+          )}
         </div>
       )}
 
@@ -362,22 +420,28 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
                   {isSuggesting ? 'Thinking...' : 'Suggest next exercise'}
                 </Button>
               </PopoverTrigger>
-              {suggestions.length > 0 && (
+              {(suggestions.length > 0 || suggestError) && (
                 <PopoverContent align="start" className="w-64 p-2 space-y-1">
-                  <p className="text-xs font-medium text-gray-500 mb-2">Suggested exercises</p>
-                  {suggestions.map((ex) => (
-                    <button
-                      key={ex.id}
-                      type="button"
-                      className="w-full text-left text-sm px-2 py-1.5 rounded hover:bg-blue-50 transition-colors"
-                      onClick={() => handleAddSuggested(ex)}
-                    >
-                      <span className="font-medium">{ex.name}</span>
-                      {ex.targetMuscle && (
-                        <span className="ml-1 text-xs text-gray-400">· {ex.targetMuscle}</span>
-                      )}
-                    </button>
-                  ))}
+                  {suggestError ? (
+                    <p className="text-xs text-red-500 px-2 py-1">{suggestError}</p>
+                  ) : (
+                    <>
+                      <p className="text-xs font-medium text-gray-500 mb-2">Suggested exercises</p>
+                      {suggestions.map((ex) => (
+                        <button
+                          key={ex.id}
+                          type="button"
+                          className="w-full text-left text-sm px-2 py-1.5 rounded hover:bg-blue-50 transition-colors"
+                          onClick={() => handleAddSuggested(ex)}
+                        >
+                          <span className="font-medium">{ex.name}</span>
+                          {ex.targetMuscle && (
+                            <span className="ml-1 text-xs text-gray-400">· {ex.targetMuscle}</span>
+                          )}
+                        </button>
+                      ))}
+                    </>
+                  )}
                 </PopoverContent>
               )}
             </Popover>
