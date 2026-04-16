@@ -122,8 +122,8 @@ test.describe('12 - Responsive / Mobile', () => {
     });
     await waitForPageReady(page);
 
-    // Dashboard heading must be visible on tablet — scope to page content
-    await expect(page.locator('main h1, main h2, .p-6 h1, .p-6 h2, text=/dashboard/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Dashboard heading must be visible on tablet — h1 is always "Trainer Dashboard" via DashboardLayout
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'tablet-dashboard.png');
   });
