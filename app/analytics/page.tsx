@@ -339,14 +339,14 @@ export default function AnalyticsPage() {
                   {user?.role === 'trainer' && selectedClientId
                     ? 'Client Analytics'
                     : user?.role === 'trainer'
-                    ? 'Client Analytics'
+                    ? 'Trainer Analytics'
                     : 'Progress Analytics'}
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
                   {user?.role === 'trainer' && selectedClientId
                     ? 'Viewing analytics for selected client'
                     : user?.role === 'trainer'
-                    ? 'Overview of all your clients — select a client to view their detailed analytics'
+                    ? 'Your client roster and performance overview — select a client to drill into their analytics'
                     : 'Track your body measurements and monitor progress over time'}
                 </p>
               </div>

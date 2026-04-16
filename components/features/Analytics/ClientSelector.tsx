@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface Client {
   id: string;
@@ -24,15 +25,18 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
   const { data: clients, isLoading, error } = useQuery<Client[]>({
     queryKey: ['trainer-clients'],
     queryFn: async () => {
-      const token = localStorage.getItem('accessToken');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
       const response = await fetch('/api/clients', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
 
+      // 401 = session expired — return empty list gracefully, don't throw
+      if (response.status === 401) return [];
+
       if (!response.ok) {
-        throw new Error('Failed to fetch clients');
+        throw new Error(`Failed to fetch clients (${response.status})`);
       }
 
       const json = await response.json();
@@ -41,20 +45,22 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
       return Array.isArray(list) ? list : [];
     },
     retry: 1,
+    staleTime: 30_000,
   });
 
   if (isLoading) {
     return (
-      <div className="text-sm text-gray-500">
-        Loading clients...
-      </div>
+      <div className="text-sm text-gray-500 animate-pulse">Loading client list...</div>
     );
   }
 
   if (error) {
     return (
-      <div className="mb-6 text-sm text-gray-500">
-        Unable to load client list
+      <div className="flex items-center gap-3 text-sm text-gray-500">
+        <span>Could not load clients.</span>
+        <Link href="/clients" className="text-blue-600 hover:underline font-medium">
+          Manage clients →
+        </Link>
       </div>
     );
   }
@@ -66,10 +72,21 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     return client.email;
   };
 
+  if (!clients || clients.length === 0) {
+    return (
+      <div className="flex items-center gap-3 text-sm text-gray-500">
+        <span>No clients on your roster yet.</span>
+        <Link href="/clients" className="text-blue-600 hover:underline font-medium">
+          Add your first client →
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-6">
       <label htmlFor="client-selector" className="block text-sm font-medium text-gray-700 mb-2">
-        View Analytics For
+        Select Client
       </label>
       <select
         id="client-selector"
@@ -77,8 +94,8 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
         value={selectedClientId || ''}
         onChange={(e) => onClientChange(e.target.value || null)}
       >
-        <option value="">My Data</option>
-        {clients?.map((client) => (
+        <option value="">— choose a client —</option>
+        {clients.map((client) => (
           <option key={client.id} value={client.id}>
             {getClientDisplayName(client)}
           </option>

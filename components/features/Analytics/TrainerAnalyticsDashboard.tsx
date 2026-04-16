@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Users, UserCheck, UserX, UserPlus, Flame, TrendingUp, Activity, ChevronRight } from 'lucide-react'
 import ClientSelector from './ClientSelector'
 
@@ -105,7 +106,14 @@ export default function TrainerAnalyticsDashboard({ onClientSelect }: TrainerAna
         {clients.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <Users className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">No clients yet. Add clients from the dashboard.</p>
+            <p className="text-gray-500 text-sm mb-3">No clients on your roster yet.</p>
+            <Link
+              href="/clients"
+              className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              <UserPlus className="h-4 w-4" />
+              Add your first client
+            </Link>
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
