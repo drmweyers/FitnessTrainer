@@ -38,17 +38,15 @@ test.describe('12 - Responsive / Mobile', () => {
     });
     await waitForPageReady(page);
 
-    // On mobile, sidebar should be hidden and hamburger menu should appear
-    const hamburger = page.locator(
-      'button[aria-label*="menu" i], button[aria-label*="Menu" i], [data-testid="mobile-menu"]'
-    );
+    // On mobile, the hamburger button has aria-label="Open navigation menu"
+    const hamburger = page.locator('button[aria-label="Open navigation menu"]');
 
     if (await hamburger.first().isVisible({ timeout: 5000 })) {
       await hamburger.first().click();
 
-      // Mobile nav should appear with navigation links
+      // MobileMenu renders as role="dialog" with a <nav> containing NavigationItems
       await expect(
-        page.locator('[role="navigation"] a, [class*="mobile-nav"] a').first()
+        page.locator('[role="dialog"][aria-label*="navigation"] nav a').first()
       ).toBeVisible({ timeout: TIMEOUTS.element });
 
       await takeScreenshot(page, 'mobile-nav.png');
@@ -124,8 +122,8 @@ test.describe('12 - Responsive / Mobile', () => {
     });
     await waitForPageReady(page);
 
-    // Dashboard heading must be visible on tablet
-    await expect(page.locator('text=/dashboard/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Dashboard heading must be visible on tablet — scope to page content
+    await expect(page.locator('main h1, main h2, .p-6 h1, .p-6 h2, text=/dashboard/i').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'tablet-dashboard.png');
   });

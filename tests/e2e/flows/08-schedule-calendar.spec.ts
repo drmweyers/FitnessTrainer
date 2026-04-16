@@ -62,16 +62,16 @@ test.describe('08 - Schedule & Calendar', () => {
     });
     await waitForPageReady(page);
 
-    // Look for "New Appointment" or "+" button — must be visible for trainer
-    const newButton = page.locator('button:has-text("New Appointment"), button:has-text("New"), a:has-text("New Appointment")');
+    // "New Appointment" button shown for trainer (not client)
+    const newButton = page.locator('button:has-text("New Appointment")');
     await expect(newButton.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await newButton.first().click();
 
-    // Modal or form must open
-    await expect(page.locator('[role="dialog"], [class*="modal"]').first()).toBeVisible({
-      timeout: TIMEOUTS.element,
-    });
+    // CreateAppointmentModal renders as a fixed overlay with "New Appointment" heading inside
+    await expect(
+      page.locator('h3:has-text("New Appointment"), [role="dialog"], .fixed.inset-0').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'schedule-new-appointment.png');
   });

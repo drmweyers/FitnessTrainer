@@ -93,19 +93,21 @@ test.describe('04 - Exercise Library', () => {
     });
     await waitForPageReady(page);
 
-    // Click on first exercise card/link
-    const exerciseLink = page.locator('a[href*="exercises/"]').first();
-    if (await exerciseLink.isVisible({ timeout: 5000 })) {
-      await exerciseLink.click();
-      await waitForPageReady(page);
+    // Click on first exercise card/link — detail links go to /dashboard/exercises/[id]
+    const exerciseLink = page.locator('a[href*="/dashboard/exercises/"]').first();
+    await expect(exerciseLink).toBeVisible({ timeout: TIMEOUTS.element });
+    await exerciseLink.click();
 
-      // Should show exercise detail with muscle/equipment info
-      await expect(
-        page.locator('text=/target|muscle|equipment|instructions/i').first()
-      ).toBeVisible({ timeout: TIMEOUTS.element });
+    // Wait for navigation to the detail page
+    await page.waitForURL(/\/dashboard\/exercises\/[^/]+$/, { timeout: TIMEOUTS.pageLoad });
+    await waitForPageReady(page);
 
-      await takeScreenshot(page, 'exercise-detail.png');
-    }
+    // Should show exercise detail with muscle/equipment info
+    await expect(
+      page.locator('text=/target|muscle|equipment|instructions/i').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
+
+    await takeScreenshot(page, 'exercise-detail.png');
   });
 
   test('should also work at public exercises route', async ({ page }) => {

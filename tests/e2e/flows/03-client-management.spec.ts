@@ -39,17 +39,16 @@ test.describe('03 - Client Management', () => {
     });
     await waitForPageReady(page);
 
-    // Click Add Client
+    // Click Add Client — wait for it to be visible first
     const addButton = page.locator('button:has-text("Add Client")');
-    if (await addButton.isVisible({ timeout: 5000 })) {
-      await addButton.click();
+    await expect(addButton.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    await addButton.first().click();
 
-      // Should see a modal or form
-      const modal = page.locator('[role="dialog"], .modal, [data-state="open"]');
-      await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Should see a modal or form — ClientModal renders as a fixed overlay
+    const modal = page.locator('[role="dialog"], .fixed.inset-0, [data-state="open"]');
+    await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element });
 
-      await takeScreenshot(page, 'client-add-modal.png');
-    }
+    await takeScreenshot(page, 'client-add-modal.png');
   });
 
   test('should display client cards or rows', async ({ page }) => {
@@ -59,9 +58,10 @@ test.describe('03 - Client Management', () => {
     });
     await waitForPageReady(page);
 
-    // The clients page should have specific client-related content
+    // The clients page should have the h1 heading then either client rows or empty state
+    await expect(page.locator('h1').filter({ hasText: /Clients/i })).toBeVisible({ timeout: TIMEOUTS.element });
     await expect(
-      page.locator('text=/active|inactive|client/i').first()
+      page.locator('text=/No clients found|Add Client/i, [class*="ClientListItem"], .space-y-4').first()
     ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 

@@ -31,11 +31,13 @@ test.describe('01 - Trainer Login Flow', () => {
   test('should login as trainer and redirect to dashboard', async ({ page }) => {
     await loginViaUI(page, 'trainer');
 
-    // Should be redirected to dashboard area
-    await expect(page).toHaveURL(/\/(dashboard|trainer)/);
+    // loginViaUI waits for URL to leave /login. The dashboard page then does a
+    // second client-side redirect to /dashboard/trainer — wait for the final URL.
+    await page.waitForURL(/\/dashboard\/(trainer|client|admin)/, { timeout: TIMEOUTS.pageLoad });
 
-    // Verify dashboard content is visible (trainer dashboard) — specific heading
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Verify dashboard content is visible — use h1 only (DashboardLayout always renders h1,
+    // nav uses h2/span, so h1 uniquely identifies main page content)
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'trainer-login-success.png');
   });

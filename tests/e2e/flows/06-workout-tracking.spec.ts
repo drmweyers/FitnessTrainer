@@ -57,10 +57,9 @@ test.describe('06 - Workout Tracking', () => {
     });
     await waitForPageReady(page);
 
-    // Should show tracker interface — heading or start-workout content
-    await expect(
-      page.locator('h1, h2, text=/track|start|log workout/i').first()
-    ).toBeVisible({ timeout: TIMEOUTS.element });
+    // Workout tracker renders DailyWorkoutView with an h1 heading like "Today Workouts"
+    // or the execution screen — either way an h1 or h2 is present
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'workout-tracker.png');
   });

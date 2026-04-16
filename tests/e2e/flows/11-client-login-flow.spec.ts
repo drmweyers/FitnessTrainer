@@ -6,13 +6,14 @@ test.describe('11 - Client Login Flow', () => {
   test('should login as client via UI', async ({ page }) => {
     await loginViaUI(page, 'client');
 
-    // Should be redirected to dashboard area
-    await expect(page).toHaveURL(/\/(dashboard|client)/);
+    // loginViaUI exits when URL leaves /login. The dashboard router then does a
+    // second redirect to /dashboard/client — wait for the final destination.
+    await page.waitForURL(/\/dashboard\/(trainer|client|admin)/, { timeout: TIMEOUTS.pageLoad });
 
     await waitForPageReady(page);
 
-    // Dashboard heading must be visible
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Dashboard heading must be visible — use h1 only (nav uses h2/span, DashboardLayout uses h1)
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'client-login-success.png');
   });
@@ -23,10 +24,10 @@ test.describe('11 - Client Login Flow', () => {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
-    await waitForPageReady(page);
 
-    // Client dashboard heading must be visible
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // Wait for auth to resolve — page may do client-side redirect if role check fails
+    // Client dashboard uses DashboardLayout with title="My Fitness Dashboard" (h1 always present)
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Must show client-specific content — not trainer KPI
     await expect(page.locator('text="Total Clients"')).not.toBeVisible();
@@ -56,12 +57,11 @@ test.describe('11 - Client Login Flow', () => {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
-    await waitForPageReady(page);
 
-    // Profile page heading must be visible
-    await expect(page.locator('text=/profile|account/i').first()).toBeVisible({
-      timeout: TIMEOUTS.element,
-    });
+    // Profile page renders DashboardLayout title="My Profile" — wait for that h1
+    await expect(
+      page.locator('h1:has-text("My Profile"), h1:has-text("Profile"), h2:has-text("Profile")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'client-profile.png');
   });
@@ -88,11 +88,11 @@ test.describe('11 - Client Login Flow', () => {
       waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.pageLoad,
     });
-    await waitForPageReady(page);
+
+    // Client dashboard h1 is always "My Fitness Dashboard" (in DashboardLayout)
+    await expect(page.locator('h1').first()).toBeVisible({ timeout: TIMEOUTS.element });
 
     // Client dashboard should NOT show trainer-specific items like "Total Clients"
     await expect(page.locator('text="Total Clients"')).not.toBeVisible();
-    // But should show a heading
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: TIMEOUTS.element });
   });
 });
