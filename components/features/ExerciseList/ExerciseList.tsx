@@ -99,7 +99,7 @@ export default function ExerciseList({ preloadedExercises, activeFilters }: Exer
     difficulty: ['beginner', 'intermediate', 'advanced'] as const
   }
 
-  // Load exercises from API on mount (skip if preloaded)
+  // Load exercises from API — re-fetches when activeFilters change for server-side filtering
   useEffect(() => {
     // Skip loading if preloaded exercises are provided
     if (preloadedExercises && preloadedExercises.length > 0) {
@@ -115,10 +115,20 @@ export default function ExerciseList({ preloadedExercises, activeFilters }: Exer
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
         const params = new URLSearchParams({
           page: '1',
-          limit: '100',
+          limit: '1500',
           sortBy: 'name',
           sortOrder: 'asc'
         })
+        // Pass active filters as server-side query params (comma-separated)
+        if (activeFilters?.bodyPart && activeFilters.bodyPart.length > 0) {
+          params.set('bodyPart', activeFilters.bodyPart.join(','))
+        }
+        if (activeFilters?.equipment && activeFilters.equipment.length > 0) {
+          params.set('equipment', activeFilters.equipment.join(','))
+        }
+        if (activeFilters?.difficulty && activeFilters.difficulty.length > 0) {
+          params.set('difficulty', activeFilters.difficulty[0])
+        }
         const response = await fetch(`${API_BASE_URL}/exercises?${params.toString()}`)
 
         if (!response.ok) {
@@ -142,7 +152,7 @@ export default function ExerciseList({ preloadedExercises, activeFilters }: Exer
     }
 
     loadExercises()
-  }, [preloadedExercises])
+  }, [preloadedExercises, activeFilters])
 
   // Apply filters and search
   useEffect(() => {

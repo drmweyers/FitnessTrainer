@@ -82,7 +82,7 @@ async function fetchExercisePage(
   // Default: GET /api/exercises
   const params = new URLSearchParams()
   if (search) params.set('search', search)
-  if (muscleGroup) params.set('targetMuscle', muscleGroup)
+  if (muscleGroup) params.set('bodyPart', muscleGroup)
   if (equipment) params.set('equipment', equipment)
   params.set('limit', String(PAGE_SIZE))
   params.set('page', String(page))

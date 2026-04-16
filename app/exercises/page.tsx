@@ -77,7 +77,7 @@ export default function ExerciseLibraryPage() {
             </div>
           </div>
         ) : (
-          <ExerciseList />
+          <ExerciseList activeFilters={activeFilters} />
         )}
       </div>
   )
