@@ -468,6 +468,10 @@ function programBuilderReducer(state: ProgramBuilderState, action: ProgramBuilde
           if (restored.currentStep >= 2 && (!restored.weeks || restored.weeks.length === 0)) {
             restored.weeks = createInitialWeeks(restored.durationWeeks || 4)
           }
+          // Re-hydrate Set — JSON.stringify/parse converts Set to {} (empty object)
+          restored.selectedExerciseIds = new Set<string>(
+            Array.isArray(parsed.selectedExerciseIds) ? parsed.selectedExerciseIds : []
+          )
           return restored
         }
       } catch (error) {
@@ -767,7 +771,12 @@ export function ProgramBuilderProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     if (state.isDirty) {
       try {
-        const stateToSave = { ...state, isLoading: false }
+        // Serialize Set as Array so JSON.stringify/parse round-trips correctly
+        const stateToSave = {
+          ...state,
+          isLoading: false,
+          selectedExerciseIds: Array.from(state.selectedExerciseIds),
+        }
         localStorage.setItem('programBuilderDraft', JSON.stringify(stateToSave))
       } catch (error) {
         console.error('Failed to save to storage:', error)

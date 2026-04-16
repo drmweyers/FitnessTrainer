@@ -16,6 +16,7 @@ import TrainingLoadTab from '@/components/features/Analytics/TrainingLoadTab';
 import GoalsTab from '@/components/features/Analytics/GoalsTab';
 import ReportModal from '@/components/features/Analytics/ReportModal';
 import ClientSelector from '@/components/features/Analytics/ClientSelector';
+import TrainerAnalyticsDashboard from '@/components/features/Analytics/TrainerAnalyticsDashboard';
 import { useToast, ToastContainer } from '@/components/shared/Toast';
 import { useTier } from '@/hooks/useTier';
 
@@ -340,11 +341,15 @@ export default function AnalyticsPage() {
                   {user?.role === 'trainer' && selectedClientId
                     ? 'Client Analytics'
                     : user?.role === 'trainer'
-                    ? 'My Analytics'
+                    ? 'Client Analytics'
                     : 'Progress Analytics'}
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  Track {user?.role === 'trainer' && selectedClientId ? 'client' : 'your'} body measurements and monitor progress over time
+                  {user?.role === 'trainer' && selectedClientId
+                    ? 'Viewing analytics for selected client'
+                    : user?.role === 'trainer'
+                    ? 'Overview of all your clients — select a client to view their detailed analytics'
+                    : 'Track your body measurements and monitor progress over time'}
                 </p>
               </div>
               <div className="flex space-x-2">
@@ -410,15 +415,23 @@ export default function AnalyticsPage() {
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Client Selector for Trainers */}
-          {user?.role === 'trainer' && (
-            <ClientSelector
-              selectedClientId={selectedClientId}
-              onClientChange={setSelectedClientId}
-            />
+          {/* Trainer with no client selected → show trainer KPI dashboard */}
+          {user?.role === 'trainer' && !selectedClientId && (
+            <TrainerAnalyticsDashboard onClientSelect={setSelectedClientId} />
           )}
 
-          {isLoading ? (
+          {/* Trainer with a client selected → show client selector + client analytics */}
+          {user?.role === 'trainer' && selectedClientId && (
+            <div className="mb-6">
+              <ClientSelector
+                selectedClientId={selectedClientId}
+                onClientChange={setSelectedClientId}
+              />
+            </div>
+          )}
+
+          {/* Client analytics tabs: visible to clients always, and to trainers only when a client is selected */}
+          {(user?.role !== 'trainer' || selectedClientId) && (isLoading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
@@ -643,7 +656,7 @@ export default function AnalyticsPage() {
                 </div>
               )}
             </div>
-          )}
+          ))}
         </div>
 
         {/* Measurement Tracker Modal */}

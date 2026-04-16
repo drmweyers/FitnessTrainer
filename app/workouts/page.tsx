@@ -58,7 +58,7 @@ export default function WorkoutsPage() {
               className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus size={20} className="mr-2" />
-              New Workout
+              AI-Generated Workout
             </Link>
           </div>
         </div>
@@ -73,8 +73,8 @@ export default function WorkoutsPage() {
               <Dumbbell size={20} className="text-blue-600" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Workout Builder</p>
-              <p className="text-sm text-gray-500">Create a custom workout</p>
+              <p className="font-medium text-gray-900">AI-Generated Workout</p>
+              <p className="text-sm text-gray-500">Build with AI assistance</p>
             </div>
           </Link>
 
