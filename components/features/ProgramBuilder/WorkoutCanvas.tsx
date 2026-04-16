@@ -157,11 +157,13 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
   const currentWeek = weeks[selectedWeekIdx]
   const currentWorkout = currentWeek?.workouts?.[selectedWorkoutIdx]
   const rawExercises = (currentWorkout?.exercises ?? []) as WorkoutExerciseDataExtended[]
-  const exercises = useMemo(() => rawExercises, // stabilise reference for downstream memos
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(rawExercises)])
+  // BUG 10 fixed: stable primitive deps instead of JSON.stringify to avoid spurious re-renders
+  const exerciseDepKey = rawExercises.map((e) => `${e.exerciseId}:${e.orderIndex}`).join(',')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const exercises = useMemo(() => rawExercises, [exerciseDepKey])
 
-  const selectedExerciseIds: Set<string> = (state as any).selectedExerciseIds ?? new Set<string>()
+  // BUG 5 fixed: selectedExerciseIds is typed on ProgramBuilderState — no cast needed
+  const selectedExerciseIds: Set<string> = state.selectedExerciseIds ?? new Set<string>()
 
   const sections = useMemo(() => groupExercisesIntoSections(exercises), [exercises])
 
@@ -178,7 +180,8 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
   )
 
   const handleSelectExercise = (id: string) => {
-    dispatch({ type: 'TOGGLE_EXERCISE_SELECTION' as any, payload: id } as any)
+    // BUG 5 fixed: TOGGLE_EXERCISE_SELECTION is in the action union — no as any needed
+    dispatch({ type: 'TOGGLE_EXERCISE_SELECTION', payload: id })
   }
 
   const handleRemoveExercise = (exerciseId: string) => {
@@ -191,8 +194,9 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
   const handleUngroup = (sectionId: string) => {
     const section = sections.find((s) => s.id === sectionId)
     if (!section) return
-    if (section.type === 'superset') {
-      dispatch({ type: 'UNGROUP_SUPERSET' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, supersetLetter: section.supersetLetter } } as any)
+    if (section.type === 'superset' && section.supersetLetter) {
+      // BUG 2 fixed: reducer expects `supersetGroup` key, not `supersetLetter`
+      dispatch({ type: 'UNGROUP_SUPERSET', payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, supersetGroup: section.supersetLetter } })
     } else {
       section.exercises.forEach((e) => {
         handleRemoveExercise(e.exerciseId)
@@ -203,11 +207,15 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
   const handleUpdateMetadata = (sectionId: string, meta: SectionMetadata) => {
     const section = sections.find((s) => s.id === sectionId)
     if (!section) return
-    dispatch({ type: 'SET_SECTION_METADATA' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, sectionId, meta } } as any)
+    // BUG 3 fixed: reducer expects `supersetGroup` + `metadata` keys
+    if (section.supersetLetter) {
+      dispatch({ type: 'SET_SECTION_METADATA', payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, supersetGroup: section.supersetLetter, metadata: meta } })
+    }
   }
 
   const handleAddSection = (type: SectionType) => {
-    dispatch({ type: 'ADD_SECTION' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, sectionType: type } } as any)
+    // BUG 5 fixed: ADD_SECTION is in the action union — no as any needed
+    dispatch({ type: 'ADD_SECTION', payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, sectionType: type } })
   }
 
   const handleAiSuggest = async () => {
@@ -266,7 +274,13 @@ const WorkoutCanvas: React.FC<WorkoutCanvasProps> = ({ weekIdx: _weekIdx, workou
   }
 
   const handleGroupAsSuperset = () => {
-    dispatch({ type: 'GROUP_AS_SUPERSET' as any, payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, exerciseIds: Array.from(selectedExerciseIds) } } as any)
+    // BUG 4 fixed: reducer expects exerciseIdxs: number[] (positional indices), not string IDs
+    const exerciseIdxs = Array.from(selectedExerciseIds)
+      .map((id) => exercises.findIndex((e) => e.exerciseId === id))
+      .filter((idx) => idx !== -1)
+      .sort((a, b) => a - b)
+    if (exerciseIdxs.length < 2) return
+    dispatch({ type: 'GROUP_AS_SUPERSET', payload: { weekIdx: selectedWeekIdx, workoutIdx: selectedWorkoutIdx, exerciseIdxs } })
   }
 
   /** Add a new training day to the current week and switch to it immediately. */

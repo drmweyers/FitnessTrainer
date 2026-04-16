@@ -54,9 +54,10 @@ const RPEIntegration: React.FC<RPEIntegrationProps> = ({
       if (exerciseMap.has(key)) {
         exerciseMap.get(key)!.count += 1;
       } else {
+        // BUG 7 fixed: use stored name from WorkoutExerciseData, fall back to placeholder
         exerciseMap.set(key, {
           id: exercise.exerciseId,
-          name: `Exercise ${exercise.orderIndex + 1}`, // Placeholder name
+          name: (exercise as any).name || (exercise as any).exerciseName || `Exercise ${exercise.orderIndex + 1}`,
           count: 1
         });
       }

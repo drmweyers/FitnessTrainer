@@ -155,7 +155,8 @@ function WorkoutSummary({ workout, workoutIndex, isExpanded, onToggle }: Workout
                       {exercise.orderIndex + 1}
                     </span>
                     <h5 className="font-medium text-gray-900">
-                      Exercise {exercise.orderIndex + 1}
+                      {/* BUG 6 fixed: show stored name with fallback to placeholder */}
+                      {(exercise as any).name || (exercise as any).exerciseName || `Exercise ${exercise.orderIndex + 1}`}
                     </h5>
                   </div>
 

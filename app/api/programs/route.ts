@@ -16,9 +16,12 @@ export const dynamic = 'force-dynamic';
 const createProgramSchema = z.object({
   name: z.string().min(1).max(255),
   description: z.string().optional(),
+  // BUG 8 fixed: all ProgramType enum values from types/program.ts are now accepted
   programType: z.enum([
     'strength', 'hypertrophy', 'endurance', 'powerlifting',
-    'bodybuilding', 'general_fitness', 'sport_specific', 'rehabilitation',
+    'bodybuilding', 'general_fitness', 'sport_specific', 'sports_specific', 'rehabilitation',
+    'olympic_weightlifting', 'crossfit', 'calisthenics', 'cardio',
+    'flexibility', 'weight_loss', 'muscle_gain', 'hybrid',
   ]),
   difficultyLevel: z.enum(['beginner', 'intermediate', 'advanced']),
   durationWeeks: z.number().min(1).max(52),

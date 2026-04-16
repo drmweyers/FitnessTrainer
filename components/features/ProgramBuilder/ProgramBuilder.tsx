@@ -109,18 +109,29 @@ const ProgramBuilder: React.FC<ProgramBuilderProps> = ({
           },
         });
       } else if (activeType === 'workout-exercise') {
-        const from = active.data.current?.location;
+        // BUG 1 fixed: MOVE_EXERCISE reducer expects { from, to } with { weekIdx, workoutIdx, exerciseIdx }
+        const from = active.data.current?.location as { weekIdx: number; workoutIdx: number; exerciseIdx: number } | undefined;
         if (String(over.id) === 'workout-trash' && from) {
           dispatch({
             type: 'REMOVE_WORKOUT_EXERCISE',
             payload: from,
           });
-        } else {
-          // Cross-section/reorder: to be wired when section drop targets expose location.
-          dispatch({
-            type: 'MOVE_EXERCISE' as any,
-            payload: { from: active.id, to: over.id },
-          } as any);
+        } else if (from) {
+          const toLocation = over.data.current?.location as { weekIdx: number; workoutIdx: number; exerciseIdx: number } | undefined;
+          if (toLocation) {
+            dispatch({ type: 'MOVE_EXERCISE', payload: { from, to: toLocation } });
+          } else {
+            // Fall back: parse orderIndex from the sortable ID (workout-exercise-{id}-{orderIndex})
+            const overIdStr = String(over.id)
+            const parts = overIdStr.split('-')
+            const destOrderIndex = parts.length >= 1 ? parseInt(parts[parts.length - 1], 10) : NaN
+            if (!isNaN(destOrderIndex)) {
+              dispatch({
+                type: 'MOVE_EXERCISE',
+                payload: { from, to: { weekIdx: from.weekIdx, workoutIdx: from.workoutIdx, exerciseIdx: destOrderIndex } },
+              });
+            }
+          }
         }
       }
     },
