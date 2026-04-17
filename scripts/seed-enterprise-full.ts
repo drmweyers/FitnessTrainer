@@ -1504,6 +1504,137 @@ async function seedFavoritesAndCollections(
   }
 }
 
+// ─── Step 16: Client notes ────────────────────────────────────────────────────
+
+/**
+ * Seeds 3 ClientNote records by calling PATCH /api/clients/[clientId]/profile
+ * with a `notes` field.  Each call appends one ClientNote row (the route does
+ * prisma.clientNote.create on every PATCH that includes notes).
+ */
+async function seedClientNotes(trainerToken: string, clientId: string): Promise<void> {
+  const notes = [
+    'Great progress on squats today. Form has improved significantly since week 1.',
+    'Discussed nutrition plan. Client is tracking macros consistently. Suggest increasing protein to 1.8g/kg.',
+    'Client mentioned mild shoulder discomfort during overhead press. Modified to landmine press as substitute.',
+  ];
+
+  for (const note of notes) {
+    const res = await apiFetch(`/api/clients/${clientId}/profile`, {
+      method: 'PATCH',
+      headers: authHeaders(trainerToken),
+      body: JSON.stringify({ notes: note }),
+    });
+
+    if (res.ok) {
+      ok(`Client note: "${note.substring(0, 60)}..."`);
+    } else {
+      const body = await res.text();
+      fail(`Client note failed: ${res.status} ${body.slice(0, 200)}`);
+    }
+  }
+}
+
+// ─── Step 17: Support tickets ─────────────────────────────────────────────────
+
+/**
+ * Seeds 2 SupportTicket records via POST /api/support/tickets (client token).
+ * Idempotent: skips creation if an identical subject already exists for this user.
+ */
+async function seedSupportTickets(clientToken: string): Promise<void> {
+  const ticketDefs = [
+    {
+      subject: 'How to export workout history as CSV',
+      message:
+        'Hi, I would like to download my full workout history as a CSV file for personal records. Is there an export option available? I have been training for 8 weeks and would love to keep a local copy of all my session data.',
+    },
+    {
+      subject: 'Password reset not working',
+      message:
+        'I tried to reset my password last week but the reset email never arrived. I checked spam and it was not there either. I eventually managed to log in by remembering my original password, but wanted to report the issue in case others are affected.',
+    },
+  ];
+
+  // Fetch existing tickets to avoid duplicates
+  const listRes = await apiFetch('/api/support/tickets', {
+    headers: authHeaders(clientToken),
+  });
+  const listJson = listRes.ok ? await listRes.json() : { data: [] };
+  const existingSubjects: Set<string> = new Set(
+    (listJson.data || []).map((t: any) => t.subject as string)
+  );
+
+  for (const ticket of ticketDefs) {
+    if (existingSubjects.has(ticket.subject)) {
+      ok(`Support ticket already exists: "${ticket.subject}"`);
+      continue;
+    }
+
+    const res = await apiFetch('/api/support/tickets', {
+      method: 'POST',
+      headers: authHeaders(clientToken),
+      body: JSON.stringify(ticket),
+    });
+
+    if (res.ok || res.status === 201) {
+      ok(`Support ticket created: "${ticket.subject}"`);
+    } else {
+      const body = await res.text();
+      fail(`Support ticket failed: ${res.status} ${body.slice(0, 200)}`);
+    }
+  }
+}
+
+// ─── Step 18: Phase 3 internal seed (Activity, Specializations, Tags, Milestones, Insights) ──
+
+/**
+ * Seeds the P0/P1 models that have no public POST API route by calling the
+ * internal /api/internal/seed-phase3 endpoint.
+ *
+ * Models seeded:
+ *   - Activity (10 entries)
+ *   - TrainerSpecialization (3)
+ *   - ClientTag (3) + ClientTagAssignment (2)
+ *   - MilestoneAchievement (3)
+ *   - UserInsight (3)
+ *
+ * Requires INTERNAL_API_SECRET to be set.  If not set, a warning is logged
+ * and the section is skipped gracefully — these models are non-blocking.
+ */
+async function seedPhase3Internal(): Promise<void> {
+  const secret = process.env.INTERNAL_API_SECRET;
+
+  if (!secret) {
+    console.log('    [warn] INTERNAL_API_SECRET not set — skipping Phase 3 internal seed');
+    console.log('    [info] Models skipped: Activity, TrainerSpecialization, ClientTag,');
+    console.log('    [info]                  MilestoneAchievement, UserInsight');
+    console.log('    [info] Set INTERNAL_API_SECRET and re-run to seed these models.');
+    return;
+  }
+
+  const res = await apiFetch('/api/internal/seed-phase3', {
+    method: 'POST',
+    headers: { 'x-internal-secret': secret },
+    body: JSON.stringify({
+      trainerEmail: TRAINER_EMAIL,
+      clientEmail: CLIENT_EMAIL,
+    }),
+  });
+
+  if (res.ok) {
+    const json = await res.json();
+    const results = json.results || {};
+    ok(`TrainerSpecializations: ${results.trainerSpecializations}`);
+    ok(`ClientTags: ${results.clientTags}`);
+    ok(`ClientTagAssignments: ${results.clientTagAssignments}`);
+    ok(`Activities: ${results.activities}`);
+    ok(`MilestoneAchievements: ${results.milestoneAchievements}`);
+    ok(`UserInsights: ${results.userInsights}`);
+  } else {
+    const body = await res.text();
+    fail(`Phase 3 internal seed failed: ${res.status} ${body.slice(0, 300)}`);
+  }
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -1621,6 +1752,26 @@ async function main() {
   section('15. Exercise Favorites & Collections');
   await seedFavoritesAndCollections(trainerToken, clientToken, exercises);
 
+  // ─ 16: Client notes ────────────────────────────────────────────────────────
+  // Re-authenticate — sections 16-18 run after the long workout seeding
+  trainerToken = await login(TRAINER_EMAIL, TRAINER_PASSWORD);
+  clientToken = await login(CLIENT_EMAIL, CLIENT_PASSWORD);
+
+  section('16. Client Notes (3 notes)');
+  if (clientId) {
+    await seedClientNotes(trainerToken, clientId);
+  } else {
+    fail('No client ID — skipping client notes');
+  }
+
+  // ─ 17: Support tickets ─────────────────────────────────────────────────────
+  section('17. Support Tickets (2 tickets)');
+  await seedSupportTickets(clientToken);
+
+  // ─ 18: Phase 3 internal seed ───────────────────────────────────────────────
+  section('18. Phase 3: Activity, Specializations, Tags, Milestones, Insights');
+  await seedPhase3Internal();
+
   // ─ Summary ─────────────────────────────────────────────────────────────────
   console.log('\n╔════════════════════════════════════════════════════╗');
   console.log('║  Seed Complete!                                    ║');
@@ -1643,6 +1794,15 @@ async function main() {
   console.log('║  - 12 appointments (Day 1-12 schedule)             ║');
   console.log('║  - 10 trainer + 5 client exercise favorites        ║');
   console.log('║  - 2 exercise collections with exercises           ║');
+  console.log('║  - 3 trainer notes on client (ClientNote)          ║');
+  console.log('║  - 2 support tickets (open + resolved)             ║');
+  console.log('║  - Phase 3 (if INTERNAL_API_SECRET set):           ║');
+  console.log('║    * 10 activity feed entries                      ║');
+  console.log('║    * 3 trainer specializations                     ║');
+  console.log('║    * 3 client tags (VIP/Morning/Competition Prep)  ║');
+  console.log('║    * 2 tag assignments (VIP + Morning on client)   ║');
+  console.log('║    * 3 milestone achievements                      ║');
+  console.log('║    * 3 user insights                               ║');
   console.log('╚════════════════════════════════════════════════════╝\n');
 }
 
