@@ -63,7 +63,7 @@ export default defineConfig({
 
   // Reuse the same global-setup that seeds the full QA world (accounts,
   // clients, programs, appointments, measurements, goals, favorites).
-  globalSetup: path.join(__dirname, '../../global-setup.ts'),
+  globalSetup: path.join(__dirname, '../global-setup.ts'),
 
   use: {
     baseURL,

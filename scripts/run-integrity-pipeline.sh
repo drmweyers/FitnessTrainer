@@ -152,7 +152,7 @@ if [ ${#RDA_FILES[@]} -eq 0 ] || [ ! -f "${RDA_FILES[0]}" ]; then
 else
   info "Found ${#RDA_FILES[@]} data-rendering spec(s)"
   set +e
-  ${PW_BASE} "${INTEGRITY_DIR}/*-data-rendering.spec.ts" 2>&1
+  ${PW_BASE} ${RDA_FILES[@]} 2>&1
   LAYER2_EXIT=$?
   set -e
 
@@ -181,7 +181,7 @@ fi
 header "Layer 3 — Data Completeness Verification (DCV)"
 info "Asserting every seeded record appears with all expected fields"
 
-DCV_FILES=( ${INTEGRITY_DIR}/*-data-completeness.spec.ts )
+DCV_FILES=( ${INTEGRITY_DIR}/*data-completeness*.spec.ts )
 
 if [ ${#DCV_FILES[@]} -eq 0 ] || [ ! -f "${DCV_FILES[0]}" ]; then
   info "No data-completeness specs found yet — Layer 3 skipped"
@@ -190,7 +190,7 @@ if [ ${#DCV_FILES[@]} -eq 0 ] || [ ! -f "${DCV_FILES[0]}" ]; then
 else
   info "Found ${#DCV_FILES[@]} data-completeness spec(s)"
   set +e
-  ${PW_BASE} "${INTEGRITY_DIR}/*-data-completeness.spec.ts" 2>&1
+  ${PW_BASE} ${DCV_FILES[@]} 2>&1
   LAYER3_EXIT=$?
   set -e
 
