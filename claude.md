@@ -4,8 +4,8 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,068 unit (316 suites) + ~546 E2E (50 workflow + 5 edge + 12 flow suites) = **~5,614 total**
-**Last session (2026-04-16):** Added 3 new E2E suites (60, 61, 62) for Program Builder wizard, AI Workout Builder, edge cases. 23 tests pass, 10 fixme (document DnD keyboard bug). Key bug found: `DraggableExerciseCard` keyboard Enter does not add exercises in production (dnd-kit instability intercepts events). Suite 61 selectors corrected from initial draft (Generate button text, exercise card CSS class, range slider not number input, form field order).
+**Tests:** 5,068 unit (316 suites) + ~743 E2E (50 workflow + 5 edge + 12 flow + 278 simulation suites) = **~5,811 total**
+**Last session (2026-04-16):** Completed FORGE QA Warfare v3 rollout — 13 new simulation suites (197 new tests) covering adversarial (IDOR, auth bypass, input validation), cross-role integrity, state-machine lifecycle, side-effects/cascades, regression, chaos/failure injection, pagination stress, pre-flight baseline, and communication workflow. Total simulations: 278 tests in 24 files across 9 directories.
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
