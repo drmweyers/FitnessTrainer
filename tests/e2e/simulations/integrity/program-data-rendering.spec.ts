@@ -161,7 +161,7 @@ test.describe('Program Data Rendering — Trainer (/programs)', () => {
     await navigateAndSettle(page, '/programs');
     await waitForProgramsLoaded(page);
 
-    await expect(page.getByText(/Flexibility/i).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /Flexibility/i })).toBeVisible({ timeout: 15_000 });
   });
 
   test('no uncaught JS errors on /programs (trainer)', async ({ page }) => {
@@ -251,7 +251,7 @@ test.describe('Program Data Rendering — Client (/programs)', () => {
     await navigateAndSettle(page, '/programs');
     await waitForProgramsLoaded(page);
 
-    await expect(page.getByText(/Flexibility/i).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /Flexibility/i })).toBeVisible({ timeout: 15_000 });
   });
 
   test('client /programs shows no error boundary', async ({ page }) => {

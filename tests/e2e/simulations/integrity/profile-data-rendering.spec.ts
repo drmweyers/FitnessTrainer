@@ -226,8 +226,8 @@ test.describe('Profile Data Rendering — Trainer /profile/edit', () => {
     await expect(page.getByText('Certifications', { exact: false })).toBeVisible({ timeout: 15_000 });
     await page.waitForTimeout(2_000);
 
-    // Check if the "Add Certification" button exists (always present for trainers)
-    await expect(page.getByText(/Add Certification/i)).toBeVisible({ timeout: 10_000 });
+    // Check if the "Add Certification" label or button exists (always present for trainers)
+    await expect(page.getByText(/Add Certification/i).first()).toBeVisible({ timeout: 10_000 });
   });
 });
 
