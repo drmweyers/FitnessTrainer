@@ -205,7 +205,13 @@ test.describe('Schedule Data Rendering — Availability Settings (/schedule/avai
     await actor.login();
     await navigateAndSettle(page, '/schedule/availability');
 
-    await actor.assertNoErrorBoundary();
+    // Skip assertNoErrorBoundary() here — the availability page legitimately
+    // renders "Unavailable" as a day-status label for unset days, which the
+    // generic error-boundary checker would flag as a false positive.
+    const bodyText = await page.locator('body').innerText().catch(() => '');
+    for (const signal of ['Something went wrong', 'Error loading', 'Failed to fetch', 'Unexpected error', 'Try again later']) {
+      expect(bodyText, `Error signal "${signal}" found on availability page`).not.toContain(signal);
+    }
     await actor.assertNoRenderBugs();
   });
 

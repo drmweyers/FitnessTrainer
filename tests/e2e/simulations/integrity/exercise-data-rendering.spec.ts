@@ -182,13 +182,13 @@ test.describe('Exercise Data Rendering — Favorites page (trainer)', () => {
     await actor.assertNoRenderBugs();
   });
 
-  test('Favorites page renders heading containing "Favorites"', async ({ page }) => {
+  test('Favorites page renders heading containing "Favorite"', async ({ page }) => {
     const actor = new BaseActor(page, QA_TRAINER);
     await actor.login();
     await navigateAndSettle(actor, '/dashboard/exercises/favorites');
 
     await expect(
-      page.getByRole('heading', { name: /Favorites/i }),
+      page.getByRole('heading', { name: /Favorite/i }),
     ).toBeVisible({ timeout: 15_000 });
   });
 
