@@ -152,7 +152,7 @@ describe('FeatureGate', () => {
       </FeatureGate>,
     );
 
-    // Children should be visible while loading (no flash of locked UI)
-    expect(screen.getByTestId('child')).toBeInTheDocument();
+    // Loading spinner should be shown (not children) to avoid hydration mismatch
+    expect(screen.queryByTestId('child')).not.toBeInTheDocument();
   });
 });

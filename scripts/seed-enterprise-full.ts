@@ -156,7 +156,54 @@ async function login(email: string, password: string): Promise<string> {
   throw new Error(`Could not log in as ${email} after 4 attempts`);
 }
 
-// ─── Step 2: Client roster ────────────────────────────────────────────────────
+// ─── Step 2: Enterprise subscription ─────────────────────────────────────────
+
+/**
+ * Ensures the enterprise trainer has an active tier_level=3 subscription.
+ * Uses the internal seed-tier endpoint if INTERNAL_API_SECRET is set,
+ * otherwise falls back to the entitlements API to verify current tier.
+ */
+async function ensureEnterpriseSubscription(trainerToken: string): Promise<void> {
+  const secret = process.env.INTERNAL_API_SECRET;
+
+  if (secret) {
+    // Preferred path: call the internal seed-tier endpoint (creates subscription via Prisma)
+    const res = await apiFetch('/api/internal/seed-tier', {
+      method: 'POST',
+      headers: { 'x-internal-secret': secret },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      ok(`Seed-tier endpoint succeeded: ${JSON.stringify(json.results || {})}`);
+      return;
+    }
+    fail(`Seed-tier endpoint returned ${res.status} — checking entitlements instead`);
+  } else {
+    console.log('    [info] INTERNAL_API_SECRET not set — checking entitlements to verify tier');
+  }
+
+  // Fallback: check current entitlements to see if subscription already exists
+  const entRes = await apiFetch('/api/entitlements', {
+    headers: authHeaders(trainerToken),
+  });
+  if (entRes.ok) {
+    const entJson = await entRes.json();
+    const tier = entJson.data?.tier;
+    const level = entJson.data?.level;
+    if (level >= 3) {
+      ok(`Trainer already at ${tier} (level ${level}) — subscription OK`);
+    } else {
+      fail(`Trainer is at ${tier} (level ${level}) — expected enterprise (level 3)`);
+      fail('Set INTERNAL_API_SECRET env var and re-run, or run: npx tsx scripts/seed-tier-accounts.ts');
+    }
+  } else {
+    fail(`Entitlements check failed: ${entRes.status}`);
+    fail('Analytics page will show "Analytics Unavailable" without an enterprise subscription');
+    fail('Fix: set INTERNAL_API_SECRET env var, or run: npx tsx scripts/seed-tier-accounts.ts');
+  }
+}
+
+// ─── Step 3: Client roster ────────────────────────────────────────────────────
 
 async function addClientToRoster(trainerToken: string, clientEmail: string): Promise<string> {
   const res = await apiFetch('/api/clients', {
@@ -183,7 +230,7 @@ async function addClientToRoster(trainerToken: string, clientEmail: string): Pro
   throw new Error(`Add client failed: ${res.status} ${body}`);
 }
 
-// ─── Step 3: Trainer profile ──────────────────────────────────────────────────
+// ─── Step 4: Trainer profile ──────────────────────────────────────────────────
 
 async function seedTrainerProfile(token: string): Promise<void> {
   const res = await apiFetch('/api/profiles/me', {
@@ -207,7 +254,7 @@ async function seedTrainerProfile(token: string): Promise<void> {
   if (res.ok) { ok('Trainer profile updated'); } else { fail(`Trainer profile: ${res.status}`); }
 }
 
-// ─── Step 4: Certifications ───────────────────────────────────────────────────
+// ─── Step 4b: Certifications ──────────────────────────────────────────────────
 
 async function seedCertifications(token: string): Promise<void> {
   const certs = [
@@ -1475,27 +1522,31 @@ async function main() {
   let trainerToken = await login(TRAINER_EMAIL, TRAINER_PASSWORD);
   let clientToken = await login(CLIENT_EMAIL, CLIENT_PASSWORD);
 
-  // ─ 3: Client roster ────────────────────────────────────────────────────────
-  section('3. Trainer-Client Relationship');
+  // ─ 3: Enterprise subscription ───────────────────────────────────────────────
+  section('3. Enterprise Subscription');
+  await ensureEnterpriseSubscription(trainerToken);
+
+  // ─ 4: Client roster ────────────────────────────────────────────────────────
+  section('4. Trainer-Client Relationship');
   const clientId = await addClientToRoster(trainerToken, CLIENT_EMAIL);
   ok(`Client ID: ${clientId}`);
 
-  // ─ 4: Trainer profile ──────────────────────────────────────────────────────
-  section('4. Trainer Profile');
+  // ─ 5: Trainer profile ──────────────────────────────────────────────────────
+  section('5. Trainer Profile');
   await seedTrainerProfile(trainerToken);
   await seedCertifications(trainerToken);
 
-  // ─ 5: Client profile & health ──────────────────────────────────────────────
-  section('5. Client Profile & Health');
+  // ─ 6: Client profile & health ──────────────────────────────────────────────
+  section('6. Client Profile & Health');
   await seedClientProfile(clientToken);
   await seedClientHealth(clientToken);
 
-  // ─ 6: Measurements ─────────────────────────────────────────────────────────
-  section('6. Body Measurements (8 weeks)');
+  // ─ 7: Measurements ─────────────────────────────────────────────────────────
+  section('7. Body Measurements (8 weeks)');
   await seedMeasurements(clientToken);
 
-  // ─ 7: Fetch exercises ──────────────────────────────────────────────────────
-  section('7. Exercise Library');
+  // ─ 8: Fetch exercises ──────────────────────────────────────────────────────
+  section('8. Exercise Library');
   const exercises = await fetchExercises(trainerToken);
   ok(`Fetched ${exercises.length} exercises`);
 
@@ -1505,8 +1556,8 @@ async function main() {
     process.exit(1);
   }
 
-  // ─ 8: Programs ─────────────────────────────────────────────────────────────
-  section('8. Programs (3 programs)');
+  // ─ 9: Programs ─────────────────────────────────────────────────────────────
+  section('9. Programs (3 programs)');
   const { strengthId, hiitId, flexibilityId } = await seedPrograms(trainerToken, exercises);
 
   const programIds = [strengthId, hiitId, flexibilityId].filter(Boolean);
@@ -1518,8 +1569,8 @@ async function main() {
     fail(`Only ${programIds.length}/3 programs created — continuing with what we have`);
   }
 
-  // ─ 9: Assign programs ──────────────────────────────────────────────────────
-  section('9. Program Assignments');
+  // ─ 10: Assign programs ─────────────────────────────────────────────────────
+  section('10. Program Assignments');
   if (!clientId) {
     fail('No client ID — cannot assign programs');
     process.exit(1);
@@ -1534,40 +1585,40 @@ async function main() {
   if (hiitId) await assignProgram(trainerToken, hiitId, clientId, hiitStart);
   if (flexibilityId) await assignProgram(trainerToken, flexibilityId, clientId, flexStart);
 
-  // ─ 10: Workout sessions ────────────────────────────────────────────────────
+  // ─ 11: Workout sessions ────────────────────────────────────────────────────
   // Re-authenticate — workout session seeding takes several minutes
   trainerToken = await login(TRAINER_EMAIL, TRAINER_PASSWORD);
   clientToken = await login(CLIENT_EMAIL, CLIENT_PASSWORD);
 
-  section('10. Workout Sessions & Logs (24 sessions × 8 weeks)');
+  section('11. Workout Sessions & Logs (24 sessions × 8 weeks)');
   if (strengthAssignmentId) {
     await seedWorkoutSessions(trainerToken, clientToken, clientId, strengthId, strengthAssignmentId);
   } else {
     fail('No assignment ID — skipping workout sessions');
   }
 
-  // ─ 11: Training load ───────────────────────────────────────────────────────
+  // ─ 12: Training load ───────────────────────────────────────────────────────
   // Re-authenticate after long workout session seeding
   clientToken = await login(CLIENT_EMAIL, CLIENT_PASSWORD);
 
-  section('11. Training Load (8 weeks ACWR data)');
+  section('12. Training Load (8 weeks ACWR data)');
   await seedTrainingLoad(clientToken);
 
-  // ─ 12: Goals & progress ────────────────────────────────────────────────────
-  section('12. Goals & Progress Tracking');
+  // ─ 13: Goals & progress ────────────────────────────────────────────────────
+  section('13. Goals & Progress Tracking');
   await seedGoals(clientToken);
 
-  // ─ 13: Availability & appointments ────────────────────────────────────────
+  // ─ 14: Availability & appointments ────────────────────────────────────────
   // Re-authenticate before final sections
   trainerToken = await login(TRAINER_EMAIL, TRAINER_PASSWORD);
   clientToken = await login(CLIENT_EMAIL, CLIENT_PASSWORD);
 
-  section('13. Availability & Appointments');
+  section('14. Availability & Appointments');
   await seedAvailability(trainerToken);
   await seedAppointments(trainerToken, clientId);
 
-  // ─ 14: Favorites & collections ─────────────────────────────────────────────
-  section('14. Exercise Favorites & Collections');
+  // ─ 15: Favorites & collections ─────────────────────────────────────────────
+  section('15. Exercise Favorites & Collections');
   await seedFavoritesAndCollections(trainerToken, clientToken, exercises);
 
   // ─ Summary ─────────────────────────────────────────────────────────────────
@@ -1579,6 +1630,7 @@ async function main() {
   console.log('║  Password: QaTest2026!                             ║');
   console.log('║                                                    ║');
   console.log('║  Seeded:                                           ║');
+  console.log('║  - Enterprise subscription (tier_level=3)          ║');
   console.log('║  - Full trainer & client profiles (every field)    ║');
   console.log('║  - 3 trainer certifications                        ║');
   console.log('║  - Client health info + PAR-Q responses            ║');

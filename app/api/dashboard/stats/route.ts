@@ -94,42 +94,50 @@ export async function GET(request: NextRequest) {
         ORDER BY tc.connected_at DESC
         LIMIT 10`
 
-      // Calculate streak for each client
-      const clientsWithStreaks = await Promise.all(
-        clients.map(async (c) => {
-          const streakResult = await prisma.$queryRaw<StreakResult[]>`
-            WITH workout_days AS (
-              SELECT DISTINCT DATE(actual_end_time) as workout_date
-              FROM workout_sessions
-              WHERE client_id = ${c.client_id}::uuid
-                AND status = 'completed'
-                AND actual_end_time IS NOT NULL
-              ORDER BY workout_date DESC
-            ),
-            numbered AS (
-              SELECT workout_date,
-                ROW_NUMBER() OVER (ORDER BY workout_date DESC) as rn
-              FROM workout_days
-            ),
-            streak AS (
-              SELECT workout_date, rn,
-                workout_date + (rn * INTERVAL '1 day') as grp
-              FROM numbered
-            )
-            SELECT COALESCE(COUNT(*)::int, 0) as streak
-            FROM streak
-            WHERE grp = (SELECT grp FROM streak LIMIT 1)`
+      // Batch streak calculation for all clients in one query
+      const clientIds = clients.map(c => c.client_id)
+      let streakMap: Record<string, number> = {}
 
-          return {
-            id: c.id,
-            name: c.email.split('@')[0].replace(/[._]/g, ' '),
-            email: c.email,
-            status: c.status,
-            connectedAt: c.connected_at,
-            workoutStreak: streakResult[0]?.streak ?? 0,
-          }
-        })
-      )
+      if (clientIds.length > 0) {
+        const streakRows = await prisma.$queryRaw<{ client_id: string; streak: number }[]>`
+          WITH workout_days AS (
+            SELECT DISTINCT client_id, DATE(actual_end_time) as workout_date
+            FROM workout_sessions
+            WHERE client_id = ANY(${clientIds}::uuid[])
+              AND status = 'completed'
+              AND actual_end_time IS NOT NULL
+          ),
+          numbered AS (
+            SELECT client_id, workout_date,
+              ROW_NUMBER() OVER (PARTITION BY client_id ORDER BY workout_date DESC) as rn
+            FROM workout_days
+          ),
+          grouped AS (
+            SELECT client_id, workout_date, rn,
+              workout_date + (rn * INTERVAL '1 day') as grp
+            FROM numbered
+          ),
+          latest_grp AS (
+            SELECT client_id, grp
+            FROM grouped
+            WHERE rn = 1
+          )
+          SELECT g.client_id::text, COALESCE(COUNT(*)::int, 0) as streak
+          FROM grouped g
+          JOIN latest_grp lg ON lg.client_id = g.client_id AND lg.grp = g.grp
+          GROUP BY g.client_id`
+
+        streakMap = Object.fromEntries(streakRows.map(r => [r.client_id, r.streak]))
+      }
+
+      const clientsWithStreaks = clients.map(c => ({
+        id: c.id,
+        name: c.email.split('@')[0].replace(/[._]/g, ' '),
+        email: c.email,
+        status: c.status,
+        connectedAt: c.connected_at,
+        workoutStreak: streakMap[c.client_id] ?? 0,
+      }))
 
       return NextResponse.json({
         success: true,

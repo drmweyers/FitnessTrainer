@@ -112,7 +112,7 @@ describe('GET /api/dashboard/stats', () => {
             connected_at: '2024-01-15',
           },
         ])
-        .mockResolvedValueOnce([{ streak: 5 }]);         // client streak
+        .mockResolvedValueOnce([{ client_id: 'c-1', streak: 5 }]); // batched streaks
 
       const req = createMockRequest('/api/dashboard/stats');
       const res = await GET(req);
@@ -154,7 +154,7 @@ describe('GET /api/dashboard/stats', () => {
             connected_at: '2024-02-01',
           },
         ])
-        .mockResolvedValueOnce([{ streak: 0 }]);
+        .mockResolvedValueOnce([{ client_id: 'c-2', streak: 0 }]);
 
       const req = createMockRequest('/api/dashboard/stats');
       const res = await GET(req);
