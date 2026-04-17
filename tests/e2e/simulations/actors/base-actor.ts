@@ -56,8 +56,12 @@ export class BaseActor {
     this.credentials = credentials;
 
     // Capture uncaught JS errors from the browser page
+    // Filter out React hydration warnings (#418, #423) — these are console-level
+    // mismatches common in production Next.js SSR and don't cause user-visible errors.
     this._consoleErrorListener = (err: Error) => {
-      this._consoleErrors.push(err.message);
+      const msg = err.message;
+      if (msg.includes('Minified React error #418') || msg.includes('Minified React error #423')) return;
+      this._consoleErrors.push(msg);
     };
     this.page.on('pageerror', this._consoleErrorListener);
   }

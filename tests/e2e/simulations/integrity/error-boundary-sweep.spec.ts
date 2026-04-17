@@ -75,7 +75,8 @@ const ADMIN_ROUTES: string[] = [
   '/dashboard/admin',
   '/admin',
   '/admin/users',
-  '/admin/support',
+  '/admin/bugs',
+  '/admin/system',
 ];
 
 // ---------------------------------------------------------------------------
