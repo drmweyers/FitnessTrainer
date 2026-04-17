@@ -13,6 +13,24 @@ const TIMEOUTS = {
   animation: 2_000,
 };
 
+/**
+ * Text patterns that indicate an error boundary or render failure in the main
+ * content area. Checked by assertNoErrorBoundary() and assertNoRenderBugs().
+ */
+const ERROR_BOUNDARY_SIGNALS = [
+  'Something went wrong',
+  'Unable to load',
+  'Error loading',
+  'Failed to fetch',
+  'Unexpected error',
+  'Try again later',
+] as const;
+
+const RENDER_BUG_SIGNALS = [
+  '[object Object]',
+  'NaN',
+] as const;
+
 export interface ActorCredentials {
   email: string;
   password: string;
@@ -30,10 +48,18 @@ export class BaseActor {
   protected page: Page;
   protected credentials: ActorCredentials;
   protected token: string | null = null;
+  private _consoleErrors: string[] = [];
+  private _consoleErrorListener: ((err: Error) => void) | null = null;
 
   constructor(page: Page, credentials: ActorCredentials) {
     this.page = page;
     this.credentials = credentials;
+
+    // Capture uncaught JS errors from the browser page
+    this._consoleErrorListener = (err: Error) => {
+      this._consoleErrors.push(err.message);
+    };
+    this.page.on('pageerror', this._consoleErrorListener);
   }
 
   /** Ensure account exists (idempotent), then login via API for speed. */
@@ -172,5 +198,101 @@ export class BaseActor {
 
   get baseUrl(): string {
     return BASE_URL;
+  }
+
+  // ═══════════════════════════════════════
+  // INTEGRITY ASSERTION METHODS
+  // ═══════════════════════════════════════
+
+  /**
+   * Fail the test if any error boundary or crash-state text is found in the
+   * main content area of the current page.
+   *
+   * Checks for: 'Something went wrong', 'Unavailable' (content only),
+   * 'Unable to load', 'Error loading', 'Failed to fetch',
+   * 'Unexpected error', 'Try again later'.
+   *
+   * Uses a scoped locator (main, [role="main"], .content, body) so that
+   * navigation items that happen to contain words like "Unavailable" are
+   * not flagged. Uses case-sensitive, substring matching via :text().
+   */
+  async assertNoErrorBoundary(): Promise<void> {
+    // Target the primary content area; fall back to the full body if absent.
+    const contentLocator = this.page
+      .locator('main, [role="main"], .content, .page-content')
+      .first();
+
+    const contentExists = await contentLocator.count() > 0;
+    const root = contentExists ? contentLocator : this.page.locator('body');
+
+    for (const signal of ERROR_BOUNDARY_SIGNALS) {
+      // :text() is a Playwright CSS extension — exact substring, case-sensitive.
+      const match = root.locator(`:text("${signal}")`).first();
+      const visible = await match.isVisible().catch(() => false);
+      if (visible) {
+        const url = this.page.url();
+        throw new Error(
+          `Error boundary signal detected on ${url}: "${signal}"`
+        );
+      }
+    }
+
+    // 'Unavailable' is checked separately — only in the content area, not
+    // nav/menu where "Unavailable" may legitimately appear as a status label.
+    if (contentExists) {
+      const unavailableMatch = contentLocator
+        .locator(':text("Unavailable")')
+        .first();
+      const unavailableVisible = await unavailableMatch.isVisible().catch(() => false);
+      if (unavailableVisible) {
+        const url = this.page.url();
+        throw new Error(
+          `Error boundary signal detected on ${url}: "Unavailable" in main content`
+        );
+      }
+    }
+  }
+
+  /**
+   * Fail the test if raw JS serialisation artefacts appear as rendered text.
+   * Catches: '[object Object]', 'NaN'.
+   */
+  async assertNoRenderBugs(): Promise<void> {
+    const bodyText = await this.page.locator('body').innerText().catch(() => '');
+    for (const signal of RENDER_BUG_SIGNALS) {
+      if (bodyText.includes(signal)) {
+        const url = this.page.url();
+        throw new Error(
+          `Render bug detected on ${url}: "${signal}" found in page text`
+        );
+      }
+    }
+  }
+
+  /**
+   * Fail the test if fewer than `min` elements match the given CSS/Playwright
+   * selector.
+   *
+   * @param selector - Any locator expression valid for page.locator()
+   * @param min      - Minimum required count (inclusive)
+   */
+  async assertMinimumElements(selector: string, min: number): Promise<void> {
+    const count = await this.page.locator(selector).count();
+    if (count < min) {
+      const url = this.page.url();
+      throw new Error(
+        `assertMinimumElements failed on ${url}: ` +
+        `expected at least ${min} elements matching "${selector}", found ${count}`
+      );
+    }
+  }
+
+  /**
+   * Return all uncaught JS errors captured since this actor was constructed.
+   * The list is populated via a `page.on('pageerror')` listener set up in the
+   * constructor, so it covers the full lifetime of the test.
+   */
+  getConsoleErrors(): string[] {
+    return [...this._consoleErrors];
   }
 }
