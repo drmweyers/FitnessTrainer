@@ -594,29 +594,29 @@ export default function ProfileEditPage() {
           />
         )}
 
-        {/* WhatsApp Business Link (trainers only) */}
+        {/* WhatsApp Community / Group Link (trainers only) */}
         {user?.role === 'trainer' && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">WhatsApp Business Link</CardTitle>
+              <CardTitle className="text-base">WhatsApp Community / Group</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-gray-600">
-                Set your WhatsApp Business short link so clients can tap to contact you directly.
-                Use your full Business link or a wa.me link.
+                Optionally set a WhatsApp Community or group invite link. Clients will see a
+                &ldquo;Join Community&rdquo; option alongside the direct chat button.
               </p>
               <p className="text-xs text-gray-500">
-                Format:{' '}
-                <code className="bg-gray-100 px-1 rounded">wa.me/15551234567</code>
+                Accepted formats:{' '}
+                <code className="bg-gray-100 px-1 rounded">https://chat.whatsapp.com/ABC123</code>
                 {' '}or{' '}
-                <code className="bg-gray-100 px-1 rounded">https://wa.me/15551234567?text=Hi%20I%27m%20interested</code>
+                <code className="bg-gray-100 px-1 rounded">https://wa.me/15551234567</code>
               </p>
               <div>
-                <Label htmlFor="whatsappLink">Business Link</Label>
+                <Label htmlFor="whatsappLink">Community / Group Link</Label>
                 <Input
                   id="whatsappLink"
                   type="url"
-                  placeholder="https://wa.me/15551234567"
+                  placeholder="https://chat.whatsapp.com/your-invite-code"
                   value={whatsappLink ?? ''}
                   onChange={(e) => setWhatsappLink(e.target.value)}
                 />

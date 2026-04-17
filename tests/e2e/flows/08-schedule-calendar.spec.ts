@@ -68,9 +68,9 @@ test.describe('08 - Schedule & Calendar', () => {
 
     await newButton.first().click();
 
-    // CreateAppointmentModal renders as a fixed overlay with "New Appointment" heading inside
+    // CreateAppointmentModal renders with h3 "New Appointment" inside a fixed overlay
     await expect(
-      page.locator('h3:has-text("New Appointment"), [role="dialog"], .fixed.inset-0').first()
+      page.locator('h3:has-text("New Appointment")').first()
     ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'schedule-new-appointment.png');

@@ -29,8 +29,9 @@ test.describe('05 - Program Builder', () => {
 
     // Look for program content — heading must be there, then either cards or empty state
     await expect(page.locator('h1:has-text("Training Programs")')).toBeVisible({ timeout: TIMEOUTS.element });
+    // Either the Create Program button OR the "No programs" empty state must be visible
     await expect(
-      page.locator('text=/No programs|programs match|Create Program/i, [class*="card"], button:has-text("Create Program")').first()
+      page.locator('button:has-text("Create Program")').or(page.locator('text=No programs yet')).or(page.locator('text=No programs match')).first()
     ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 

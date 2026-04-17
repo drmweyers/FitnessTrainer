@@ -10,6 +10,7 @@ import InstallPrompt from '@/components/shared/InstallPrompt';
 import UpdateAvailable from '@/components/shared/UpdateAvailable';
 import SyncStatus from '@/components/shared/SyncStatus'
 import ReportBugButton from '@/components/ReportBugButton';
+import ClientWhatsAppFloat from '@/components/shared/ClientWhatsAppFloat';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -80,6 +81,7 @@ export default function AppLayout({
       <UpdateAvailable />
       <SyncStatus />
       {isAuthenticated && <ReportBugButton />}
+      <ClientWhatsAppFloat />
 
       {/* Navigation */}
       <MainNavigation

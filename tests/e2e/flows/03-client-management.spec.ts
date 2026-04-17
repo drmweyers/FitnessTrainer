@@ -44,9 +44,10 @@ test.describe('03 - Client Management', () => {
     await expect(addButton.first()).toBeVisible({ timeout: TIMEOUTS.element });
     await addButton.first().click();
 
-    // Should see a modal or form — ClientModal renders as a fixed overlay
-    const modal = page.locator('[role="dialog"], .fixed.inset-0, [data-state="open"]');
-    await expect(modal.first()).toBeVisible({ timeout: TIMEOUTS.element });
+    // ClientModal renders with an h2 "Add New Client" inside a fixed overlay
+    await expect(
+      page.locator('h2:has-text("Add New Client"), h2:has-text("Add Client")').first()
+    ).toBeVisible({ timeout: TIMEOUTS.element });
 
     await takeScreenshot(page, 'client-add-modal.png');
   });
@@ -60,8 +61,9 @@ test.describe('03 - Client Management', () => {
 
     // The clients page should have the h1 heading then either client rows or empty state
     await expect(page.locator('h1').filter({ hasText: /Clients/i })).toBeVisible({ timeout: TIMEOUTS.element });
+    // Either the Add Client button OR the "No clients found" empty state must be visible
     await expect(
-      page.locator('text=/No clients found|Add Client/i, [class*="ClientListItem"], .space-y-4').first()
+      page.locator('button:has-text("Add Client")').or(page.locator('text=No clients found')).first()
     ).toBeVisible({ timeout: TIMEOUTS.element });
   });
 

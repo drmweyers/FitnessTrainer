@@ -94,26 +94,20 @@ test.describe('04 - Exercise Library', () => {
     await waitForPageReady(page);
 
     // Click on first exercise card/link — detail links go to /dashboard/exercises/[id]
-    const exerciseLink = page.locator('a[href*="/dashboard/exercises/"]').first();
+    // Exclude favorites and collections sub-paths
+    const exerciseLink = page.locator('a[href*="/dashboard/exercises/"]:not([href*="favorites"]):not([href*="collections"])').first();
     await expect(exerciseLink).toBeVisible({ timeout: TIMEOUTS.element });
     await exerciseLink.click();
 
     // Wait for navigation to the detail page
     await page.waitForURL(/\/dashboard\/exercises\/[^/]+$/, { timeout: TIMEOUTS.pageLoad });
-    await waitForPageReady(page);
-
-    // Wait for loading skeleton to finish — exercise data fetches from the API
-    // ExerciseDetailView renders "Equipment" label once exercise loads
-    await page.waitForFunction(
-      () => !document.querySelector('.animate-pulse'),
-      { timeout: TIMEOUTS.pageLoad }
-    ).catch(() => {}); // Best-effort — some pulse might remain
 
     // Detail page renders either exercise info (target/muscle/equipment) or "Exercise not found"
     // Both are valid rendered states — the key assertion is that navigation worked
+    // Allow up to 20s for the skeleton to load exercise data
     await expect(
       page.locator('text=/target|muscle|equipment|instructions|exercise not found/i').first()
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible({ timeout: 20000 });
 
     await takeScreenshot(page, 'exercise-detail.png');
   });
