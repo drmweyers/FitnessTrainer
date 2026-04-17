@@ -22,7 +22,11 @@
     "cleanup:production:dry-run": "tsx scripts/cleanup-production.ts --dry-run",
     "seed:analytics": "tsx scripts/seed-analytics.ts",
     "seed:analytics:dry-run": "tsx scripts/seed-analytics.ts --dry-run",
-    "seed:exercises": "tsx scripts/seed-exercises.ts"
+    "seed:exercises": "tsx scripts/seed-exercises.ts",
+    "test:integrity": "bash scripts/run-integrity-pipeline.sh",
+    "test:integrity:sweep": "npx playwright test tests/e2e/simulations/integrity/error-boundary-sweep.spec.ts --config tests/e2e/simulations/playwright.integrity.config.ts",
+    "test:integrity:rda": "npx playwright test \"tests/e2e/simulations/integrity/*-data-rendering.spec.ts\" --config tests/e2e/simulations/playwright.integrity.config.ts",
+    "test:integrity:dcv": "npx playwright test \"tests/e2e/simulations/integrity/*-data-completeness.spec.ts\" --config tests/e2e/simulations/playwright.integrity.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
