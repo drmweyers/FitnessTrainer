@@ -109,9 +109,9 @@ export default function BodyCompositionChart({
           font: {
             size: 12,
           },
-          filter: function(item, chart) {
-            // Only show legend items that have data
-            const dataset = (chart as any).data.datasets[item.datasetIndex!];
+          filter: function(item, data) {
+            const dataset = (data as any).datasets?.[item.datasetIndex!];
+            if (!dataset) return true;
             return Array.isArray(dataset.data) && dataset.data.some((value: any) => value !== null && value !== undefined);
           },
         },
