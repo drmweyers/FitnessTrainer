@@ -44,9 +44,10 @@ interface ReportData {
 interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  clientId?: string | null;
 }
 
-export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
+export default function ReportModal({ isOpen, onClose, clientId }: ReportModalProps) {
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 1);
@@ -54,6 +55,7 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
   });
   const [endDate, setEndDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [report, setReport] = useState<ReportData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,6 +82,44 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
       setError('Failed to generate report');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const downloadPdf = async () => {
+    setIsDownloadingPdf(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch('/api/analytics/reports/pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          clientId: clientId || report?.id,
+          startDate,
+          endDate,
+        }),
+      });
+
+      if (!res.ok) {
+        setError('Failed to generate PDF report');
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `evofit-report-${startDate}-to-${endDate}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      setError('Failed to download PDF report');
+    } finally {
+      setIsDownloadingPdf(false);
     }
   };
 
@@ -307,6 +347,12 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
 
               {/* Actions */}
               <div className="flex flex-col space-y-2 pt-2">
+                <Button onClick={downloadPdf} disabled={isDownloadingPdf} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  {isDownloadingPdf ? 'Generating PDF...' : 'Download as PDF'}
+                </Button>
                 <Button onClick={downloadCSV} variant="outline" className="w-full">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

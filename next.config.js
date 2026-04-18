@@ -3,10 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
-  // Enable experimental features for better performance
   experimental: {
-    // optimizeCss: true, // Disabled due to critters module issue
     scrollRestoration: true,
+    outputFileTracingIncludes: {
+      '/api/analytics/reports/pdf': ['./lib/templates/**/*', './node_modules/@sparticuz/chromium/**/*'],
+    },
   },
 
   // TypeScript configuration

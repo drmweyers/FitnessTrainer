@@ -694,7 +694,7 @@ export default function AnalyticsPage() {
         />
 
         {/* Report Modal */}
-        <ReportModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
+        <ReportModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} clientId={selectedClientId} />
 
         {/* Toast Notifications */}
         <ToastContainer toasts={toasts} onClose={removeToast} />
