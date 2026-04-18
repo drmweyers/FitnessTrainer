@@ -4,8 +4,8 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,086 unit (319 suites) + ~874 E2E (50 workflow + 5 edge + 12 flow + 278 simulation + 131 integrity suites) = **~5,960 total**
-**Last session (2026-04-18):** PDF report export feature shipped (Puppeteer + EJS, 18 new tests). Fixed BodyCompositionChart Chart.js crash. Deployed via CLI (git integration stale).
+**Tests:** 5,094 unit (321 suites) + ~874 E2E (50 workflow + 5 edge + 12 flow + 278 simulation + 131 integrity suites) = **~5,968 total**
+**Last session (2026-04-18):** Client invitation system wired up (5 API routes + acceptance page, 8 tests). PDF report export shipped earlier.
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
@@ -28,7 +28,7 @@ See: `~/Claude/second-brain/dev-updates/HOW-IT-WORKS.md`
 | **Frontend** | Next.js 14 App Router, React 18, TypeScript 5.6 |
 | **UI** | Tailwind CSS 3.4, Radix UI, shadcn/ui, Framer Motion |
 | **State** | TanStack Query (server), Jotai (client) |
-| **Backend** | Next.js API routes (93 endpoints) |
+| **Backend** | Next.js API routes (98 endpoints) |
 | **Database** | PostgreSQL 16 (Neon serverless), Prisma 5.22 |
 | **Cache** | Upstash Redis |
 | **Auth** | JWT (15min/7d), WebAuthn passkeys, bcryptjs |
@@ -89,7 +89,7 @@ npm run docker:up        # Start Docker services
 app/
   (auth)/               # Login, register pages
   (dashboard)/          # Protected dashboard routes
-  api/                  # Next.js API routes (93 endpoints)
+  api/                  # Next.js API routes (98 endpoints)
   admin/                # Admin panel
   analytics/            # Analytics dashboards
   clients/              # Client management
