@@ -96,7 +96,7 @@ export default function TrainingLoadTab({ clientId }: TrainingLoadTabProps) {
     datasets: [
       {
         label: 'Total Volume',
-        data: sortedData.map(tl => tl.totalVolume),
+        data: sortedData.map(tl => Number(tl.totalVolume)),
         backgroundColor: '#3B82F6',
       },
     ],
@@ -133,14 +133,14 @@ export default function TrainingLoadTab({ clientId }: TrainingLoadTabProps) {
     datasets: [
       {
         label: 'Acute Load (7-day)',
-        data: sortedData.map(tl => tl.acuteLoad),
+        data: sortedData.map(tl => Number(tl.acuteLoad)),
         borderColor: '#F59E0B',
         backgroundColor: '#F59E0B20',
         tension: 0.4,
       },
       {
         label: 'Chronic Load (28-day)',
-        data: sortedData.map(tl => tl.chronicLoad),
+        data: sortedData.map(tl => Number(tl.chronicLoad)),
         borderColor: '#10B981',
         backgroundColor: '#10B98120',
         tension: 0.4,
@@ -173,7 +173,7 @@ export default function TrainingLoadTab({ clientId }: TrainingLoadTabProps) {
 
   // Calculate current week stats
   const currentWeek = sortedData[sortedData.length - 1];
-  const avgVolume = sortedData.reduce((sum, tl) => sum + tl.totalVolume, 0) / sortedData.length;
+  const avgVolume = sortedData.reduce((sum, tl) => sum + Number(tl.totalVolume), 0) / sortedData.length;
 
   return (
     <div className="space-y-6">
@@ -204,7 +204,7 @@ export default function TrainingLoadTab({ clientId }: TrainingLoadTabProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-medium text-gray-500">Total Volume</h3>
-            <p className="text-2xl font-bold text-gray-900">{currentWeek.totalVolume.toFixed(0)} kg</p>
+            <p className="text-2xl font-bold text-gray-900">{Number(currentWeek.totalVolume).toFixed(0)} kg</p>
             <p className="text-xs text-gray-500 mt-1">This Week</p>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
@@ -214,9 +214,9 @@ export default function TrainingLoadTab({ clientId }: TrainingLoadTabProps) {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-medium text-gray-500">Load Ratio</h3>
-            <p className="text-2xl font-bold text-gray-900">{currentWeek.loadRatio.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-gray-900">{Number(currentWeek.loadRatio).toFixed(2)}</p>
             <p className="text-xs text-gray-500 mt-1">
-              {currentWeek.loadRatio > 1.5 ? 'High Risk' : currentWeek.loadRatio > 0.8 ? 'Optimal' : 'Low'}
+              {Number(currentWeek.loadRatio) > 1.5 ? 'High Risk' : Number(currentWeek.loadRatio) > 0.8 ? 'Optimal' : 'Low'}
             </p>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
