@@ -70,7 +70,7 @@ test.describe('DCV — Trainer data completeness', () => {
     await actor.login();
 
     const res = await actor.apiCall('GET', '/api/clients');
-    const clients: any[] = res?.data?.clients ?? res?.data ?? [];
+    const clients: any[] = res?.clients ?? res?.data?.clients ?? res?.data ?? [];
     expect(
       Array.isArray(clients) ? clients.length : 0,
       'Expected at least 1 client record from /api/clients',
@@ -82,7 +82,7 @@ test.describe('DCV — Trainer data completeness', () => {
     await actor.login();
 
     const res = await actor.apiCall('GET', '/api/programs');
-    const programs: any[] = res?.data?.programs ?? res?.data ?? [];
+    const programs: any[] = res?.data ?? res?.programs ?? [];
     expect(
       Array.isArray(programs) ? programs.length : 0,
       'Expected at least 1 program from /api/programs',
@@ -94,7 +94,7 @@ test.describe('DCV — Trainer data completeness', () => {
     await actor.login();
 
     const res = await actor.apiCall('GET', '/api/exercises?limit=20');
-    const exercises: any[] = res?.data?.exercises ?? res?.data ?? [];
+    const exercises: any[] = res?.exercises ?? res?.data?.exercises ?? res?.data ?? [];
     expect(
       Array.isArray(exercises) ? exercises.length : 0,
       'Expected at least 10 exercises from /api/exercises',
@@ -155,19 +155,17 @@ test.describe('DCV — Trainer data completeness', () => {
 
     await page.waitForTimeout(2_000);
 
-    // Program cards or list items
-    const programElements = page.locator(
-      '[data-testid*="program-card"], [data-testid*="program-item"], .program-card',
-    );
-    const count = await programElements.count();
+    // Program cards render program names in h3 elements
+    await page
+      .waitForFunction(
+        () => !(document.body.textContent || '').includes('Loading programs'),
+        { timeout: 30_000 },
+      )
+      .catch(() => {});
 
-    if (count === 0) {
-      // Fallback: look for any heading/link that mentions a program name
-      const anyProgram = page.getByText(/program/i).first();
-      await expect(anyProgram).toBeVisible({ timeout: 10_000 });
-    } else {
-      expect(count).toBeGreaterThanOrEqual(1);
-    }
+    const programHeadings = page.locator('h3');
+    const count = await programHeadings.count();
+    expect(count, 'Expected at least 1 program heading on /programs').toBeGreaterThanOrEqual(1);
   });
 
   test('/exercises page renders exercise content for trainer', async ({ page }) => {
@@ -353,7 +351,7 @@ test.describe('DCV — Cross-role data consistency', () => {
     const clientsRes = await actor.apiCall('GET', '/api/clients');
     const statsRes = await actor.apiCall('GET', '/api/dashboard/stats');
 
-    const apiClients: any[] = clientsRes?.data?.clients ?? clientsRes?.data ?? [];
+    const apiClients: any[] = clientsRes?.clients ?? clientsRes?.data?.clients ?? clientsRes?.data ?? [];
     const statsTotal: number = statsRes?.data?.clientOverview?.totalClients ?? -1;
 
     // Both sources should agree there is at least 1 client
@@ -372,7 +370,7 @@ test.describe('DCV — Cross-role data consistency', () => {
 
     // First verify API count
     const res = await actor.apiCall('GET', '/api/exercises?limit=20');
-    const apiExercises: any[] = res?.data?.exercises ?? res?.data ?? [];
+    const apiExercises: any[] = res?.exercises ?? res?.data?.exercises ?? res?.data ?? [];
     expect(
       Array.isArray(apiExercises) ? apiExercises.length : 0,
       'API should return >= 10 exercises',
