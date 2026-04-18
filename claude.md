@@ -4,8 +4,8 @@
 **Status:** All 13 Epics at 100% — Production Ready
 **Production:** https://trainer.evofit.io
 **Repo:** `drmweyers/FitnessTrainer` (branch: `master`)
-**Tests:** 5,068 unit (316 suites) + ~874 E2E (50 workflow + 5 edge + 12 flow + 278 simulation + 131 integrity suites) = **~5,942 total**
-**Last session (2026-04-17):** FORGE integrity pipeline 131/131 green against production. Fixed 21 test failures (L2 selector mismatches + L3 API response shape mismatches).
+**Tests:** 5,086 unit (319 suites) + ~874 E2E (50 workflow + 5 edge + 12 flow + 278 simulation + 131 integrity suites) = **~5,960 total**
+**Last session (2026-04-18):** PDF report export feature shipped (Puppeteer + EJS, 18 new tests). Fixed BodyCompositionChart Chart.js crash. Deployed via CLI (git integration stale).
 **Deploy:** Vercel (auto-deploy on push to master)
 
 ---
