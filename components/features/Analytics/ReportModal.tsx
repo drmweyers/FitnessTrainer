@@ -70,7 +70,7 @@ export default function ReportModal({ isOpen, onClose, clientId }: ReportModalPr
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify({ startDate, endDate }),
+        body: JSON.stringify({ startDate, endDate, clientId }),
       });
       const result = await res.json();
       if (result.success) {
@@ -96,7 +96,7 @@ export default function ReportModal({ isOpen, onClose, clientId }: ReportModalPr
           ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
-          clientId: clientId || report?.id,
+          clientId,
           startDate,
           endDate,
         }),

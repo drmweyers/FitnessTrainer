@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { startDate, endDate } = body
+    const { startDate, endDate, clientId } = body
 
     if (!startDate || !endDate) {
       return NextResponse.json(
@@ -58,10 +58,12 @@ export async function POST(request: NextRequest) {
     const start = new Date(startDate)
     const end = new Date(endDate)
 
+    const targetUserId = req.user!.role === 'trainer' && clientId ? clientId : userId
+
     // Fetch workout sessions in range
     const workoutSessions = await prisma.workoutSession.findMany({
       where: {
-        clientId: userId,
+        clientId: targetUserId,
         scheduledDate: { gte: start, lte: end },
       },
       select: {
@@ -81,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Fetch performance metrics in range
     const performanceMetrics = await prisma.performanceMetric.findMany({
       where: {
-        userId,
+        userId: targetUserId,
         recordedAt: { gte: start, lte: end },
       },
       select: {
@@ -96,7 +98,7 @@ export async function POST(request: NextRequest) {
     // Fetch measurements in range
     const measurements = await prisma.userMeasurement.findMany({
       where: {
-        userId,
+        userId: targetUserId,
         recordedAt: { gte: start, lte: end },
       },
       select: {
@@ -111,7 +113,7 @@ export async function POST(request: NextRequest) {
     // Fetch active goals
     const goals = await prisma.userGoal.findMany({
       where: {
-        userId,
+        userId: targetUserId,
         isActive: true,
       },
       include: {
