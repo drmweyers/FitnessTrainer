@@ -159,10 +159,8 @@ test.describe('Analytics Data Rendering — Client role', () => {
     await chartsTab.click();
     await page.waitForTimeout(2_000);
 
-    const bodyText = await page.locator('main, body').first().innerText().catch(() => '');
-    for (const signal of ['Something went wrong', 'Error loading', 'Failed to fetch', 'Unexpected error']) {
-      expect(bodyText, `Error signal "${signal}" on Charts tab`).not.toContain(signal);
-    }
+    await actor.assertNoErrorBoundary();
+    await actor.assertNoRenderBugs();
   });
 
   test('Goals tab renders without error', async ({ page }) => {
@@ -256,11 +254,11 @@ test.describe('Analytics Data Rendering — Trainer role', () => {
         page.getByText(/Analytics|Professional|Upgrade/i).first(),
       ).toBeVisible({ timeout: 10_000 });
     } else {
-      // Verify analytics content rendered in main area (not sidebar nav link)
-      const mainContent = page.locator('main, [role="main"]').first();
-      const mainText = await mainContent.innerText().catch(() => '');
-      expect(mainText.length, 'Analytics main content should have rendered').toBeGreaterThan(50);
-      expect(mainText).toMatch(/Analytics|Overview|Performance|Clients/i);
+      // Trainer Analytics heading should be visible in main content
+      await expect(
+        page.locator('main h1, [role="main"] h1').filter({ hasText: /Analytics/i }).first(),
+      ).toBeVisible({ timeout: 15_000 });
+      await actor.assertNoErrorBoundary();
     }
   });
 

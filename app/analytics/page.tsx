@@ -109,10 +109,15 @@ export default function AnalyticsPage() {
   };
 
   useEffect(() => {
-    if (user?.id) {
-      loadMeasurements();
+    if (!user?.id) return;
+    // Trainers without a selected client have no personal measurements to load —
+    // their Overview tab uses TrainerAnalyticsDashboard which fetches its own data.
+    if (user.role === 'trainer' && !selectedClientId) {
+      setIsLoading(false);
+      return;
     }
-  }, [user?.id, selectedClientId]);
+    loadMeasurements();
+  }, [user?.id, user?.role, selectedClientId]);
 
   // Show loading while auth is initializing or user not yet available
   if (authLoading || !user) {
